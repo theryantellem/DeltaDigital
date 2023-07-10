@@ -1,30 +1,79 @@
 {
   "expo": {
-    "name": "delta-signal",
+    "name": "Delta signal",
     "slug": "delta-signal",
+    "scheme": "delta-signal",
+    "owner": "delta-signal",
     "version": "1.0.0",
+    "jsEngine": "hermes",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "notification": {
+      "iosDisplayInForeground": true,
+      "androidMode": "collapse",
+      "androidCollapsedTitle": "BuddyEx",
+      "icon": "./assets/icon.png"
+    },
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#141621"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
+      "icon": "./assets/icon.png",
+      "userInterfaceStyle": "light",
+      "bundleIdentifier": "com.deltaSignal.mobile",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "buildNumber": "1",
+      "usesIcloudStorage": true,
+      "infoPlist": {
+        "remote-notification": "Allow user to receive remote notification",
+        "NSLocationWhenInUseUsageDescription": "Allow user to receive remote notification",
+        "NSCameraUsageDescription": "This app uses the camera to let user put a photo in his profile page.",
+        "NSPhotoLibraryUsageDescription": "This app needs to access the camera library so they can upload their profile image.",
+        "NSMicrophoneUsageDescription": "Allow Brace to access your microphone"
+      },
       "supportsTablet": true
     },
     "android": {
+      "package": "com.deltaSignal.mobile",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "googleServicesFile": "./google-services.json",
+      "versionCode": 1,
+      "userInterfaceStyle": "light",
+      "permissions": [
+        "RECEIVE_BOOT_COMPLETED",
+        "CAMERA",
+        "INTERNET",
+        "ACCESS_MEDIA_LOCATION",
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_EXTERNAL_STORAGE",
+        "ACCESS_FINE_LOCATION",
+        "USE_FINGERPRINT",
+        "USE_BIOMETRIC",
+        "ACCESS_COARSE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "401f6018-19cc-401e-9aac-72b20c0bf6cf"
+      }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/401f6018-19cc-401e-9aac-72b20c0bf6cf"
+    },
+    "runtimeVersion": "1.0.0"
   }
 }
