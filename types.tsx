@@ -15,6 +15,11 @@ import TradeSetting from "./screens/cyborg/bot/TradeSetting";
 import ReviewScreen from "./screens/cyborg/bot/ReviewScreen";
 import OverView from "./screens/cyborg/OverView";
 import BotSuccess from "./screens/cyborg/bot/BotSuccess";
+import UserAccount from "./screens/cyborg/UserAccount";
+import Assets from "./screens/cyborg/profile/Assets";
+import DepositScreen from "./screens/cyborg/profile/DepositScreen";
+import Withdrawal from "./screens/cyborg/profile/WIthdrawalAmount";
+import WithdrawalAmount from "./screens/cyborg/profile/WIthdrawalAmount";
 
 
 
@@ -40,6 +45,11 @@ export type RootStackParamList = {
     ReviewScreen: undefined;
     OverView: undefined;
     BotSuccess: undefined;
+    UserAccount: undefined;
+    DepositScreen: undefined;
+    Withdrawal: undefined;
+    WithdrawalAmount: undefined;
+    Assets: undefined;
 
 
     //END CYBORG

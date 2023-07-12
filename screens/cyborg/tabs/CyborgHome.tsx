@@ -1,5 +1,4 @@
 import React from 'react';
-
 import {
     Text,
     View,
@@ -20,7 +19,6 @@ import {Fonts} from "../../../constants/Fonts";
 import {Ionicons, Octicons} from "@expo/vector-icons";
 import Colors from "../../../constants/Colors";
 import {currencyFormatter} from "../../../helpers";
-import {LineGraph} from "react-native-graph";
 import {LineChart} from "react-native-wagmi-charts";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-reanimated";

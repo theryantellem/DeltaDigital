@@ -7,15 +7,13 @@ export function MyButton(props: ButtonProps) {
 
             height: heightPixel(55),
             alignItems: 'center',
-
-
             borderRadius:8,
+
 
         }]}/> :
         <Pressable {...props} style={[props.style, {
             height: heightPixel(55),
             alignItems: 'center',
-            paddingVertical: 16,
 
             borderRadius:8,
 

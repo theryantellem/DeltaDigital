@@ -20,7 +20,7 @@ const TopBar = ({ profilePhoto, userName}: props) => {
        navigation.navigate('NewsScreen')
     }
     const openProfile = () => {
-       navigation.navigate('Account')
+       navigation.navigate('UserAccount')
     }
 
     const [greeting, setGreeting] = useState('');

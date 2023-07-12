@@ -177,13 +177,13 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
                                 label="Password"/>
 
 
-                            <View style={[styles.terms, {
+                         {/*   <View style={[styles.terms, {
                                 marginTop: errors.password ? 10 : 0
                             }]}>
                                 <TouchableOpacity onPress={forgotPassword}>
                                     <Text style={styles.forgotPass}>Forgot password?</Text>
                                 </TouchableOpacity>
-                            </View>
+                            </View>*/}
 
 
                         </View>

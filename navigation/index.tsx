@@ -4,13 +4,13 @@
  *
  */
 import {FontAwesome} from '@expo/vector-icons';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+
 import {NavigationContainer, DefaultTheme, DarkTheme} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import * as React from 'react';
 import {ColorSchemeName, AppState, Pressable} from 'react-native';
 
-import {RootStackParamList, RootTabParamList, RootTabScreenProps} from '../types';
+import {RootStackParamList} from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 import {AuthNavigator} from "./AuthNavigation";
 import OnBoardingScreen from "../screens/onboarding";
@@ -24,6 +24,11 @@ import TradeSetting from "../screens/cyborg/bot/TradeSetting";
 import ReviewScreen from "../screens/cyborg/bot/ReviewScreen";
 import OverView from "../screens/cyborg/OverView";
 import BotSuccess from "../screens/cyborg/bot/BotSuccess";
+import UserAccount from "../screens/cyborg/UserAccount";
+import Assets from "../screens/cyborg/profile/Assets";
+import DepositScreen from "../screens/cyborg/profile/DepositScreen";
+import WithdrawalAmount from "../screens/cyborg/profile/WIthdrawalAmount";
+import Withdrawal from "../screens/cyborg/profile/Withdrawal";
 
 
 export default function Navigation({colorScheme}: { colorScheme: ColorSchemeName }) {
@@ -69,6 +74,12 @@ function RootNavigator() {
                 <Stack.Screen name={"TradeSetting"} component={TradeSetting}/>
                 <Stack.Screen name={"ReviewScreen"} component={ReviewScreen}/>
                 <Stack.Screen name={"OverView"} component={OverView}/>
+                <Stack.Screen name={"UserAccount"} component={UserAccount}/>
+                <Stack.Screen name={"Assets"} component={Assets}/>
+                <Stack.Screen name={"DepositScreen"} component={DepositScreen}/>
+                <Stack.Screen name={"Withdrawal"} component={Withdrawal}/>
+                <Stack.Screen name={"WithdrawalAmount"} component={WithdrawalAmount}/>
+
                 <Stack.Screen name={"BotSuccess"} options={{animation: 'slide_from_bottom'}} component={BotSuccess}/>
 
                 <Stack.Screen name={"SelectType"} component={SelectType}/>
