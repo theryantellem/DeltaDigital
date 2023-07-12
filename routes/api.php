@@ -25,7 +25,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('bind', 'apiBind');
         Route::post('unbind', 'apiUnBind');
         Route::post('set-trade', 'tradeSettings');
+        Route::get('market-list', 'getMarkets');
         Route::get('get-strategy', 'getStrategy');
-        Route::get('set-user','setupUser');
+        Route::get('set-user', 'setupUser');
     });
 });

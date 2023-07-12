@@ -74,7 +74,11 @@ class CyborgController extends ApiController
 
             $respone = $this->cybordService->bindApi($data);
 
-            dd($respone);
+            if ($respone->status == 1) {
+                return $this->sendResponse([], "Unbinded Successfully");
+            }
+
+            return $this->sendError("Not Successfull."[], 400);
         } catch (\Throwable $e) {
             logger(["Api bind" => $e->getMessage()]);
             return $this->sendError("Service Unavailable", [], Response::HTTP_SERVICE_UNAVAILABLE);
@@ -84,38 +88,26 @@ class CyborgController extends ApiController
     function tradeSettings(\App\Http\Requests\Cyborg\TradeSettingsRequest $request)
     {
         try {
-            $validated = $request->validated();
+
+            $validated = (object) $request->validated();
 
             $user = $request->user();
 
-            $id = $validated->id;
-            $firstbuy_amount = $validated->firstbuy_amount;
-            $double_position = $validated->double_position;
-            $margin_limit = $validated->margin_limit;
-            $profit_ratio = $validated->profit_ratio;
-            $whole_ratio = $validated->whole_ratio;
-            $first_call = $validated->first_call;
-            $first_ratio = $validated->first_ratio;
-            $profit_callback = $validated->profit_callback;
-            $cycle = $validated->cycle;
-            $one_short = $validated->one_shirt;
-            $whole_stop = $validated->whole_stop;
+            $data['userId'] = $user->id;
+            $data['id'] = $validated->id;
+            $data['firstbuy_amount'] = $validated->firstbuy_amount;
+            $data['double_positio'] = $validated->double_position;
+            $data['margin_limit'] = $validated->margin_limit;
+            $data['profit_ratio'] = $validated->profit_ratio;
+            $data['whole_ratio'] = $validated->whole_ratio;
+            $data['first_call'] = $validated->first_call;
+            $data['first_ratio'] = $validated->first_ratio;
+            $data['profit_callback'] = $validated->profit_callback;
+            $data['cycle'] = $validated->cycle;
+            $data['one_short'] = $validated->one_short;
+            $data['whole_stop'] = $validated->whole_stop;
 
-            $respone = $this->cybordService->tradeSettings(
-                $user->id,
-                $id,
-                $firstbuy_amount,
-                $double_position,
-                $margin_limit,
-                $profit_ratio,
-                $whole_ratio,
-                $first_call,
-                $first_ratio,
-                $profit_callback,
-                $cycle,
-                $one_short,
-                $whole_stop,
-            );
+            $respone = $this->cybordService->tradeSettings($data);
 
             dd($respone);
         } catch (\Throwable $e) {
@@ -132,6 +124,20 @@ class CyborgController extends ApiController
             $respone = $this->cybordService->getStrategy($user->id);
 
             dd($respone);
+        } catch (\Throwable $e) {
+            logger(["Get stratigy error" => $e->getMessage()]);
+            return $this->sendError("Service Unavailable", [], Response::HTTP_SERVICE_UNAVAILABLE);
+        }
+    }
+
+    public function getMarkets()
+    {
+        try {
+            $user = Auth::user();
+
+            $respone = $this->cybordService->getOStrategy($user->id);
+
+            return $this->sendResponse($respone->data->strategy, "List of markets");
         } catch (\Throwable $e) {
             logger(["Get stratigy error" => $e->getMessage()]);
             return $this->sendError("Service Unavailable", [], Response::HTTP_SERVICE_UNAVAILABLE);
