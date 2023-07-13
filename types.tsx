@@ -20,6 +20,8 @@ import Assets from "./screens/cyborg/profile/Assets";
 import DepositScreen from "./screens/cyborg/profile/DepositScreen";
 import Withdrawal from "./screens/cyborg/profile/WIthdrawalAmount";
 import WithdrawalAmount from "./screens/cyborg/profile/WIthdrawalAmount";
+import SettingsScreen from "./screens/cyborg/profile/SettingsScreen";
+import ApiBinding from "./screens/cyborg/profile/ApiBinding";
 
 
 
@@ -49,6 +51,11 @@ export type RootStackParamList = {
     DepositScreen: undefined;
     Withdrawal: undefined;
     WithdrawalAmount: undefined;
+    RewardDetails: undefined;
+    SettingsScreen: undefined;
+    Earnings: undefined;
+    ApiBinding: undefined;
+    TransferScreen: undefined;
     Assets: undefined;
 
 

@@ -5,7 +5,16 @@ import HeaderWithTitle from "../../components/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import FastImage from "react-native-fast-image";
-import {Feather, FontAwesome, Foundation, Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons} from '@expo/vector-icons';
+import {
+    Feather,
+    FontAwesome,
+    FontAwesome5,
+    Foundation,
+    Ionicons,
+    MaterialCommunityIcons,
+    MaterialIcons,
+    Octicons
+} from '@expo/vector-icons';
 import {fontPixel, heightPixel, widthPixel} from "../../helpers/normalize";
 import Colors from "../../constants/Colors";
 import {Fonts} from "../../constants/Fonts";
@@ -15,7 +24,7 @@ import {RootStackScreenProps} from "../../types";
 
 const UserAccount = ({navigation}:RootStackScreenProps<'UserAccount'>) => {
 
-    const navigate = (screen:'Assets') => {
+    const navigate = (screen:'Assets'|'RewardDetails'|'SettingsScreen'|'ApiBinding'|'Earnings') => {
         navigation.navigate(screen)
     }
 
@@ -96,7 +105,7 @@ const UserAccount = ({navigation}:RootStackScreenProps<'UserAccount'>) => {
 
 
                     <View style={styles.profileButtonContainer}>
-                        <TouchableOpacity activeOpacity={0.6} style={styles.profileButton}>
+                        <TouchableOpacity onPress={()=>navigate('SettingsScreen')} activeOpacity={0.6} style={styles.profileButton}>
 
                             <View style={styles.leftContent}>
 
@@ -132,7 +141,7 @@ const UserAccount = ({navigation}:RootStackScreenProps<'UserAccount'>) => {
                         </TouchableOpacity>
 
 
-                        <TouchableOpacity activeOpacity={0.6} style={styles.profileButton}>
+                        <TouchableOpacity onPress={()=>navigate('Earnings')} activeOpacity={0.6} style={styles.profileButton}>
 
                             <View style={styles.leftContent}>
 
@@ -151,7 +160,26 @@ const UserAccount = ({navigation}:RootStackScreenProps<'UserAccount'>) => {
                         </TouchableOpacity>
 
 
-                        <TouchableOpacity activeOpacity={0.6} style={styles.profileButton}>
+                        <TouchableOpacity onPress={()=>navigate('RewardDetails')} activeOpacity={0.6} style={styles.profileButton}>
+
+                            <View style={styles.leftContent}>
+
+                                <View style={styles.buttonIcon}>
+                                    <FontAwesome5 name="coins" size={18} color={Colors.lightColor} />
+
+                                </View>
+                                <Text style={styles.profileTxt}>
+                                    Reward details
+                                </Text>
+                            </View>
+
+                            <Octicons name="chevron-right" size={20} color="#979797"/>
+
+
+                        </TouchableOpacity>
+
+
+                        <TouchableOpacity onPress={()=>navigate('ApiBinding')} activeOpacity={0.6} style={styles.profileButton}>
 
                             <View style={styles.leftContent}>
 
