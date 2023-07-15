@@ -63,4 +63,14 @@ class User extends Authenticatable
     {
         return $this->where('uuid', $value)->firstOrFail();
     }
+
+    function wallet()
+    {
+        return $this->hasOne(Wallet::class);
+    }
+
+    public function exchanges()
+    {
+        return $this->hasMany(ExchangeBind::class);
+    }
 }

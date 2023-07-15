@@ -1,8 +1,6 @@
 <?php
 
 use App\Http\Controllers\Api\AuthenticationController;
-use App\Http\Controllers\Api\CyborgController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,13 +18,10 @@ Route::post('/login', [AuthenticationController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     // cyborg
-    Route::controller(CyborgController::class)->prefix('cyborg')->group(function () {
-        Route::get('exchange-list', 'getExchanges');
-        Route::post('bind', 'apiBind');
-        Route::post('unbind', 'apiUnBind');
-        Route::post('set-trade', 'tradeSettings');
-        Route::get('market-list', 'getMarkets');
-        Route::get('get-strategy', 'getStrategy');
-        Route::get('set-user', 'setupUser');
+    Route::prefix('cyborg')->group(function(){
+        Route::controller(\App\Http\Controllers\Cyborg\BindController::class)->group(function(){
+            Route::post('/bind', 'bind');
+            Route::post('/unbind', 'unbind');
+        });
     });
 });
