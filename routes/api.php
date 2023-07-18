@@ -18,10 +18,16 @@ Route::post('/login', [AuthenticationController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     // cyborg
-    Route::prefix('cyborg')->group(function(){
-        Route::controller(\App\Http\Controllers\Cyborg\BindController::class)->group(function(){
+    Route::prefix('cyborg')->group(function () {
+        Route::controller(\App\Http\Controllers\Api\Cyborg\BindController::class)->group(function () {
             Route::post('/bind', 'bind');
             Route::post('/unbind', 'unbind');
         });
+
+        Route::controller(\App\Http\Controllers\Api\Cyborg\StrategyController::class)->group(function () {
+            Route::post('/strategies', 'index');
+        });
+
+        Route::get('/exchanges', [\App\Http\Controllers\Api\Cyborg\ExchangeController::class, 'index']);
     });
 });

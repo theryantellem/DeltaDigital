@@ -34,4 +34,9 @@ class Exchange extends Model
             'status' => "enabled"
         ],
     ];
+
+    function strategies()
+    {
+        return $this->hasMany(Strategy::class);
+    }
 }

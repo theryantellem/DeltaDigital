@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Cyborg;
+namespace App\Http\Controllers\Api\Cyborg;
 
 use App\Http\Controllers\ApiController;
 use App\Models\Exchange;
