@@ -33,8 +33,13 @@ class TradeSettings extends Model
         return $this->where('uuid', $value)->firstOrFail();
     }
 
-    public function exchange()
+    public function strategy()
     {
-        return $this->belongsTo(Exchange::class);
+        return $this->belongsTo(Strategy::class);
+    }
+
+    public function market()
+    {
+        return $this->belongsTo(Market::class);
     }
 }

@@ -24,10 +24,16 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/unbind', 'unbind');
         });
 
-        Route::controller(\App\Http\Controllers\Api\Cyborg\StrategyController::class)->group(function () {
-            Route::post('/strategies', 'index');
+        Route::controller(\App\Http\Controllers\Api\Cyborg\StrategyController::class)->prefix('strategies')->group(function () {
+            Route::get('/', 'index');
+            Route::get('trade-settings', 'tradeSettings');
+            Route::post('sync', 'syncStrategy');
         });
 
         Route::get('/exchanges', [\App\Http\Controllers\Api\Cyborg\ExchangeController::class, 'index']);
+
+        Route::controller(\App\Http\Controllers\Api\Cyborg\WalletController::class)->prefix('wallets')->group(function () {
+            Route::post('deposit', 'deposit');
+        });
     });
 });

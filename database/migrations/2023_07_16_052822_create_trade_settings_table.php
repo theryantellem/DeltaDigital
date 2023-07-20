@@ -21,8 +21,8 @@ return new class extends Migration
             $table->unsignedBigInteger('margin_limit');
             $table->unsignedBigInteger('profit_ratio');
             $table->unsignedBigInteger('whole_ratio');
-            $table->unsignedBigInteger('price_drop');
-            $table->unsignedBigInteger('m_ratio');
+            $table->text('price_drop');
+            $table->text('m_ratio');
             $table->unsignedBigInteger('profit_callback');
             $table->unsignedBigInteger('cycle')->nullable();
             $table->boolean('one_short')->default(true);

@@ -36,8 +36,6 @@ class AuthenticationController extends ApiController
                 return $this->sendError($data['user'], [], Response::HTTP_UNAUTHORIZED);
             }
 
-            dispatch(new \App\Jobs\SetupCyborgUserJob($data['uid']));
-
             $user = User::where('id', $data['uid'])->where('username', $request->username)->first();
 
             if (!$user) {

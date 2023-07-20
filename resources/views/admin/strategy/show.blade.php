@@ -6,6 +6,7 @@
     <div id="strategy">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="heading mb-0">Strategy Details</h2>
+
         </div>
         <div class="card">
             <div class="card-body">
@@ -31,6 +32,7 @@
                                         {{ number_format($strategy->minimum_amount, 2, '.', ',') }}</p>
                                 </div>
                                 <p class="text-content">
+
                                     {{ $strategy->description }}
                                 </p>
                             </div>
@@ -51,13 +53,14 @@
                     <table class="table table-responsive-md">
                         <thead>
                             <tr>
-                                <th><strong>Exchange</strong></th>
                                 <th><strong>Market</strong></th>
                                 <th><strong>First Buy</strong></th>
                                 <th><strong>Double Position</strong></th>
                                 <th><strong>Profit Ratio</strong></th>
                                 <th><strong>Profit Callback</strong></th>
                                 <th><strong>Whole Ratio</strong></th>
+                                <th><strong>Whole Stop</strong></th>
+                                <th><strong>Margin Limit</strong></th>
                                 <th><strong>Price Drop</strong></th>
                                 <th><strong>M Ratio</strong></th>
                                 <th></th>
@@ -67,30 +70,55 @@
                             <tr v-for="settings in trade_settings" :key="settings.id">
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <img :src="settings.strategy.image" class="avatar rounded-circle" alt="">
-                                        <p class="mb-0 ms-2">@{{ settings.strategy.strategy_name }}</p>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
                                         <img :src="settings.market.image" class="avatar rounded-circle" alt="">
                                         <p class="mb-0 ms-2">@{{ settings.market.name }}</p>
                                     </div>
                                 </td>
-                                <td>@{{ settings.exchange.name }}</td>
-                                <td>@{{ settings.formated_amount }}</td>
-                                <td>@{{ settings.description }}</td>
-                                <td>@{{ settings.description }}</td>
-                                <td>@{{ settings.description }}</td>
-                                <td>@{{ settings.description }}</td>
-                                <td>@{{ settings.description }}</td>
+                                <td><span class="d-flex justify-content-center">@{{ settings.first_buy_amount }}</span></td>
+                                <td>
+                                    <span class="d-flex justify-content-center">
+                                        @{{ settings.double_position }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="d-flex justify-content-center">
+                                        @{{ settings.profit_ratio }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="d-flex justify-content-center">
+                                        @{{ settings.profit_callback }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="d-flex justify-content-center">
+                                        @{{ settings.whole_ratio }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="d-flex justify-content-center">
+                                        @{{ settings.whole_stop }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="d-flex justify-content-center">
+                                        @{{ settings.margin_limit }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="d-flex justify-content-center">
+                                        @{{ settings.price_drop }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="d-flex justify-content-center">
+                                        @{{ settings.m_ratio }}
+                                    </span>
+                                </td>
                                 <td>
                                     <div class="d-flex">
-                                        <a href="#" @click="show(settings.id)"
-                                            class="btn btn-primary shadow btn-xs sharp me-1"><i
-                                                class="fa fa-pencil"></i></a>
                                         <a href="#" class="btn btn-danger shadow btn-xs sharp"
-                                            @click.prevent="deleteSettings(strategy)"><i class="fa fa-trash"></i></a>
+                                            @click.prevent="deleteSettings(settings)"><i class="fa fa-trash"></i></a>
                                     </div>
                                 </td>
                             </tr>
@@ -128,7 +156,7 @@
                 profit_callback: "",
                 margin_limit: 1,
                 price_drop: [],
-                m_ration: [],
+                m_ratio: [],
                 loading: false,
                 errors: {}
             },
@@ -143,22 +171,66 @@
                     });
                 },
             },
+            mounted() {
+                this.getMarkets();
+                this.getTradeSettings();
+            },
             methods: {
                 handleMarketChange(event) {
                     this.market = event.target.value;
                 },
                 getMarkets() {
-                    axios.get("{{ route('admin.cyborg.markets.index') }}").then(response => {
+                    axios.get("{{ route('admin.cyborg.markets.index') }}", {
+                        params: {
+                            exchange: "{{ $strategy->exchange->tag }}"
+                        }
+                    }).then(response => {
                         this.markets = response.data.markets;
+                        // console.log(this.markets)
                     }).catch(error => {
                         console.log(error)
                     })
                 },
-                show(setting) {
-
+                getTradeSettings() {
+                    axios.get("{{ route('admin.cyborg.trade-settings.index') }}").then(response => {
+                        this.trade_settings = response.data.trade_settings;
+                    }).catch(error => {
+                        console.log(error)
+                    })
                 },
-                deleteSettings(setting) {
+                deleteSettings(settings) {
 
+                    Notiflix.Confirm.Show(
+                        'Are you sure?',
+                        'you want Delete Trade Settings.',
+                        'Delete',
+                        'Cancle',
+                        function okCb(){
+                            axios.delete(`/admin/cyborg/trade-settings/${settings.id}`)
+                                .then(function(response) {
+
+                                    if (response.data.success) {
+                                        Notiflix.Notify.Success(response.data.message);
+                                        // Remove the deleted strategy from the table
+
+                                        location.reload()
+
+                                        // const index = this.strategies.findIndex(item => item.id === strategy
+                                        //     .id);
+                                        // if (index > -1) {
+                                        //     this.strategies.splice(index, 1);
+                                        // }
+                                    } else {
+                                        Notiflix.Notify.Failure("Could not find trade settings.");
+                                    }
+                                })
+                                .catch(error => {
+                                    console.log(error);
+                                    Notiflix.Notify.Failure(
+                                        "Error Occurred while trying to delete trade settings.");
+                                })
+                        }
+                    );
                 },
                 createSettings() {
 
@@ -169,6 +241,7 @@
 
                     axios.post("{{ route('admin.cyborg.trade-settings.store') }}", {
                         market: this.market,
+                        strategy: this.strategy,
                         first_buy: this.first_buy,
                         double_position: this.double_position,
                         profit_ratio: this.profit_ratio,
@@ -177,10 +250,10 @@
                         profit_callback: this.profit_callback,
                         margin_limit: this.margin_limit,
                         price_drop: this.price_drop,
-                        m_ration: this.m_ration,
+                        m_ratio: this.m_ratio,
                     }).then(response => {
 
-                        this.trade_settings.push(response.data.settings)
+                        this.trade_settings.push(response.data.trade_settings)
 
                         this.market = "";
                         this.first_buy = ""

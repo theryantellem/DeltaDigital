@@ -73,7 +73,7 @@
                             <div class="col-lg-6">
                                 <label :for="field.id">Ratio @{{ field.id }}:</label>
                                 <input :id="field.id" class="form-control" type="number" step="any"
-                                    v-model="m_ration[index]">
+                                    v-model="m_ratio[index]">
                             </div>
                         </div>
                     </div>

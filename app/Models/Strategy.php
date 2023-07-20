@@ -40,6 +40,6 @@ class Strategy extends Model
 
     public function tradeSettings()
     {
-        return $this->hasMany(TradeSetting::class);
+        return $this->hasMany(TradeSettings::class);
     }
 }

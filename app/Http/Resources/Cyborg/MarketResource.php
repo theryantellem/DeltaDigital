@@ -15,10 +15,11 @@ class MarketResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
             'name' => $this->name,
             'exchange_tag' => $this->exchange_tag,
             'coin' => $this->coin,
-            'coin_image' => url('/') . '/assets/images/coin/' . $this->coin_image,
+            'image' => url('/') . '/assets/images/coin/' . $this->coin_image,
             'strategy_ratio' => $this->strategy_ratio
         ];
     }

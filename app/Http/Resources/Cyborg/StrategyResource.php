@@ -22,6 +22,7 @@ class StrategyResource extends JsonResource
             'description' => $this->description,
             'image' => $this->image,
             'exchange' => new ExchangeResource($this->exchange),
+            'trade_settings' => TradeSettingsResource::collection($this->tradeSettings)
         ];
     }
 }
