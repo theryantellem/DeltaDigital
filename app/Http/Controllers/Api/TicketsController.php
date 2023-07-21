@@ -17,7 +17,7 @@ class TicketsController extends ApiController
      */
     public function index()
     {
-        $tickets = TicketResource::collection(Tickets::where('user_id',Auth::user()->id));
+        $tickets = TicketResource::collection(Tickets::where('user_id',Auth::user()->id)->get());
 
         return $this->sendResponse($tickets,"Lists of tickets.");
     }
