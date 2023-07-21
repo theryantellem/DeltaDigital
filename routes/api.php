@@ -36,4 +36,10 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('deposit', 'deposit');
         });
     });
+
+    Route::controller(\App\Http\Controllers\Api\NewsController::class)->prefix('news')->group(function (){
+        Route::get('','index');
+    });
+
+    Route::apiResource('/tickets',\App\Http\Controllers\Api\TicketsController::class);
 });
