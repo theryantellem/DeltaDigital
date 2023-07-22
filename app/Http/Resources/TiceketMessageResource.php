@@ -14,6 +14,10 @@ class TiceketMessageResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'message'=>$this->message,
+            'file'=>$this->file,
+            'created_at'=>$this->created_at
+        ];
     }
 }

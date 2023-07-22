@@ -8,7 +8,7 @@ class Navigation
     public static function adminRoutes()
     {
         return [
-             (object) [
+            (object) [
                 // (object) [
                 //     'name'  => 'Dashboard',
                 //     'route' => 'admin.dashboard',
@@ -35,7 +35,28 @@ class Navigation
                     'icon'  => 'bi bi-house-fill fs-3',
                     'hasPermission' => true
                 ]
-            ]
+            ],
+            'Extras' => (object) [
+                (object) [
+                    'name'  => 'News Management',
+                    'route' => 'admin.news.index',
+                    'icon'  => 'bi bi-house-fill fs-3',
+                    'hasPermission' => true
+                ],
+                (object) [
+                    'name'  => 'Banner Management',
+                    'route' => 'admin.banners.index',
+                    'icon'  => 'bi bi-house-fill fs-3',
+                    'hasPermission' => true
+                ],
+                (object) [
+                    'name'  => 'Support Tickets',
+                    'route' => 'admin.tickets.index',
+                    'icon'  => 'bi bi-house-fill fs-3',
+                    'hasPermission' => true
+                ]
+            ],
+
         ];
     }
 }

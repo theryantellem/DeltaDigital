@@ -2,10 +2,13 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\AdminManagementController;
+use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\Cyborg\ExchangeController;
 use App\Http\Controllers\Admin\Cyborg\MarketController;
 use App\Http\Controllers\Admin\Cyborg\StrategyController;
 use App\Http\Controllers\Admin\Cyborg\TradeSettingsController;
+use App\Http\Controllers\Admin\NewsManagement;
+use App\Http\Controllers\Admin\SupportTicket;
 use App\Http\Controllers\Admin\UserManagementController;
 use Illuminate\Support\Facades\Route;
 
@@ -38,3 +41,11 @@ Route::resource('administrative', AdminManagementController::class);
 Route::prefix('users')->name('users.')->controller(UserManagementController::class)->group(function () {
     Route::get('/', 'index')->name('index');
 });
+
+Route::resource('/news',NewsManagement::class);
+
+Route::controller(SupportTicket::class)->prefix('tickets')->name('tickets.')->group(function(){
+    Route::get('tickets','index')->name('index');
+});
+
+Route::resource('banners',BannerController::class);
