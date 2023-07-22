@@ -6,15 +6,20 @@ use App\Traits\GeneratesUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Tickets extends Model
+class Ticket extends Model
 {
-    use HasFactory,GeneratesUuid;
+    use HasFactory, GeneratesUuid;
 
     protected $guarded = [];
 
-    public  function messages()
+    public function user()
     {
-        return $this->hasMany(TicketMessage::class);
+        return $this->belongsTo(User::class);
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(TicketMessage::class, 'ticket_id', 'id');
     }
 
     /**
@@ -28,9 +33,9 @@ class Tickets extends Model
     /**
      * Retrieve the model for a bound value.
      *
-     * @param  mixed  $value
-     * @param  string|null  $field
-     * @return \Illuminate\Database\Eloquent\Model|null
+     * @param mixed $value
+     * @param string|null $field
+     * @return Model|null
      */
     public function resolveRouteBinding($value, $field = null)
     {
