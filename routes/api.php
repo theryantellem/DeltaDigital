@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthenticationController;
+use App\Http\Controllers\Api\BannerController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -50,4 +51,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/verify-token', 'verifyPinResetToken');
         Route::post('/reset', 'resetPin');
     });
+
+    Route::get('banners', [BannerController::class, 'banners']);
 });
