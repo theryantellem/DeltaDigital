@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\Authentication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -74,5 +75,38 @@ class AuthenticationController extends ApiController
             logger(["auth error" => $e->getMessage()]);
             return $this->sendError("Service Unavailable", [], Response::HTTP_SERVICE_UNAVAILABLE);
         }
+    }
+
+    function loginWithPin(Request $request)
+    {
+        try{
+
+            $validator = Validator::make($request->all(), [
+                'pin' => 'required|numeric|digits:4',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->sendError("Validation error", $validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            $user = $request->user();
+
+            if(!Hash::check($request->pin,$user->pin))
+            {
+                return $this->sendError("Invalid pin", [], Response::HTTP_UNAUTHORIZED);
+            }
+
+            $token = $user->createToken('auth-token');
+
+            $responseData['user'] = new UserResource($user);
+            $responseData['auth_token'] = $token->plainTextToken;
+
+            return $this->sendResponse($responseData, "Successful login.", Response::HTTP_OK);
+
+        }catch (\Throwable $e) {
+            logger(["auth error" => $e->getMessage()]);
+            return $this->sendError("Service Unavailable", [], Response::HTTP_SERVICE_UNAVAILABLE);
+        }
+
     }
 }

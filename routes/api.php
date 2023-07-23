@@ -37,9 +37,17 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
-    Route::controller(\App\Http\Controllers\Api\NewsController::class)->prefix('news')->group(function (){
-        Route::get('','index');
+    Route::controller(\App\Http\Controllers\Api\NewsController::class)->prefix('news')->group(function () {
+        Route::get('', 'index');
     });
 
-    Route::apiResource('/tickets',\App\Http\Controllers\Api\TicketsController::class);
+    Route::apiResource('/tickets', \App\Http\Controllers\Api\TicketsController::class);
+
+    //Pin set controller
+    Route::controller(\App\Http\Controllers\Api\PinController::class)->prefix('pin')->group(function () {
+        Route::post('/set', 'setPin');
+        Route::post('/reset-token', 'requestPinResetToken');
+        Route::post('/verify-token', 'verifyPinResetToken');
+        Route::post('/reset', 'resetPin');
+    });
 });

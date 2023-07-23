@@ -51,7 +51,14 @@ return [
         ],
 
         'mailgun' => [
-            'transport' => 'mailgun',
+            'transport'     => 'mailgun',
+            'host'          => env('MAILGUN_HOST', 'smtp.mailgun.org'),
+            'port'          => env('MAILGUN_PORT', 587),
+            'encryption'    => env('MAILGUN_ENCRYPTION', 'tls'),
+            'username'      => env('MAILGUN_USERNAME'),
+            'password'      => env('MAILGUN_PASSWORD'),
+            'domain'        => env('MAILGUN_DOMAIN'),
+            'secret'        => env('MAILGUN_SECRET_KEY'),
             // 'client' => [
             //     'timeout' => 5,
             // ],
