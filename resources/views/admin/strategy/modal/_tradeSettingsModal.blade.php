@@ -24,10 +24,12 @@
                         <span v-if="errors.first_buy" class="text-danger">@{{ errors.first_buy[0] }}</span>
                     </div>
                     <div class="mb-3">
-                        <label for="">Double Position</label>
-                        <input type="number" step="any" class="form-control" v-model="double_position"
-                            placeholder="Double Position">
-                        <span v-if="errors.double_position" class="text-danger">@{{ errors.double_position[0] }}</span>
+                        <label for="">Open Position Doubled</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" v-model="open_position_doubled" type="checkbox" id="flexSwitchCheckDefault">
+                            <label class="form-check-label" for="flexSwitchCheckDefault"></label>
+                          </div>
+                        <span v-if="errors.open_position_doubled" class="text-danger">@{{ errors.open_position_doubled[0] }}</span>
                     </div>
                     <div class="row">
                         <div class="mb-3 col-lg-6">
@@ -56,6 +58,15 @@
                                 placeholder="Whole Stop">
                             <span v-if="errors.whole_stop" class="text-danger">@{{ errors.whole_stop[0] }}</span>
                         </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="">Strategy Period</label>
+                        <select v-model="market" class="form-control" @change="handleMPeriodChange($event)">
+                            <option value="">--strategy--period--</option>
+                            <option v-for="period in strategy_periods" :key="market.id" :value="market.id">
+                                @{{ market.name }}</option>
+                        </select>
+                        <span v-if="errors.market" class="text-danger">@{{ errors.market[0] }}</span>
                     </div>
                     <div class="mb-3">
                         <label for="">Margin Limit</label>

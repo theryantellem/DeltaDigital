@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -13,12 +14,14 @@ class SetupCyborgUserJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $user;
+
     /**
      * Create a new job instance.
      */
-    public function __construct(public $userId)
+    public function __construct(User $user)
     {
-        //
+        $this->user = $user;
     }
 
     /**
@@ -26,14 +29,16 @@ class SetupCyborgUserJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $cyborgService = new \App\Services\CyborgService();
+        $cyborgService = new \App\Services\Cyborg();
 
         try {
-            $response = $cyborgService->setupUser($this->userId);
+            if (in_array($this->user->plan, cyborgPlans())) {
+                $response = $cyborgService->setupUser($this->user->id);
 
-            logger(['user set response' => $response]);
+                logger(['user_set_response' => $response]);
+            }
         } catch (\Throwable $th) {
-            logger(['user set error' => $th->getMessage()]);
+            logger(['user_set_error' => $th->getMessage()]);
         }
     }
 }

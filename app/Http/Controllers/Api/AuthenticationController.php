@@ -67,6 +67,8 @@ class AuthenticationController extends ApiController
             $responseData['user'] = new UserResource($user);
             $responseData['auth_token'] = $token->plainTextToken;
 
+            dispatch(new \App\Jobs\SetupCyborgUserJob($user));
+
             DB::commit();
 
             return $this->sendResponse($responseData, "Successful login.", Response::HTTP_OK);

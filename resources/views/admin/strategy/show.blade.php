@@ -146,14 +146,25 @@
             data: {
                 markets: [],
                 trade_settings: [],
+                strategy_periods:[
+                    {
+                        value: "cycle",
+                        name: 'Cycle'
+                    },
+                    {
+                        value: "one short",
+                        name: 'One Short'
+                    }
+                ]
                 strategy: "{{ $strategy->uuid }}",
                 market: "",
                 first_buy: "",
-                double_position: "",
+                open_position_doubled: false,
                 profit_ratio: "",
                 whole_ratio: "",
                 whole_stop: "",
                 profit_callback: "",
+                strategy_period:"",
                 margin_limit: 1,
                 price_drop: [],
                 m_ratio: [],
