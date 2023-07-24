@@ -1,5 +1,12 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
-import {UserState} from "./userSlice";
+
+
+interface TaskInterface {
+    index: number;
+    id: string;
+    type: 'error' | 'success' | 'info';
+    body: string;
+}
 
 export interface DataState {
     amountToWithdrawBank: string | number
@@ -10,15 +17,13 @@ export interface DataState {
     hideSaveBalance: boolean,
     hideMissionBalance: boolean,
 
-
-
-
+    notificationData: [TaskInterface]
 
 }
 
 const initialState: DataState = {
 
-    hideMissionBalance:false,
+    hideMissionBalance: false,
 
     amountToWithdrawBank: '',
     amountToDeposit: '',
@@ -27,6 +32,9 @@ const initialState: DataState = {
     hideBalance: false,
     hideSaveBalance: false,
 
+    notificationData: [
+
+    ].reverse()
 
 }
 
@@ -34,12 +42,6 @@ export const dataSlice = createSlice({
     name: 'data',
     initialState,
     reducers: {
-
-
-
-
-
-
 
 
         setAmountToWithdraw: (state, action) => {
@@ -72,8 +74,21 @@ export const dataSlice = createSlice({
         decrement: (state) => {
             //  state.value -= 1
         },
+        addNotificationItem: (state, action) => {
+            state.notificationData = [action.payload, ...state.notificationData,]
+        },
 
+        removeSingleNotification: (state, action) => {
+            state.notificationData = state.notificationData.filter((item: { index: any; }) => item.index !== action.payload.index)
+        },
 
+        removeNotificationItem: (state, action) => {
+          //  const { index,id } = action.payload.notification;
+            const newData=  state.notificationData.filter((item,index) => index !== action.payload.notification.index);
+
+          state.notificationData = newData
+
+        },
         cleanData: () => initialState
 
     },
@@ -91,7 +106,9 @@ export const {
     setAmountToWithdraw,
     setAmountToSend,
     setAmountToDeposit,
-
+    addNotificationItem,
+    removeSingleNotification,
+    removeNotificationItem
 } = dataSlice.actions
 
 export default dataSlice.reducer

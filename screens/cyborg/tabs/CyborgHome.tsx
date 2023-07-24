@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback, useId, useRef, useState} from 'react';
 import {
     Text,
     View,
@@ -22,8 +22,28 @@ import {currencyFormatter} from "../../../helpers";
 import {LineChart} from "react-native-wagmi-charts";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-reanimated";
+import SwipeToast from "../../../components/toast/SwipeToast";
+import ToastAnimated from "../../../components/toast";
+import {useAppDispatch} from "../../../app/hooks";
+import {addNotificationItem} from "../../../app/slices/dataSlice";
 
 let width = Dimensions.get("window").width
+
+
+
+interface TaskInterface {
+    title: string;
+    index: number;
+}
+
+const TITLES = [
+    'Record the dismissible tutorial 🎥',
+    'Leave 👍🏼 to the video',
+    'Check YouTube comments',
+    'Subscribe to the channel 🚀',
+    'Leave a ⭐️ on the GitHub Repo',
+];
+const TASKS: TaskInterface[] = TITLES.map((title, index) => ({ title, index }));
 
 const ChartData = [
     {
@@ -53,8 +73,11 @@ const ChartData = [
     },]
 
 
+
+
 const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
 
+    const dispatch = useAppDispatch()
     const openProfile = () => {
 
     }
@@ -64,6 +87,14 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
     const overView = () => {
         navigation.navigate('OverView')
     }
+
+const addNoti = () => {
+  dispatch(addNotificationItem({
+      id: Math.random(),
+      type: 'info',
+      body: 'Subscribe to the channel 🚀'+Math.random().toFixed(2),
+  }))
+}
 
     return (
 
@@ -129,14 +160,22 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
 
                                 </Text>
 
-                                <TouchableOpacity onPress={overView} style={styles.overviewBtn}>
+                                <TouchableOpacity onPress={addNoti} style={styles.overviewBtn}>
                                     <Text style={styles.overviewText}>
-                                        Overview
+                                        Add Item
                                     </Text>
                                     <Octicons name="chevron-right" size={14} color="#fff"/>
 
                                 </TouchableOpacity>
 
+
+{/*                                <TouchableOpacity onPress={overView} style={styles.overviewBtn}>
+                                    <Text style={styles.overviewText}>
+                                        Overview
+                                    </Text>
+                                    <Octicons name="chevron-right" size={14} color="#fff"/>
+
+                                </TouchableOpacity>*/}
                             </View>
 
 
@@ -247,12 +286,15 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
                         </View>
 
                     </Pressable>
+
+
                 </Animated.View>
+
 
 
             </ScrollView>
 
-
+            <ToastAnimated/>
         </SafeAreaView>
     );
 };
