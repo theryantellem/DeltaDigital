@@ -77,6 +77,10 @@ export const dataSlice = createSlice({
         addNotificationItem: (state, action) => {
             state.notificationData = [action.payload, ...state.notificationData,]
         },
+        clearNotification: (state) => {
+            state.notificationData = []
+
+        },
 
         removeSingleNotification: (state, action) => {
             state.notificationData = state.notificationData.filter((item: { index: any; }) => item.index !== action.payload.index)
@@ -108,7 +112,8 @@ export const {
     setAmountToDeposit,
     addNotificationItem,
     removeSingleNotification,
-    removeNotificationItem
+    removeNotificationItem,
+    clearNotification
 } = dataSlice.actions
 
 export default dataSlice.reducer

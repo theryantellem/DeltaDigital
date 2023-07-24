@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 
 import {Dimensions, StyleSheet, Text, View} from 'react-native';
 import {
@@ -148,6 +148,8 @@ const SwipeToast: React.FC<ListItemProps> = ({
     });
 
 
+
+
     return (
         <Animated.View key={index}
                        entering={FadeInDown}
@@ -163,10 +165,28 @@ const SwipeToast: React.FC<ListItemProps> = ({
                 onGestureEvent={panGesture}
             >
                 <Animated.View
-                    style={[styles.task, rStyle]}>
-                    <View style={styles.toastIcon}>
+                    style={[styles.task, rStyle,{
+
+                    }]}>
+                    {
+                        task.type == 'success' &&
+
+                    <View style={[styles.toastIcon,{
+                        backgroundColor: Colors.tintSuccess,
+                    }]}>
+                        <FontAwesome5 name="thumbs-up" size={18} color={Colors.success} />
+                    </View>
+                    }
+                    {
+                        task.type == 'error' &&
+
+                        <View style={[styles.toastIcon,{
+                        backgroundColor: Colors.textDark,
+                    }]}>
+                            <Ionicons name="warning-outline" size={18} color={Colors.errorRed}/>
 
                     </View>
+                    }
                     <View style={styles.toastBody}>
                         <Text style={styles.taskTitle}>{task.body}</Text>
                     </View>
@@ -190,7 +210,7 @@ const styles = StyleSheet.create({
     },
     task: {
         width: '90%',
-        height: LIST_ITEM_HEIGHT,
+        minHeight: 80,
         justifyContent: 'flex-start',
         paddingHorizontal: 20,
         paddingVertical: 20,
@@ -211,10 +231,12 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     toastIcon: {
-        width: 35,
-        height: 35,
+        width: 30,
+        height: 30,
         borderRadius: 40,
-        backgroundColor: "red",
+     alignItems:'center',
+        justifyContent:'center'
+
     },
     taskTitle: {
         color:Colors.text,

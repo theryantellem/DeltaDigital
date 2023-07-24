@@ -14,7 +14,18 @@ export interface UserState {
 
     userData: {
         "id": string,
-
+        name: string,
+        email: string,
+        username: string,
+        profile_picture: string,
+        plan: string,
+        expiry_time: number,
+        referallinks: {
+            left_link: string,
+            right_link: string
+        },
+        role: string,
+        iseligible: number
     }
 }
 
@@ -32,7 +43,18 @@ const initialState: UserState = {
 
     userData: {
         id: "",
-
+        name: "",
+        email: "",
+        username: "",
+        profile_picture: "",
+        plan: "",
+        expiry_time: 0,
+        referallinks: {
+            left_link: "",
+            right_link: ""
+        },
+        role: "",
+        iseligible: 1
     },
 
 }

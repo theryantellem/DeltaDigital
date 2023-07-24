@@ -9,9 +9,13 @@ import {PersistQueryClientProvider} from "@tanstack/react-query-persist-client";
 import {createSyncStoragePersister} from "@tanstack/query-sync-storage-persister";
 import {MutationCache, QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {persistor, store} from "./app/store";
-import { PersistGate } from 'redux-persist/integration/react';
+import {PersistGate} from 'redux-persist/integration/react';
 import {Provider} from "react-redux";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
+import ToastAnimated from "./components/toast";
+import React from "react";
+import {Portal, PortalProvider} from "@gorhom/portal";
+
 enableScreens()
 
 
@@ -67,10 +71,13 @@ export default function App() {
                             {/*@ts-ignore*/}
 
                             <PersistGate loading={null} persistor={persistor}>
-            <SafeAreaProvider>
-                <StatusBar style="light"/>
-            <Navigation colorScheme={colorScheme}/>
-            </SafeAreaProvider>
+                                <SafeAreaProvider>
+                                    <StatusBar style="light"/>
+                                    <PortalProvider>
+                                        <Navigation colorScheme={colorScheme}/>
+
+                                    </PortalProvider>
+                                </SafeAreaProvider>
 
                             </PersistGate>
                         </Provider>

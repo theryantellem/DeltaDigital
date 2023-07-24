@@ -34,6 +34,12 @@ import RewardDetails from "../screens/cyborg/profile/RewardDetails";
 import SettingsScreen from "../screens/cyborg/profile/SettingsScreen";
 import ApiBinding from "../screens/cyborg/profile/ApiBinding";
 import Earnings from "../screens/cyborg/profile/Earning";
+import ToastAnimated from "../components/toast";
+import {useEffect, useRef, useState} from "react";
+import {logoutUser, setLockUser, setUserLastSession} from "../app/slices/userSlice";
+import {useAppDispatch, useAppSelector} from "../app/hooks";
+import {store} from "../app/store";
+import {timeDifference} from "../helpers";
 
 
 export default function Navigation({colorScheme}: { colorScheme: ColorSchemeName }) {
@@ -41,7 +47,9 @@ export default function Navigation({colorScheme}: { colorScheme: ColorSchemeName
         <NavigationContainer
             linking={LinkingConfiguration}
             theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+
             <RootNavigator/>
+
         </NavigationContainer>
     );
 }
@@ -55,20 +63,97 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
 
+
+
+
+    const dispatch = useAppDispatch()
+    const user = useAppSelector(state => state.user)
+    const [firstLaunch, setFirstLaunch] = useState<boolean | null>(null);
+    const appState = useRef(AppState.currentState);
+    const [appStateVisible, setAppStateVisible] = useState(appState.current);
+    const {
+        lockUser,
+        lastUserActive,
+        isAuthenticated,
+        userIsIn
+    } = user
+
+
+    useEffect(() => {
+        const subscription = AppState.addEventListener("change", _handleAppStateChange);
+
+        return () => {
+            subscription.remove();
+        };
+
+    }, []);
+    const _handleAppStateChange = (nextAppState: string) => {
+        if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
+            // console.log('App has come to the foreground!');
+        }
+        const start = Date.now();
+        appState.current = nextAppState;
+        setAppStateVisible(appState.current);
+
+        if (appState.current === 'inactive') {
+            if(isAuthenticated) {
+                dispatch(setUserLastSession({lastUserActive: start}))
+            }
+        }
+        // console.log('AppState', appState.current);
+
+    };
+
+
+
+
+    //  let resolution = lastUserActive - Date.now()
+    //console.log(Date.now())
+    const diffMinutes = timeDifference(Date.now(), lastUserActive)
+
+    useEffect(() => {
+        if (appStateVisible === 'active') {
+            if (diffMinutes > 10) {
+
+                dispatch(setLockUser({
+                    lockUser: true
+                }))
+
+
+            }
+
+        }
+
+    }, [appStateVisible, diffMinutes]);
+
+
+
+
+
+
     return (
         <Stack.Navigator screenOptions={{
             headerShown: false,
 
-        }} initialRouteName={"OnBoardingScreen"}>
+        }} initialRouteName={ !isAuthenticated ? "OnBoardingScreen" : 'CyborgBottomTab'}>
 
+
+            {
+                !isAuthenticated &&
+            <Stack.Group>
             <Stack.Screen name={"OnBoardingScreen"} component={OnBoardingScreen}/>
             <Stack.Screen name={"Auth"} component={AuthNavigator}/>
             <Stack.Screen name={"LandingScreen"} component={LandingScreen}/>
+            </Stack.Group>
+            }
 
-            <Stack.Group screenOptions={{
-                headerShown: false,
-                animation: 'slide_from_left'
-            }}>
+            {
+                isAuthenticated &&
+            <Stack.Group screenOptions={{headerShown: false, animation: 'slide_from_left'}}>
+
+                <Stack.Screen name={"CyborgBottomTab"} options={{
+                    headerShown: false
+                }} component={CyborgBottomTab}/>
 
                 <Stack.Screen name={"NewsScreen"} options={{
                     animation: 'slide_from_bottom'
@@ -94,12 +179,11 @@ function RootNavigator() {
 
                 <Stack.Screen name={"SelectType"} component={SelectType}/>
 
-                <Stack.Screen name={"CyborgBottomTab"} options={{
-                    headerShown: false
-                }} component={CyborgBottomTab}/>
+
 
 
             </Stack.Group>
+            }
         </Stack.Navigator>
     );
 }

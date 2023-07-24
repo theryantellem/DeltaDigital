@@ -29,6 +29,7 @@ export default {
     border: "#D1D5DB",
     disabled: "#9BA8AF",
     errorRed: '#FF3C3C',
+    tintRed: "#FDEFE7",
 
     light: {
         text: '#000',

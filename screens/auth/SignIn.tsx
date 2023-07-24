@@ -20,6 +20,13 @@ import * as Haptics from 'expo-haptics';
 
 import * as SecureStore from 'expo-secure-store';
 import {LinearGradient} from "expo-linear-gradient";
+import ToastAnimated from "../../components/toast";
+import {useAppDispatch} from "../../app/hooks";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {loginUser} from "../../api";
+import {addNotificationItem} from "../../app/slices/dataSlice";
+import {letUserIn, setAuthenticated, setLockUser, setUserLastSession, updateUserInfo} from "../../app/slices/userSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 /*const storeData = async (value: string) => {
@@ -35,7 +42,8 @@ const height = Dimensions.get('window').height
 
 const formSchema = yup.object().shape({
 
-    email: yup.string().email("Please enter a valid email address").required('Email is required'),
+    username: yup.string().required('Username is required'),
+    // email: yup.string().email("Please enter a valid email address").required('Email is required'),
     /*  password: yup.string().required('Password is required').matches(
           /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#.-:;()_?\$%\^&\*])(?=.{8,})/,
           "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character"
@@ -47,17 +55,75 @@ const formSchema = yup.object().shape({
 
 const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
 
+    const dispatch = useAppDispatch()
+    const queryClient = useQueryClient()
     //hide and show password
     const [togglePass, setTogglePass] = useState(true)
 
-    const [email, setEmail] = useState('');
-    const [focusEmail, setFocusEmail] = useState<boolean>(false);
+    const [username, setUsername] = useState('');
+    const [focusUsername, setFocusUsername] = useState<boolean>(false);
 
     const [focusPassword, setFocusPassword] = useState<boolean>(false);
 
 
     const [value, setValue] = useState("");
     const [formattedValue, setFormattedValue] = useState("");
+
+
+    const {mutate, data, isLoading, isSuccess, error} = useMutation(['login-user'], loginUser,
+
+        {
+
+            onSuccess: async (data) => {
+                // alert(message)
+
+                if (data.success) {
+
+           /*         dispatch(addNotificationItem({
+                        id: Math.random(),
+                        type: 'success',
+                        body: data.message,
+                    }))
+                    */
+                   await AsyncStorage.setItem('username',username)
+                    dispatch(setUserLastSession({
+                        cleanLastActive: ''
+                    }))
+                    dispatch(setLockUser({
+                        lockUser: false
+                    }))
+                    dispatch(letUserIn({
+                        userIsIn: true,
+                    }))
+
+                   SecureStore.setItemAsync('delta-signal-token', data.data.auth_token).then(() => {
+                        dispatch((updateUserInfo({...data.data.user})))
+                        dispatch(setAuthenticated({
+                            isAuthenticated: true
+                        }))
+                    })
+
+
+                } else {
+                    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+                    dispatch(addNotificationItem({
+                        id: Math.random(),
+                        type: 'error',
+                        body: data.message,
+                    }))
+
+                }
+            },
+
+            onError: (err) => {
+
+
+            },
+            onSettled: () => {
+                queryClient.invalidateQueries(['login-user']);
+            }
+
+        })
 
 
     const {
@@ -73,23 +139,24 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
     } = useFormik({
         validationSchema: formSchema,
         initialValues: {
-            password: '2132324',
-            email: 'orji@gmail.com'
+            password: '',
+            username: ''
 
         },
         onSubmit: (values) => {
-            const {email, password} = values;
+            const {username, password} = values;
             const data = JSON.stringify({
                 password,
-                email,
+                username,
 
                 /* "phoneNumber": "+2348068989092",
                  "password": "password",
                  "countryCode": "NG"*/
             })
 
+            mutate(data)
 
-            navigation.navigate('LandingScreen')
+
         }
     });
 
@@ -97,6 +164,18 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
         navigation.navigate('ForgotPasswordScreen')
     }
 
+
+    useEffect(() => {
+        const userName = AsyncStorage.getItem('username')
+        userName.then(res =>{
+if(res){
+    setFieldValue('username',res)
+    setUsername(res)
+}
+
+
+        })
+    }, []);
 
     return (
 
@@ -135,23 +214,23 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
 
                             <TextInput
 
-                                placeholder="Email address"
-                                keyboardType={"email-address"}
-                                touched={touched.email}
-                                error={touched.email && errors.email}
-                                onFocus={() => setFocusEmail(true)}
+                                placeholder="Username"
+                                keyboardType={"default"}
+                                touched={touched.username}
+                                error={touched.username && errors.username}
+                                onFocus={() => setFocusUsername(true)}
                                 onChangeText={(e) => {
-                                    handleChange('email')(e);
-                                    setEmail(e);
+                                    handleChange('username')(e);
+                                    setUsername(e);
                                 }}
                                 onBlur={(e) => {
-                                    handleBlur('email')(e);
-                                    setFocusEmail(false);
+                                    handleBlur('username')(e);
+                                    setFocusUsername(false);
                                 }}
-                                defaultValue={email}
-                                focus={focusEmail}
-                                value={values.email}
-                                label="Enter Your email address"/>
+                                defaultValue={username}
+                                focus={focusUsername}
+                                value={values.username}
+                                label="Enter Your username"/>
 
 
                             <TextInput
@@ -177,7 +256,7 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
                                 label="Password"/>
 
 
-                         {/*   <View style={[styles.terms, {
+                            {/*   <View style={[styles.terms, {
                                 marginTop: errors.password ? 10 : 0
                             }]}>
                                 <TouchableOpacity onPress={forgotPassword}>
@@ -195,14 +274,19 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
                                       backgroundColor: !isValid ? Colors.disabled : Colors.primary
                                   }]} disabled={!isValid}>
 
-
-                            <Text style={styles.btnText}>
-                                Sign In
-                            </Text>
+                            {
+                                isLoading ? <ActivityIndicator color={"#fff"} size='small'/>
+                                    :
+                                    <Text style={styles.btnText}>
+                                        Sign In
+                                    </Text>
+                            }
 
 
                         </MyButton>
                     </KeyboardAwareScrollView>
+
+                    <ToastAnimated/>
                 </LinearGradient>
             </SafeAreaView>
         </>

@@ -160,22 +160,16 @@ const addNoti = () => {
 
                                 </Text>
 
-                                <TouchableOpacity onPress={addNoti} style={styles.overviewBtn}>
-                                    <Text style={styles.overviewText}>
-                                        Add Item
-                                    </Text>
-                                    <Octicons name="chevron-right" size={14} color="#fff"/>
-
-                                </TouchableOpacity>
 
 
-{/*                                <TouchableOpacity onPress={overView} style={styles.overviewBtn}>
+
+                            <TouchableOpacity onPress={overView} style={styles.overviewBtn}>
                                     <Text style={styles.overviewText}>
                                         Overview
                                     </Text>
                                     <Octicons name="chevron-right" size={14} color="#fff"/>
 
-                                </TouchableOpacity>*/}
+                                </TouchableOpacity>
                             </View>
 
 
@@ -294,7 +288,7 @@ const addNoti = () => {
 
             </ScrollView>
 
-            <ToastAnimated/>
+
         </SafeAreaView>
     );
 };

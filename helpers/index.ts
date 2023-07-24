@@ -1,8 +1,39 @@
-
 import 'intl';
 import 'intl/locale-data/jsonp/en';
 import {useFocusEffect} from "@react-navigation/native";
 import {useCallback, useRef} from "react";
+
+
+export function isWhatPercentOf(x: number, y: number) {
+    return (x / y) * 100;
+}
+
+
+
+export const calculatePercentage = (percentage: number, amount: number) => {
+
+    return (percentage / 100) * amount;
+
+
+}
+
+
+
+
+
+
+export function getMultipleRandom(arr: any, num: number | undefined) {
+    const shuffled = [...arr].sort(() => 0.5 - Math.random());
+
+    return shuffled.slice(0, num);
+}
+
+
+
+
+
+
+
 
 
 
@@ -22,7 +53,7 @@ export function isStringGreaterThan(value: string, amount:number) {
     return isNaN(numberValue) || numberValue > amount;
 }
 
-export function titleCase(str) {
+export function titleCase(str: string) {
     var splitStr = str.toLowerCase().split(' ');
     for (var i = 0; i < splitStr.length; i++) {
         // You do not need to check if i is larger than splitStr length, as your for does that for you
@@ -56,7 +87,7 @@ export const currencyFormatter = (locals: 'en-US' | 'en-NG', currency: 'USD' | '
         style: 'currency',
         currency,
 
-minimumFractionDigits:1,
+        minimumFractionDigits:1,
         maximumFractionDigits:2,
         // These options are needed to round to whole numbers if that's what you want.
         //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
@@ -156,9 +187,9 @@ export function timeDifference(date1: number, date2: number) {
     return minutesDifference
 }
 
- const countDownFromDate = (countdownTime:Date) => {
+const countDownFromDate = (countdownTime:Date) => {
 // Set the countdown time to 30 minutes from now
-   // var countdownTime = new Date();
+    // var countdownTime = new Date();
 
     countdownTime.setMinutes(countdownTime.getMinutes() + 30);
 
@@ -171,14 +202,14 @@ export function timeDifference(date1: number, date2: number) {
         // Check if the countdown has reached zero
         if (timeRemaining <= 0) {
             clearInterval(countdownInterval);
-           // console.log("Countdown complete!");
+            // console.log("Countdown complete!");
         } else {
             // Calculate the minutes and seconds remaining
             var minutes = Math.floor(timeRemaining / 60000);
             var seconds = Math.floor((timeRemaining % 60000) / 1000);
 
             // Display the time remaining
-           console.log("Time remaining: " + minutes + " minutes, " + seconds + " seconds");
+            console.log("Time remaining: " + minutes + " minutes, " + seconds + " seconds");
         }
 
     }, 1000);

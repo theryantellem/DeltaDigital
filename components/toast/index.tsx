@@ -4,7 +4,7 @@ import {Text, View, StyleSheet} from 'react-native';
 import {useSharedValue} from "react-native-reanimated";
 import SwipeToast from "./SwipeToast";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
-import {removeNotificationItem, removeSingleNotification} from "../../app/slices/dataSlice";
+import {clearNotification, removeNotificationItem, removeSingleNotification} from "../../app/slices/dataSlice";
 import {useDispatch, useSelector} from "react-redux";
 
 
@@ -50,11 +50,11 @@ const ToastAnimated = () => {
     const {notificationData} =data
 
    // let TASKS: { index: number; body: string; type: string }[] = [];
-    const [tasks, setTasks] = useState(notificationData.map((item, index) => ({ body:item.body,type:item.type, index })));
+    const [tasks, setTasks] = useState(notificationData.map((item, index) => ({ body:item.body,type:item.type, id: item.id,index })));
 
 
     useEffect(() => {
-       setTasks(notificationData.map((item, index) => ({ body:item.body,type:item.type, index })))
+       setTasks(notificationData.map((item, index) => ({ body:item.body,type:item.type,id: item.id,index })))
     }, [notificationData]);
 
 
@@ -71,14 +71,32 @@ const ToastAnimated = () => {
 
 
 
+    useEffect(() => {
+        // console.log(user)
+        let time: NodeJS.Timeout | undefined;
+        if (notificationData.length > 0) {
+
+
+            time = setTimeout(() => {
+                dispatch(clearNotification())
+            }, 4500)
+
+        }
+        return () => {
+            clearTimeout(time)
+        };
+    }, [notificationData])
+
 
 
     return (
 
         <View
             style={{
-                alignItems: 'center',
+
                 flex: 1,
+                alignItems: 'center',
+
                 justifyContent: 'flex-end',
                 marginBottom: layout.cardsGap * 2,
             }}
@@ -90,7 +108,7 @@ const ToastAnimated = () => {
                     totalLength={tasks.length}
                     index={index}
                     simultaneousHandlers={scrollRef}
-                    key={task.index}
+                    key={task.id}
                     task={task}
                     onDismiss={onDismiss}
                 />
