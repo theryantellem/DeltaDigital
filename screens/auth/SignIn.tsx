@@ -22,10 +22,17 @@ import * as SecureStore from 'expo-secure-store';
 import {LinearGradient} from "expo-linear-gradient";
 import ToastAnimated from "../../components/toast";
 import {useAppDispatch} from "../../app/hooks";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {loginUser} from "../../api";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {getUser, loginUser} from "../../api";
 import {addNotificationItem} from "../../app/slices/dataSlice";
-import {letUserIn, setAuthenticated, setLockUser, setUserLastSession, updateUserInfo} from "../../app/slices/userSlice";
+import {
+    letUserIn,
+    setAuthenticated,
+    setLockUser,
+    setUserLastSession,
+    updateUserDetails,
+    updateUserInfo
+} from "../../app/slices/userSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
@@ -70,6 +77,28 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
     const [formattedValue, setFormattedValue] = useState("");
 
 
+    const {data: userInfo, mutate: getUserInfo, isLoading: gettingUser} = useMutation(['user-data'], getUser, {
+        onSuccess: async (data) => {
+            if (data.status == 1) {
+
+                //console.log(data.data["User Details"][0])
+                 dispatch((updateUserDetails({...data.data["User Details"][0]})))
+                   dispatch(setAuthenticated({
+                        isAuthenticated: true
+                    }))
+
+
+            } else {
+
+            }
+
+
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries(['user-data']);
+        }
+    })
+
     const {mutate, data, isLoading, isSuccess, error} = useMutation(['login-user'], loginUser,
 
         {
@@ -77,15 +106,15 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
             onSuccess: async (data) => {
                 // alert(message)
 
-                if (data.success) {
+                if (data.status == 1) {
 
-           /*         dispatch(addNotificationItem({
-                        id: Math.random(),
-                        type: 'success',
-                        body: data.message,
-                    }))
-                    */
-                   await AsyncStorage.setItem('username',username)
+                    /*         dispatch(addNotificationItem({
+                                 id: Math.random(),
+                                 type: 'success',
+                                 body: data.message,
+                             }))
+                             */
+                    await AsyncStorage.setItem('username', username)
                     dispatch(setUserLastSession({
                         cleanLastActive: ''
                     }))
@@ -96,11 +125,14 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
                         userIsIn: true,
                     }))
 
-                   SecureStore.setItemAsync('delta-signal-token', data.data.auth_token).then(() => {
-                        dispatch((updateUserInfo({...data.data.user})))
-                        dispatch(setAuthenticated({
-                            isAuthenticated: true
-                        }))
+
+                    SecureStore.setItemAsync('delta-signal-token', data.data.TOKEN).then(() => {
+                        console.log(data.data.ID)
+                        getUserInfo(data.data.ID)
+                        //   dispatch((updateUserInfo({...data.data.user})))
+                        /*  dispatch(setAuthenticated({
+                              isAuthenticated: true
+                          }))*/
                     })
 
 
@@ -109,7 +141,7 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
                     dispatch(addNotificationItem({
                         id: Math.random(),
                         type: 'error',
-                        body: data.message,
+                        body: data.data,
                     }))
 
                 }
@@ -154,7 +186,11 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
                  "countryCode": "NG"*/
             })
 
-            mutate(data)
+            const formData = new FormData()
+            formData.append('username', username)
+            formData.append('password', password)
+
+            mutate(formData)
 
 
         }
@@ -167,11 +203,11 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
 
     useEffect(() => {
         const userName = AsyncStorage.getItem('username')
-        userName.then(res =>{
-if(res){
-    setFieldValue('username',res)
-    setUsername(res)
-}
+        userName.then(res => {
+            if (res) {
+                setFieldValue('username', res)
+                setUsername(res)
+            }
 
 
         })
@@ -180,9 +216,14 @@ if(res){
     return (
 
         <>
-
-
+            {
+                gettingUser &&
+            <View style={styles.loading}>
+                <ActivityIndicator size='large' color={Colors.primary}/>
+            </View>
+            }
             <SafeAreaView style={styles.safeArea}>
+
                 <LinearGradient style={styles.background}
                                 colors={['#680051', '#131622',]}
                                 start={{x: 3.0, y: 4.0}}
@@ -190,6 +231,7 @@ if(res){
 
 
                 >
+
                     <Image source={require('../../assets/images/shape-auth.png')} style={styles.imageShape}/>
 
                     <KeyboardAwareScrollView scrollEnabled
@@ -456,6 +498,19 @@ const styles = StyleSheet.create({
         fontSize: fontPixel(16),
         fontFamily: Fonts.faktumMedium,
         lineHeight: heightPixel(20)
+    },
+    loading: {
+        flex:1,
+        width:'100%',
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        zIndex:1,
+        top: 0,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor:'rgba(0,0,0,0.3)'
     }
 })
 

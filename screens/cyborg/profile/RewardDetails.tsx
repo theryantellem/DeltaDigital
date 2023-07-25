@@ -1,16 +1,164 @@
-import React from 'react';
+import React, {useCallback, useId, useState} from 'react';
 
-import {Text, View, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
+import {Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl} from 'react-native';
 import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {Ionicons, Octicons} from "@expo/vector-icons";
 import Colors from "../../../constants/Colors";
-import {currencyFormatter} from "../../../helpers";
+import {currencyFormatter, useRefreshOnFocus, wait} from "../../../helpers";
 import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPixel} from "../../../helpers/normalize";
 import {Fonts} from "../../../constants/Fonts";
+import {useQuery} from "@tanstack/react-query";
+import {getRevenues, getRewardDetails} from "../../../api";
+import {useAppSelector} from "../../../app/hooks";
+import {FlashList} from "@shopify/flash-list";
+import dayjs from "dayjs";
+
+
+
+
+interface RewardItem {
+    item:{
+        "Date": number,
+        "Details": string,
+        "Reward": string
+    }
+}
+
+
+const RewardItem =({item}:RewardItem) =>{
+    return(
+        <View style={styles.transactionCard}>
+
+
+            <View style={styles.circleTop}>
+
+
+                <Octicons name="dot-fill" size={25} color={Colors.successChart}/>
+
+            </View>
+
+            <View style={styles.bodyLeft}>
+                <Text style={styles.transactionTitle}>
+                    {item.Details}
+                </Text>
+                <Text style={styles.transactionDate}>
+
+                    {dayjs.unix(item.Date).format('ddd, DD MMM YYYY H:mm')}
+                </Text>
+            </View>
+
+            <View style={styles.bodyRight}>
+                <Text style={styles.transactionTitle}>
+                    +$350
+                </Text>
+                <Text style={styles.transactionDate}>
+                    10:53 AM
+                </Text>
+            </View>
+
+        </View>
+    )
+}
 
 const RewardDetails = () => {
+
+    const [refreshing, setRefreshing] = useState(false);
+
+    const user = useAppSelector(state => state.user)
+    const {User_Details} = user
+
+
+    const {data,refetch,isLoading,isRefetching} = useQuery(['get-RewardDetails'],()=> getRewardDetails(User_Details.id))
+
+
+    useRefreshOnFocus(refetch)
+
+
+
+   const renderItem = useCallback(
+        ({item}) => (
+            <RewardItem item={item}/>
+        ),
+        [],
+    );
+
+
+
+    const keyExtractor = useCallback((item: { Date: string,Details:string }) => item.Date , [],);
+
+
+    const  renderHeader= useCallback(() => (
+        <>
+
+            <View style={styles.balanceCanvas}>
+                <View style={styles.balanceTop}>
+
+                    <TouchableOpacity style={styles.balanceTitle}>
+                        <Text style={styles.balText}>
+                            Cumulative Reward (USDT)
+                        </Text>
+
+                        <Ionicons name="eye-off-outline" size={18} color={Colors.text}/>
+
+                    </TouchableOpacity>
+
+                    <View style={styles.balanceGraph}>
+
+                        <Text
+                            style={styles.balance}>
+
+                            {currencyFormatter('en-US', 'USD').format(data?.data?.comulative_profit)}
+                        </Text>
+
+                    </View>
+                    <Text style={styles.walletAddressTxt}>
+                        <Text style={{color: data?.data?.today_profit > 0 ?Colors.success : Colors.errorRed}}>+${data?.data?.today_profit}</Text> Today’s reward
+                    </Text>
+                </View>
+
+            </View>
+
+
+            <TouchableOpacity activeOpacity={0.7} style={styles.contentTop}>
+
+
+                <View style={styles.contentMsg}>
+
+                    <Text style={[styles.contentMsgTxt, {
+                        fontFamily: Fonts.faktumBold,
+
+                    }]}>
+                        Analysis
+                    </Text>
+
+                </View>
+
+                <View style={styles.contentMsgRight}>
+
+                    <Text style={[styles.contentMsgTxt, {
+                        fontFamily: Fonts.faktumMedium,
+                        fontSize: fontPixel(14)
+                    }]}>
+                        View details
+                    </Text>
+                    <Ionicons name="chevron-forward" size={16} color={Colors.text}/>
+
+                </View>
+            </TouchableOpacity>
+
+        </>
+    ), [data]);
+
+
+    const refresh = () => {
+        setRefreshing(true)
+        refetch()
+        wait(2000).then(() => setRefreshing(false));
+    }
+
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <LinearGradient style={styles.background}
@@ -24,107 +172,42 @@ const RewardDetails = () => {
 
 
                 <HeaderWithTitle title='Reward details'/>
-                <ScrollView style={{
-                    width: '100%'
-                }} contentContainerStyle={styles.scrollView} scrollEnabled
-                            showsVerticalScrollIndicator={false}>
-
-
-                    <View style={styles.balanceCanvas}>
-                        <View style={styles.balanceTop}>
-
-                            <TouchableOpacity style={styles.balanceTitle}>
-                                <Text style={styles.balText}>
-                                    Cumulative Reward (USDT)
-                                </Text>
-
-                                <Ionicons name="eye-off-outline" size={18} color={Colors.text}/>
-
-                            </TouchableOpacity>
-
-                            <View style={styles.balanceGraph}>
-
-                                <Text
-                                    style={styles.balance}>
-
-                                    {currencyFormatter('en-US', 'USD').format(434343)}
-                                </Text>
-
-                            </View>
-                            <Text style={styles.walletAddressTxt}>
-                                <Text style={{color: Colors.success}}>+$150</Text> Today’s reward
-                            </Text>
-                        </View>
-
-                    </View>
-
-
-                    <TouchableOpacity activeOpacity={0.7} style={styles.contentTop}>
-
-
-                        <View style={styles.contentMsg}>
-
-                            <Text style={[styles.contentMsgTxt, {
-                                fontFamily: Fonts.faktumBold,
-
-                            }]}>
-                                Analysis
-                            </Text>
-
-                        </View>
-
-                        <View style={styles.contentMsgRight}>
-
-                            <Text style={[styles.contentMsgTxt, {
-                                fontFamily: Fonts.faktumMedium,
-                                fontSize: fontPixel(14)
-                            }]}>
-                                View details
-                            </Text>
-                            <Ionicons name="chevron-forward" size={16} color={Colors.text}/>
-
-                        </View>
-                    </TouchableOpacity>
-
 
                     <View style={styles.content}>
 
 
-                        <View style={styles.transactionCard}>
 
 
-                                <View style={styles.circleTop}>
+                        {
+                            isLoading && <ActivityIndicator color={Colors.primary} size='small'/>
+                        }
+                        {
+                            !isLoading && data &&
+                            <FlashList
+                                estimatedItemSize={200}
+                                ListHeaderComponent={renderHeader}
+                                refreshing={isLoading}
+                                onRefresh={refetch}
+                                scrollEnabled
+                                showsVerticalScrollIndicator={false}
+                                data={data.data.All}
+                                renderItem={renderItem}
+                                keyExtractor={keyExtractor}
+estimatedListSize={{height:70,width:320}}
+                                refreshControl={
+                                    <RefreshControl
+                                        tintColor={Colors.text}
+                                        refreshing={refreshing}
+                                        onRefresh={refresh}
+                                    />
+                                }
 
 
-                                    <Octicons name="dot-fill" size={25} color={Colors.successChart}/>
-
-                                </View>
-
-                                <View style={styles.bodyLeft}>
-                                    <Text style={styles.transactionTitle}>
-                                        Circle Fee earn
-                                    </Text>
-                                    <Text style={styles.transactionDate}>
-
-                                        Mon, 23rd may 2022
-                                    </Text>
-                                </View>
-
-                                <View style={styles.bodyRight}>
-                                    <Text style={styles.transactionTitle}>
-                                        +$350
-                                    </Text>
-                                    <Text style={styles.transactionDate}>
-                                        10:53 AM
-                                    </Text>
-                                </View>
-
-                        </View>
-
-                    </View>
+                            />
+                        }
 
 
-                </ScrollView>
+                </View>
             </LinearGradient>
         </SafeAreaView>
     );
@@ -146,6 +229,7 @@ const styles = StyleSheet.create({
     scrollView: {
         width: '100%',
         alignItems: "center"
+
     },
 
     balanceCanvas: {
@@ -236,10 +320,9 @@ const styles = StyleSheet.create({
         color: Colors.text
     },
     content: {
-
+flex:1,
         width: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
+
     },
     transactionCard: {
         flexDirection: 'row',

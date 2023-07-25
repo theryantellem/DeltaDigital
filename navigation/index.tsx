@@ -40,6 +40,8 @@ import {logoutUser, setLockUser, setUserLastSession} from "../app/slices/userSli
 import {useAppDispatch, useAppSelector} from "../app/hooks";
 import {store} from "../app/store";
 import {timeDifference} from "../helpers";
+import LeaderBoard from "../screens/cyborg/more/LeaderBoard";
+import SuccessScreen from "../screens/cyborg/SuccessScreen";
 
 
 export default function Navigation({colorScheme}: { colorScheme: ColorSchemeName }) {
@@ -176,8 +178,11 @@ function RootNavigator() {
                 <Stack.Screen name={"WithdrawalAmount"} component={WithdrawalAmount}/>
 
                 <Stack.Screen name={"BotSuccess"} options={{animation: 'slide_from_bottom'}} component={BotSuccess}/>
+                <Stack.Screen name={"SuccessScreen"} options={{animation: 'slide_from_bottom'}} component={SuccessScreen}/>
 
                 <Stack.Screen name={"SelectType"} component={SelectType}/>
+
+                <Stack.Screen name={"LeaderBoard"} component={LeaderBoard}/>
 
 
 

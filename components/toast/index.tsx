@@ -8,7 +8,6 @@ import {clearNotification, removeNotificationItem, removeSingleNotification} fro
 import {useDispatch, useSelector} from "react-redux";
 
 
-
 interface TaskInterface {
     index: number;
     id: string;
@@ -47,22 +46,27 @@ const ToastAnimated = () => {
 
     const dispatch = useAppDispatch()
     const data = useAppSelector(state => state.data)
-    const {notificationData} =data
+    const {notificationData} = data
 
-   // let TASKS: { index: number; body: string; type: string }[] = [];
-    const [tasks, setTasks] = useState(notificationData.map((item, index) => ({ body:item.body,type:item.type, id: item.id,index })));
+    // let TASKS: { index: number; body: string; type: string }[] = [];
+    const [tasks, setTasks] = useState(notificationData.map((item, index) => ({
+        body: item.body,
+        type: item.type,
+        id: item.id,
+        index
+    })));
 
 
     useEffect(() => {
-       setTasks(notificationData.map((item, index) => ({ body:item.body,type:item.type,id: item.id,index })))
+        setTasks(notificationData.map((item, index) => ({body: item.body, type: item.type, id: item.id, index})))
     }, [notificationData]);
 
 
     const onDismiss = useCallback((notification: TaskInterface) => {
 
-      setTasks((tasks) => tasks.filter((item) => item.index !== notification.index).reverse());
-       // tasks  = tasks.filter((item) => item.index !== notification.index)
-       // dispatch(removeSingleNotification(task))
+        setTasks((tasks) => tasks.filter((item) => item.index !== notification.index).reverse());
+        // tasks  = tasks.filter((item) => item.index !== notification.index)
+        // dispatch(removeSingleNotification(task))
         dispatch(removeNotificationItem({notification}))
     }, []);
 
@@ -70,22 +74,21 @@ const ToastAnimated = () => {
     const activeIndex = useSharedValue(0)
 
 
+      useEffect(() => {
+          // console.log(user)
+          let time: NodeJS.Timeout | undefined;
+          if (notificationData.length > 0) {
 
-    useEffect(() => {
-        // console.log(user)
-        let time: NodeJS.Timeout | undefined;
-        if (notificationData.length > 0) {
 
+              time = setTimeout(() => {
+                  dispatch(clearNotification())
+              }, 6500)
 
-            time = setTimeout(() => {
-                dispatch(clearNotification())
-            }, 4500)
-
-        }
-        return () => {
-            clearTimeout(time)
-        };
-    }, [notificationData])
+          }
+          return () => {
+              clearTimeout(time)
+          };
+      }, [notificationData])
 
 
 
@@ -94,11 +97,25 @@ const ToastAnimated = () => {
         <View
             style={{
 
-                flex: 1,
+
+                zIndex: 1000,
+
                 alignItems: 'center',
 
                 justifyContent: 'flex-end',
-                marginBottom: layout.cardsGap * 2,
+                // marginBottom: layout.cardsGap * 2,
+
+
+
+
+                width:'100%',
+                position: 'absolute',
+                left: 0,
+                right: 0,
+
+                bottom: 60,
+
+
             }}
             pointerEvents="box-none"
         >
@@ -113,7 +130,6 @@ const ToastAnimated = () => {
                     onDismiss={onDismiss}
                 />
             ))}
-
 
 
         </View>

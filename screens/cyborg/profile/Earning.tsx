@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useState} from 'react';
 
-import {Text, View, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
+import {Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl} from 'react-native';
 import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -10,8 +10,28 @@ import {Ionicons} from "@expo/vector-icons";
 import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPixel} from "../../../helpers/normalize";
 import {Fonts} from "../../../constants/Fonts";
 import HorizontalLine from "../../../components/HorizontalLine";
+import {useQuery} from "@tanstack/react-query";
+import {getRevenues} from "../../../api";
+import {useAppSelector} from "../../../app/hooks";
+import {useRefreshOnFocus, wait} from "../../../helpers";
 
 const Earnings = ({}: RootStackScreenProps<'Earnings'>) => {
+
+
+    const [refreshing, setRefreshing] = useState(false);
+    const user = useAppSelector(state => state.user)
+    const {User_Details} = user
+    const {data:revenues,refetch,isLoading} = useQuery(['user-Revenues'],()=> getRevenues(User_Details.id))
+
+
+
+    const refresh = () => {
+        setRefreshing(true)
+        refetch()
+        wait(2000).then(() => setRefreshing(false));
+    }
+
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <LinearGradient style={styles.background}
@@ -28,7 +48,11 @@ const Earnings = ({}: RootStackScreenProps<'Earnings'>) => {
                 <ScrollView style={{
                     width: '100%'
                 }} contentContainerStyle={styles.scrollView} scrollEnabled
-                            showsVerticalScrollIndicator={false}>
+                            showsVerticalScrollIndicator={false}
+
+                            refreshControl={<RefreshControl tintColor={Colors.text} refreshing={refreshing}
+                                                            onRefresh={refresh}/>}
+                >
 
                     <View style={styles.planInfo}>
                         <Text style={styles.planTitle}>
@@ -36,6 +60,14 @@ const Earnings = ({}: RootStackScreenProps<'Earnings'>) => {
                         </Text>
 
                     </View>
+
+                    {
+                        isLoading  && <ActivityIndicator color={Colors.primary} size='small'/>
+                    }
+
+                    {
+                        !isLoading && revenues && revenues?.data
+                         &&
                     <View style={styles.topDetails}>
                         <View style={styles.interestGained}>
 
@@ -46,7 +78,7 @@ const Earnings = ({}: RootStackScreenProps<'Earnings'>) => {
 
                                               }]}>
                                 <Text style={styles.balText}>
-                                    Activate profit
+                                    Activate total profit
                                 </Text>
 
                                 <Ionicons name="eye-outline" size={16} color={Colors.lightText}/>
@@ -58,7 +90,8 @@ const Earnings = ({}: RootStackScreenProps<'Earnings'>) => {
 
                                 <View>
                                     <Text style={[styles.balance, {}]}>
-                                        $24
+
+                                        ${revenues?.data["Activate total profit"]}
                                     </Text>
 
                                 </View>
@@ -74,10 +107,10 @@ const Earnings = ({}: RootStackScreenProps<'Earnings'>) => {
                         <View style={styles.currentBalanceContainer}>
 
                             <TouchableOpacity activeOpacity={0.7} style={[styles.balanceTitle, {
-                                justifyContent: 'flex-start',
+                                justifyContent: 'flex-end',
                             }]}>
                                 <Text style={styles.balText}>
-                                    Current balance
+                                    Activate profit today
                                 </Text>
 
                                 <Ionicons name="eye-outline" size={16} color={Colors.lightText}/>
@@ -85,11 +118,13 @@ const Earnings = ({}: RootStackScreenProps<'Earnings'>) => {
 
                             </TouchableOpacity>
 
-                            <View style={[styles.balanceWrap]}>
+                            <View style={[styles.balanceWrap,{
+                                alignItems: 'flex-end',
+                            }]}>
 
 
                                 <Text style={[styles.balance, {color: Colors.success}]}>
-                                    $76789
+                                    ${revenues?.data["Activate profit today"]}
                                 </Text>
 
                                 <Text style={styles.walletAddressTxt}>
@@ -102,7 +137,7 @@ const Earnings = ({}: RootStackScreenProps<'Earnings'>) => {
 
 
                     </View>
-
+                    }
                     <HorizontalLine/>
 
                     <View style={styles.planInfo}>
@@ -111,6 +146,10 @@ const Earnings = ({}: RootStackScreenProps<'Earnings'>) => {
                         </Text>
 
                     </View>
+
+                    {
+                        !isLoading && revenues && revenues?.data
+                        &&
                     <View style={styles.topDetails}>
                         <View style={styles.interestGained}>
 
@@ -121,7 +160,7 @@ const Earnings = ({}: RootStackScreenProps<'Earnings'>) => {
 
                                               }]}>
                                 <Text style={styles.balText}>
-                                    Activate profit
+                                    Direct earning activated
                                 </Text>
 
                                 <Ionicons name="eye-outline" size={16} color={Colors.lightText}/>
@@ -132,8 +171,8 @@ const Earnings = ({}: RootStackScreenProps<'Earnings'>) => {
 
 
                                 <View>
-                                    <Text style={[styles.balance, {}]}>
-                                        $24
+                                    <Text style={[styles.balance, {color: Colors.success}]}>
+                                        ${revenues?.data["Direct activated"]}
                                     </Text>
 
                                 </View>
@@ -149,10 +188,11 @@ const Earnings = ({}: RootStackScreenProps<'Earnings'>) => {
                         <View style={styles.currentBalanceContainer}>
 
                             <TouchableOpacity activeOpacity={0.7} style={[styles.balanceTitle, {
-                                justifyContent: 'flex-start',
+                                justifyContent: 'flex-end',
+
                             }]}>
                                 <Text style={styles.balText}>
-                                    Current balance
+                                     Not activated
                                 </Text>
 
                                 <Ionicons name="eye-outline" size={16} color={Colors.lightText}/>
@@ -160,11 +200,13 @@ const Earnings = ({}: RootStackScreenProps<'Earnings'>) => {
 
                             </TouchableOpacity>
 
-                            <View style={[styles.balanceWrap]}>
+                            <View style={[[styles.balanceWrap,{
+                                alignItems: 'flex-end',
+                            }]]}>
 
 
-                                <Text style={[styles.balance, {color: Colors.success}]}>
-                                    $76789
+                                <Text style={[styles.balance, ]}>
+                                    ${revenues?.data["Direct not activated"]}
                                 </Text>
 
                                 <Text style={styles.walletAddressTxt}>
@@ -177,6 +219,7 @@ const Earnings = ({}: RootStackScreenProps<'Earnings'>) => {
 
 
                     </View>
+                    }
 
                     <HorizontalLine/>
                 </ScrollView>

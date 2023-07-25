@@ -22,6 +22,7 @@ import Withdrawal from "./screens/cyborg/profile/WIthdrawalAmount";
 import WithdrawalAmount from "./screens/cyborg/profile/WIthdrawalAmount";
 import SettingsScreen from "./screens/cyborg/profile/SettingsScreen";
 import ApiBinding from "./screens/cyborg/profile/ApiBinding";
+import LeaderBoard from "./screens/cyborg/more/LeaderBoard";
 
 
 
@@ -57,6 +58,12 @@ export type RootStackParamList = {
     ApiBinding: undefined;
     TransferScreen: undefined;
     Assets: undefined;
+    LeaderBoard: undefined;
+    SuccessScreen: {
+        title:string,
+        message:string,
+        type?:'error'|'success'
+    };
 
 
     //END CYBORG

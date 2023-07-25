@@ -25,6 +25,7 @@ import CreateScreen from "../../screens/cyborg/tabs/CreateScreen";
 import MoreScreen from "../../screens/cyborg/tabs/MoreScreen";
 import {RootTabParamList} from "../../types";
 import Colors from "../../constants/Colors";
+import {LinearGradient} from "expo-linear-gradient";
 
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
@@ -126,8 +127,17 @@ export const CyborgBottomTab = () => {
 
                         <Animated.View
                             style={[animatedStyle, styles.createBtn]}>
+                            <LinearGradient style={styles.createBtnGradient}
+                                            colors={['#e602df', '#4406b0']}
+
+                                            start={{x: 1, y: 0}}
+                                            end={{x: 0.1, y: 0.3,}}
+
+                                // locations={[0.1, 0.7,]}
+                            >
                             <Feather name="plus" size={20} color="#fff"/>
 
+                            </LinearGradient>
                         </Animated.View>
                     )
 
@@ -191,13 +201,18 @@ const styles = StyleSheet.create({
         elevation: 8,
         width: 40,
         height: 40,
-        backgroundColor: "#5F46F6",
+        //backgroundColor: "#5F46F6",
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
        // marginBottom: Platform.OS == "android" ? 70 : 60,
 
         zIndex: 100,
+    },
+    createBtnGradient:{
+        width:'100%',height:'100%', borderRadius:10,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     tabButton:{
         position: 'absolute',

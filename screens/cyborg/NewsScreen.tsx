@@ -9,6 +9,9 @@ import HeaderWithTitle from "../../components/header/HeaderWithTitle";
 import Colors from "../../constants/Colors";
 import {Fonts} from "../../constants/Fonts";
 import {Ionicons} from "@expo/vector-icons";
+import {useQuery} from "@tanstack/react-query";
+import {getUser, getUserNews} from "../../api";
+import {useAppSelector} from "../../app/hooks";
 
 
 const NewsCard = () => {
@@ -38,6 +41,13 @@ const NewsCard = () => {
 }
 
 const NewsScreen = ({navigation}: RootStackScreenProps<'NewsScreen'>) => {
+
+
+    const user = useAppSelector(state => state.user)
+    const {userData} = user
+    const {data, refetch} = useQuery(['user-news'],()=> getUserNews(userData.id))
+
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <LinearGradient style={styles.background}

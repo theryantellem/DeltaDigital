@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Text, View, StyleSheet, ScrollView} from 'react-native';
+import {Text, View, StyleSheet, ScrollView, ActivityIndicator} from 'react-native';
 import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
 import {LinearGradient} from "expo-linear-gradient";
 import {SafeAreaView} from "react-native-safe-area-context";
@@ -13,10 +13,13 @@ import TextInput from "../../../components/inputs/TextInput";
 import HorizontalLine from "../../../components/HorizontalLine";
 import {Entypo} from "@expo/vector-icons";
 import {MyButton} from "../../../components/MyButton";
-
-
-
-
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {getUser, transferAsset} from "../../../api";
+import {setAuthenticated, updateUserDetails} from "../../../app/slices/userSlice";
+import {useAppDispatch, useAppSelector} from "../../../app/hooks";
+import {addNotificationItem} from "../../../app/slices/dataSlice";
+import {RootStackScreenProps} from "../../../types";
+import ToastAnimated from "../../../components/toast";
 
 
 const formSchema = yup.object().shape({
@@ -27,10 +30,39 @@ const formSchema = yup.object().shape({
 
 })
 
-const TransferScreen = () => {
+const TransferScreen = ({navigation}: RootStackScreenProps<'TransferScreen'>) => {
+
+    const dispatch = useAppDispatch()
+    const queryClient = useQueryClient()
+
+    const user = useAppSelector(state => state.user)
+    const {userData, User_Details} = user
+
+    const {mutate, isLoading} = useMutation(['transferAsset'], transferAsset, {
+        onSuccess: async (data) => {
+
+            if (data.status == 1) {
+
+                navigation.navigate('SuccessScreen', {
+                    type: 'success',
+                    title: 'Transfer successful',
+                    message: data.message
+                })
+
+            } else {
+                dispatch(addNotificationItem({
+                    id: Math.random(),
+                    type: 'error',
+                    body:data?.data,
+                }))
+            }
 
 
-
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries(['transferAsset']);
+        }
+    })
 
 
     const {
@@ -56,140 +88,151 @@ const TransferScreen = () => {
             //navigation.navigate('CryptoWithdrawalDetails')
             const {amount} = values
 
-
+            const formData = new FormData()
+            formData.append('amount', amount)
+            mutate({body: formData, userId: User_Details.id})
         }
     });
 
 
     return (
-        <SafeAreaView style={styles.safeArea}>
-            <LinearGradient style={styles.background}
-                            colors={['#04074E', '#141621',]}
-
-                            start={{x: 2.5, y: 0}}
-                            end={{x: 1.5, y: 0.8,}}
-                // locations={[0.1, 0.7,]}
-
-            >
+        <>
 
 
-                <HeaderWithTitle title='Transfer'/>
-                <ScrollView style={{
-                    width: '100%'
-                }} contentContainerStyle={styles.scrollView} scrollEnabled
-                            showsVerticalScrollIndicator={false}>
-                    <View style={styles.planInfo}>
-                        <Text style={styles.planTitle}>
-                            Transfer Details
-                        </Text>
-                        <View style={styles.planMessage}>
-                            <Text style={styles.planMessageTxt}>
-                                Transfer from available assets to Total fee assets
+            <SafeAreaView style={styles.safeArea}>
+
+                <LinearGradient style={styles.background}
+                                colors={['#04074E', '#141621',]}
+
+                                start={{x: 2.5, y: 0}}
+                                end={{x: 1.5, y: 0.8,}}
+                    // locations={[0.1, 0.7,]}
+
+                >
+
+
+                    <HeaderWithTitle title='Transfer'/>
+                    <ScrollView style={{
+                        width: '100%'
+                    }} contentContainerStyle={styles.scrollView} scrollEnabled
+                                showsVerticalScrollIndicator={false}>
+                        <View style={styles.planInfo}>
+                            <Text style={styles.planTitle}>
+                                Transfer Details
                             </Text>
-                        </View>
-                    </View>
-
-                    <View style={styles.authContainer}>
-
-                    <TextInput
-
-                        placeholder="Quantity"
-                        keyboardType={"number-pad"}
-                        touched={touched.amount}
-                        error={touched.amount && errors.amount}
-                        onChangeText={(e) => {
-                            handleChange('marginLimit')(e);
-
-                        }}
-
-                        onBlur={(e) => {
-                            handleBlur('amount')(e);
-
-                        }}
-
-                        value={values.amount}
-                        label="Quantity"/>
-
-
-                    </View>
-
-
-                    <View style={styles.topWrap}>
-                        <Text style={styles.DetailsTitle}>
-                            Transaction Details
-                        </Text>
-
-
-                        <View style={styles.details}>
-                            <View style={styles.rowDetails}>
-                                <Text style={styles.amountText}>
-                                    Available
-                                </Text>
-                                <Text style={styles.amountText}>
-                                    3030 USDT
-                                </Text>
-                            </View>
-
-                            <HorizontalLine/>
-
-                            <View style={styles.rowDetails}>
-                                <Text style={styles.amountText}>
-                                    Transfer fee
-                                </Text>
-                                <Text style={styles.amountText}>
-                                    0.00
+                            <View style={styles.planMessage}>
+                                <Text style={styles.planMessageTxt}>
+                                    Transfer from available assets to Total fee assets
                                 </Text>
                             </View>
                         </View>
-                    </View>
+
+                        <View style={styles.authContainer}>
+
+                            <TextInput
+
+                                placeholder="Quantity"
+                                keyboardType={"number-pad"}
+                                touched={touched.amount}
+                                error={touched.amount && errors.amount}
+                                onChangeText={(e) => {
+                                    handleChange('amount')(e);
+
+                                }}
+
+                                onBlur={(e) => {
+                                    handleBlur('amount')(e);
+
+                                }}
+
+                                value={values.amount}
+                                label="Quantity"/>
 
 
-
-
-
-                    <View style={styles.operationReminderWrap}>
-                        <Text style={styles.operationReminderTitle}>
-                            Operation reminder
-                        </Text>
-
-
-                        <View style={[styles.list, {
-                            marginTop: 12,
-                        }]}>
-                            <Entypo name="dot-single" size={24} color={Colors.pendingYellow}/>
-                            <Text style={[styles.bodyText, {}]}>
-                                All funds send to Total Fee Asset can not be moved
-                                on the future, this wallet is only cyborg performance
-                                fees purpose
-                            </Text>
                         </View>
 
 
-                        <View style={styles.list}>
-                            <Entypo name="dot-single" size={24} color={Colors.pendingYellow}/>
-                            <Text style={[styles.bodyText, {}]}>
-
-                                Please deposit funds that are dedicated only for
-                                Cyborg fees
+                        <View style={styles.topWrap}>
+                            <Text style={styles.DetailsTitle}>
+                                Transaction Details
                             </Text>
+
+
+                            <View style={styles.details}>
+                                <View style={styles.rowDetails}>
+                                    <Text style={styles.amountText}>
+                                        Available
+                                    </Text>
+                                    <Text style={styles.amountText}>
+                                        3030 USDT
+                                    </Text>
+                                </View>
+
+                                <HorizontalLine/>
+
+                                <View style={styles.rowDetails}>
+                                    <Text style={styles.amountText}>
+                                        Transfer fee
+                                    </Text>
+                                    <Text style={styles.amountText}>
+                                        0.00
+                                    </Text>
+                                </View>
+                            </View>
                         </View>
 
 
+                        <View style={styles.operationReminderWrap}>
+                            <Text style={styles.operationReminderTitle}>
+                                Operation reminder
+                            </Text>
 
-                    </View>
+
+                            <View style={[styles.list, {
+                                marginTop: 12,
+                            }]}>
+                                <Entypo name="dot-single" size={24} color={Colors.pendingYellow}/>
+                                <Text style={[styles.bodyText, {}]}>
+                                    All funds send to Total Fee Asset can not be moved
+                                    on the future, this wallet is only cyborg performance
+                                    fees purpose
+                                </Text>
+                            </View>
 
 
+                            <View style={styles.list}>
+                                <Entypo name="dot-single" size={24} color={Colors.pendingYellow}/>
+                                <Text style={[styles.bodyText, {}]}>
+
+                                    Please deposit funds that are dedicated only for
+                                    Cyborg fees
+                                </Text>
+                            </View>
 
 
+                        </View>
 
-                </ScrollView>
-                <MyButton  style={styles.proceedBtn}>
-                    <Text style={styles.btnText}>
-                        Withdraw
-                    </Text>
-                </MyButton>
-            </LinearGradient>
-        </SafeAreaView>
+
+                    </ScrollView>
+                    <MyButton disabled={!isValid} onPress={() => handleSubmit()} style={styles.proceedBtn}>
+                        {
+                            isLoading ? <ActivityIndicator color="#fff" size='small'/>
+                                :
+
+                                <Text style={styles.btnText}>
+                                    Transfer
+                                </Text>
+                        }
+                    </MyButton>
+
+
+                </LinearGradient>
+
+
+            </SafeAreaView>
+
+            <ToastAnimated/>
+        </>
     );
 };
 
@@ -260,13 +303,13 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     rowDetails: {
-        width:'100%',
+        width: '100%',
         flexDirection: 'row',
         height: 35,
         alignItems: 'center',
         justifyContent: 'space-between'
     },
-    amountText:{
+    amountText: {
         fontFamily: Fonts.faktumRegular,
         fontSize: fontPixel(14),
         color: Colors.text
@@ -283,13 +326,13 @@ const styles = StyleSheet.create({
 
     },
     list: {
-        minHeight:heightPixel(20),
+        minHeight: heightPixel(20),
         // flexWrap:'wrap',
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
         width: '90%',
-        marginVertical:pixelSizeVertical(10),
+        marginVertical: pixelSizeVertical(10),
 
     },
     bodyText: {

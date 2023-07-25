@@ -20,13 +20,48 @@ import Colors from "../../constants/Colors";
 import {Fonts} from "../../constants/Fonts";
 import HorizontalLine from "../../components/HorizontalLine";
 import {RootStackScreenProps} from "../../types";
+import {useAppSelector} from "../../app/hooks";
+import dayjs from "dayjs";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
+import {getUser} from "../../api";
+import {useRefreshOnFocus} from "../../helpers";
+import {useDispatch} from "react-redux";
+import * as SecureStore from "expo-secure-store";
+import {logoutUser} from "../../app/slices/userSlice";
 
 
-const UserAccount = ({navigation}:RootStackScreenProps<'UserAccount'>) => {
 
-    const navigate = (screen:'Assets'|'RewardDetails'|'SettingsScreen'|'ApiBinding'|'Earnings') => {
+
+const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
+
+    const queryClient = useQueryClient()
+    const dispatch = useDispatch()
+
+    const user = useAppSelector(state => state.user)
+    const {userData,User_Details} = user
+    const navigate = (screen: 'Assets' | 'RewardDetails' | 'SettingsScreen' | 'ApiBinding' | 'Earnings') => {
         navigation.navigate(screen)
     }
+
+   const {data, refetch} = useQuery(['user-data'],()=> getUser(userData.id))
+
+
+    const logout = async () => {
+        // setLoggingOut(true)
+        await queryClient.invalidateQueries()
+
+        await SecureStore.setItemAsync('delta-signal-token', '')
+        dispatch(logoutUser())
+        //  dispatch( setLockUser({lockUser: false}))
+        // setUserLastSession({cleanLastActive: ''})
+        //await queryClient.removeQueries()
+
+    }
+
+
+    useRefreshOnFocus(refetch)
+
+
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -57,7 +92,7 @@ const UserAccount = ({navigation}:RootStackScreenProps<'UserAccount'>) => {
                                 <FastImage
                                     style={styles.Avatar}
                                     source={{
-                                        uri: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+                                        uri: User_Details.image ? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png',
                                         cache: FastImage.cacheControl.web,
                                         priority: FastImage.priority.normal,
                                     }}
@@ -69,7 +104,7 @@ const UserAccount = ({navigation}:RootStackScreenProps<'UserAccount'>) => {
                         </View>
                         <View style={styles.profileName}>
                             <Text style={styles.profileNameTxt}>
-                                Kane samuel
+                                {User_Details.username}
                             </Text>
                         </View>
 
@@ -88,10 +123,13 @@ const UserAccount = ({navigation}:RootStackScreenProps<'UserAccount'>) => {
                             </View>
                             <View style={styles.centerTextWrap}>
                                 <Text style={styles.centerText}>
-                                    Delta Digital Plus
+                                    {User_Details.plan}
                                 </Text>
                                 <Text style={styles.centerSubText}>
-                                    Wed, 12 March 20223
+
+                                    {
+                                        dayjs.unix(userData.expiry_time).format('ddd, DD MMM YYYY')
+                                    }
                                 </Text>
                             </View>
 
@@ -105,7 +143,8 @@ const UserAccount = ({navigation}:RootStackScreenProps<'UserAccount'>) => {
 
 
                     <View style={styles.profileButtonContainer}>
-                        <TouchableOpacity onPress={()=>navigate('SettingsScreen')} activeOpacity={0.6} style={styles.profileButton}>
+                        <TouchableOpacity onPress={() => navigate('SettingsScreen')} activeOpacity={0.6}
+                                          style={styles.profileButton}>
 
                             <View style={styles.leftContent}>
 
@@ -141,7 +180,8 @@ const UserAccount = ({navigation}:RootStackScreenProps<'UserAccount'>) => {
                         </TouchableOpacity>
 
 
-                        <TouchableOpacity onPress={()=>navigate('Earnings')} activeOpacity={0.6} style={styles.profileButton}>
+                        <TouchableOpacity onPress={() => navigate('Earnings')} activeOpacity={0.6}
+                                          style={styles.profileButton}>
 
                             <View style={styles.leftContent}>
 
@@ -160,12 +200,13 @@ const UserAccount = ({navigation}:RootStackScreenProps<'UserAccount'>) => {
                         </TouchableOpacity>
 
 
-                        <TouchableOpacity onPress={()=>navigate('RewardDetails')} activeOpacity={0.6} style={styles.profileButton}>
+                        <TouchableOpacity onPress={() => navigate('RewardDetails')} activeOpacity={0.6}
+                                          style={styles.profileButton}>
 
                             <View style={styles.leftContent}>
 
                                 <View style={styles.buttonIcon}>
-                                    <FontAwesome5 name="coins" size={18} color={Colors.lightColor} />
+                                    <FontAwesome5 name="coins" size={18} color={Colors.lightColor}/>
 
                                 </View>
                                 <Text style={styles.profileTxt}>
@@ -179,7 +220,8 @@ const UserAccount = ({navigation}:RootStackScreenProps<'UserAccount'>) => {
                         </TouchableOpacity>
 
 
-                        <TouchableOpacity onPress={()=>navigate('ApiBinding')} activeOpacity={0.6} style={styles.profileButton}>
+                        <TouchableOpacity onPress={() => navigate('ApiBinding')} activeOpacity={0.6}
+                                          style={styles.profileButton}>
 
                             <View style={styles.leftContent}>
 
@@ -198,7 +240,8 @@ const UserAccount = ({navigation}:RootStackScreenProps<'UserAccount'>) => {
                         </TouchableOpacity>
 
 
-                        <TouchableOpacity onPress={()=>navigate('Assets')} activeOpacity={0.6} style={styles.profileButton}>
+                        <TouchableOpacity onPress={() => navigate('Assets')} activeOpacity={0.6}
+                                          style={styles.profileButton}>
 
                             <View style={styles.leftContent}>
 
@@ -236,12 +279,12 @@ const UserAccount = ({navigation}:RootStackScreenProps<'UserAccount'>) => {
                         </TouchableOpacity>
 
 
-   <TouchableOpacity activeOpacity={0.6} style={styles.profileButton}>
+                        <TouchableOpacity activeOpacity={0.6} style={styles.profileButton}>
 
                             <View style={styles.leftContent}>
 
                                 <View style={styles.buttonIcon}>
-                                    <MaterialIcons name="support-agent" size={20} color={Colors.lightColor} />
+                                    <MaterialIcons name="support-agent" size={20} color={Colors.lightColor}/>
                                 </View>
                                 <Text style={styles.profileTxt}>
                                     My councillor
@@ -255,6 +298,13 @@ const UserAccount = ({navigation}:RootStackScreenProps<'UserAccount'>) => {
 
 
                     </View>
+
+
+                    <TouchableOpacity onPress={logout}>
+                        <Text style={styles.logoutText}>
+                            Logout
+                        </Text>
+                    </TouchableOpacity>
 
                 </ScrollView>
             </LinearGradient>
@@ -295,7 +345,8 @@ const styles = StyleSheet.create({
     profileNameTxt: {
         fontSize: fontPixel(18),
         fontFamily: Fonts.faktumBold,
-        color: Colors.text
+        color: Colors.text,
+        textTransform: 'capitalize'
     },
     profileImage: {
         width: 90,
@@ -396,6 +447,12 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.faktumSemiBold,
         color: Colors.text
     },
+    logoutText:{
+        color:Colors.errorRed,
+        fontSize: fontPixel(16),
+        fontFamily: Fonts.faktumSemiBold,
+
+    }
 })
 
 export default UserAccount;

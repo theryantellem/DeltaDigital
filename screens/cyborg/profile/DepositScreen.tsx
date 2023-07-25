@@ -12,11 +12,18 @@ import QRCode from "react-native-qrcode-svg";
 import Animated, {FadeInDown, FadeOutDown} from "react-native-reanimated";
 import {truncateString} from "../../../helpers";
 import HorizontalLine from "../../../components/HorizontalLine";
+import {useQuery} from "@tanstack/react-query";
+import {getDepositAddress, getRevenues} from "../../../api";
+import {useAppSelector} from "../../../app/hooks";
 
 
 const DepositScreen = () => {
     const [copied, setCopied] = useState(false);
 
+    const user = useAppSelector(state => state.user)
+    const {userData} = user
+    const {data} = useQuery(['user-DepositAddress'],()=> getDepositAddress(userData.id))
+console.log(data)
     return (
         <SafeAreaView style={styles.safeArea}>
             <LinearGradient style={styles.background}

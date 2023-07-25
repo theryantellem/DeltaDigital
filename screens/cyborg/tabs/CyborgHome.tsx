@@ -8,7 +8,7 @@ import {
     TouchableOpacity,
     Dimensions,
     ScrollView,
-    Pressable
+    Pressable, RefreshControl
 } from 'react-native';
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -18,32 +18,22 @@ import {RootTabScreenProps} from "../../../types";
 import {Fonts} from "../../../constants/Fonts";
 import {Ionicons, Octicons} from "@expo/vector-icons";
 import Colors from "../../../constants/Colors";
-import {currencyFormatter} from "../../../helpers";
+import {currencyFormatter, wait} from "../../../helpers";
 import {LineChart} from "react-native-wagmi-charts";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-reanimated";
 import SwipeToast from "../../../components/toast/SwipeToast";
 import ToastAnimated from "../../../components/toast";
-import {useAppDispatch} from "../../../app/hooks";
+import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {addNotificationItem} from "../../../app/slices/dataSlice";
+import {useQuery} from "@tanstack/react-query";
+import {getUser} from "../../../api";
 
 let width = Dimensions.get("window").width
 
 
 
-interface TaskInterface {
-    title: string;
-    index: number;
-}
 
-const TITLES = [
-    'Record the dismissible tutorial 🎥',
-    'Leave 👍🏼 to the video',
-    'Check YouTube comments',
-    'Subscribe to the channel 🚀',
-    'Leave a ⭐️ on the GitHub Repo',
-];
-const TASKS: TaskInterface[] = TITLES.map((title, index) => ({ title, index }));
 
 const ChartData = [
     {
@@ -77,24 +67,31 @@ const ChartData = [
 
 const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
 
+
+
     const dispatch = useAppDispatch()
+    const user = useAppSelector(state => state.user)
+    const {userData,User_Details} = user
     const openProfile = () => {
 
     }
+
+    const [refreshing, setRefreshing] = useState(false);
     const openNotifications = () => {
 
     }
     const overView = () => {
         navigation.navigate('OverView')
     }
+    const {data, refetch} = useQuery(['user-data'],()=> getUser(userData.id))
 
-const addNoti = () => {
-  dispatch(addNotificationItem({
-      id: Math.random(),
-      type: 'info',
-      body: 'Subscribe to the channel 🚀'+Math.random().toFixed(2),
-  }))
-}
+
+    const refresh = () => {
+        setRefreshing(true)
+        refetch()
+        wait(2000).then(() => setRefreshing(false));
+    }
+
 
     return (
 
@@ -113,6 +110,9 @@ const addNoti = () => {
             >*/}
             <ScrollView style={{width: '100%',}} contentContainerStyle={styles.scrollView} scrollEnabled
                         showsVerticalScrollIndicator={false}
+
+                        refreshControl={<RefreshControl tintColor={Colors.primary} refreshing={refreshing}
+                                                       onRefresh={refresh}/>}
             >
                 <LinearGradient style={styles.dashboard}
                                 colors={['#e813e1', "#690152", '#030D34']}
@@ -125,8 +125,8 @@ const addNoti = () => {
 
 
                     <TopBar
-                        profilePhoto={'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'}
-                        userName={'Orji'}/>
+                        profilePhoto={ User_Details.image? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'}
+                        userName={User_Details.username}/>
 
                     <View style={styles.dashboardInfo}>
                         <View style={styles.cyborgInfo}>

@@ -7,7 +7,8 @@ import {
     PanGestureHandlerProps,
 } from 'react-native-gesture-handler';
 
-import Animated, {FadeInDown, FadeOutDown,
+import Animated, {
+    FadeInDown, FadeOutDown,
     interpolate, interpolateColor, Layout,
     runOnJS, SharedValue,
     useAnimatedGestureHandler,
@@ -18,7 +19,7 @@ import Animated, {FadeInDown, FadeOutDown,
 
 import {FontAwesome5, Ionicons} from "@expo/vector-icons";
 import Colors from "../../constants/Colors";
-import {fontPixel} from "../../helpers/normalize";
+import {fontPixel, heightPixel} from "../../helpers/normalize";
 import {Fonts} from "../../constants/Fonts";
 
 
@@ -67,11 +68,11 @@ const SwipeToast: React.FC<ListItemProps> = ({
                 return
             }
 
-            translateX.value = event.translationX;
+            // translateX.value = event.translationX;
             //
-           /* if (activeIndex.value == index) {
+            if (activeIndex.value == index) {
                 translateX.value = event.translationX;
-            }*/
+            }
         },
         onEnd: () => {
             const shouldBeDismissed = translateX.value < TRANSLATE_X_THRESHOLD;
@@ -138,7 +139,7 @@ const SwipeToast: React.FC<ListItemProps> = ({
     const rTaskContainerStyle = useAnimatedStyle(() => {
 
         return {
-           //zIndex:  index,
+            //zIndex:  index,
             zIndex: totalLength - index,
             position: 'absolute',
             height: itemHeight.value,
@@ -146,8 +147,6 @@ const SwipeToast: React.FC<ListItemProps> = ({
             opacity: opacity.value,
         };
     });
-
-
 
 
     return (
@@ -165,27 +164,28 @@ const SwipeToast: React.FC<ListItemProps> = ({
                 onGestureEvent={panGesture}
             >
                 <Animated.View
-                    style={[styles.task, rStyle,{
-
-                    }]}>
+                    style={[styles.task, rStyle, {}]}>
                     {
                         task.type == 'success' &&
 
-                    <View style={[styles.toastIcon,{
-                        backgroundColor: Colors.tintSuccess,
-                    }]}>
-                        <FontAwesome5 name="thumbs-up" size={18} color={Colors.success} />
-                    </View>
+                        <View style={styles.toastIconWrap}>
+                            <View style={[styles.toastIcon, {
+                                backgroundColor: Colors.tintSuccess,
+                            }]}>
+                                <FontAwesome5 name="thumbs-up" size={18} color={Colors.success}/>
+                            </View>
+                        </View>
                     }
                     {
                         task.type == 'error' &&
+                        <View style={styles.toastIconWrap}>
+                            <View style={[styles.toastIcon, {
+                                backgroundColor: Colors.textDark,
+                            }]}>
+                                <Ionicons name="warning-outline" size={18} color={Colors.errorRed}/>
 
-                        <View style={[styles.toastIcon,{
-                        backgroundColor: Colors.textDark,
-                    }]}>
-                            <Ionicons name="warning-outline" size={18} color={Colors.errorRed}/>
-
-                    </View>
+                            </View>
+                        </View>
                     }
                     <View style={styles.toastBody}>
                         <Text style={styles.taskTitle}>{task.body}</Text>
@@ -203,8 +203,14 @@ const styles = StyleSheet.create({
 
 
     },
+    toastIconWrap: {
+            height: '100%',
+            width: '8%',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+        },
     toastBody: {
-        width: '80%',
+        width: '90%',
 
         marginLeft: 10,
     },
@@ -234,13 +240,14 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         borderRadius: 40,
-     alignItems:'center',
-        justifyContent:'center'
+        alignItems: 'center',
+        justifyContent: 'center'
 
     },
     taskTitle: {
-        color:Colors.text,
-fontFamily:Fonts.faktumMedium,
+        lineHeight: heightPixel(18),
+        color: Colors.text,
+        fontFamily: Fonts.faktumMedium,
         fontSize: fontPixel(14),
     },
     iconContainer: {

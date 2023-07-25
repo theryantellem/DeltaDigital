@@ -11,6 +11,36 @@ export interface UserState {
     lockUser: boolean,
     lastUserActive: number | string,
 
+    "User_Details":
+        {
+            id: string,
+            image: string,
+            username: string,
+            Email: string,
+            Subscribed: string,
+            plan: string,
+            "phone no": string,
+            role: string,
+            country: string,
+            expires: string,
+            "referred by": string,
+            "referral left link": string,
+            "referral right link": string,
+            binancebind: string,
+            kucoinbind: string,
+            coinbaseprobind: string,
+            krakenbind: string,
+            binanceapi: string,
+            kucoinapi: string,
+            coinbaseproapi: string,
+            krakenapi: string,
+            binancescret: string,
+            kucoinsecret: string,
+            coinbaseprosecret: string,
+            krakensecret: string,
+            "api group": string
+        }
+
 
     userData: {
         "id": string,
@@ -40,7 +70,6 @@ const initialState: UserState = {
     lastUserActive: 0,
 
 
-
     userData: {
         id: "",
         name: "",
@@ -56,6 +85,36 @@ const initialState: UserState = {
         role: "",
         iseligible: 1
     },
+    User_Details:
+        {
+            "id": "",
+            "image": "",
+            "username": "",
+            "Email": "",
+            "Subscribed": "1",
+            "plan": "",
+            "phone no": "",
+            "role": "",
+            "country": "",
+            "expires": "",
+            "referred by": "",
+            "referral left link": "",
+            "referral right link": "",
+            "binancebind": "",
+            "kucoinbind": "",
+            "coinbaseprobind": "",
+            "krakenbind": "",
+            "binanceapi": "",
+            "kucoinapi": "",
+            "coinbaseproapi": "",
+            "krakenapi": "",
+            "binancescret": "",
+            "kucoinsecret": "",
+            "coinbaseprosecret": "",
+            "krakensecret": "",
+            "api group": ""
+        }
+
 
 }
 
@@ -67,6 +126,10 @@ export const userSlice = createSlice({
 
         updateUserInfo: (state, action: PayloadAction<UserState['userData']>) => {
             state.userData = action.payload
+
+        },
+        updateUserDetails: (state, action: PayloadAction<UserState['User_Details']>) => {
+            state.User_Details = action.payload
 
         },
 
@@ -113,7 +176,8 @@ export const {
     unSetResponse,
     updateUserInfo,
     setResponse,
-    setAuthenticated
+    setAuthenticated,
+    updateUserDetails,
 } = userSlice.actions
 
 export default userSlice.reducer

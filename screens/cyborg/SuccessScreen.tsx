@@ -1,19 +1,21 @@
 import React from 'react';
 
-import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
-import {fontPixel, heightPixel, pixelSizeVertical, widthPixel} from "../../../helpers/normalize";
+import {Text, View, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
+import {fontPixel, heightPixel, pixelSizeVertical, widthPixel} from "../../helpers/normalize";
 import {Ionicons, Octicons} from "@expo/vector-icons";
-import Colors from "../../../constants/Colors";
-import {Fonts} from "../../../constants/Fonts";
-import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
+import Colors from "../../constants/Colors";
+import {Fonts} from "../../constants/Fonts";
+import HeaderWithTitle from "../../components/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-reanimated";
-import {RootStackScreenProps} from "../../../types";
-import HorizontalLine from "../../../components/HorizontalLine";
+import {RootStackScreenProps} from "../../types";
+import HorizontalLine from "../../components/HorizontalLine";
 
-const BotSuccess = ({navigation}: RootStackScreenProps<'BotSuccess'>) => {
+const SuccessScreen = ({navigation, route}: RootStackScreenProps<'SuccessScreen'>) => {
+
+    const {type, message, title} = route.params
     const goNextScreen = () => {
         navigation.navigate('CyborgBottomTab', {
             screen: 'CyborgHome'
@@ -32,77 +34,53 @@ const BotSuccess = ({navigation}: RootStackScreenProps<'BotSuccess'>) => {
 
 
 
-                <KeyboardAwareScrollView style={{
+                <ScrollView style={{
                     width: '100%'
                 }} contentContainerStyle={styles.scrollView} scrollEnabled
-                                         showsVerticalScrollIndicator={false}>
+                            showsVerticalScrollIndicator={false}>
 
-                    <Animated.View key={'title-info'} layout={Layout.easing(Easing.bounce).delay(100)}
-                                   entering={FadeInDown.springify()} exiting={FadeOutDown} style={[styles.topWrap,{
-                        height: heightPixel(80)
-                    }]}>
+                    <View style={styles.container}>
 
 
-                        <Text style={styles.title}>
-                            Trade Bot started
+                        <Animated.View key={'title-info'} layout={Layout.easing(Easing.bounce).delay(100)}
+                                       entering={FadeInDown.springify()} exiting={FadeOutDown} style={[styles.topWrap, {
+                            height: heightPixel(80)
+                        }]}>
+
+
+                            <Text style={styles.title}>
+                                {title}
+                            </Text>
+
+                            <Text style={styles.message}>
+                                {message}
+                            </Text>
+
+                        </Animated.View>
+
+
+                        <Animated.View key={"checked"} layout={Layout.easing(Easing.bounce).delay(50)}
+                                       entering={FadeInDown.springify()} exiting={FadeOutDown}
+                                       style={styles.circleCheck}>
+                            <Octicons name="check" size={34} color="#fff"/>
+                        </Animated.View>
+
+
+                        <Text style={styles.noticeText}>
+                            You will be notified as soon as it is completed typically within 5 minutes
                         </Text>
-
-                        <Text style={styles.message}>
-                            Your transaction has been received and is been processed.
-                        </Text>
-
-                    </Animated.View>
-
-
-                    <Animated.View key={"checked"} layout={Layout.easing(Easing.bounce).delay(50)}
-                                   entering={FadeInDown.springify()} exiting={FadeOutDown} style={styles.circleCheck}>
-                        <Octicons name="check" size={34} color="#fff"/>
-                    </Animated.View>
-
-
-                    <View style={styles.topWrap}>
-                        <Text style={styles.DetailsTitle}>
-                            Details
-                        </Text>
-
-
-                        <View style={styles.details}>
-                            <View style={styles.rowDetails}>
-                                <Text style={styles.amountText}>
-                                    Amount
-                                </Text>
-                                <Text style={styles.amountText}>
-                                    $3,030
-                                </Text>
-                            </View>
-
-                            <HorizontalLine/>
-
-                            <View style={styles.rowDetails}>
-                                <Text style={styles.amountText}>
-                                    Exchange
-                                </Text>
-                                <Text style={styles.amountText}>
-                                 Binance
-                                </Text>
-                            </View>
-                        </View>
-
-
 
                     </View>
-                    <Text style={styles.noticeText}>
-                        You will be notified as soon as it is completed typically within 5 minutes
-                    </Text>
 
-                </KeyboardAwareScrollView>
+                    <TouchableOpacity style={styles.button}
+                                      onPress={goNextScreen}>
+                        <Text style={styles.btnText}>
+                            Continue
+                        </Text>
+                    </TouchableOpacity>
+                </ScrollView>
 
-                <TouchableOpacity style={styles.button}
-                                  onPress={goNextScreen}>
-                    <Text style={styles.btnText}>
-                        Continue
-                    </Text>
-                </TouchableOpacity>
+
             </LinearGradient>
         </SafeAreaView>
     );
@@ -184,13 +162,19 @@ const styles = StyleSheet.create({
         width: '100%',
         alignItems: "center"
     },
+    container: {
+        height: heightPixel(600),
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%'
+    },
     topWrap: {
         marginTop: 15,
         width: '80%',
         alignItems: 'center',
 
-        justifyContent: 'space-between',
-        height: heightPixel(140)
+        justifyContent: 'space-evenly',
+        height: heightPixel(100)
     },
     DetailsTitle: {
         fontFamily: Fonts.faktumSemiBold,
@@ -204,25 +188,25 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     rowDetails: {
-        width:'100%',
+        width: '100%',
         flexDirection: 'row',
         height: 35,
         alignItems: 'center',
         justifyContent: 'space-between'
     },
-    amountText:{
+    amountText: {
         fontFamily: Fonts.faktumRegular,
         fontSize: fontPixel(14),
         color: Colors.text
     },
-    noticeText:{
-        width:'70%',
+    noticeText: {
+        width: '70%',
         marginVertical: pixelSizeVertical(55),
-        textAlign:'center',
+        textAlign: 'center',
         fontFamily: Fonts.faktumRegular,
         fontSize: fontPixel(14),
         color: Colors.text
     }
 })
 
-export default BotSuccess;
+export default SuccessScreen;
