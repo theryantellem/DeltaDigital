@@ -220,3 +220,21 @@ export const wait = (timeout: number) => {
         setTimeout(resolve, timeout);
     });
 };
+
+
+
+
+export const removeHTMLTags = (htmlString, removeWhiteSpace = false) => {
+    // Regular expression to match HTML tags
+    const regex = /(<([^>]+)>)/gi;
+
+    // Replace HTML tags with an empty string
+    let result = htmlString.replace(regex, '');
+
+    if (removeWhiteSpace) {
+        // Remove contiguous white spaces longer than 1 character from the resulting string
+        result = result.replace(/\s{2,}/g, ' ');
+    }
+
+    return result;
+};

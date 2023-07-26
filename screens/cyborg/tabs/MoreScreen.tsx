@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useRef} from 'react';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 
 import {Text, View, StyleSheet, Platform, ScrollView, TouchableOpacity} from 'react-native';
 import {SafeAreaView} from "react-native-safe-area-context";
@@ -7,7 +7,7 @@ import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical} from "..
 import TopBar from "../../../components/header/TopBar";
 import {Fonts} from "../../../constants/Fonts";
 import Colors from "../../../constants/Colors";
-import {AntDesign, Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
+import {AntDesign, FontAwesome, Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
 import {RootTabScreenProps} from "../../../types";
 import BottomSheet, {
     BottomSheetBackdrop, BottomSheetBackdropProps,
@@ -19,13 +19,24 @@ import {
     BottomSheetDefaultBackdropProps
 } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
 import {Portal} from "@gorhom/portal";
-import {useAppSelector} from "../../../app/hooks";
+import {useAppDispatch, useAppSelector} from "../../../app/hooks";
+import QRCode from "react-native-qrcode-svg";
+import * as Clipboard from "expo-clipboard";
+import ToastAnimated from "../../../components/toast";
+import {addNotificationItem} from "../../../app/slices/dataSlice";
+
+
 
 
 const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
 
+const dispatch = useAppDispatch()
+    const [copied, setCopied] = useState(false);
+
+
+
     const user = useAppSelector(state => state.user)
-    const {userData,User_Details} = user
+    const {User_Details} = user
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
     // variables
@@ -62,6 +73,28 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
     const navigate = (screen: 'LeaderBoard' | 'NewsScreen') => {
         navigation.navigate(screen)
     }
+
+
+    const copyLeftLink = async () => {
+        await Clipboard.setStringAsync(`${User_Details['referral left link']}`);
+        dispatch(addNotificationItem({
+            id: Math.random(),
+            type: 'info',
+            body: "Left referral link copied 👍",
+        }))
+        setCopied(true)
+    };
+
+    const copyRightLink = async () => {
+        await Clipboard.setStringAsync(`${User_Details['referral right link']}`);
+        dispatch(addNotificationItem({
+            id: Math.random(),
+            type: 'info',
+            body: "Right referral link copied 👍",
+        }))
+        setCopied(true)
+    };
+
 
     return (
         <>
@@ -150,10 +183,11 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
 
                                 <TouchableOpacity disabled activeOpacity={0.6} style={styles.dashButton}>
                                     <View style={[styles.dashIcon,]}>
-                                        <Ionicons name="share-social-outline" size={20} color="#fff"/>
+
+                                        <FontAwesome name="diamond" size={20} color="#fff" />
                                     </View>
                                     <Text style={styles.dashText}>
-                                        Share
+                                        Member center
                                     </Text>
                                 </TouchableOpacity>
 
@@ -171,7 +205,7 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
 
 
             <Portal>
-
+                <ToastAnimated/>
                 <BottomSheetModalProvider>
 
 
@@ -218,6 +252,77 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
 
                                 <View style={styles.qrBoxWrap}>
 
+                                    <View style={styles.qrCode}>
+
+                                        <QRCode
+                                            logo={require('../../../assets/images/cyborg-logo.png')}
+                                            logoSize={35}
+                                            size={120}
+                                            value={User_Details['referral left link']}
+                                            color={Colors.text}
+
+                                            backgroundColor={Colors.secondary}
+                                        />
+                                    </View>
+
+                                    <View style={styles.inviteDetails}>
+
+                                        <TouchableOpacity style={styles.copyButtonTitle}>
+                                            <Text style={styles.copyTxt}>
+                                                Right joining link
+                                            </Text>
+                                        </TouchableOpacity>
+
+                                        <Text style={styles.linkText}>
+                                            Please use the referral link
+                                            to add new members to
+                                            right position
+                                        </Text>
+
+                                        <TouchableOpacity onPress={copyRightLink} activeOpacity={0.7} style={styles.copyButton}>
+                                            <Text style={styles.copyButtonTxt}>
+                                                Copy URL
+                                            </Text>
+                                            <Ionicons name="md-copy-outline" size={18} color="#fff" />
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                                <View style={styles.qrBoxWrap}>
+
+                                    <View style={styles.qrCode}>
+
+                                        <QRCode
+                                            logo={require('../../../assets/images/cyborg-logo.png')}
+                                            logoSize={35}
+                                            size={120}
+                                            value={User_Details['referral left link']}
+                                            color={Colors.text}
+
+                                            backgroundColor={Colors.secondary}
+                                        />
+                                    </View>
+
+                                    <View style={styles.inviteDetails}>
+
+                                        <TouchableOpacity style={styles.copyButtonTitle}>
+                                            <Text style={styles.copyTxt}>
+                                                Left joining link
+                                            </Text>
+                                        </TouchableOpacity>
+
+                                        <Text style={styles.linkText}>
+                                            Please use the referral link
+                                            to add new members to
+                                            right position
+                                        </Text>
+
+                                        <TouchableOpacity onPress={copyLeftLink} activeOpacity={0.7} style={styles.copyButton}>
+                                            <Text style={styles.copyButtonTxt}>
+                                                Copy URL
+                                            </Text>
+                                            <Ionicons name="md-copy-outline" size={18} color="#fff" />
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
 
                             </View>
@@ -227,7 +332,11 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
                     </BottomSheetModal>
 
                 </BottomSheetModalProvider>
+
             </Portal>
+
+
+
         </>
     );
 };
@@ -269,7 +378,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     dashButton: {
-        width: heightPixel(85),
+        width: heightPixel(100),
         height: heightPixel(80),
 
         alignItems: 'center',
@@ -363,13 +472,71 @@ const styles = StyleSheet.create({
     },
 
     contentContainer: {
-        paddingHorizontal: pixelSizeHorizontal(20),
+        marginTop:10,
+        paddingHorizontal: pixelSizeHorizontal(10),
         width: '100%',
         justifyContent: 'center',
         alignItems: 'center'
     },
     qrBoxWrap:{
+marginVertical:pixelSizeVertical(10),
+        width:'100%',
+        height:heightPixel(180),
+        alignItems:'center',
+        flexDirection:'row',
+        justifyContent:"space-between",
+    },
+    qrCode: {
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
+        width: heightPixel(160),
+        height: heightPixel(160),
+        borderRadius: 16,
+        padding: 10,
+        backgroundColor: "#151722",
 
+    },
+    inviteDetails:{
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
+        width: heightPixel(180),
+        height: '100%',
+
+    },
+    copyButtonTitle:{
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'space-between',
+        width: '90%',
+    },
+    copyButton:{
+        backgroundColor:Colors.secondary,
+        borderWidth:1,
+        borderRadius:10,
+        borderColor:"#3179FF",
+        flexDirection:'row',
+        height:40,
+        alignItems:'center',
+        justifyContent:'space-evenly',
+        width: '90%',
+    },
+    copyButtonTxt:{
+        fontSize: fontPixel(14),
+        fontFamily: Fonts.faktumMedium,
+        color: "#CCCCCC"
+    },
+    copyTxt:{
+        fontSize: fontPixel(14),
+        fontFamily: Fonts.faktumMedium,
+        color: Colors.text,
+        alignSelf:'flex-start'
+    },
+    linkText:{
+        width: '90%',
+        lineHeight:heightPixel(18),
+        fontSize: fontPixel(12),
+        fontFamily: Fonts.faktumRegular,
+        color:"#cccc"
     }
 
 })

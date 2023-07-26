@@ -18,7 +18,7 @@ import {RootTabScreenProps} from "../../../types";
 import {Fonts} from "../../../constants/Fonts";
 import {Ionicons, Octicons} from "@expo/vector-icons";
 import Colors from "../../../constants/Colors";
-import {currencyFormatter, wait} from "../../../helpers";
+import {currencyFormatter, useRefreshOnFocus, wait} from "../../../helpers";
 import {LineChart} from "react-native-wagmi-charts";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-reanimated";
@@ -27,7 +27,7 @@ import ToastAnimated from "../../../components/toast";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {addNotificationItem} from "../../../app/slices/dataSlice";
 import {useQuery} from "@tanstack/react-query";
-import {getUser} from "../../../api";
+import {getAsset, getUser} from "../../../api";
 
 let width = Dimensions.get("window").width
 
@@ -72,9 +72,10 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
     const dispatch = useAppDispatch()
     const user = useAppSelector(state => state.user)
     const {userData,User_Details} = user
-    const openProfile = () => {
 
-    }
+    const {data: Asset, refetch: fetchAsset, isLoading} = useQuery(['user-Asset'], () => getAsset(User_Details.id))
+
+
 
     const [refreshing, setRefreshing] = useState(false);
     const openNotifications = () => {
@@ -83,7 +84,14 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
     const overView = () => {
         navigation.navigate('OverView')
     }
-    const {data, refetch} = useQuery(['user-data'],()=> getUser(userData.id))
+
+
+    const {data, isRefetching, refetch,} = useQuery(
+        [`user-data`, User_Details.id],
+        () => getUser(User_Details.id),
+        {
+
+        })
 
 
     const refresh = () => {
@@ -92,7 +100,7 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
         wait(2000).then(() => setRefreshing(false));
     }
 
-
+useRefreshOnFocus(fetchAsset)
     return (
 
         <SafeAreaView style={styles.safeArea}>
@@ -156,7 +164,7 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
                                 <Text
                                     style={styles.balance}>
 
-                                    {currencyFormatter('en-US', 'USD').format(27673891)}
+                                    {currencyFormatter('en-US', 'USD').format(Asset?.data?.total_assets)}
 
                                 </Text>
 
@@ -179,7 +187,7 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
                                 </Text>
                                 <Text style={styles.profitBalance}>
 
-                                    {currencyFormatter('en-US', 'USD').format(73891)}
+                                    {currencyFormatter('en-US', 'USD').format(Asset?.data?.rp_assets)}
 
                                 </Text>
 

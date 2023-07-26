@@ -79,6 +79,7 @@ const DepositRecords = () => {
     const [refreshing, setRefreshing] = useState(false);
 
     const {data:Asset,refetch:fetchAsset,isLoading,isRefetching} = useQuery(['user-Asset'],()=> getAsset(User_Details.id))
+
     const keyExtractor = useCallback((item: { id: string }) => item.id, [],);
 
 

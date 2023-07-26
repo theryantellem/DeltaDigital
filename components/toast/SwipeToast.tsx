@@ -187,6 +187,17 @@ const SwipeToast: React.FC<ListItemProps> = ({
                             </View>
                         </View>
                     }
+                    {
+                        task.type == 'info' &&
+                        <View style={styles.toastIconWrap}>
+                            <View style={[styles.toastIcon, {
+                                backgroundColor: Colors.textDark,
+                            }]}>
+                                <Ionicons name="information-circle-outline" size={18} color="#fff" />
+
+                            </View>
+                        </View>
+                    }
                     <View style={styles.toastBody}>
                         <Text style={styles.taskTitle}>{task.body}</Text>
                     </View>

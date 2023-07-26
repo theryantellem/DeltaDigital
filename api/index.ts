@@ -290,6 +290,7 @@ export const getAsset = async (userId: string) => {
 
 
 
+
 export const doWithdraw = async ({userId,body}:{userId: string,body:any}) => {
     let Token = await SecureStore.getItemAsync('delta-signal-token');
 
@@ -320,3 +321,34 @@ export const doWithdraw = async ({userId,body}:{userId: string,body:any}) => {
 
 }
 
+
+
+export const getAllNews = async (userId: string) => {
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+
+    const myHeaders = {
+        "TOKEN": Token,
+        "ID": userId
+    }
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'POST',
+        headers: myHeaders
+
+    };
+
+    return Promise.race([
+        fetch(`${LIVE_PROD_URL}/News`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])
+
+}

@@ -137,7 +137,7 @@ function RootNavigator() {
         <Stack.Navigator screenOptions={{
             headerShown: false,
 
-        }} initialRouteName={ !isAuthenticated ? "OnBoardingScreen" : 'CyborgBottomTab'}>
+        }} initialRouteName={ !isAuthenticated ? "OnBoardingScreen" : 'LandingScreen'}>
 
 
             {
@@ -145,14 +145,14 @@ function RootNavigator() {
             <Stack.Group>
             <Stack.Screen name={"OnBoardingScreen"} component={OnBoardingScreen}/>
             <Stack.Screen name={"Auth"} component={AuthNavigator}/>
-            <Stack.Screen name={"LandingScreen"} component={LandingScreen}/>
+
             </Stack.Group>
             }
 
             {
                 isAuthenticated &&
             <Stack.Group screenOptions={{headerShown: false, animation: 'slide_from_left'}}>
-
+                <Stack.Screen name={"LandingScreen"} component={LandingScreen}/>
                 <Stack.Screen name={"CyborgBottomTab"} options={{
                     headerShown: false
                 }} component={CyborgBottomTab}/>

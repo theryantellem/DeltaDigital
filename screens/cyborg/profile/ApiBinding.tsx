@@ -1,14 +1,35 @@
 import React from 'react';
 
-import {Text, View, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
+import {Text, View, StyleSheet, ScrollView, TouchableOpacity, Image} from 'react-native';
 import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import Colors from "../../../constants/Colors";
-import {fontPixel, heightPixel, pixelSizeVertical} from "../../../helpers/normalize";
+import {fontPixel, heightPixel, pixelSizeVertical, widthPixel} from "../../../helpers/normalize";
 import {Fonts} from "../../../constants/Fonts";
+import {useQuery} from "@tanstack/react-query";
+import {getUser} from "../../../api";
+import {useAppDispatch, useAppSelector} from "../../../app/hooks";
+import {RootStackScreenProps} from "../../../types";
+import {useRefreshOnFocus} from "../../../helpers";
+import {Octicons} from "@expo/vector-icons";
 
-const ApiBinding = () => {
+const ApiBinding = ({navigation}:RootStackScreenProps<'ApiBinding'>) => {
+
+
+    const dispatch = useAppDispatch()
+    const user = useAppSelector(state => state.user)
+    const {userData,User_Details} = user
+
+    const {data, isRefetching, refetch,} = useQuery(
+        [`user-data`,User_Details.id],
+        () => getUser(User_Details.id),
+        {
+
+        })
+
+useRefreshOnFocus(refetch)
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <LinearGradient style={styles.background}
@@ -30,11 +51,9 @@ const ApiBinding = () => {
                     <View style={styles.content}>
                     <View style={styles.appListCard}>
                         <View style={styles.listTop}>
-
-
                             <View style={styles.listTopLeft}>
                                 <View style={styles.appIconWrap}>
-
+                                    <Image source={{uri: 'https://play-lh.googleusercontent.com/PjoJoG27miSglVBXoXrxBSLveV6e3EeBPpNY55aiUUBM9Q1RCETKCOqdOkX2ZydqVf0'}} style={styles.logo}/>
                                 </View>
                                 <Text style={[styles.appText, {
                                     color: Colors.text
@@ -45,17 +64,145 @@ const ApiBinding = () => {
                             <TouchableOpacity  activeOpacity={0.8}
                                               style={styles.connectBtn}>
 
+                                {
+                                    data.data["User Details"][0].coinbaseprobind == '1'
+                                ?
                                 <Text style={[styles.appText, {
                                     color: Colors.primary
                                 }]}>
                                     Unbound
                                 </Text>
+:
+                                        <Text style={[styles.appText, {
+                                            color: Colors.success
+                                        }]}>
+                                            Bind
+                                        </Text>
 
+                                }
+                                <Octicons name="chevron-right" size={14} color="#ccc" />
 
                             </TouchableOpacity>
                         </View>
-
                     </View>
+
+
+
+                        <View style={styles.appListCard}>
+                            <View style={styles.listTop}>
+                                <View style={styles.listTopLeft}>
+                                    <View style={styles.appIconWrap}>
+                                        <Image source={{uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Binance_Logo.svg/1200px-Binance_Logo.svg.png'}} style={styles.logo}/>
+                                    </View>
+                                    <Text style={[styles.appText, {
+                                        color: Colors.text
+                                    }]}>
+                                        Binance
+                                    </Text>
+                                </View>
+                                <TouchableOpacity  activeOpacity={0.8}
+                                                   style={styles.connectBtn}>
+
+                                    {
+                                        data.data["User Details"][0].binancebind == '1'
+                                            ?
+                                            <Text style={[styles.appText, {
+                                                color: Colors.primary
+                                            }]}>
+                                                Unbound
+                                            </Text>
+                                            :
+                                            <Text style={[styles.appText, {
+                                                color: Colors.success
+                                            }]}>
+                                                Bind
+                                            </Text>
+
+                                    }
+                                    <Octicons name="chevron-right" size={14} color="#ccc" />
+
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+
+
+
+
+
+                        <View style={styles.appListCard}>
+                            <View style={styles.listTop}>
+                                <View style={styles.listTopLeft}>
+                                    <View style={styles.appIconWrap}>
+                                        <Image source={{uri: 'https://static-00.iconduck.com/assets.00/kraken-icon-512x512-icmwhmh8.png'}} style={styles.logo}/>
+                                    </View>
+                                    <Text style={[styles.appText, {
+                                        color: Colors.text
+                                    }]}>
+                                        Kraken
+                                    </Text>
+                                </View>
+                                <TouchableOpacity  activeOpacity={0.8}
+                                                   style={styles.connectBtn}>
+
+                                    {
+                                        data.data["User Details"][0].krakenbind == '1'
+                                            ?
+                                            <Text style={[styles.appText, {
+                                                color: Colors.primary
+                                            }]}>
+                                                Unbound
+                                            </Text>
+                                            :
+                                            <Text style={[styles.appText, {
+                                                color: Colors.success
+                                            }]}>
+                                                Bind
+                                            </Text>
+
+                                    }
+                                    <Octicons name="chevron-right" size={14} color="#ccc" />
+
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                        <View style={styles.appListCard}>
+                            <View style={styles.listTop}>
+                                <View style={styles.listTopLeft}>
+                                    <View style={styles.appIconWrap}>
+                                        <Image source={{uri: 'https://assets.staticimg.com/cms/media/3gfl2DgVUqjJ8FnkC7QxhvPmXmPgpt42FrAqklVMr.png'}} style={styles.logo}/>
+                                    </View>
+                                    <Text style={[styles.appText, {
+                                        color: Colors.text
+                                    }]}>
+                                        Kucoin
+                                    </Text>
+                                </View>
+                                <TouchableOpacity  activeOpacity={0.8}
+                                                   style={styles.connectBtn}>
+
+                                    {
+                                        data.data["User Details"][0].krakenbind == '1'
+                                            ?
+                                            <Text style={[styles.appText, {
+                                                color: Colors.primary
+                                            }]}>
+                                                Unbound
+                                            </Text>
+                                            :
+                                            <Text style={[styles.appText, {
+                                                color: Colors.success
+                                            }]}>
+                                                Bind
+                                            </Text>
+
+                                    }
+                                    <Octicons name="chevron-right" size={14} color="#ccc" />
+
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+
+
                     </View>
                 </ScrollView>
             </LinearGradient>
@@ -129,11 +276,25 @@ const styles = StyleSheet.create({
 
         fontFamily: Fonts.faktumRegular
     },
+    connectBtn:{
+        height:'100%',
+        width:widthPixel(90),
+        justifyContent:'space-evenly',
+        alignItems:'center',
+      flexDirection:'row'
+    },
     content: {
 
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    logo: {
+        borderRadius:20,
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover',
+
     },
 })
 

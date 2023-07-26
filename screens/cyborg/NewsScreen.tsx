@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useCallback, useState} from 'react';
 
-import {Text, View, StyleSheet, Platform} from 'react-native';
+import {Text, View, StyleSheet, Platform, RefreshControl, ActivityIndicator, Image} from 'react-native';
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {fontPixel, heightPixel, pixelSizeHorizontal} from "../../helpers/normalize";
@@ -12,31 +12,42 @@ import {Ionicons} from "@expo/vector-icons";
 import {useQuery} from "@tanstack/react-query";
 import {getUser, getUserNews} from "../../api";
 import {useAppSelector} from "../../app/hooks";
+import {FlashList} from "@shopify/flash-list";
+import {removeHTMLTags, wait} from "../../helpers";
+import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-reanimated";
 
+interface props {
+    item:{
+        details:string,
+        id:string,
+        image:string,
+        title:string,
+    }
+}
+const NewsCard = ({item}:props) => {
 
-const NewsCard = () => {
     return (
-        <View style={styles.newsCard}>
+        <Animated.View layout={Layout.easing(Easing.bounce).delay(100)}
+                       entering={FadeInDown.springify()} exiting={FadeOutDown}  style={styles.newsCard}>
             <View style={styles.newsCardIcon}>
-                <Ionicons name="gift-outline" size={20} color="#fff" />
+         <Image source={{uri:item.image}} style={styles.image}/>
             </View>
             <View style={styles.newsCardBody}>
                 <View style={styles.cardTop}>
                     <Text style={styles.newsCardTitle}>
-                        Welcome to delta digital Cyborg
+                        {item.title}
                     </Text>
-                    <Text style={styles.dateText}>
+                  {/*  <Text style={styles.dateText}>
                         Wed, 04 Jan 2023
-                    </Text>
+                    </Text>*/}
                 </View>
 
                 <Text style={styles.bodyText}>
-                    Apple may automatically adjust prices from time to time in every country or region except your base
-                    to account for changes in tax or foreign exchange rates.
+                    {removeHTMLTags(item.details,true)}
                 </Text>
 
             </View>
-        </View>
+        </Animated.View>
     )
 }
 
@@ -44,9 +55,25 @@ const NewsScreen = ({navigation}: RootStackScreenProps<'NewsScreen'>) => {
 
 
     const user = useAppSelector(state => state.user)
-    const {userData} = user
-    const {data, refetch} = useQuery(['user-news'],()=> getUserNews(userData.id))
+    const {User_Details} = user
 
+    const [refreshing, setRefreshing] = useState(false);
+
+    const {data, refetch,isLoading,isRefetching} = useQuery(['user-news'],()=> getUserNews(User_Details.id))
+
+    const keyExtractor = useCallback((item: { id: string }) => item.id, [],);
+
+
+    const renderItem = useCallback(({item}) => (
+        <NewsCard item={item}/>
+    ), [])
+
+
+    const refresh = () => {
+        setRefreshing(true)
+        refetch()
+        wait(2000).then(() => setRefreshing(false));
+    }
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -63,7 +90,35 @@ const NewsScreen = ({navigation}: RootStackScreenProps<'NewsScreen'>) => {
                 <HeaderWithTitle title={"News"}/>
 
                 <View style={styles.flatList}>
-                    <NewsCard/>
+
+                    {
+                        isLoading && <ActivityIndicator size='small' color={Colors.primary}/>
+                    }
+
+
+                   {
+                        !isLoading && data &&
+                        <FlashList
+                            estimatedItemSize={200}
+                            refreshing={isLoading}
+                            scrollEnabled
+                            showsVerticalScrollIndicator={false}
+                            data={data.data.News}
+                            renderItem={renderItem}
+                            keyExtractor={keyExtractor}
+                            onEndReachedThreshold={0.3}
+                            refreshControl={
+                                <RefreshControl
+                                    tintColor={Colors.text}
+                                    refreshing={refreshing}
+                                    onRefresh={refresh}
+                                />
+                            }
+                            ListFooterComponent={isRefetching ?
+                                <ActivityIndicator size="small" color={Colors.primary}/> : null}
+
+                        />
+                    }
                 </View>
             </LinearGradient>
         </SafeAreaView>
@@ -80,7 +135,7 @@ const styles = StyleSheet.create({
 
     flatList: {
         width: '90%',
-        alignItems: 'center',
+
         flex: 1,
 
 
@@ -105,7 +160,13 @@ const styles = StyleSheet.create({
         height: 35,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: Colors.primary
+    },
+    image: {
+        borderRadius: 40,
+        width: '100%',
+        height: 35,
+       resizeMode:'cover',
+
     },
     newsCardBody: {
         paddingHorizontal: pixelSizeHorizontal(10),
@@ -115,7 +176,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start'
     },
     cardTop: {
-        height: 40,
+        minHeight: 20,
         width: '100%',
         alignItems: 'flex-start',
         justifyContent: 'space-between'

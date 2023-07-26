@@ -5,6 +5,7 @@ import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import {Octicons} from "@expo/vector-icons";
 import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../helpers/normalize";
 import {Fonts} from "../../constants/Fonts";
+import FastImage from "react-native-fast-image";
 
 
 interface props {
@@ -52,9 +53,17 @@ const TopBar = ({ profilePhoto, userName}: props) => {
             <TouchableOpacity onPress={openProfile} activeOpacity={0.8} style={styles.leftButton}>
                 <View style={styles.userImageWrap}>
 
-                    <Image
-                        source={{uri: !profilePhoto ? 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' : profilePhoto}}
-                        style={styles.userImage}/>
+
+
+                    <FastImage
+                        style={styles.userImage}
+                        source={{
+                            uri: profilePhoto ? profilePhoto : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png',
+                            cache: FastImage.cacheControl.web,
+                            priority: FastImage.priority.normal,
+                        }}
+                        resizeMode={FastImage.resizeMode.cover}
+                    />
                 </View>
                 <View style={styles.userDetails}>
                     <Text style={styles.greeting}>

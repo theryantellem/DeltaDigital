@@ -85,10 +85,6 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
                     <View style={styles.profileDetails}>
                         <View style={styles.profileImage}>
 
-
-                            {
-
-
                                 <FastImage
                                     style={styles.Avatar}
                                     source={{
@@ -98,7 +94,7 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
                                     }}
                                     resizeMode={FastImage.resizeMode.cover}
                                 />
-                            }
+
 
 
                         </View>

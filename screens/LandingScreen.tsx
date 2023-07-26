@@ -11,10 +11,17 @@ import Colors from "../constants/Colors";
 import {useFocusEffect} from "@react-navigation/native";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from 'react-native-reanimated';
 import {CyborgBottomTab} from "../navigation/cyborg";
+import {useAppSelector} from "../app/hooks";
+import FastImage from "react-native-fast-image";
 
 const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
+    const user = useAppSelector(state => state.user)
+    const {User_Details} = user
 
     const [greeting, setGreeting] = useState('');
+
+
+
     useFocusEffect(
         useCallback(() => {
             // Do something when the screen is focused
@@ -57,25 +64,25 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                         <View style={styles.userImageWrap}>
 
 
-                            {
-
-                                <Image
-                                    style={styles.tAvatar}
-                                    source={{
-                                        uri: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-
-                                    }}
-
-                                />
 
 
-                            }
+
+
+                                <FastImage
+                                style={styles.tAvatar}
+                            source={{
+                                uri: User_Details.image ? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png',
+                                cache: FastImage.cacheControl.web,
+                                priority: FastImage.priority.normal,
+                            }}
+                            resizeMode={FastImage.resizeMode.cover}
+                        />
 
 
                         </View>
                         <View style={styles.userDetails}>
                             <Text style={styles.greeting}>
-                                {greeting}, Orji
+                                {greeting}, {User_Details.username}
                             </Text>
                             <Text style={styles.tag}>
                                 Welcome back

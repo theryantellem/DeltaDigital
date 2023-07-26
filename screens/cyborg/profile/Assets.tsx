@@ -282,7 +282,7 @@ const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
                             <IF condition={tabIndex == 1}>
                             {
                                 !isLoading && Asset &&
-                                Asset.data['Withdraw Records'].slice(0, 30).map((({address, Date, amount, Asset, TX}:
+                                Asset.data['Withdraw Records'].filter(asset => asset.address !== "RP Transfer").slice(0, 30).map((({address, Date, amount, Asset, TX}:
                                                                                      {
                                                                                          address: string,
                                                                                          Date: string,
@@ -291,7 +291,7 @@ const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
                                                                                          TX: string
                                                                                      }) => (
                                     <Animated.View layout={Layout.easing(Easing.bounce).delay(10)}
-                                                   entering={FadeInRight.springify()} exiting={FadeOutRight}  style={styles.transactionCard} key={TX+amount}>
+                                                   entering={FadeInRight.springify()} exiting={FadeOutRight}  style={styles.transactionCard} key={address+amount+Date}>
 
 
                                         <View style={styles.circleTop}>
@@ -299,6 +299,53 @@ const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
                                             <MaterialCommunityIcons name="arrow-top-right" size={20}
                                                                     color={Colors.errorRed}/>
 
+
+                                        </View>
+
+                                        <View style={styles.bodyLeft}>
+                                            <Text style={styles.transactionTitle}>
+                                                {truncateString(address, 25)}
+                                            </Text>
+                                            <Text style={styles.transactionDate}>
+
+                                                {dayjs.unix(Number(Date)).format('ddd, DD MMM YYYY')}
+                                            </Text>
+                                        </View>
+
+                                        <View style={styles.bodyRight}>
+                                            <Text style={styles.transactionTitle}>
+                                                {amount}
+                                            </Text>
+                                            <Text style={styles.transactionDate}>
+
+                                                {Asset}
+                                            </Text>
+                                        </View>
+
+                                    </Animated.View>
+                                )))
+
+                            }
+                            </IF>
+                            <IF condition={tabIndex == 2}>
+                            {
+                                !isLoading && Asset &&
+                                Asset.data['Withdraw Records'].filter(asset => asset.address == "RP Transfer").slice(0, 30).map((({address, Date, amount, Asset, TX}:
+                                                                                     {
+                                                                                         address: string,
+                                                                                         Date: string,
+                                                                                         amount: string,
+                                                                                         Asset: string,
+                                                                                         TX: string
+                                                                                     }) => (
+                                    <Animated.View layout={Layout.easing(Easing.bounce).delay(10)}
+                                                   entering={FadeInRight.springify()} exiting={FadeOutRight}  style={styles.transactionCard} key={address+amount+Date}>
+
+
+                                        <View style={styles.circleTop}>
+
+
+                                            <FontAwesome5 name="exchange-alt" size={16} color="#fff" />
 
                                         </View>
 
