@@ -1,20 +1,91 @@
 import React, {SetStateAction, useState} from 'react';
 
-import {Text, View, StyleSheet, ScrollView, TouchableOpacity, Platform} from 'react-native';
+import {Text, View, StyleSheet, ScrollView, TouchableOpacity, Platform, ActivityIndicator} from 'react-native';
 import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
 import {LinearGradient} from "expo-linear-gradient";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {RootStackScreenProps} from "../../../types";
-import {currencyFormatter} from "../../../helpers";
-import {Feather, FontAwesome5, Ionicons} from "@expo/vector-icons";
+import {currencyFormatter, truncateString, useRefreshOnFocus} from "../../../helpers";
+import {Feather, FontAwesome5, Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
 import Colors from "../../../constants/Colors";
 import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPixel} from '../../../helpers/normalize';
 import {Fonts} from "../../../constants/Fonts";
 import HorizontalLine from "../../../components/HorizontalLine";
 import IOSSegmentContol from "../../../components/segment-control/IOSSegmentContol";
 import SegmentedControl from "../../../components/segment-control/SegmentContol";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
+import {getAsset} from "../../../api";
+import {useAppDispatch, useAppSelector} from "../../../app/hooks";
+import dayjs from "dayjs";
+import {IF} from "../../../helpers/ConditionJsx";
+import Animated, {
+    Easing,
+    FadeInDown,
+    FadeInLeft,
+    FadeInRight,
+    FadeOutDown, FadeOutLeft,
+    FadeOutRight,
+    Layout
+} from 'react-native-reanimated';
+
+
+interface props {
+    item: {
+        "Date": number,
+        "address": string,
+        "Asset": string,
+        "TX": string,
+        "amount": string
+    }
+}
+
+
+const DepositRecordItem = ({item}: props) => {
+    return (
+        <View style={styles.transactionCard}>
+
+
+            <View style={styles.circleTop}>
+
+                <MaterialCommunityIcons name="arrow-bottom-right" size={20} color={Colors.successChart}/>
+
+
+            </View>
+
+            <View style={styles.bodyLeft}>
+                <Text style={styles.transactionTitle}>
+                    {item.address}
+                </Text>
+                <Text style={styles.transactionDate}>
+
+                    {dayjs.unix(item.Date).format('ddd, DD MMM YYYY')}
+                </Text>
+            </View>
+
+            <View style={styles.bodyRight}>
+                <Text style={styles.transactionTitle}>
+                    {item.amount}
+                </Text>
+                <Text style={styles.transactionDate}>
+
+                    {item.Asset}
+                </Text>
+            </View>
+
+        </View>
+    )
+}
+
 
 const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
+
+
+    const dispatch = useAppDispatch()
+    const queryClient = useQueryClient()
+
+    const user = useAppSelector(state => state.user)
+    const {userData, User_Details} = user
+
 
     const [tabIndex, setTabIndex] = useState(0);
     const handleTabsChange = (index: SetStateAction<number>) => {
@@ -22,10 +93,17 @@ const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
         //  setScreen(index === 0 ? 'Banks' : 'Wallets')
     };
 
+    const {data: Asset, refetch: fetchAsset, isLoading} = useQuery(['user-Asset'], () => getAsset(User_Details.id))
+
+
+    useRefreshOnFocus(fetchAsset)
+
 
     const navigate = (screen: 'DepositScreen' | 'TransferScreen' | 'WithdrawalAmount') => {
         navigation.navigate(screen)
     }
+
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <LinearGradient style={styles.background}
@@ -44,6 +122,11 @@ const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
                 }} contentContainerStyle={styles.scrollView} scrollEnabled
                             showsVerticalScrollIndicator={false}>
 
+                    {
+                        isLoading && <ActivityIndicator size='small' color={Colors.primary}/>
+                    }
+                    {
+                        !isLoading &&
 
                     <View style={styles.balanceCanvas}>
                         <View style={styles.balanceTop}>
@@ -62,12 +145,12 @@ const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
                                 <Text
                                     style={styles.balance}>
 
-                                    {currencyFormatter('en-US', 'USD').format(434343)}
+                                    {currencyFormatter('en-US', 'USD').format(Asset?.data?.total_assets)}
                                 </Text>
 
                             </View>
                             <Text style={styles.walletAddressTxt}>
-                                <Text style={{color: Colors.success}}>+$150</Text> Total fee
+                                <Text style={{color: Colors.errorRed}}>{Asset?.data?.rp_assets}</Text> Total fee
                             </Text>
                         </View>
                         <View style={styles.walletAddress}>
@@ -80,7 +163,7 @@ const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
 
                         </View>
                     </View>
-
+                    }
 
                     <View style={styles.dashButtonContainer}>
 
@@ -104,7 +187,7 @@ const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
                             </Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={()=>navigate('WithdrawalAmount')} activeOpacity={0.6}
+                        <TouchableOpacity onPress={() => navigate('WithdrawalAmount')} activeOpacity={0.6}
                                           style={styles.dashButton}>
                             <View style={styles.dashIcon}>
                                 <Ionicons name="ios-arrow-down-sharp" size={24} color="#fff"/>
@@ -141,6 +224,112 @@ const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
                                               textColor={"#CDD4D7"}
                                               paddingVertical={pixelSizeVertical(16)}/>
                     }
+
+
+
+                        <View style={styles.content}>
+                            {
+                                isLoading && <ActivityIndicator size='small' color={Colors.primary}/>
+                            }
+                            <IF condition={tabIndex == 0}>
+                            {
+                                !isLoading && Asset &&
+                                Asset.data['Deposit Records'].slice(0, 30).map((({address, Date, amount, Asset, TX}:
+                                                                                     {
+                                                                                         address: string,
+                                                                                         Date: string,
+                                                                                         amount: string,
+                                                                                         Asset: string,
+                                                                                         TX: string
+                                                                                     }) => (
+                                    <Animated.View layout={Layout.easing(Easing.bounce).delay(10)}
+                                                   entering={FadeInLeft.springify()} exiting={FadeOutLeft}  style={styles.transactionCard} key={TX}>
+
+
+                                        <View style={styles.circleTop}>
+
+                                            <MaterialCommunityIcons name="arrow-bottom-right" size={20}
+                                                                    color={Colors.successChart}/>
+
+
+                                        </View>
+
+                                        <View style={styles.bodyLeft}>
+                                            <Text style={styles.transactionTitle}>
+                                                {truncateString(address, 25)}
+                                            </Text>
+                                            <Text style={styles.transactionDate}>
+
+                                                {dayjs.unix(Number(Date)).format('ddd, DD MMM YYYY')}
+                                            </Text>
+                                        </View>
+
+                                        <View style={styles.bodyRight}>
+                                            <Text style={styles.transactionTitle}>
+                                                {amount}
+                                            </Text>
+                                            <Text style={styles.transactionDate}>
+
+                                                {Asset}
+                                            </Text>
+                                        </View>
+
+                                    </Animated.View>
+                                )))
+
+                            }
+                            </IF>
+                            <IF condition={tabIndex == 1}>
+                            {
+                                !isLoading && Asset &&
+                                Asset.data['Withdraw Records'].slice(0, 30).map((({address, Date, amount, Asset, TX}:
+                                                                                     {
+                                                                                         address: string,
+                                                                                         Date: string,
+                                                                                         amount: string,
+                                                                                         Asset: string,
+                                                                                         TX: string
+                                                                                     }) => (
+                                    <Animated.View layout={Layout.easing(Easing.bounce).delay(10)}
+                                                   entering={FadeInRight.springify()} exiting={FadeOutRight}  style={styles.transactionCard} key={TX+amount}>
+
+
+                                        <View style={styles.circleTop}>
+
+                                            <MaterialCommunityIcons name="arrow-top-right" size={20}
+                                                                    color={Colors.errorRed}/>
+
+
+                                        </View>
+
+                                        <View style={styles.bodyLeft}>
+                                            <Text style={styles.transactionTitle}>
+                                                {truncateString(address, 25)}
+                                            </Text>
+                                            <Text style={styles.transactionDate}>
+
+                                                {dayjs.unix(Number(Date)).format('ddd, DD MMM YYYY')}
+                                            </Text>
+                                        </View>
+
+                                        <View style={styles.bodyRight}>
+                                            <Text style={styles.transactionTitle}>
+                                                {amount}
+                                            </Text>
+                                            <Text style={styles.transactionDate}>
+
+                                                {Asset}
+                                            </Text>
+                                        </View>
+
+                                    </Animated.View>
+                                )))
+
+                            }
+                            </IF>
+                        </View>
+
+
 
                 </ScrollView>
             </LinearGradient>
@@ -253,6 +442,56 @@ const styles = StyleSheet.create({
         color: Colors.text,
         fontSize: fontPixel(14),
         fontFamily: Fonts.faktumMedium
+    },
+
+
+    transactionCard: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        marginVertical: pixelSizeVertical(10),
+        paddingHorizontal: pixelSizeHorizontal(15),
+        height: heightPixel(70),
+
+    },
+    circleTop: {
+
+        height: '50%',
+        width: widthPixel(15),
+        alignItems: 'flex-start',
+        justifyContent: 'center'
+    },
+    bodyLeft: {
+        width: '60%',
+        height: '80%',
+        alignItems: 'flex-start',
+        justifyContent: 'space-evenly',
+    },
+    bodyRight: {
+        width: '30%',
+        height: '80%',
+
+        alignItems: 'flex-end',
+        justifyContent: 'space-evenly',
+    },
+    transactionTitle: {
+        height: heightPixel(25),
+        fontSize: fontPixel(14),
+        fontFamily: Fonts.faktumSemiBold,
+        color: Colors.text
+    },
+    transactionDate: {
+        height: heightPixel(20),
+        fontSize: fontPixel(12),
+        fontFamily: Fonts.faktumRegular,
+        color: Colors.tintText
+    },
+
+    content: {
+        alignItems: 'center',
+        width: '100%',
+
     },
 })
 

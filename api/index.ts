@@ -45,7 +45,7 @@ export const getUser = async (userId: string) => {
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/profile?userId=${userId}`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/profile`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -142,18 +142,23 @@ export const getRevenues = async (userId: string) => {
     ])
 
 }
-export const getDepositAddress = async (userId: string) => {
+export const getDepositAddress = async (userId: string,) => {
 
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+    const myHeaders = {
+        "Content-Type": 'multipart/form-data',
+        "TOKEN": Token,
+        "ID": userId
+    }
     let timeoutId: NodeJS.Timeout
 
     const requestOptions = {
-        method: 'GET',
-
-
+        method: 'POST',
+        headers: myHeaders,
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/depositaddress?userId=${userId}`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/depositaddress`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -221,11 +226,7 @@ export const getLeaderboard = async (userId: string) => {
 }
 
 
-
-
-
-
-export const transferAsset = async ({body,userId}:{body: any, userId: string}) => {
+export const transferAsset = async ({body, userId}: { body: any, userId: string }) => {
 
     let Token = await SecureStore.getItemAsync('delta-signal-token');
     const myHeaders = {
@@ -255,3 +256,67 @@ export const transferAsset = async ({body,userId}:{body: any, userId: string}) =
     ])
 
 }
+
+
+export const getAsset = async (userId: string) => {
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+
+    const myHeaders = {
+        "TOKEN": Token,
+        "ID": userId
+    }
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'POST',
+        headers: myHeaders
+
+    };
+
+    return Promise.race([
+        fetch(`${LIVE_PROD_URL}/asset`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])
+
+}
+
+
+
+export const doWithdraw = async ({userId,body}:{userId: string,body:any}) => {
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+
+    const myHeaders = {
+        "TOKEN": Token,
+        "ID": userId
+    }
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body,
+    };
+
+    return Promise.race([
+        fetch(`${LIVE_PROD_URL}/doWithdraw`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])
+
+}
+

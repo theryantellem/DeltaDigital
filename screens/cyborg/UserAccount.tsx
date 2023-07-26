@@ -38,12 +38,12 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
     const dispatch = useDispatch()
 
     const user = useAppSelector(state => state.user)
-    const {userData,User_Details} = user
+    const {User_Details} = user
     const navigate = (screen: 'Assets' | 'RewardDetails' | 'SettingsScreen' | 'ApiBinding' | 'Earnings') => {
         navigation.navigate(screen)
     }
 
-   const {data, refetch} = useQuery(['user-data'],()=> getUser(userData.id))
+   const {data, refetch} = useQuery(['user-data'],()=> getUser(User_Details.id))
 
 
     const logout = async () => {
@@ -128,7 +128,7 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
                                 <Text style={styles.centerSubText}>
 
                                     {
-                                        dayjs.unix(userData.expiry_time).format('ddd, DD MMM YYYY')
+                                        dayjs.unix(User_Details.expires).format('ddd, DD MMM YYYY')
                                     }
                                 </Text>
                             </View>

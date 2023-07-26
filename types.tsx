@@ -50,7 +50,9 @@ export type RootStackParamList = {
     BotSuccess: undefined;
     UserAccount: undefined;
     DepositScreen: undefined;
-    Withdrawal: undefined;
+    Withdrawal: {
+        amount:string
+    };
     WithdrawalAmount: undefined;
     RewardDetails: undefined;
     SettingsScreen: undefined;

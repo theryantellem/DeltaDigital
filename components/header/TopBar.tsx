@@ -58,7 +58,7 @@ const TopBar = ({ profilePhoto, userName}: props) => {
                 </View>
                 <View style={styles.userDetails}>
                     <Text style={styles.greeting}>
-                        {greeting} {userName}
+                        {greeting}, {userName}
                     </Text>
                     <Text style={styles.tag}>
                         Welcome back

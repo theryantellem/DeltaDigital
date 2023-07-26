@@ -19,11 +19,13 @@ import {
     BottomSheetDefaultBackdropProps
 } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
 import {Portal} from "@gorhom/portal";
+import {useAppSelector} from "../../../app/hooks";
 
 
 const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
 
-
+    const user = useAppSelector(state => state.user)
+    const {userData,User_Details} = user
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
     // variables
@@ -78,8 +80,8 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
                                 showsVerticalScrollIndicator={false}>
 
                         <TopBar
-                            profilePhoto={'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'}
-                            userName={'Orji'}/>
+                            profilePhoto={ User_Details.image? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'}
+                            userName={User_Details.username}/>
 
 
                         <View style={styles.buttonContainer}>

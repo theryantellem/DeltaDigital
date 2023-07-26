@@ -46,7 +46,9 @@ const WithdrawalAmount = ({navigation}: RootStackScreenProps<'WithdrawalAmount'>
     }
 
     const proceed = () => {
-        navigation.navigate('Withdrawal')
+        navigation.navigate('Withdrawal',{
+            amount:sendAmount.join('')
+        })
     }
 
     return (
@@ -61,7 +63,7 @@ const WithdrawalAmount = ({navigation}: RootStackScreenProps<'WithdrawalAmount'>
             >
 
 
-                <HeaderWithTitle title='Withdraw Amount'/>
+                <HeaderWithTitle title='Amount'/>
                 <ScrollView style={{
                     width: '100%'
                 }} contentContainerStyle={styles.scrollView} scrollEnabled

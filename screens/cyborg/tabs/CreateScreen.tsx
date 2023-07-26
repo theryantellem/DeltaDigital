@@ -10,11 +10,13 @@ import {Entypo, FontAwesome, MaterialCommunityIcons, MaterialIcons} from "@expo/
 import {Fonts} from "../../../constants/Fonts";
 import Colors from "../../../constants/Colors";
 import {RootTabScreenProps} from "../../../types";
+import {useAppSelector} from "../../../app/hooks";
 
-const CreateScreen = ({navigation}:RootTabScreenProps<'Create'>) => {
-
+const CreateScreen = ({navigation}: RootTabScreenProps<'Create'>) => {
+    const user = useAppSelector(state => state.user)
+    const {userData, User_Details} = user
     const startBot = () => {
-      navigation.navigate('SelectType')
+        navigation.navigate('SelectType')
     }
 
     return (
@@ -28,11 +30,13 @@ const CreateScreen = ({navigation}:RootTabScreenProps<'Create'>) => {
 
 
             >
-                <ScrollView  style={{width: '100%',}} contentContainerStyle={styles.scrollView} scrollEnabled
-                             showsVerticalScrollIndicator={false}
+                <ScrollView style={{width: '100%',}} contentContainerStyle={styles.scrollView} scrollEnabled
+                            showsVerticalScrollIndicator={false}
                 >
 
-                    <TopBar  profilePhoto={'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'} userName={'Orji'}/>
+                    <TopBar
+                        profilePhoto={ User_Details.image? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'}
+                        userName={User_Details.username}/>
 
 
                     <Animated.View style={styles.planContainer} layout={Layout.easing(Easing.bounce).delay(100)}
@@ -45,8 +49,7 @@ const CreateScreen = ({navigation}:RootTabScreenProps<'Create'>) => {
                             {backgroundColor: '#090A1C'}]}>
                             <View style={styles.planTop}>
 
-                                <MaterialCommunityIcons name="robot" size={20} color={Colors.primary} />
-
+                                <MaterialCommunityIcons name="robot" size={20} color={Colors.primary}/>
 
 
                             </View>
@@ -59,7 +62,8 @@ const CreateScreen = ({navigation}:RootTabScreenProps<'Create'>) => {
                                     </Text>
                                     <View style={styles.planDescriptionWrap}>
                                         <Text style={styles.planDescription}>
-                                            Choose a bot type and add your own rules and conditions for trade entries and exits.
+                                            Choose a bot type and add your own rules and conditions for trade entries
+                                            and exits.
                                         </Text>
                                     </View>
 
@@ -105,7 +109,7 @@ const CreateScreen = ({navigation}:RootTabScreenProps<'Create'>) => {
                             activeOpacity={0.8} style={[styles.plan,
                             {backgroundColor: '#090A1C'}]}>
                             <View style={styles.planTop}>
-                                <MaterialCommunityIcons name="lightbulb-group"size={20} color="#fff"/>
+                                <MaterialCommunityIcons name="lightbulb-group" size={20} color="#fff"/>
 
 
                             </View>
@@ -118,7 +122,8 @@ const CreateScreen = ({navigation}:RootTabScreenProps<'Create'>) => {
                                     </Text>
                                     <View style={styles.planDescriptionWrap}>
                                         <Text style={styles.planDescription}>
-                                            We are sharing over 80% of all our revenues with our affiliates are rewards for working together with us.
+                                            We are sharing over 80% of all our revenues with our affiliates are rewards
+                                            for working together with us.
                                         </Text>
                                     </View>
 
@@ -130,7 +135,6 @@ const CreateScreen = ({navigation}:RootTabScreenProps<'Create'>) => {
                         </TouchableOpacity>
 
                     </Animated.View>
-
 
 
                 </ScrollView>

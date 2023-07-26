@@ -82,7 +82,7 @@ const ToastAnimated = () => {
 
               time = setTimeout(() => {
                   dispatch(clearNotification())
-              }, 6500)
+              }, 3500)
 
           }
           return () => {

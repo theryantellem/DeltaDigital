@@ -35,7 +35,7 @@ const RewardItem =({item}:RewardItem) =>{
             <View style={styles.circleTop}>
 
 
-                <Octicons name="dot-fill" size={25} color={Colors.successChart}/>
+                <Octicons name="dot-fill" size={20} color={Colors.successChart}/>
 
             </View>
 
@@ -45,16 +45,17 @@ const RewardItem =({item}:RewardItem) =>{
                 </Text>
                 <Text style={styles.transactionDate}>
 
-                    {dayjs.unix(item.Date).format('ddd, DD MMM YYYY H:mm')}
+                    {dayjs.unix(item.Date).format('ddd, DD MMM YYYY')}
                 </Text>
             </View>
 
             <View style={styles.bodyRight}>
                 <Text style={styles.transactionTitle}>
-                    +$350
+                    +{item.Reward}
                 </Text>
                 <Text style={styles.transactionDate}>
-                    10:53 AM
+
+                    {dayjs.unix(item.Date).format('H:mm')}
                 </Text>
             </View>
 
@@ -337,7 +338,7 @@ flex:1,
     circleTop: {
 
         height: '50%',
-        width: widthPixel(20),
+        width: widthPixel(15),
         alignItems: 'flex-start',
         justifyContent: 'center'
     },

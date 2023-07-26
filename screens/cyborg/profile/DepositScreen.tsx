@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 
-import {Text, View, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
+import {Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator} from 'react-native';
 import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -10,10 +10,10 @@ import Colors from "../../../constants/Colors";
 import {Fonts} from "../../../constants/Fonts";
 import QRCode from "react-native-qrcode-svg";
 import Animated, {FadeInDown, FadeOutDown} from "react-native-reanimated";
-import {truncateString} from "../../../helpers";
+import {truncateString, useRefreshOnFocus} from "../../../helpers";
 import HorizontalLine from "../../../components/HorizontalLine";
 import {useQuery} from "@tanstack/react-query";
-import {getDepositAddress, getRevenues} from "../../../api";
+import {getAsset, getDepositAddress, getRevenues} from "../../../api";
 import {useAppSelector} from "../../../app/hooks";
 
 
@@ -21,9 +21,10 @@ const DepositScreen = () => {
     const [copied, setCopied] = useState(false);
 
     const user = useAppSelector(state => state.user)
-    const {userData} = user
-    const {data} = useQuery(['user-DepositAddress'],()=> getDepositAddress(userData.id))
-console.log(data)
+    const {User_Details} = user
+    const {data,refetch,isLoading} = useQuery(['user-DepositAddress'],()=> getDepositAddress(User_Details.id))
+
+    useRefreshOnFocus(refetch)
     return (
         <SafeAreaView style={styles.safeArea}>
             <LinearGradient style={styles.background}
@@ -43,6 +44,17 @@ console.log(data)
                             showsVerticalScrollIndicator={false}>
 
 
+
+
+                    {
+                        isLoading && <ActivityIndicator color="#fff" size='small'/>
+                    }
+
+                    {
+                        !isLoading && data && data.status == 1 &&
+
+                    <>
+
                     <View style={styles.assetBox}>
 
 
@@ -61,7 +73,7 @@ console.log(data)
                             logo={require('../../../assets/images/cyborg-logo.png')}
                             logoSize={35}
                             size={200}
-                            value={'0xac6f9c7032wedw019f8ec10b247f3718a3de '}
+                            value={data.wallet}
                             color={Colors.text}
 
                             backgroundColor={Colors.secondary}
@@ -92,7 +104,7 @@ console.log(data)
                             <View>
                                 <Text style={styles.walletAddress}>
                                     {
-                                        truncateString('0xac6f9c70fwedwEWAD019f8ec10b247f3718a3de ', 35)
+                                        truncateString( data.wallet, 30)
                                     }
 
 
@@ -156,8 +168,8 @@ console.log(data)
                             </Text>
                         </View>
                     </View>
-
-
+                    </>
+                    }
                 </ScrollView>
             </LinearGradient>
         </SafeAreaView>

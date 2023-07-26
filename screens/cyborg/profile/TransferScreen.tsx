@@ -36,7 +36,7 @@ const TransferScreen = ({navigation}: RootStackScreenProps<'TransferScreen'>) =>
     const queryClient = useQueryClient()
 
     const user = useAppSelector(state => state.user)
-    const {userData, User_Details} = user
+    const {User_Details} = user
 
     const {mutate, isLoading} = useMutation(['transferAsset'], transferAsset, {
         onSuccess: async (data) => {

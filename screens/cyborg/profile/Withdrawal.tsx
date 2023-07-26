@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 
-import {Text, View, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
+import {Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator} from 'react-native';
 import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -14,8 +14,11 @@ import * as yup from "yup";
 import {BarCodeScanner} from "expo-barcode-scanner";
 import {Entypo, Ionicons} from "@expo/vector-icons";
 import {MyButton} from "../../../components/MyButton";
-
-
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {doWithdraw, transferAsset} from "../../../api";
+import {addNotificationItem} from "../../../app/slices/dataSlice";
+import {useAppDispatch, useAppSelector} from "../../../app/hooks";
+import ToastAnimated from "../../../components/toast";
 
 
 const formSchema = yup.object().shape({
@@ -27,8 +30,17 @@ const formSchema = yup.object().shape({
 })
 
 
+const Withdrawal = ({navigation, route}: RootStackScreenProps<'Withdrawal'>) => {
 
-const Withdrawal = ({}:RootStackScreenProps<'Withdrawal'>) => {
+    const {amount} = route.params
+
+
+    const dispatch = useAppDispatch()
+    const queryClient = useQueryClient()
+
+    const user = useAppSelector(state => state.user)
+    const {User_Details} = user
+
 
     const [validWallet, setValidWallet] = useState<boolean | null>(null);
     const [validWalletCheck, setValidWalletCheck] = useState('');
@@ -46,6 +58,33 @@ const Withdrawal = ({}:RootStackScreenProps<'Withdrawal'>) => {
 
         getBarCodeScannerPermissions();
     }, []);
+
+
+    const {mutate, isLoading} = useMutation(['doWithdraw'], doWithdraw, {
+        onSuccess: async (data) => {
+
+            if (data.status == 1) {
+
+                navigation.navigate('SuccessScreen', {
+                    type: 'success',
+                    title: 'Withdrawal successful',
+                    message: data.message
+                })
+
+            } else {
+                dispatch(addNotificationItem({
+                    id: Math.random(),
+                    type: 'error',
+                    body: data?.data,
+                }))
+            }
+
+
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries(['doWithdraw']);
+        }
+    })
 
 
     const {
@@ -70,8 +109,10 @@ const Withdrawal = ({}:RootStackScreenProps<'Withdrawal'>) => {
         onSubmit: (values) => {
             //navigation.navigate('CryptoWithdrawalDetails')
             const {walletAddress,} = values
-
-
+            const body = new FormData()
+            body.append('addr', walletAddress)
+            body.append('num', amount)
+            mutate({body, userId: User_Details.id})
         }
     });
 
@@ -87,11 +128,13 @@ const Withdrawal = ({}:RootStackScreenProps<'Withdrawal'>) => {
         // alert(`Bar code with type ${type} and data ${data} has been scanned!`);
     };
 
-const proceed = () =>{
+    const proceed = () => {
 
-}
+    }
 
     return (
+        <>
+
         <SafeAreaView style={styles.safeArea}>
             <LinearGradient style={styles.background}
                             colors={['#04074E', '#141621',]}
@@ -117,94 +160,106 @@ const proceed = () =>{
                     </View>
                 )}
                 {!scannerView && (
-                <>
+                    <>
 
-                <HeaderWithTitle title='Withdraw'/>
-                <ScrollView style={{
-                    width: '100%'
-                }} contentContainerStyle={styles.scrollView} scrollEnabled
-                            showsVerticalScrollIndicator={false}>
+                        <HeaderWithTitle title={`Withdraw $${amount}`}/>
+                        <ScrollView style={{
+                            width: '100%'
+                        }} contentContainerStyle={styles.scrollView} scrollEnabled
+                                    showsVerticalScrollIndicator={false}>
 
-                    <View style={styles.planInfo}>
-                        <Text style={styles.planTitle}>
-                            Enter Crypto Details
-                        </Text>
-                        <View style={styles.planMessage}>
-                            <Text style={styles.planMessageTxt}>
-                                Enter crypto details you want to use for this transaction
-                            </Text>
-                        </View>
-                    </View>
-
-
-                    <View style={styles.formContainer}>
-
-
-                        <WalletAddressInput
-                            action={showScannerView}
-                            placeholder="Scan or paste wallet address"
-                            keyboardType={"default"}
-                            touched={touched.walletAddress}
-                            error={touched.walletAddress && errors.walletAddress || validWalletCheck}
-
-                            onChangeText={(e) => {
-                                handleChange('walletAddress')(e);
-
-                            }}
-                            onBlur={(e) => {
-                                handleBlur('walletAddress')(e);
-
-                            }}
-                            value={values.walletAddress}
-                            label="Wallet address"/>
-
-                        <View style={styles.operationReminderWrap}>
-                            <Text style={styles.operationReminderTitle}>
-                                Operation reminder
-                            </Text>
-
-
-                            <View style={[styles.list, {
-                                marginTop: 12,
-                            }]}>
-                                <Entypo name="dot-single" size={24} color={Colors.pendingYellow}/>
-                                <Text style={[styles.bodyText, {}]}>
-                                    The minimum withdrawal amount for a single
-                                    transaction is <Text style={{fontFamily:Fonts.faktumBold}}>10 TRC20 USDT</Text>
+                            <View style={styles.planInfo}>
+                                <Text style={styles.planTitle}>
+                                    Enter Crypto Details
                                 </Text>
+                                <View style={styles.planMessage}>
+                                    <Text style={styles.planMessageTxt}>
+                                        Enter crypto details you want to use for this transaction
+                                    </Text>
+                                </View>
                             </View>
 
 
-                            <View style={styles.list}>
-                                <Entypo name="dot-single" size={24} color={Colors.pendingYellow}/>
-                                <Text style={[styles.bodyText, {}]}>
+                            <View style={styles.formContainer}>
 
-                                    Do not transfer <Text style={{fontFamily:Fonts.faktumBold}}>TRC20 USDT</Text> assets to a non TRC20
-                                    USDT addresses otherwise they can not be retrieved.
-                                </Text>
+
+                                <WalletAddressInput
+                                    action={showScannerView}
+                                    placeholder="Scan or paste wallet address"
+                                    keyboardType={"default"}
+                                    touched={touched.walletAddress}
+                                    error={touched.walletAddress && errors.walletAddress || validWalletCheck}
+
+                                    onChangeText={(e) => {
+                                        handleChange('walletAddress')(e);
+
+                                    }}
+                                    onBlur={(e) => {
+                                        handleBlur('walletAddress')(e);
+
+                                    }}
+                                    value={values.walletAddress}
+                                    label="Wallet address"/>
+
+                                <View style={styles.operationReminderWrap}>
+                                    <Text style={styles.operationReminderTitle}>
+                                        Operation reminder
+                                    </Text>
+
+
+                                    <View style={[styles.list, {
+                                        marginTop: 12,
+                                    }]}>
+                                        <Entypo name="dot-single" size={24} color={Colors.pendingYellow}/>
+                                        <Text style={[styles.bodyText, {}]}>
+                                            The minimum withdrawal amount for a single
+                                            transaction is <Text style={{fontFamily: Fonts.faktumBold}}>10 TRC20
+                                            USDT</Text>
+                                        </Text>
+                                    </View>
+
+
+                                    <View style={styles.list}>
+                                        <Entypo name="dot-single" size={24} color={Colors.pendingYellow}/>
+                                        <Text style={[styles.bodyText, {}]}>
+
+                                            Do not transfer <Text style={{fontFamily: Fonts.faktumBold}}>TRC20
+                                            USDT</Text> assets to a non TRC20
+                                            USDT addresses otherwise they can not be retrieved.
+                                        </Text>
+                                    </View>
+
+
+                                </View>
+
                             </View>
 
 
+                        </ScrollView>
+                        <MyButton onPress={()=>handleSubmit()} disabled={!isValid} style={[styles.proceedBtn,{
 
-                        </View>
+                        }]}>
+                            {
+                                isLoading ? <ActivityIndicator color="#fff" size='small'/>
+                                    :
 
-                    </View>
+                                    <Text style={styles.btnText}>
+                                        Proceed
+                                    </Text>
+                            }
 
+                        </MyButton>
 
-                </ScrollView>
-                    <MyButton onPress={proceed} style={styles.proceedBtn}>
-                        <Text style={styles.btnText}>
-                            Proceed
-                        </Text>
-                    </MyButton>
-
-                </>
+                    </>
                 )
                 }
 
             </LinearGradient>
         </SafeAreaView>
-                );
+            <ToastAnimated/>
+        </>
+
+    );
 };
 
 const styles = StyleSheet.create({
@@ -267,13 +322,13 @@ const styles = StyleSheet.create({
 
     },
     list: {
-        minHeight:heightPixel(20),
+        minHeight: heightPixel(20),
         // flexWrap:'wrap',
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
         width: '90%',
-        marginVertical:pixelSizeVertical(10),
+        marginVertical: pixelSizeVertical(10),
 
     },
     bodyText: {
