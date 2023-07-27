@@ -42,6 +42,9 @@ import {store} from "../app/store";
 import {timeDifference} from "../helpers";
 import LeaderBoard from "../screens/cyborg/more/LeaderBoard";
 import SuccessScreen from "../screens/cyborg/SuccessScreen";
+import EditProfile from "../screens/cyborg/profile/EditProfile";
+import CouncellerScreen from "../screens/cyborg/profile/CouncellerScreen";
+import ViewAPIBinding from "../screens/cyborg/profile/ViewAPIBinding";
 
 
 export default function Navigation({colorScheme}: { colorScheme: ColorSchemeName }) {
@@ -181,6 +184,9 @@ function RootNavigator() {
                 <Stack.Screen name={"SuccessScreen"} options={{animation: 'slide_from_bottom'}} component={SuccessScreen}/>
 
                 <Stack.Screen name={"SelectType"} component={SelectType}/>
+                <Stack.Screen name={"EditProfile"} component={EditProfile}/>
+                <Stack.Screen name={"CouncellerScreen"} component={CouncellerScreen}/>
+                <Stack.Screen name={"ViewAPIBinding"} component={ViewAPIBinding}/>
 
                 <Stack.Screen name={"LeaderBoard"} component={LeaderBoard}/>
 

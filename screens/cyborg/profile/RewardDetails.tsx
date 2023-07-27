@@ -16,10 +16,8 @@ import {FlashList} from "@shopify/flash-list";
 import dayjs from "dayjs";
 
 
-
-
 interface RewardItem {
-    item:{
+    item: {
         "Date": number,
         "Details": string,
         "Reward": string
@@ -27,8 +25,8 @@ interface RewardItem {
 }
 
 
-const RewardItem =({item}:RewardItem) =>{
-    return(
+const RewardItem = ({item}: RewardItem) => {
+    return (
         <View style={styles.transactionCard}>
 
 
@@ -71,14 +69,18 @@ const RewardDetails = () => {
     const {User_Details} = user
 
 
-    const {data,refetch,isLoading,isRefetching} = useQuery(['get-RewardDetails'],()=> getRewardDetails(User_Details.id))
+    const {
+        data,
+        refetch,
+        isLoading,
+        isRefetching
+    } = useQuery(['get-RewardDetails'], () => getRewardDetails(User_Details.id))
 
 
     useRefreshOnFocus(refetch)
 
 
-
-   const renderItem = useCallback(
+    const renderItem = useCallback(
         ({item}) => (
             <RewardItem item={item}/>
         ),
@@ -86,11 +88,10 @@ const RewardDetails = () => {
     );
 
 
+    const keyExtractor = useCallback((item: { Date: string, Details: string }) => item.Date, [],);
 
-    const keyExtractor = useCallback((item: { Date: string,Details:string }) => item.Date , [],);
 
-
-    const  renderHeader= useCallback(() => (
+    const renderHeader = useCallback(() => (
         <>
 
             <View style={styles.balanceCanvas}>
@@ -115,7 +116,9 @@ const RewardDetails = () => {
 
                     </View>
                     <Text style={styles.walletAddressTxt}>
-                        <Text style={{color: data?.data?.today_profit > 0 ?Colors.success : Colors.errorRed}}>+${data?.data?.today_profit}</Text> Today’s reward
+                        <Text
+                            style={{color: data?.data?.today_profit > 0 ? Colors.success : Colors.errorRed}}>+${data?.data?.today_profit}</Text> Today’s
+                        reward
                     </Text>
                 </View>
 
@@ -174,38 +177,36 @@ const RewardDetails = () => {
 
                 <HeaderWithTitle title='Reward details'/>
 
-                    <View style={styles.content}>
+                <View style={styles.content}>
 
 
+                    {
+                        isLoading && <ActivityIndicator color={Colors.primary} size='small'/>
+                    }
+                    {
+                        !isLoading && data &&
+                        <FlashList
+                            estimatedItemSize={200}
+                            ListHeaderComponent={renderHeader}
+                            refreshing={isLoading}
+                            onRefresh={refetch}
+                            scrollEnabled
+                            showsVerticalScrollIndicator={false}
+                            data={data.data.All}
+                            renderItem={renderItem}
+                            keyExtractor={keyExtractor}
+                            estimatedListSize={{height: 70, width: 320}}
+                            refreshControl={
+                                <RefreshControl
+                                    tintColor={Colors.text}
+                                    refreshing={refreshing}
+                                    onRefresh={refresh}
+                                />
+                            }
 
 
-                        {
-                            isLoading && <ActivityIndicator color={Colors.primary} size='small'/>
-                        }
-                        {
-                            !isLoading && data &&
-                            <FlashList
-                                estimatedItemSize={200}
-                                ListHeaderComponent={renderHeader}
-                                refreshing={isLoading}
-                                onRefresh={refetch}
-                                scrollEnabled
-                                showsVerticalScrollIndicator={false}
-                                data={data.data.All}
-                                renderItem={renderItem}
-                                keyExtractor={keyExtractor}
-estimatedListSize={{height:70,width:320}}
-                                refreshControl={
-                                    <RefreshControl
-                                        tintColor={Colors.text}
-                                        refreshing={refreshing}
-                                        onRefresh={refresh}
-                                    />
-                                }
-
-
-                            />
-                        }
+                        />
+                    }
 
 
                 </View>
@@ -321,7 +322,7 @@ const styles = StyleSheet.create({
         color: Colors.text
     },
     content: {
-flex:1,
+        flex: 1,
         width: '100%',
 
     },
@@ -330,7 +331,7 @@ flex:1,
         alignItems: 'center',
         justifyContent: 'space-between',
         width: '100%',
-        marginVertical:pixelSizeVertical(10),
+        marginVertical: pixelSizeVertical(10),
         paddingHorizontal: pixelSizeHorizontal(15),
         height: heightPixel(70),
 

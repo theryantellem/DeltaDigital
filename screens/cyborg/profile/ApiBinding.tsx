@@ -5,7 +5,7 @@ import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import Colors from "../../../constants/Colors";
-import {fontPixel, heightPixel, pixelSizeVertical, widthPixel} from "../../../helpers/normalize";
+import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPixel} from "../../../helpers/normalize";
 import {Fonts} from "../../../constants/Fonts";
 import {useQuery} from "@tanstack/react-query";
 import {getUser} from "../../../api";
@@ -14,21 +14,30 @@ import {RootStackScreenProps} from "../../../types";
 import {useRefreshOnFocus} from "../../../helpers";
 import {Octicons} from "@expo/vector-icons";
 
-const ApiBinding = ({navigation}:RootStackScreenProps<'ApiBinding'>) => {
+const ApiBinding = ({navigation}: RootStackScreenProps<'ApiBinding'>) => {
 
 
     const dispatch = useAppDispatch()
     const user = useAppSelector(state => state.user)
-    const {userData,User_Details} = user
+    const {userData, User_Details} = user
 
     const {data, isRefetching, refetch,} = useQuery(
-        [`user-data`,User_Details.id],
+        [`user-data`, User_Details.id],
         () => getUser(User_Details.id),
-        {
+        {})
 
+
+
+    const editNow = (apiKey: string, apiSecrete: string, exchange: string,isBound:'0'|'1') => {
+        navigation.navigate('ViewAPIBinding', {
+            exchange,
+            apiKey,
+            apiSecrete,
+            isBound
         })
+    }
 
-useRefreshOnFocus(refetch)
+    useRefreshOnFocus(refetch)
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -48,51 +57,72 @@ useRefreshOnFocus(refetch)
                 }} contentContainerStyle={styles.scrollView} scrollEnabled
                             showsVerticalScrollIndicator={false}>
 
-                    <View style={styles.content}>
-                    <View style={styles.appListCard}>
-                        <View style={styles.listTop}>
-                            <View style={styles.listTopLeft}>
-                                <View style={styles.appIconWrap}>
-                                    <Image source={{uri: 'https://play-lh.googleusercontent.com/PjoJoG27miSglVBXoXrxBSLveV6e3EeBPpNY55aiUUBM9Q1RCETKCOqdOkX2ZydqVf0'}} style={styles.logo}/>
-                                </View>
-                                <Text style={[styles.appText, {
-                                    color: Colors.text
-                                }]}>
-                                    Coinbase
-                                </Text>
-                            </View>
-                            <TouchableOpacity  activeOpacity={0.8}
-                                              style={styles.connectBtn}>
 
-                                {
-                                    data.data["User Details"][0].coinbaseprobind == '1'
-                                ?
-                                <Text style={[styles.appText, {
-                                    color: Colors.primary
-                                }]}>
-                                    Unbound
-                                </Text>
-:
-                                        <Text style={[styles.appText, {
-                                            color: Colors.success
-                                        }]}>
-                                            Bind
-                                        </Text>
+                    <View style={styles.planInfo}>
+                        <Text style={styles.planTitle}>
+                            Choose an exchange to bind your API
+                        </Text>
 
-                                }
-                                <Octicons name="chevron-right" size={14} color="#ccc" />
-
-                            </TouchableOpacity>
-                        </View>
                     </View>
 
+                    <View style={styles.content}>
 
+                        <TouchableOpacity activeOpacity={0.8}
+                                          onPress={() => editNow(data.data['User Details'][0].coinbaseproapi,
+                                              data.data['User Details'][0].coinbaseprosecret,
+                                              'Coinbase',data.data['User Details'][0].coinbaseprobind)
 
-                        <View style={styles.appListCard}>
+                        }
+                                          style={styles.appListCard}>
                             <View style={styles.listTop}>
                                 <View style={styles.listTopLeft}>
                                     <View style={styles.appIconWrap}>
-                                        <Image source={{uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Binance_Logo.svg/1200px-Binance_Logo.svg.png'}} style={styles.logo}/>
+                                        <Image
+                                            source={{uri: 'https://play-lh.googleusercontent.com/PjoJoG27miSglVBXoXrxBSLveV6e3EeBPpNY55aiUUBM9Q1RCETKCOqdOkX2ZydqVf0'}}
+                                            style={styles.logo}/>
+                                    </View>
+                                    <Text style={[styles.appText, {
+                                        color: Colors.text
+                                    }]}>
+                                        Coinbase
+                                    </Text>
+                                </View>
+                                <TouchableOpacity activeOpacity={0.8}
+                                                  style={styles.connectBtn}>
+
+                                    {
+                                        data.data["User Details"][0].coinbaseprobind == '1'
+                                            ?
+                                            <Text style={[styles.appText, {
+                                                color: Colors.primary
+                                            }]}>
+                                                Unbound
+                                            </Text>
+                                            :
+                                            <Text style={[styles.appText, {
+                                                color: Colors.success
+                                            }]}>
+                                                Bind
+                                            </Text>
+
+                                    }
+                                    <Octicons name="chevron-right" size={14} color="#ccc"/>
+
+                                </TouchableOpacity>
+                            </View>
+                        </TouchableOpacity>
+
+
+                        <TouchableOpacity  onPress={() => editNow(data.data['User Details'][0].binanceapi,
+                            data.data['User Details'][0].binancescret,
+                            'Binance',data.data['User Details'][0].binancebind)}
+                                           activeOpacity={0.8} style={styles.appListCard}>
+                            <View style={styles.listTop}>
+                                <View style={styles.listTopLeft}>
+                                    <View style={styles.appIconWrap}>
+                                        <Image
+                                            source={{uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Binance_Logo.svg/1200px-Binance_Logo.svg.png'}}
+                                            style={styles.logo}/>
                                     </View>
                                     <Text style={[styles.appText, {
                                         color: Colors.text
@@ -100,8 +130,8 @@ useRefreshOnFocus(refetch)
                                         Binance
                                     </Text>
                                 </View>
-                                <TouchableOpacity  activeOpacity={0.8}
-                                                   style={styles.connectBtn}>
+                                <TouchableOpacity activeOpacity={0.8}
+                                                  style={styles.connectBtn}>
 
                                     {
                                         data.data["User Details"][0].binancebind == '1'
@@ -119,21 +149,23 @@ useRefreshOnFocus(refetch)
                                             </Text>
 
                                     }
-                                    <Octicons name="chevron-right" size={14} color="#ccc" />
+                                    <Octicons name="chevron-right" size={14} color="#ccc"/>
 
                                 </TouchableOpacity>
                             </View>
-                        </View>
+                        </TouchableOpacity>
 
 
-
-
-
-                        <View style={styles.appListCard}>
+                        <TouchableOpacity activeOpacity={0.7} onPress={() => editNow(data.data['User Details'][0].krakenapi,
+                            data.data['User Details'][0].krakensecret,
+                            'Kraken',data.data['User Details'][0].krakenbind)}
+                                          style={styles.appListCard}>
                             <View style={styles.listTop}>
                                 <View style={styles.listTopLeft}>
                                     <View style={styles.appIconWrap}>
-                                        <Image source={{uri: 'https://static-00.iconduck.com/assets.00/kraken-icon-512x512-icmwhmh8.png'}} style={styles.logo}/>
+                                        <Image
+                                            source={{uri: 'https://static-00.iconduck.com/assets.00/kraken-icon-512x512-icmwhmh8.png'}}
+                                            style={styles.logo}/>
                                     </View>
                                     <Text style={[styles.appText, {
                                         color: Colors.text
@@ -141,8 +173,8 @@ useRefreshOnFocus(refetch)
                                         Kraken
                                     </Text>
                                 </View>
-                                <TouchableOpacity  activeOpacity={0.8}
-                                                   style={styles.connectBtn}>
+                                <TouchableOpacity activeOpacity={0.8}
+                                                  style={styles.connectBtn}>
 
                                     {
                                         data.data["User Details"][0].krakenbind == '1'
@@ -160,16 +192,23 @@ useRefreshOnFocus(refetch)
                                             </Text>
 
                                     }
-                                    <Octicons name="chevron-right" size={14} color="#ccc" />
+                                    <Octicons name="chevron-right" size={14} color="#ccc"/>
 
                                 </TouchableOpacity>
                             </View>
-                        </View>
-                        <View style={styles.appListCard}>
+                        </TouchableOpacity>
+                        <TouchableOpacity activeOpacity={0.7}
+                                          onPress={() => editNow(data.data['User Details'][0].kucoinapi,
+                            data.data['User Details'][0].kucoinsecret,
+                            'Kucoin',data.data['User Details'][0].kucoinbind)}
+
+                                          style={styles.appListCard}>
                             <View style={styles.listTop}>
                                 <View style={styles.listTopLeft}>
                                     <View style={styles.appIconWrap}>
-                                        <Image source={{uri: 'https://assets.staticimg.com/cms/media/3gfl2DgVUqjJ8FnkC7QxhvPmXmPgpt42FrAqklVMr.png'}} style={styles.logo}/>
+                                        <Image
+                                            source={{uri: 'https://assets.staticimg.com/cms/media/3gfl2DgVUqjJ8FnkC7QxhvPmXmPgpt42FrAqklVMr.png'}}
+                                            style={styles.logo}/>
                                     </View>
                                     <Text style={[styles.appText, {
                                         color: Colors.text
@@ -177,11 +216,11 @@ useRefreshOnFocus(refetch)
                                         Kucoin
                                     </Text>
                                 </View>
-                                <TouchableOpacity  activeOpacity={0.8}
-                                                   style={styles.connectBtn}>
+                                <TouchableOpacity activeOpacity={0.8}
+                                                  style={styles.connectBtn}>
 
                                     {
-                                        data.data["User Details"][0].krakenbind == '1'
+                                        data.data["User Details"][0].kucoinbind == '1'
                                             ?
                                             <Text style={[styles.appText, {
                                                 color: Colors.primary
@@ -196,18 +235,18 @@ useRefreshOnFocus(refetch)
                                             </Text>
 
                                     }
-                                    <Octicons name="chevron-right" size={14} color="#ccc" />
+                                    <Octicons name="chevron-right" size={14} color="#ccc"/>
 
                                 </TouchableOpacity>
                             </View>
-                        </View>
+                        </TouchableOpacity>
 
 
                     </View>
                 </ScrollView>
             </LinearGradient>
         </SafeAreaView>
-                );
+    );
 };
 
 const styles = StyleSheet.create({
@@ -262,7 +301,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden'
     },
     appText: {
-
+marginRight:8,
         fontSize: fontPixel(14),
         fontFamily: Fonts.faktumSemiBold
     },
@@ -276,12 +315,12 @@ const styles = StyleSheet.create({
 
         fontFamily: Fonts.faktumRegular
     },
-    connectBtn:{
-        height:'100%',
-        width:widthPixel(90),
-        justifyContent:'space-evenly',
-        alignItems:'center',
-      flexDirection:'row'
+    connectBtn: {
+        height: '100%',
+        width: widthPixel(90),
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        flexDirection: 'row'
     },
     content: {
 
@@ -290,11 +329,24 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     logo: {
-        borderRadius:20,
+        borderRadius: 20,
         width: '100%',
         height: '100%',
         resizeMode: 'cover',
 
+    },
+    planInfo: {
+        width: '100%',
+        paddingHorizontal: pixelSizeHorizontal(20),
+        height: heightPixel(60),
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+
+    },
+    planTitle: {
+        color: "#fff",
+        fontSize: fontPixel(16),
+        fontFamily: Fonts.faktumMedium
     },
 })
 

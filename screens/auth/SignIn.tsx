@@ -50,11 +50,7 @@ const height = Dimensions.get('window').height
 const formSchema = yup.object().shape({
 
     username: yup.string().required('Username is required'),
-    // email: yup.string().email("Please enter a valid email address").required('Email is required'),
-    /*  password: yup.string().required('Password is required').matches(
-          /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#.-:;()_?\$%\^&\*])(?=.{8,})/,
-          "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character"
-      ),*/
+
     password: yup.string().required('Password is required'),
 
 });
@@ -127,7 +123,6 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
 
 
                     SecureStore.setItemAsync('delta-signal-token', data.data.TOKEN).then(() => {
-                        console.log(data.data.ID)
                         getUserInfo(data.data.ID)
                         //   dispatch((updateUserInfo({...data.data.user})))
                         /*  dispatch(setAuthenticated({
@@ -447,7 +442,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontSize: fontPixel(16),
-        fontFamily: 'faktum-bold'
+        fontFamily:Fonts.faktumBold
     },
     btnText: {
         color: 'white',

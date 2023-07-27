@@ -1,6 +1,6 @@
 import React, {useCallback, useState} from 'react';
 
-import {Text, View, StyleSheet, Platform, RefreshControl, ActivityIndicator, Image} from 'react-native';
+import {Text, View, StyleSheet, Platform, RefreshControl, ActivityIndicator, Image, Dimensions} from 'react-native';
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {fontPixel, heightPixel, pixelSizeHorizontal} from "../../helpers/normalize";
@@ -10,46 +10,52 @@ import Colors from "../../constants/Colors";
 import {Fonts} from "../../constants/Fonts";
 import {Ionicons} from "@expo/vector-icons";
 import {useQuery} from "@tanstack/react-query";
-import {getUser, getUserNews} from "../../api";
+import {getBanner, getUser, getUserNews} from "../../api";
 import {useAppSelector} from "../../app/hooks";
 import {FlashList} from "@shopify/flash-list";
 import {removeHTMLTags, wait} from "../../helpers";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-reanimated";
+import Carousel from 'react-native-reanimated-carousel';
+
 
 interface props {
-    item:{
-        details:string,
-        id:string,
-        image:string,
-        title:string,
+    item: {
+        details: string,
+        id: string,
+        image: string,
+        title: string,
     }
 }
-const NewsCard = ({item}:props) => {
+
+const NewsCard = ({item}: props) => {
 
     return (
         <Animated.View layout={Layout.easing(Easing.bounce).delay(100)}
-                       entering={FadeInDown.springify()} exiting={FadeOutDown}  style={styles.newsCard}>
+                       entering={FadeInDown.springify()} exiting={FadeOutDown} style={styles.newsCard}>
             <View style={styles.newsCardIcon}>
-         <Image source={{uri:item.image}} style={styles.image}/>
+                <Image source={{uri: item.image}} style={styles.image}/>
             </View>
             <View style={styles.newsCardBody}>
                 <View style={styles.cardTop}>
                     <Text style={styles.newsCardTitle}>
                         {item.title}
                     </Text>
-                  {/*  <Text style={styles.dateText}>
+                    {/*  <Text style={styles.dateText}>
                         Wed, 04 Jan 2023
                     </Text>*/}
                 </View>
 
                 <Text style={styles.bodyText}>
-                    {removeHTMLTags(item.details,true)}
+                    {removeHTMLTags(item.details, true)}
                 </Text>
 
             </View>
         </Animated.View>
     )
 }
+
+
+const width = Dimensions.get('window').width;
 
 const NewsScreen = ({navigation}: RootStackScreenProps<'NewsScreen'>) => {
 
@@ -59,8 +65,14 @@ const NewsScreen = ({navigation}: RootStackScreenProps<'NewsScreen'>) => {
 
     const [refreshing, setRefreshing] = useState(false);
 
-    const {data, refetch,isLoading,isRefetching} = useQuery(['user-news'],()=> getUserNews(User_Details.id))
+    const {data, refetch, isLoading, isRefetching} = useQuery(['user-news'], () => getUserNews(User_Details.id))
+    const {
+        data: banner,
+        refetch: fetchBanner,
+        isLoading: loadingBanner
+    } = useQuery(['get-Banners'], () => getBanner(User_Details.id))
 
+    // console.log(banner.data.Banners)
     const keyExtractor = useCallback((item: { id: string }) => item.id, [],);
 
 
@@ -75,6 +87,40 @@ const NewsScreen = ({navigation}: RootStackScreenProps<'NewsScreen'>) => {
         wait(2000).then(() => setRefreshing(false));
     }
 
+
+    const renderHeader = useCallback(() => (
+
+        <View style={styles.bannerWrap}>
+            <Carousel
+                modeConfig={{stackInterval: 19}}
+                loop
+                width={width - 40}
+                height={180}
+                autoPlay={true}
+                pagingEnabled
+                mode={"vertical-stack"}
+                data={banner?.data?.Banners}
+                scrollAnimationDuration={2000}
+                // onSnapToItem={(index) => console.log('current index:', index)}
+                renderItem={({index, item}: { index: string, item: { image: string, id: string } }) => (
+                    <View
+                        key={item.id}
+                        style={{
+                            flex: 1,
+                            justifyContent: 'center',
+                            borderRadius: 20,
+                        }}
+                    >
+                        <Image source={{uri: item.image}}
+                               style={styles.itemImage}/>
+                    </View>
+                )}
+            />
+
+        </View>
+
+    ), [banner]);
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <LinearGradient style={styles.background}
@@ -84,10 +130,11 @@ const NewsScreen = ({navigation}: RootStackScreenProps<'NewsScreen'>) => {
 
                             start={{x: 3.5, y: 0}}
                             end={{x: 1.5, y: 0.8,}}
-                // locations={[0.1, 0.7,]}
+
             >
 
                 <HeaderWithTitle title={"News"}/>
+
 
                 <View style={styles.flatList}>
 
@@ -96,11 +143,12 @@ const NewsScreen = ({navigation}: RootStackScreenProps<'NewsScreen'>) => {
                     }
 
 
-                   {
+                    {
                         !isLoading && data &&
                         <FlashList
                             estimatedItemSize={200}
                             refreshing={isLoading}
+                            ListHeaderComponent={renderHeader}
                             scrollEnabled
                             showsVerticalScrollIndicator={false}
                             data={data.data.News}
@@ -165,7 +213,7 @@ const styles = StyleSheet.create({
         borderRadius: 40,
         width: '100%',
         height: 35,
-       resizeMode:'cover',
+        resizeMode: 'cover',
 
     },
     newsCardBody: {
@@ -191,11 +239,19 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.faktumBold,
         color: Colors.text
     },
-    bodyText:{
-        marginTop:10,
+    bodyText: {
+        marginTop: 10,
         fontSize: fontPixel(14),
         fontFamily: Fonts.faktumRegular,
         color: Colors.text
+    },
+    bannerWrap: {
+        width: '90%',
+        height: heightPixel(200),
+        marginBottom: 14,
+    },
+    itemImage: {
+        height: '100%', width: '100%', borderRadius: 20, resizeMode: 'cover'
     }
 })
 

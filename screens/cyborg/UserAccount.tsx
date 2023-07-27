@@ -28,6 +28,7 @@ import {useRefreshOnFocus} from "../../helpers";
 import {useDispatch} from "react-redux";
 import * as SecureStore from "expo-secure-store";
 import {logoutUser} from "../../app/slices/userSlice";
+import EditProfile from "./profile/EditProfile";
 
 
 
@@ -39,7 +40,7 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
 
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
-    const navigate = (screen: 'Assets' | 'RewardDetails' | 'SettingsScreen' | 'ApiBinding' | 'Earnings') => {
+    const navigate = (screen: 'Assets' | 'RewardDetails' | 'SettingsScreen' | 'ApiBinding' | 'Earnings' | 'EditProfile' | 'CouncellerScreen') => {
         navigation.navigate(screen)
     }
 
@@ -104,7 +105,7 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
                             </Text>
                         </View>
 
-                        <TouchableOpacity activeOpacity={0.6}
+                        <TouchableOpacity onPress={()=>navigate('EditProfile')} activeOpacity={0.6}
                                           style={styles.editProfile}>
                             <Text style={styles.btnTxt}>
                                 Edit profile
@@ -275,7 +276,7 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
                         </TouchableOpacity>
 
 
-                        <TouchableOpacity activeOpacity={0.6} style={styles.profileButton}>
+                        <TouchableOpacity onPress={()=>navigate('CouncellerScreen')} activeOpacity={0.6} style={styles.profileButton}>
 
                             <View style={styles.leftContent}>
 

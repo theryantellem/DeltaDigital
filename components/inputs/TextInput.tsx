@@ -95,7 +95,7 @@ const BottomSheetInput: FC<Props> = ({
             <View style={[styles.inputContainer, {
                 borderRadius: borderRadius ? borderRadius : 6,
                 borderColor: validationColor,
-                backgroundColor: inputBg ? "#FAFAFA" : 'transparent',
+                backgroundColor: inputBg ? inputBg : 'transparent',
                 height: inputHeight ? inputHeight : heightPixel(56),
             }]}>
 

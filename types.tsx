@@ -23,6 +23,9 @@ import WithdrawalAmount from "./screens/cyborg/profile/WIthdrawalAmount";
 import SettingsScreen from "./screens/cyborg/profile/SettingsScreen";
 import ApiBinding from "./screens/cyborg/profile/ApiBinding";
 import LeaderBoard from "./screens/cyborg/more/LeaderBoard";
+import EditProfile from "./screens/cyborg/profile/EditProfile";
+import CouncellerScreen from "./screens/cyborg/profile/CouncellerScreen";
+import ViewAPIBinding from "./screens/cyborg/profile/ViewAPIBinding";
 
 
 
@@ -54,6 +57,7 @@ export type RootStackParamList = {
         amount:string
     };
     WithdrawalAmount: undefined;
+    EditProfile: undefined;
     RewardDetails: undefined;
     SettingsScreen: undefined;
     Earnings: undefined;
@@ -61,10 +65,18 @@ export type RootStackParamList = {
     TransferScreen: undefined;
     Assets: undefined;
     LeaderBoard: undefined;
+    CouncellerScreen: undefined;
     SuccessScreen: {
         title:string,
         message:string,
         type?:'error'|'success'
+    };
+    ViewAPIBinding: {
+        exchange:string,
+        apiKey:string,
+        apiSecrete:string,
+        isBound:'0'|'1',
+
     };
 
 

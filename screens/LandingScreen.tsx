@@ -1,6 +1,6 @@
 import React, {useCallback, useState} from 'react';
 
-import {Text, View, StyleSheet, ScrollView, TouchableOpacity, Image} from 'react-native';
+import {Text, View, StyleSheet, ScrollView, TouchableOpacity, Image, ActivityIndicator} from 'react-native';
 import {RootStackScreenProps} from "../types";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -13,12 +13,20 @@ import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from 'react-native-re
 import {CyborgBottomTab} from "../navigation/cyborg";
 import {useAppSelector} from "../app/hooks";
 import FastImage from "react-native-fast-image";
+import {useQuery} from "@tanstack/react-query";
+import {checkUserPlan, getUser} from "../api";
+import {useRefreshOnFocus} from "../helpers";
 
 const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
 
     const [greeting, setGreeting] = useState('');
+
+
+  //const {} =  useQuery(['checkUserPlan',User_Details.id],()=>checkUserPlan(User_Details.id))
+
+    const {data, refetch,isLoading} = useQuery(['user-data'],()=> getUser(User_Details.id))
 
 
 
@@ -48,8 +56,19 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
         navigation.navigate('CyborgBottomTab')
     }
 
+    useRefreshOnFocus(refetch)
+
     return (
         <SafeAreaView style={styles.safeArea}>
+            {
+
+                isLoading &&
+                <View style={styles.loading}>
+                    <ActivityIndicator size='large' color={Colors.primary}/>
+                </View>
+
+            }
+
             <LinearGradient style={styles.background}
                             colors={['#4E044B', '#141621',]}
 
@@ -95,8 +114,13 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
 
 
                 <ScrollView style={{width: '100%',}} contentContainerStyle={styles.scrollView} scrollEnabled
-                            showsVerticalScrollIndicator={false}
-                >
+                            showsVerticalScrollIndicator={false}>
+
+
+                    {
+
+                        !isLoading &&
+                    <>
 
                     <View style={styles.introTextWrap}>
                         <Text style={styles.titleText}>
@@ -109,8 +133,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                         </Text>
                     </View>
 
-                    <Animated.View style={styles.planContainer} layout={Layout.easing(Easing.bounce).delay(100)}
-                                   entering={FadeInDown.springify()} exiting={FadeOutDown}>
+                    <Animated.View style={styles.planContainer} layout={Layout.easing(Easing.bounce).delay(100)} entering={FadeInDown.springify()} exiting={FadeOutDown}>
 
 
                         <TouchableOpacity
@@ -219,6 +242,8 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                         </TouchableOpacity>
 
                     </Animated.View>
+                    </>
+                    }
 
                 </ScrollView>
             </LinearGradient>
@@ -398,6 +423,19 @@ const styles = StyleSheet.create({
         width:'100%',
         height:'100%',
         resizeMode:'cover',
+    },
+    loading: {
+        flex:1,
+        width:'100%',
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        zIndex:1,
+        top: 0,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor:'rgba(0,0,0,0.3)'
     }
 
 })
