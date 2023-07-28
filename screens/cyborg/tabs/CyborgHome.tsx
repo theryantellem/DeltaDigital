@@ -8,7 +8,7 @@ import {
     TouchableOpacity,
     Dimensions,
     ScrollView,
-    Pressable, RefreshControl
+    Pressable, RefreshControl, ActivityIndicator
 } from 'react-native';
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -27,7 +27,7 @@ import ToastAnimated from "../../../components/toast";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {addNotificationItem} from "../../../app/slices/dataSlice";
 import {useQuery} from "@tanstack/react-query";
-import {getAsset, getUser} from "../../../api";
+import {activeStrategy, getAsset, getNewstrategy, getUser} from "../../../api";
 
 let width = Dimensions.get("window").width
 
@@ -71,18 +71,28 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
 
     const dispatch = useAppDispatch()
     const user = useAppSelector(state => state.user)
-    const {userData,User_Details} = user
+    const {User_Details} = user
 
     const {data: Asset, refetch: fetchAsset, isLoading} = useQuery(['user-Asset'], () => getAsset(User_Details.id))
-
-
-
     const [refreshing, setRefreshing] = useState(false);
+
+
+    const {data:strategy,refetch:fetchStrategy,isLoading:loadingStrategy} = useQuery(['activeStrategy'],()=>activeStrategy(User_Details.id))
+
+
+
     const openNotifications = () => {
 
     }
     const overView = () => {
         navigation.navigate('OverView')
+    }
+
+    const seeLogs = (exchange:string,market:string) =>{
+        navigation.navigate('LogScreen',{
+            exchange,
+            market
+        })
     }
 
 
@@ -249,48 +259,59 @@ useRefreshOnFocus(fetchAsset)
                     </Text>
                 </View>
 
-                <Animated.View layout={Layout.easing(Easing.bounce).delay(100)} entering={FadeInDown.springify()}
-                               exiting={FadeOutDown}>
-                    <Pressable style={styles.AssetCard}>
+                {
+                    loadingStrategy && <ActivityIndicator size='small' color={Colors.primary}/>
+                }
 
-                        <View style={styles.assetIcon}>
-                            <View style={styles.assetCardIcon}>
-                                <Image source={{uri: 'https://cdn-icons-png.flaticon.com/512/5968/5968260.png'}}
-                                       style={styles.logo}/>
-                            </View>
-                        </View>
+                {
+                    strategy &&
+                    strategy.data['Operation Strategy'].map((item: { [x: string]: any; id: React.Key | null | undefined; Market: string, Avg_Price: number | bigint; Quantity: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined; }, index: any)=>(
+                        <Animated.View key={item.id} layout={Layout.easing(Easing.bounce).delay(100)} entering={FadeInDown.springify()}
+                                       exiting={FadeOutDown}>
+                            <Pressable onPress={()=>seeLogs(item.exchange,item.Market)} style={styles.AssetCard}>
 
-                        <View style={styles.coinName}>
-                            <Text style={styles.coinSymbol}>
-                                BTC/USDT
-                            </Text>
-                            <Text style={styles.coinNameText}>
-                                Bitcoin
-                            </Text>
-                        </View>
+                                <View style={styles.assetIcon}>
+                                    <View style={styles.assetCardIcon}>
+                                        <Image source={{uri:`https://backend.deltacyborg.pro/Upload/coin/${item['coin image']}`}}
+                                               style={styles.logo}/>
+                                    </View>
+                                </View>
 
-                        <View style={styles.assetChart}>
-                            <LineChart.Provider data={ChartData}>
-                                <LineChart height={heightPixel(70)} width={widthPixel(90)}>
-                                    <LineChart.Path color={Colors.errorRed}/>
-                                </LineChart>
-                            </LineChart.Provider>
-                        </View>
+                                <View style={styles.coinName}>
+                                    <Text style={styles.coinSymbol}>
+                                        {item.Market}
+                                    </Text>
+                                    <Text style={styles.coinNameText}>
+                                        Bitcoin
+                                    </Text>
+                                </View>
 
-
-                        <View style={styles.priceSection}>
-                            <Text style={styles.coinSymbol}>
-                                {currencyFormatter('en-US', 'USD').format(230032)}
-                            </Text>
-                            <Text style={styles.coinNameText}>
-                                0.323
-                            </Text>
-                        </View>
-
-                    </Pressable>
+                                <View style={styles.assetChart}>
+                                    <LineChart.Provider data={ChartData}>
+                                        <LineChart height={heightPixel(70)} width={widthPixel(90)}>
+                                            <LineChart.Path color={Colors.errorRed}/>
+                                        </LineChart>
+                                    </LineChart.Provider>
+                                </View>
 
 
-                </Animated.View>
+                                <View style={styles.priceSection}>
+                                    <Text style={styles.coinSymbol}>
+                                        {currencyFormatter('en-US', 'USD').format(item.Avg_Price)}
+                                    </Text>
+                                    <Text style={styles.coinNameText}>
+                                        {item.Quantity}
+                                    </Text>
+                                </View>
+
+                            </Pressable>
+
+
+                        </Animated.View>
+                    ))
+                }
+
+
 
 
 

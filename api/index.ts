@@ -450,6 +450,64 @@ export const activeStrategy = async (userId:string) => {
     ])
 
 }
+export const getNewstrategy = async ({body,userId}:{userId: string,body:any}) => {
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+
+    const myHeaders = {
+        "TOKEN": Token,
+        "ID": userId
+    }
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+body
+    };
+
+    return Promise.race([
+        fetch(`${LIVE_PROD_URL}/newstrategyget`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])
+
+}
+export const quantitativeStrategies = async (userId:string) => {
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+
+    const myHeaders = {
+        "TOKEN": Token,
+        "ID": userId
+    }
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+
+    };
+
+    return Promise.race([
+        fetch(`${LIVE_PROD_URL}/ostrategy`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])
+
+}
 
 
 

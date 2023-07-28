@@ -71,7 +71,7 @@ const EditProfile = () => {
 
             const formData = new FormData()
             formData.append('username', username)
-            formData.append('password', password)
+
 
 
         }

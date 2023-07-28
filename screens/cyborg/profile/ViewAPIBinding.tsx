@@ -24,7 +24,6 @@ import TextInput from "../../../components/inputs/TextInput";
 import {MyButton} from "../../../components/MyButton";
 
 
-
 const formSchema = yup.object().shape({
 
     apiKey: yup.string().required('API Key is required'),
@@ -34,12 +33,11 @@ const formSchema = yup.object().shape({
 });
 
 
-
-const ViewAPIBinding = ({route,navigation}: RootStackScreenProps<'ViewAPIBinding'>) => {
+const ViewAPIBinding = ({route, navigation}: RootStackScreenProps<'ViewAPIBinding'>) => {
 
     const dispatch = useAppDispatch()
     const queryClient = useQueryClient()
-    const {exchange, apiSecrete, apiKey,isBound} = route.params
+    const {exchange, apiSecrete, apiKey, isBound} = route.params
 
     const [copied, setCopied] = useState(false);
 
@@ -72,32 +70,31 @@ const ViewAPIBinding = ({route,navigation}: RootStackScreenProps<'ViewAPIBinding
     };
 
 
+    const {isLoading, mutate} = useMutation(['bindAPI'], bindAPI, {
+        onSuccess: async (data) => {
 
-   const {isLoading,mutate} = useMutation(['bindAPI'],bindAPI,{
-       onSuccess: async (data) => {
+            if (data.status == 1) {
 
-           if (data.status == 1) {
+                navigation.navigate('SuccessScreen', {
+                    type: 'success',
+                    title: `${exchange} API Updated successfully`,
+                    message: data.message
+                })
 
-               navigation.navigate('SuccessScreen', {
-                   type: 'success',
-                   title: `${exchange} API Updated successfully`,
-                   message: data.message
-               })
-
-           } else {
-               dispatch(addNotificationItem({
-                   id: Math.random(),
-                   type: 'error',
-                   body:data?.data,
-               }))
-           }
+            } else {
+                dispatch(addNotificationItem({
+                    id: Math.random(),
+                    type: 'error',
+                    body: data?.data,
+                }))
+            }
 
 
-       },
-       onSettled: () => {
-           queryClient.invalidateQueries(['transferAsset']);
-       }
-   })
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries(['transferAsset']);
+        }
+    })
 
     const {
         resetForm,
@@ -118,17 +115,17 @@ const ViewAPIBinding = ({route,navigation}: RootStackScreenProps<'ViewAPIBinding
 
         },
         onSubmit: (values) => {
-            const {APISecrete, apiKey,passphrase} = values;
+            const {APISecrete, apiKey, passphrase} = values;
 
 
             const formData = new FormData()
             formData.append('api_passphrase', passphrase)
             formData.append('api_key', apiKey)
             formData.append('api_secret', APISecrete)
-            formData.append('bind', isBound == '1' ? '0' :'1')
+            formData.append('bind', isBound == '1' ? '0' : '1')
             formData.append('exchange', exchange)
 
-            mutate({body:formData,userId:User_Details.id})
+            mutate({body: formData, userId: User_Details.id})
 
 
         }
@@ -158,10 +155,14 @@ const ViewAPIBinding = ({route,navigation}: RootStackScreenProps<'ViewAPIBinding
                         </Text>
                         <View style={styles.planMessage}>
                             <Text style={styles.planMessageTxt}>
-                                for security, binance Exchange recommends binding the server IP address when creating the API.
-                                For users who need to bind the IP address, click Edit permissions in the upper right corner
-                                after the API is created, and click in the IP address permission column to restrict access to
-                                only trusted IPs. (Recommended) option, click the copy button to copy the IP group to the input
+                                for security, binance Exchange recommends binding the server IP address when creating
+                                the API.
+                                For users who need to bind the IP address, click Edit permissions in the upper right
+                                corner
+                                after the API is created, and click in the IP address permission column to restrict
+                                access to
+                                only trusted IPs. (Recommended) option, click the copy button to copy the IP group to
+                                the input
                                 box and click OK, after adding, click save in the upper right corner.
                             </Text>
                         </View>
@@ -187,10 +188,6 @@ const ViewAPIBinding = ({route,navigation}: RootStackScreenProps<'ViewAPIBinding
 
                     </View>
                     <HorizontalLine margin={20}/>
-
-
-
-
 
 
                     <View style={styles.authContainer}>
@@ -237,26 +234,26 @@ const ViewAPIBinding = ({route,navigation}: RootStackScreenProps<'ViewAPIBinding
 
                         {
                             isBound == '0'
-                        &&
-                        <TextInput
+                            &&
+                            <TextInput
 
-                            placeholder="Passphrase"
-                            keyboardType={"default"}
-                            touched={touched.passphrase}
-                            error={touched.passphrase && errors.passphrase}
-                            onFocus={() => setFocusPassphrase(true)}
-                            onChangeText={(e) => {
-                                handleChange('passphrase')(e);
-                                setPassphrase(e);
-                            }}
-                            onBlur={(e) => {
-                                handleBlur('passphrase')(e);
-                                setFocusPassphrase(false);
-                            }}
-                            defaultValue={passphrase}
-                            focus={focusPassphrase}
-                            value={values.passphrase}
-                            label="API Passphrase"/>
+                                placeholder="Passphrase"
+                                keyboardType={"default"}
+                                touched={touched.passphrase}
+                                error={touched.passphrase && errors.passphrase}
+                                onFocus={() => setFocusPassphrase(true)}
+                                onChangeText={(e) => {
+                                    handleChange('passphrase')(e);
+                                    setPassphrase(e);
+                                }}
+                                onBlur={(e) => {
+                                    handleBlur('passphrase')(e);
+                                    setFocusPassphrase(false);
+                                }}
+                                defaultValue={passphrase}
+                                focus={focusPassphrase}
+                                value={values.passphrase}
+                                label="API Passphrase"/>
                         }
 
                     </View>
@@ -264,23 +261,23 @@ const ViewAPIBinding = ({route,navigation}: RootStackScreenProps<'ViewAPIBinding
                     {
                         isBound == '0'
                         &&
-                    <MyButton onPress={() => {
-                        handleSubmit()
-                    }} activeOpacity={0.7}
-                              style={[styles.button, {
-                                  backgroundColor: !isValid ? Colors.disabled : Colors.purplePrimary
-                              }]} disabled={!isValid}>
+                        <MyButton onPress={() => {
+                            handleSubmit()
+                        }} activeOpacity={0.7}
+                                  style={[styles.button, {
+                                      backgroundColor: !isValid ? Colors.disabled : Colors.purplePrimary
+                                  }]} disabled={!isValid}>
 
-                        {
-                            isLoading ? <ActivityIndicator color={"#fff"} size='small'/>
-                                :
-                                <Text style={styles.btnText}>
-                                  Bind
-                                </Text>
-                        }
+                            {
+                                isLoading ? <ActivityIndicator color={"#fff"} size='small'/>
+                                    :
+                                    <Text style={styles.btnText}>
+                                        Bind
+                                    </Text>
+                            }
 
 
-                    </MyButton>
+                        </MyButton>
                     }
 
 
@@ -288,44 +285,43 @@ const ViewAPIBinding = ({route,navigation}: RootStackScreenProps<'ViewAPIBinding
                         isBound == '1'
                         &&
 
-<View style={styles.buttonRow}>
-    <MyButton onPress={() => {
-        handleSubmit()
-    }} activeOpacity={0.7}
-              style={[styles.smallButton, {
-                  backgroundColor: !isValid ? Colors.disabled : Colors.purplePrimary
-              }]} disabled={!isValid}>
+                        <View style={styles.buttonRow}>
+                            <MyButton onPress={() => {
+                                handleSubmit()
+                            }} activeOpacity={0.7}
+                                      style={[styles.smallButton, {
+                                          backgroundColor: !isValid ? Colors.disabled : Colors.purplePrimary
+                                      }]} disabled={!isValid}>
 
-        {
-            isLoading ? <ActivityIndicator color={"#fff"} size='small'/>
-                :
-                <Text style={styles.btnText}>
-                    UNBIND
-                </Text>
-        }
-
-
-    </MyButton>
-
-    <MyButton activeOpacity={0.7}
-              style={[styles.smallButton, {
-                  backgroundColor: !isValid ? Colors.disabled : Colors.primary
-              }]} disabled={!isValid}>
-
-        {
-            isLoading ? <ActivityIndicator color={"#fff"} size='small'/>
-                :
-                <Text style={styles.btnText}>
-                    REPLACE
-                </Text>
-        }
+                                {
+                                    isLoading ? <ActivityIndicator color={"#fff"} size='small'/>
+                                        :
+                                        <Text style={styles.btnText}>
+                                            UNBIND
+                                        </Text>
+                                }
 
 
-    </MyButton>
+                            </MyButton>
+
+                            <MyButton activeOpacity={0.7}
+                                      style={[styles.smallButton, {
+                                          backgroundColor: !isValid ? Colors.disabled : Colors.primary
+                                      }]} disabled={!isValid}>
+
+                                {
+                                    isLoading ? <ActivityIndicator color={"#fff"} size='small'/>
+                                        :
+                                        <Text style={styles.btnText}>
+                                            REPLACE
+                                        </Text>
+                                }
 
 
+                            </MyButton>
 
-</View>
+
+                        </View>
                     }
                 </KeyboardAwareScrollView>
 
@@ -370,12 +366,12 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     planMessageTxt: {
-lineHeight:heightPixel(20),
+        lineHeight: heightPixel(20),
         color: Colors.tintText,
         fontSize: fontPixel(14),
         fontFamily: Fonts.faktumRegular
     },
-    copyWrap:{
+    copyWrap: {
         height: 70,
         width: '90%',
         flexDirection: "row",
@@ -418,12 +414,12 @@ lineHeight:heightPixel(20),
         bottom: 0,
     },
 
-    buttonRow:{
-        width:'90%',
-        height:70,
-        flexDirection:'row',
-        alignItems:'center',
-        justifyContent:'space-between'
+    buttonRow: {
+        width: '90%',
+        height: 70,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
     }
 })
 

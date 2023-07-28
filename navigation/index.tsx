@@ -45,6 +45,8 @@ import SuccessScreen from "../screens/cyborg/SuccessScreen";
 import EditProfile from "../screens/cyborg/profile/EditProfile";
 import CouncellerScreen from "../screens/cyborg/profile/CouncellerScreen";
 import ViewAPIBinding from "../screens/cyborg/profile/ViewAPIBinding";
+import SyncStrategy from "../screens/cyborg/profile/SyncStrategy";
+import LogScreen from "../screens/cyborg/strategy/LogScreen";
 
 
 export default function Navigation({colorScheme}: { colorScheme: ColorSchemeName }) {
@@ -187,6 +189,8 @@ function RootNavigator() {
                 <Stack.Screen name={"EditProfile"} component={EditProfile}/>
                 <Stack.Screen name={"CouncellerScreen"} component={CouncellerScreen}/>
                 <Stack.Screen name={"ViewAPIBinding"} component={ViewAPIBinding}/>
+                <Stack.Screen name={"SyncStrategy"} component={SyncStrategy}/>
+                <Stack.Screen name={"LogScreen"} component={LogScreen}/>
 
                 <Stack.Screen name={"LeaderBoard"} component={LeaderBoard}/>
 

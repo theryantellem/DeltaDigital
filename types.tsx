@@ -26,6 +26,7 @@ import LeaderBoard from "./screens/cyborg/more/LeaderBoard";
 import EditProfile from "./screens/cyborg/profile/EditProfile";
 import CouncellerScreen from "./screens/cyborg/profile/CouncellerScreen";
 import ViewAPIBinding from "./screens/cyborg/profile/ViewAPIBinding";
+import LogScreen from "./screens/cyborg/strategy/LogScreen";
 
 
 
@@ -66,6 +67,11 @@ export type RootStackParamList = {
     Assets: undefined;
     LeaderBoard: undefined;
     CouncellerScreen: undefined;
+    SyncStrategy: undefined;
+    LogScreen: {
+        market:string,
+        exchange:string
+    };
     SuccessScreen: {
         title:string,
         message:string,

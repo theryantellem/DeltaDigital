@@ -5,14 +5,14 @@ import {Platform, Pressable} from "react-native";
 export function MyButton(props: ButtonProps) {
     return  Platform.OS === 'android' ?  <TouchableOpacity activeOpacity={0.6} {...props} style={[props.style, {
 
-            height: heightPixel(55),
+            height: heightPixel(50),
             alignItems: 'center',
             borderRadius:8,
 
 
         }]}/> :
         <Pressable {...props} style={[props.style, {
-            height: heightPixel(55),
+            height: heightPixel(50),
             alignItems: 'center',
 
             borderRadius:8,

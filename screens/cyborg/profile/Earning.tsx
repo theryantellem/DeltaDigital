@@ -81,7 +81,7 @@ const Earnings = ({}: RootStackScreenProps<'Earnings'>) => {
                                     Activate total profit
                                 </Text>
 
-                                <Ionicons name="eye-outline" size={16} color={Colors.lightText}/>
+
 
                             </TouchableOpacity>
 
@@ -113,7 +113,7 @@ const Earnings = ({}: RootStackScreenProps<'Earnings'>) => {
                                     Activate profit today
                                 </Text>
 
-                                <Ionicons name="eye-outline" size={16} color={Colors.lightText}/>
+
 
 
                             </TouchableOpacity>
@@ -163,7 +163,7 @@ const Earnings = ({}: RootStackScreenProps<'Earnings'>) => {
                                     Direct earning activated
                                 </Text>
 
-                                <Ionicons name="eye-outline" size={16} color={Colors.lightText}/>
+
 
                             </TouchableOpacity>
 
@@ -195,7 +195,7 @@ const Earnings = ({}: RootStackScreenProps<'Earnings'>) => {
                                      Not activated
                                 </Text>
 
-                                <Ionicons name="eye-outline" size={16} color={Colors.lightText}/>
+
 
 
                             </TouchableOpacity>

@@ -31,8 +31,6 @@ import {logoutUser} from "../../app/slices/userSlice";
 import EditProfile from "./profile/EditProfile";
 
 
-
-
 const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
 
     const queryClient = useQueryClient()
@@ -40,11 +38,12 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
 
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
-    const navigate = (screen: 'Assets' | 'RewardDetails' | 'SettingsScreen' | 'ApiBinding' | 'Earnings' | 'EditProfile' | 'CouncellerScreen') => {
+    const navigate = (screen: 'Assets' | 'RewardDetails' | 'SettingsScreen' | 'ApiBinding' |
+        'Earnings' | 'EditProfile' | 'CouncellerScreen' | 'SyncStrategy') => {
         navigation.navigate(screen)
     }
 
-   const {data, refetch} = useQuery(['user-data'],()=> getUser(User_Details.id))
+    const {data, refetch} = useQuery(['user-data'], () => getUser(User_Details.id))
 
 
     const logout = async () => {
@@ -61,7 +60,6 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
 
 
     useRefreshOnFocus(refetch)
-
 
 
     return (
@@ -86,16 +84,15 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
                     <View style={styles.profileDetails}>
                         <View style={styles.profileImage}>
 
-                                <FastImage
-                                    style={styles.Avatar}
-                                    source={{
-                                        uri: User_Details.image ? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png',
-                                        cache: FastImage.cacheControl.web,
-                                        priority: FastImage.priority.normal,
-                                    }}
-                                    resizeMode={FastImage.resizeMode.cover}
-                                />
-
+                            <FastImage
+                                style={styles.Avatar}
+                                source={{
+                                    uri: User_Details.image ? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png',
+                                    cache: FastImage.cacheControl.web,
+                                    priority: FastImage.priority.normal,
+                                }}
+                                resizeMode={FastImage.resizeMode.cover}
+                            />
 
 
                         </View>
@@ -105,7 +102,7 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
                             </Text>
                         </View>
 
-                        <TouchableOpacity onPress={()=>navigate('EditProfile')} activeOpacity={0.6}
+                        <TouchableOpacity onPress={() => navigate('EditProfile')} activeOpacity={0.6}
                                           style={styles.editProfile}>
                             <Text style={styles.btnTxt}>
                                 Edit profile
@@ -158,7 +155,7 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
 
                         </TouchableOpacity>
 
-                        <TouchableOpacity activeOpacity={0.6} style={styles.profileButton}>
+                        <TouchableOpacity onPress={()=>navigate('SyncStrategy')} activeOpacity={0.6} style={styles.profileButton}>
 
                             <View style={styles.leftContent}>
 
@@ -276,7 +273,8 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
                         </TouchableOpacity>
 
 
-                        <TouchableOpacity onPress={()=>navigate('CouncellerScreen')} activeOpacity={0.6} style={styles.profileButton}>
+                        <TouchableOpacity onPress={() => navigate('CouncellerScreen')} activeOpacity={0.6}
+                                          style={styles.profileButton}>
 
                             <View style={styles.leftContent}>
 
@@ -444,8 +442,8 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.faktumSemiBold,
         color: Colors.text
     },
-    logoutText:{
-        color:Colors.errorRed,
+    logoutText: {
+        color: Colors.errorRed,
         fontSize: fontPixel(16),
         fontFamily: Fonts.faktumSemiBold,
 
