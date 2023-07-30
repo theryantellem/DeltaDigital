@@ -39,7 +39,7 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
     const navigate = (screen: 'Assets' | 'RewardDetails' | 'SettingsScreen' | 'ApiBinding' |
-        'Earnings' | 'EditProfile' | 'CouncellerScreen' | 'SyncStrategy') => {
+        'Earnings' | 'EditProfile' | 'CouncellerScreen' | 'SyncStrategy' | 'ContactUs') => {
         navigation.navigate(screen)
     }
 
@@ -254,7 +254,7 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
                         </TouchableOpacity>
 
 
-                        <TouchableOpacity activeOpacity={0.6} style={styles.profileButton}>
+                        <TouchableOpacity onPress={()=>navigate('ContactUs')} activeOpacity={0.6} style={styles.profileButton}>
 
                             <View style={styles.leftContent}>
 

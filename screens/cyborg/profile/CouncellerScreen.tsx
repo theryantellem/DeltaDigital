@@ -45,13 +45,13 @@ const CouncellerScreen = () => {
                         </View>
                         <View style={styles.welcomeBack}>
                             <Text style={styles.welcomeBackTxt}>
-                                {data.data['My Counselor'][0].name}
+                                {data?.data['My Counselor'][0].name}
 
                             </Text>
                         </View>
                         <View style={styles.profileName}>
                             <Text style={styles.profileNameTxt}>
-                                {data.data['My Counselor'][0].email}
+                                {data?.data['My Counselor'][0].email}
 
                             </Text>
                         </View>

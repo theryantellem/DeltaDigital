@@ -2,6 +2,8 @@ const tintColorLight = '#2f95dc';
 const tintColorDark = '#fff';
 
 export default {
+    primaryGradient:['#04074E', '#141621',],
+    btnGradient:['#F6465D', '#310886',],
     primaryLight: "#D6798F",
     primary: "#F6465D",
     purplePrimary: "#4406b0",
@@ -22,6 +24,7 @@ export default {
     greyText: "#9CA3AF",
     lightGrey: "#E6E9EB",
     pendingYellow: "#F7931A",
+    tintPending: "#fff3e6",
     blue: "#216CDA",
     orange: "#FF6D3B",
     indigo: "#797FD6",

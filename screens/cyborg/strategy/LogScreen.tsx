@@ -35,6 +35,10 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
         () => getNewstrategy({body: formdata, userId: User_Details.id}))
 
     useRefreshOnFocus(fetchNewStrategy)
+
+
+    console.log("********************quantitativeStrategies********************")
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <LinearGradient style={styles.background}
@@ -68,8 +72,13 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                                 <View style={styles.balanceTop}>
 
                                     <View style={styles.balanceTitle}>
-                                        <Text style={styles.balText}>
-                                            Cycle
+                                        <Text style={[styles.balText,{
+                                            color: Colors.success
+                                        }]}>
+
+                                            {newStrategy?.data['Operation Strategy'][0].cycle == '1' && 'Cycle'}
+                                            {newStrategy?.data['Operation Strategy'][0]['One-shot'] == '1' && 'One-shot'}
+
                                         </Text>
 
                                     </View>
@@ -538,7 +547,7 @@ const styles = StyleSheet.create({
     balText: {
         fontFamily: Fonts.faktumMedium,
         color: Colors.tintText,
-        fontSize: fontPixel(12),
+        fontSize: fontPixel(14),
         marginRight: 5,
     },
     balanceGraph: {

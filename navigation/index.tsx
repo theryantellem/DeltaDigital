@@ -47,6 +47,9 @@ import CouncellerScreen from "../screens/cyborg/profile/CouncellerScreen";
 import ViewAPIBinding from "../screens/cyborg/profile/ViewAPIBinding";
 import SyncStrategy from "../screens/cyborg/profile/SyncStrategy";
 import LogScreen from "../screens/cyborg/strategy/LogScreen";
+import ContactUs from "../screens/cyborg/profile/ContactUs";
+import FeedbackRecord from "../screens/cyborg/profile/FeedbackRecord";
+import Quantitative from "../screens/cyborg/Quantitative";
 
 
 export default function Navigation({colorScheme}: { colorScheme: ColorSchemeName }) {
@@ -191,6 +194,9 @@ function RootNavigator() {
                 <Stack.Screen name={"ViewAPIBinding"} component={ViewAPIBinding}/>
                 <Stack.Screen name={"SyncStrategy"} component={SyncStrategy}/>
                 <Stack.Screen name={"LogScreen"} component={LogScreen}/>
+                <Stack.Screen name={"ContactUs"} component={ContactUs}/>
+                <Stack.Screen name={"FeedbackRecord"} component={FeedbackRecord}/>
+                <Stack.Screen name={"Quantitative"} component={Quantitative}/>
 
                 <Stack.Screen name={"LeaderBoard"} component={LeaderBoard}/>
 

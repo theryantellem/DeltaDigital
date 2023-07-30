@@ -508,6 +508,37 @@ export const quantitativeStrategies = async (userId:string) => {
     ])
 
 }
+export const botTradeSetting = async ({userId,body}:{userId: string,body:any}) => {
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+
+    const myHeaders = {
+        "TOKEN": Token,
+        "ID": userId,
+        "Content-Type": 'multipart/form-data'
+    }
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body
+
+    };
+
+    return Promise.race([
+        fetch(`${LIVE_PROD_URL}/tradesetting`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])
+
+}
 
 
 
@@ -528,6 +559,63 @@ export const getBanner = async (userId:string) => {
 
     return Promise.race([
         fetch(`${LIVE_PROD_URL}/Banner`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])
+
+}
+
+
+export const getFeedback = async (userId:string) => {
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+
+    const myHeaders = {
+        "TOKEN": Token,
+        "ID": userId
+    }
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+
+    };
+
+    return Promise.race([
+        fetch(`${LIVE_PROD_URL}/Feedback`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])
+
+}
+
+
+export const binanceTicker = async () => {
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+
+
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'GET',
+    };
+
+    return Promise.race([
+        fetch(`https://api.binance.com/api/v3/ticker/24hr`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)

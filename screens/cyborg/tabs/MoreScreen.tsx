@@ -70,7 +70,7 @@ const dispatch = useAppDispatch()
         []
     );
 
-    const navigate = (screen: 'LeaderBoard' | 'NewsScreen') => {
+    const navigate = (screen: 'LeaderBoard' | 'NewsScreen'|'Quantitative') => {
         navigation.navigate(screen)
     }
 
@@ -131,7 +131,7 @@ const dispatch = useAppDispatch()
                                 </TouchableOpacity>
 
 
-                                <TouchableOpacity activeOpacity={0.6} style={styles.dashButton}>
+                                <TouchableOpacity onPress={()=>navigate('Quantitative')} activeOpacity={0.6} style={styles.dashButton}>
                                     <View style={styles.dashIcon}>
                                         <AntDesign name="profile" size={20} color="#fff"/>
                                     </View>

@@ -27,6 +27,8 @@ import EditProfile from "./screens/cyborg/profile/EditProfile";
 import CouncellerScreen from "./screens/cyborg/profile/CouncellerScreen";
 import ViewAPIBinding from "./screens/cyborg/profile/ViewAPIBinding";
 import LogScreen from "./screens/cyborg/strategy/LogScreen";
+import ContactUs from "./screens/cyborg/profile/ContactUs";
+import Quantitative from "./screens/cyborg/Quantitative";
 
 
 
@@ -47,7 +49,10 @@ export type RootStackParamList = {
     NewsScreen: undefined;
     SelectType: undefined;
     SelectExchange: undefined;
-    SelectAsset: undefined;
+    SelectAsset: {
+
+        exchange:string
+    };
     TradeSetting: undefined;
     ReviewScreen: undefined;
     OverView: undefined;
@@ -84,7 +89,9 @@ export type RootStackParamList = {
         isBound:'0'|'1',
 
     };
-
+    ContactUs:undefined
+    FeedbackRecord:undefined
+    Quantitative:undefined
 
     //END CYBORG
 

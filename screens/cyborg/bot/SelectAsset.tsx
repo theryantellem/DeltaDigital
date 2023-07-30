@@ -1,6 +1,6 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 
-import {Text, View, StyleSheet, Image, FlatList, Pressable} from 'react-native';
+import {Text, View, StyleSheet, Image, FlatList, Pressable, RefreshControl, ActivityIndicator} from 'react-native';
 import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -9,38 +9,46 @@ import {fontPixel, heightPixel, pixelSizeVertical, widthPixel} from "../../../he
 import Colors from "../../../constants/Colors";
 import {Fonts} from "../../../constants/Fonts";
 import {LineChart} from 'react-native-wagmi-charts';
-import {currencyFormatter} from "../../../helpers";
+import {currencyFormatter, titleCase, wait} from "../../../helpers";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-reanimated";
+import {getUser, quantitativeStrategies} from "../../../api";
+import {useQuery} from "@tanstack/react-query";
+import {useAppSelector} from "../../../app/hooks";
+import {FlashList} from "@shopify/flash-list";
+import TextInput from "../../../components/inputs/TextInput";
+import SearchInput from "../../../components/inputs/SearchInput";
 
 
 const AssetData = [
     {
-        id:'1',
-        image:'https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/512/Ethereum-ETH-icon.png',
-        coinName:'Ethereum',
-        symbol:'ETH/USDT',
-        price:6090,
-        balance:'0.9993',
-    },{
-        id:'2',
-        image:'https://cdn-icons-png.flaticon.com/512/5968/5968260.png',
-        coinName:'Bitcoin',
-        symbol:'BTC/USDT',
-        price:26090,
-        balance:'1.9993',
+        id: '1',
+        image: 'https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/512/Ethereum-ETH-icon.png',
+        coinName: 'Ethereum',
+        symbol: 'ETH/USDT',
+        price: 6090,
+        balance: '0.9993',
+    }, {
+        id: '2',
+        image: 'https://cdn-icons-png.flaticon.com/512/5968/5968260.png',
+        coinName: 'Bitcoin',
+        symbol: 'BTC/USDT',
+        price: 26090,
+        balance: '1.9993',
     }
 ]
 
 
 interface props {
-    continueAsset:()=>void,
-    item:{
-        id:string,
-        image:string,
-        coinName:string,
-        symbol:string,
-        price:number,
-        balance:string,
+    continueAsset: () => void,
+    item: {
+        id: string,
+        Quantity: string,
+        Market: string,
+        Avg_Price:string,
+        coinName: string,
+        symbol: string,
+        price: number,
+        balance: string,
     }
 }
 
@@ -86,56 +94,67 @@ const coinData = [
 ];
 
 
-const AssetCard = ({item,continueAsset}:props) => {
+const AssetCard = ({item, continueAsset}: props) => {
+
+
+    const user = useAppSelector(state => state.user)
+    const {User_Details} = user
+
+
     return (
-        <Animated.View key={item.id} layout={Layout.easing(Easing.bounce).delay(100)}
-                       entering={FadeInDown.springify()} exiting={FadeOutDown}>
-        <Pressable onPress={continueAsset} style={styles.AssetCard}>
+        <Animated.View key={item.Market} layout={Layout.easing(Easing.ease)}
+                       entering={FadeInDown} exiting={FadeOutDown}>
+            <Pressable onPress={continueAsset} style={styles.AssetCard}>
 
-            <View style={styles.assetIcon}>
-                <View style={styles.assetCardIcon}>
-                    <Image source={{uri: item.image}}
-                           style={styles.logo}/>
+                <View style={styles.assetIcon}>
+                    <View style={styles.assetCardIcon}>
+                        <Image source={{uri:`https://backend.deltacyborg.pro/Upload/coin/${item['coin image']}`}}
+                               style={styles.logo}/>
+                    </View>
                 </View>
-            </View>
 
-            <View style={styles.coinName}>
-                <Text style={styles.coinSymbol}>
-                    {item.symbol}
-                </Text>
-                <Text style={styles.coinNameText}>
-                    {item.coinName}
-                </Text>
-            </View>
+                <View style={styles.coinName}>
+                    <Text style={styles.coinSymbol}>
+                        {item.Market}
+                    </Text>
+                    <Text style={styles.coinNameText}>
+                        {item.balance}
+                    </Text>
+                </View>
 
-            <View style={styles.assetChart}>
-                <LineChart.Provider data={coinData}>
-                    <LineChart height={heightPixel(70)} width={widthPixel(90)}>
-                        <LineChart.Path color={Colors.successChart}/>
-                    </LineChart>
-                </LineChart.Provider>
-            </View>
+                <View style={styles.assetChart}>
+                   {/* <LineChart.Provider data={coinData}>
+                        <LineChart height={heightPixel(70)} width={widthPixel(90)}>
+                            <LineChart.Path color={Colors.successChart}/>
+                        </LineChart>
+                    </LineChart.Provider>*/}
+                </View>
 
 
-            <View style={styles.priceSection}>
-                <Text style={styles.coinSymbol}>
-                    {currencyFormatter('en-US','USD').format(item.price)}
-                </Text>
-                <Text style={styles.coinNameText}>
-                    {item.balance}
-                </Text>
-            </View>
+                <View style={styles.priceSection}>
+                    <Text style={styles.coinSymbol}>
+                        {currencyFormatter('en-US', 'USD').format(item.Avg_Price)}
+                    </Text>
+                    <Text style={styles.coinNameText}>
+                        {item.Quantity}
+                    </Text>
+                </View>
 
-        </Pressable>
+            </Pressable>
         </Animated.View>
     )
 }
 
-const SelectAsset = ({navigation}: RootStackScreenProps<'SelectAsset'>) => {
+const SelectAsset = ({navigation,route}: RootStackScreenProps<'SelectAsset'>) => {
 
-const continueAsset = () => {
-  navigation.navigate('TradeSetting')
-}
+    const {exchange} = route.params
+    const user = useAppSelector(state => state.user)
+    const {User_Details} = user
+    const [refreshing, setRefreshing] = useState(false);
+    const [searchValue, setSearchValue] = useState('');
+    const continueAsset = () => {
+        navigation.navigate('TradeSetting')
+    }
 
     const renderItem = useCallback(
         ({item}: any) => <AssetCard continueAsset={continueAsset} item={item}/>,
@@ -143,8 +162,24 @@ const continueAsset = () => {
     );
 
 
-    const keyExtractor = useCallback((item: { id: string; }) => item.id, [],);
+    const keyExtractor = useCallback((item: {
+        id: string;
+    }) => item.id, [],);
+    const {data, refetch,isLoading} = useQuery([`quantitativeStrategies`], () => quantitativeStrategies(User_Details.id))
+  //  console.log("********************quantitativeStrategies********************")
+   // console.log(data.data['Operation Strategy'])
+    const refresh = () => {
+        setRefreshing(true)
+       refetch()
+        wait(2000).then(() => setRefreshing(false));
+    }
 
+    let filterAssets: readonly any[] | null | undefined = []
+    if (!isLoading && data && data.data['Operation Strategy']) {
+        filterAssets = data.data['Operation Strategy'].filter((item: { exchange: string; }) => item.exchange == exchange)?.filter((assets: { Market: string | string[]; }) =>
+            assets?.Market?.includes(searchValue.toUpperCase().trim())
+        )
+    }
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -162,15 +197,42 @@ const continueAsset = () => {
 
                 <View style={styles.scrollView}>
 
+                    <SearchInput
 
-                    <FlatList
-                        style={{width:'100%'}}
+                        placeholder="Search market pair"
+                        keyboardType={"number-pad"}
+
+                        onChangeText={(e) => {
+                            setSearchValue(e);
+
+                        }}
+                        value={searchValue}
+                        />
+                    {
+                        isLoading && <ActivityIndicator size='small' color={Colors.primary}/>
+                    }
+
+                    {
+                        !isLoading && data &&
+
+                    <FlashList
+                       // style={{width: '100%'}}
                         scrollEnabled
+                        estimatedItemSize={200}
                         onEndReachedThreshold={0.3}
                         showsVerticalScrollIndicator={false}
-                        data={AssetData}
-                        renderItem={renderItem} keyExtractor={keyExtractor}/>
+                        data={filterAssets}
+                        renderItem={renderItem} keyExtractor={keyExtractor}
 
+                        refreshControl={
+                            <RefreshControl
+                                tintColor={Colors.text}
+                                refreshing={refreshing}
+                                onRefresh={refresh}
+                            />
+                        }
+                    />
+                    }
 
                 </View>
 
@@ -196,7 +258,7 @@ const styles = StyleSheet.create({
     scrollView: {
         width: '90%',
         flex: 1,
-        alignItems: "center"
+        //alignItems: "center"
     },
     AssetCard: {
         width: '100%',
