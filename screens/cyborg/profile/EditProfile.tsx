@@ -36,7 +36,6 @@ const formSchema = yup.object().shape({
 const EditProfile = () => {
 
 
-
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
 
@@ -72,7 +71,6 @@ const EditProfile = () => {
 
             const formData = new FormData()
             formData.append('username', username)
-
 
 
         }
@@ -117,7 +115,8 @@ const EditProfile = () => {
                     <View style={styles.authContainer}>
 
                         <TextInput
-
+                            editable={false}
+                            inputBg={Colors.secondary}
                             placeholder="Username"
                             keyboardType={"default"}
                             touched={touched.username}
@@ -139,7 +138,7 @@ const EditProfile = () => {
                         <TextInput
                             editable={false}
                             inputBg={Colors.secondary}
-defaultValue={User_Details.id}
+                            defaultValue={User_Details.id}
                             onFocus={() => setFocusUsername(true)}
 
                             onBlur={(e) => {
@@ -160,7 +159,7 @@ defaultValue={User_Details.id}
                                 setFocusUsername(false);
                             }}
 
-defaultValue={User_Details.Email}
+                            defaultValue={User_Details.Email}
                             label="Email"/>
 
                         <TextInput
@@ -174,13 +173,13 @@ defaultValue={User_Details.Email}
                                 setFocusUsername(false);
                             }}
 
-defaultValue={dayjs.unix(User_Details.expires).format('ddd, DD MMM YYYY')}
+                            defaultValue={dayjs.unix(User_Details.expires).format('ddd, DD MMM YYYY')}
                             label="Subscription Expiry"/>
 
 
                     </View>
 
-                    <MyButton onPress={() => {
+                    {/*   <MyButton onPress={() => {
                         handleSubmit()
                     }} activeOpacity={0.7}
                               style={[styles.button, {
@@ -194,7 +193,7 @@ defaultValue={dayjs.unix(User_Details.expires).format('ddd, DD MMM YYYY')}
 
 
 
-                    </MyButton>
+                    </MyButton>*/}
                 </KeyboardAwareScrollView>
             </LinearGradient>
         </SafeAreaView>

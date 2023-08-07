@@ -107,7 +107,7 @@ const SelectValue = ({selected, item, action}: itemProps) => (
 
 const QuantitativeItem = ({item,tickers,continueAsset}:props) => {
 
-const tickerRes = tickers.find((ticker: { symbol: string; }) => ticker.symbol == item.Market.replace('/', '') )
+const tickerRes = tickers?.find((ticker: { symbol: string; }) => ticker.symbol == item.Market.replace('/', '') )
 
   return(
       <Pressable onPress={()=>continueAsset(item.exchange,item.Market)} style={styles.quantitativeCard}>
@@ -187,7 +187,7 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
 
     const [refreshing, setRefreshing] = useState(false);
 
-    const {data:tickers,refetch:fetchTickers}= useQuery(['binanceTicker'],binanceTicker)
+    const {data:tickers,refetch:fetchTickers,isLoading:fetchingTickers}= useQuery(['binanceTicker'],binanceTicker)
 //   const {data:tickers}= useQuery(['binanceTicker'],binanceTicker)
 
 
@@ -347,11 +347,11 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
                 <View style={styles.flatList}>
 
                     {
-                        isLoading && <ActivityIndicator size='small' color={Colors.primary}/>
+                        isLoading &&  fetchingTickers && <ActivityIndicator size='small' color={Colors.primary}/>
                     }
 
                     {
-                        !isLoading && data &&
+                        !isLoading && !fetchingTickers && data &&
                         <FlashList
                             estimatedItemSize={200}
                             refreshing={isLoading}

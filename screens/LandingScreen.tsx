@@ -1,6 +1,16 @@
 import React, {useCallback, useState} from 'react';
 
-import {Text, View, StyleSheet, ScrollView, TouchableOpacity, Image, ActivityIndicator} from 'react-native';
+import {
+    Text,
+    View,
+    StyleSheet,
+    ScrollView,
+    TouchableOpacity,
+    Image,
+    ActivityIndicator,
+    Dimensions,
+    Platform
+} from 'react-native';
 import {RootStackScreenProps} from "../types";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -14,8 +24,28 @@ import {CyborgBottomTab} from "../navigation/cyborg";
 import {useAppSelector} from "../app/hooks";
 import FastImage from "react-native-fast-image";
 import {useQuery} from "@tanstack/react-query";
-import {checkUserPlan, getUser} from "../api";
-import {useRefreshOnFocus} from "../helpers";
+import {checkUserPlan, getAsset, getUser} from "../api";
+import {currencyFormatter, useRefreshOnFocus} from "../helpers";
+
+
+
+
+
+const {width} = Dimensions.get('screen');
+const CARD_WIDTH = Dimensions.get('window').width * 0.8
+const CARD_HEIGHT = Dimensions.get('window').height * 0.7
+const SPACING_FOR_CARD_INSET = Dimensions.get('window').width * 0.1 - 10
+
+type CardType = {
+    name: string,
+    balance: string|number,
+    bg: string,
+    id: string,
+    action: ()=>void,
+    btnBg: string,
+    description:string,
+    icon:string
+}
 
 const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
     const user = useAppSelector(state => state.user)
@@ -24,7 +54,9 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
     const [greeting, setGreeting] = useState('');
 
 
-  //const {} =  useQuery(['checkUserPlan',User_Details.id],()=>checkUserPlan(User_Details.id))
+    const {data: Asset, refetch: fetchAsset} = useQuery(['user-Asset'], () => getAsset(User_Details.id))
+
+    //const {} =  useQuery(['checkUserPlan',User_Details.id],()=>checkUserPlan(User_Details.id))
 
     const {data, refetch,isLoading} = useQuery(['user-data'],()=> getUser(User_Details.id))
 
@@ -55,6 +87,89 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
     const CyborgHome = () => {
         navigation.navigate('CyborgBottomTab')
     }
+
+
+    const cards = [
+        {
+            name: 'Cyborg',
+            bg: "#090A1C",
+            id: "1",
+            action: CyborgHome,
+            btnBg: "#fff",
+            balance: Asset?.data?.total_assets,
+            description: " Spot/Future",
+            icon:   <Image source={require('../assets/images/cyborg-logo.png')} style={styles.imageLogo}/>,
+
+        },
+        {
+            name: 'Finix',
+            balance:0,
+            bg: "#090A1C",
+            id: "2",
+            action: CyborgHome,
+            btnBg: "#fff",
+            description: "Learn",
+            icon:   <Image source={require('../assets/images/cyborg-logo.png')} style={styles.imageLogo}/>,
+
+        },
+        {
+            name: 'Starfox',
+            balance:0,
+            bg: "#090A1C",
+            id: "3",
+            action: CyborgHome,
+            btnBg: "#fff",
+            description: "Forex",
+            icon:   <Image source={require('../assets/images/signal.jpeg')} style={styles.imageLogo}/>,
+
+        },
+    ]
+
+    const _renderViews = (views: CardType[]): JSX.Element[] => {
+        return views.map(card => {
+            return (
+                <TouchableOpacity
+                    key={card.id}
+                    onPress={CyborgHome}
+                    activeOpacity={0.8} style={[styles.plan,
+                    {backgroundColor: '#090A1C',   width: CARD_WIDTH,}]}>
+                    <View style={styles.planTop}>
+                        <View style={styles.imageCover}>
+                            {card.icon}
+
+                        </View>
+
+
+
+                        <View style={styles.APYPill}>
+                            <Text style={styles.apyText}>
+                                {card.description}
+                            </Text>
+                        </View>
+                    </View>
+
+
+                    <View style={styles.planBottom}>
+                        <View style={styles.planBottomLeft}>
+                            <Text style={styles.planTitle}>
+                                {card.name}
+                            </Text>
+                            <View style={styles.planDescriptionWrap}>
+                                <Text style={styles.planDescription}>
+                                    {currencyFormatter('en-US', 'USD').format(card.balance)}
+                                </Text>
+                            </View>
+
+                        </View>
+
+                        <Entypo name="chevron-right" size={20} color="#60687E"/>
+
+                    </View>
+                </TouchableOpacity>
+            )
+        })
+    }
+
 
     useRefreshOnFocus(refetch)
 
@@ -115,13 +230,6 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
 
                 <ScrollView style={{width: '100%',}} contentContainerStyle={styles.scrollView} scrollEnabled
                             showsVerticalScrollIndicator={false}>
-
-
-                    {
-
-                        !isLoading &&
-                    <>
-
                     <View style={styles.introTextWrap}>
                         <Text style={styles.titleText}>
                             Delta Signal
@@ -133,118 +241,33 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                         </Text>
                     </View>
 
-                    <Animated.View style={styles.planContainer} layout={Layout.easing(Easing.bounce).delay(100)} entering={FadeInDown.springify()} exiting={FadeOutDown}>
-
-
-                        <TouchableOpacity
-                            onPress={CyborgHome}
-                            activeOpacity={0.8} style={[styles.plan,
-                            {backgroundColor: '#090A1C'}]}>
-                            <View style={styles.planTop}>
-                                <View style={styles.imageCover}>
-                                    <Image source={require('../assets/images/cyborg-logo.png')} style={styles.imageLogo}/>
-                                </View>
 
 
 
-                                <View style={styles.APYPill}>
-                                    <Text style={styles.apyText}>
-                                        Spot/Future
-                                    </Text>
-                                </View>
-                            </View>
+                    {
+                        !isLoading &&
 
-
-                            <View style={styles.planBottom}>
-                                <View style={styles.planBottomLeft}>
-                                    <Text style={styles.planTitle}>
-                                        Cyborg
-                                    </Text>
-                                    <View style={styles.planDescriptionWrap}>
-                                        <Text style={styles.planDescription}>
-                                            $185,600
-                                        </Text>
-                                    </View>
-
-                                </View>
-
-                                <Entypo name="chevron-right" size={20} color="#60687E"/>
-
-                            </View>
-                        </TouchableOpacity>
-
-
-                        <TouchableOpacity
-
-                            activeOpacity={0.8} style={[styles.plan,
-                            {backgroundColor: '#090A1C'}]}>
-                            <View style={styles.planTop}>
-                                <FontAwesome name="graduation-cap" size={20} color="#fff"/>
-
-                                <View style={styles.APYPill}>
-                                    <Text style={styles.apyText}>
-                                        Learn
-                                    </Text>
-                                </View>
-                            </View>
-
-
-                            <View style={styles.planBottom}>
-                                <View style={styles.planBottomLeft}>
-                                    <Text style={styles.planTitle}>
-                                        Finix
-                                    </Text>
-                                    <View style={styles.planDescriptionWrap}>
-                                        <Text style={styles.planDescription}>
-                                            $85,000
-                                        </Text>
-                                    </View>
-
-                                </View>
-
-                                <Entypo name="chevron-right" size={20} color="#60687E"/>
-
-                            </View>
-                        </TouchableOpacity>
-
-
-                        <TouchableOpacity
-
-                            activeOpacity={0.8} style={[styles.plan,
-                            {backgroundColor: '#090A1C'}]}>
-                            <View style={styles.planTop}>
-
-                                <MaterialIcons name="waterfall-chart" size={20} color="#fff"/>
-                                <View style={styles.APYPill}>
-                                    <Text style={styles.apyText}>
-                                        Forex
-                                    </Text>
-                                </View>
-                            </View>
-
-
-                            <View style={styles.planBottom}>
-                                <View style={styles.planBottomLeft}>
-                                    <Text style={styles.planTitle}>
-                                        Starfox
-                                    </Text>
-                                    <View style={styles.planDescriptionWrap}>
-                                        <Text style={styles.planDescription}>
-                                            $31,400
-                                        </Text>
-                                    </View>
-
-                                </View>
-
-                                <Entypo name="chevron-right" size={20} color="#60687E"/>
-
-                            </View>
-                        </TouchableOpacity>
-
-                    </Animated.View>
-                    </>
+                    <Animated.ScrollView
+                        layout={Layout.easing(Easing.bounce).delay(100)} entering={FadeInDown.springify()} exiting={FadeOutDown}
+                        showsHorizontalScrollIndicator={false}
+                        horizontal // Change the direction to horizontal
+                        pagingEnabled // Enable paging
+                        decelerationRate={0} // Disable deceleration
+                        snapToInterval={CARD_WIDTH + 10} // Calculate the size for a card including marginLeft and marginRight
+                        snapToAlignment='center' // Snap to the center
+                        contentInset={{ // iOS ONLY
+                            top: 0,
+                            left: SPACING_FOR_CARD_INSET, // Left spacing for the very first card
+                            bottom: 0,
+                            right: SPACING_FOR_CARD_INSET // Right spacing for the very last card
+                        }}
+                        contentContainerStyle={{ // contentInset alternative for Android
+                            paddingHorizontal: Platform.OS === 'android' ? SPACING_FOR_CARD_INSET : 0// Horizontal spacing before and after the ScrollView
+                        }}
+                    >
+                        {_renderViews(cards)}
+                    </Animated.ScrollView>
                     }
-
                 </ScrollView>
             </LinearGradient>
         </SafeAreaView>
@@ -338,7 +361,8 @@ const styles = StyleSheet.create({
         height: heightPixel(630)
     },
     plan: {
-        height: heightPixel(200),
+        marginRight: 15,
+        height: heightPixel(400),
         width: '100%',
         borderRadius: 10,
         paddingHorizontal: 15,
@@ -349,7 +373,7 @@ const styles = StyleSheet.create({
     planBottom: {
         width: '100%',
         alignItems: 'center',
-        height: heightPixel(80),
+        height: heightPixel(120),
         justifyContent: 'space-between',
         flexDirection: 'row'
     },
@@ -361,7 +385,7 @@ const styles = StyleSheet.create({
     },
     planTitle: {
         fontFamily: Fonts.faktumBold,
-        fontSize: fontPixel(20),
+        fontSize: fontPixel(40),
         color: Colors.primary
     },
     planDescription: {
@@ -377,7 +401,7 @@ const styles = StyleSheet.create({
         width: '100%',
         flexDirection: 'row',
         alignItems: 'center',
-        height: heightPixel(60),
+        height: heightPixel(120),
         justifyContent: 'space-between'
     },
     APYPill: {
@@ -413,8 +437,8 @@ const styles = StyleSheet.create({
     },
     imageCover:{
 
-        height:35,
-        width:35,
+        height:65,
+        width:65,
         alignItems:'center',
         justifyContent:'center',
 

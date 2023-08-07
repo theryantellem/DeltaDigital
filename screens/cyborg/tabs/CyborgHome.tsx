@@ -32,9 +32,6 @@ import {activeStrategy, getAsset, getNewstrategy, getUser} from "../../../api";
 let width = Dimensions.get("window").width
 
 
-
-
-
 const ChartData = [
     {
         timestamp: 5225945400000,
@@ -63,10 +60,7 @@ const ChartData = [
     },]
 
 
-
-
 const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
-
 
 
     const dispatch = useAppDispatch()
@@ -74,11 +68,15 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
     const {User_Details} = user
 
     const {data: Asset, refetch: fetchAsset, isLoading} = useQuery(['user-Asset'], () => getAsset(User_Details.id))
+
     const [refreshing, setRefreshing] = useState(false);
 
 
-    const {data:strategy,refetch:fetchStrategy,isLoading:loadingStrategy} = useQuery(['activeStrategy'],()=>activeStrategy(User_Details.id))
-
+    const {
+        data: strategy,
+        refetch: fetchStrategy,
+        isLoading: loadingStrategy
+    } = useQuery(['activeStrategy'], () => activeStrategy(User_Details.id))
 
 
     const openNotifications = () => {
@@ -88,8 +86,8 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
         navigation.navigate('OverView')
     }
 
-    const seeLogs = (exchange:string,market:string) =>{
-        navigation.navigate('LogScreen',{
+    const seeLogs = (exchange: string, market: string) => {
+        navigation.navigate('LogScreen', {
             exchange,
             market
         })
@@ -99,9 +97,7 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
     const {data, isRefetching, refetch,} = useQuery(
         [`user-data`, User_Details.id],
         () => getUser(User_Details.id),
-        {
-
-        })
+        {})
 
 
     const refresh = () => {
@@ -110,11 +106,11 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
         wait(2000).then(() => setRefreshing(false));
     }
 
-useRefreshOnFocus(fetchAsset)
+    useRefreshOnFocus(fetchAsset)
     return (
 
         <SafeAreaView style={styles.safeArea}>
-        {/*     <LinearGradient style={styles.background}
+            {/*     <LinearGradient style={styles.background}
 
 
                              start={{x: 2.5, y: 0}}
@@ -130,7 +126,7 @@ useRefreshOnFocus(fetchAsset)
                         showsVerticalScrollIndicator={false}
 
                         refreshControl={<RefreshControl tintColor={Colors.primary} refreshing={refreshing}
-                                                       onRefresh={refresh}/>}
+                                                        onRefresh={refresh}/>}
             >
                 <LinearGradient style={styles.dashboard}
                                 colors={['#e813e1', "#690152", '#030D34']}
@@ -143,7 +139,7 @@ useRefreshOnFocus(fetchAsset)
 
 
                     <TopBar
-                        profilePhoto={ User_Details.image? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'}
+                        profilePhoto={User_Details.image ? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'}
                         userName={User_Details.username}/>
 
                     <View style={styles.dashboardInfo}>
@@ -179,9 +175,7 @@ useRefreshOnFocus(fetchAsset)
                                 </Text>
 
 
-
-
-                            <TouchableOpacity onPress={overView} style={styles.overviewBtn}>
+                                <TouchableOpacity onPress={overView} style={styles.overviewBtn}>
                                     <Text style={styles.overviewText}>
                                         Overview
                                     </Text>
@@ -216,7 +210,7 @@ useRefreshOnFocus(fetchAsset)
                                         <LineChart style={[
 
                                             {bottom: 0}
-                                        ]} height={100} width={width - 40}>
+                                        ]} height={100} width={widthPixel(350)}>
 
                                             <LineChart.Path color={Colors.successChart}>
 
@@ -265,15 +259,23 @@ useRefreshOnFocus(fetchAsset)
 
                 {
                     strategy &&
-                    strategy.data['Operation Strategy'].map((item: { [x: string]: any; id: React.Key | null | undefined; Market: string, Avg_Price: number | bigint; Quantity: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined; }, index: any)=>(
-                        <Animated.View key={item.id} layout={Layout.easing(Easing.bounce).delay(100)} entering={FadeInDown.springify()}
+                    strategy?.data['Operation Strategy'].map((item: {
+                        [x: string]: any;
+                        id: React.Key | null | undefined;
+                        Market: string,
+                        Avg_Price: number | bigint;
+                        Quantity: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined;
+                    }, index: any) => (
+                        <Animated.View key={item.id} layout={Layout.easing(Easing.bounce).delay(100)}
+                                       entering={FadeInDown.springify()}
                                        exiting={FadeOutDown}>
-                            <Pressable onPress={()=>seeLogs(item.exchange,item.Market)} style={styles.AssetCard}>
+                            <Pressable onPress={() => seeLogs(item.exchange, item.Market)} style={styles.AssetCard}>
 
                                 <View style={styles.assetIcon}>
                                     <View style={styles.assetCardIcon}>
-                                        <Image source={{uri:`https://backend.deltacyborg.pro/Upload/coin/${item['coin image']}`}}
-                                               style={styles.logo}/>
+                                        <Image
+                                            source={{uri: `https://backend.deltacyborg.pro/Upload/coin/${item['coin image']}`}}
+                                            style={styles.logo}/>
                                     </View>
                                 </View>
 
@@ -312,9 +314,6 @@ useRefreshOnFocus(fetchAsset)
                 }
 
 
-
-
-
             </ScrollView>
 
 
@@ -338,13 +337,13 @@ const styles = StyleSheet.create({
     background: {
         flex: 1,
         width: '100%',
-       // paddingHorizontal: pixelSizeHorizontal(20),
+        // paddingHorizontal: pixelSizeHorizontal(20),
     },
     dashboard: {
-        width: '100%',
+        width: '96%',
         height: heightPixel(440),
         alignItems: 'center',
-        borderRadius: 60,
+        borderRadius: 30,
         paddingHorizontal: pixelSizeHorizontal(20),
     },
     dashboardInfo: {
@@ -419,13 +418,13 @@ const styles = StyleSheet.create({
 
         width: '100%',
         alignItems: 'center',
-        height: heightPixel(45),
+        height: heightPixel(55),
         flexDirection: 'row',
         justifyContent: 'space-between',
 
     }, balance: {
         fontFamily: Fonts.faktumBold,
-        fontSize: fontPixel(26),
+        fontSize: fontPixel(34),
         color: "#fff",
     },
     overviewBtn: {

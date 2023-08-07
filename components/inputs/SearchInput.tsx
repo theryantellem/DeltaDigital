@@ -68,12 +68,12 @@ const SearchInput: FC<Props> = ({
 
         <View style={[styles.inputContainer, {
 
-            backgroundColor: 'transparent',
+            backgroundColor: Colors.secondary,
             height: inputHeight ? inputHeight : heightPixel(55),
             width:'100%',
         }]}>
                 <View style={styles.leftIcon}>
-                    <Ionicons name="ios-search-outline" size={20} color="#ccc" />
+                    <Ionicons name="ios-search-outline" size={20} color="#fff" />
                 </View>
 
             <RNTextInput
@@ -126,12 +126,12 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         borderRadius:  10,
-        borderColor:Colors.borderColor,
+       // borderColor:Colors.borderColor,
         alignItems:'center',
         justifyContent:'center',
         marginTop: 8,
         marginBottom: 10,
-        borderWidth: 1,
+      //  borderWidth: 1,
         flexDirection: 'row',
 
 

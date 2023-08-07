@@ -37,7 +37,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
     useRefreshOnFocus(fetchNewStrategy)
 
 
-    console.log("********************quantitativeStrategies********************")
+   // console.log("********************quantitativeStrategies********************")
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -289,7 +289,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                             </View>
 
 
-                            <View style={styles.moreButtonContainer}>
+                 {/*           <View style={styles.moreButtonContainer}>
 
 
                                 <TouchableOpacity activeOpacity={0.6}
@@ -328,10 +328,10 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                                 </TouchableOpacity>
 
 
-                            </View>
+                            </View>*/}
 
 
-                            <View style={[styles.moreButtonContainer, {}]}>
+                            {/*<View style={[styles.moreButtonContainer, {}]}>
 
 
                                 <TouchableOpacity activeOpacity={0.6} style={styles.dashButton}>
@@ -365,7 +365,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                                 </TouchableOpacity>
 
 
-                            </View>
+                            </View>*/}
 
 
                             <View style={[styles.spotlightContainer, {marginTop: 15,}]}>

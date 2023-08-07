@@ -9,58 +9,34 @@ import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPix
 import {Fonts} from "../../../constants/Fonts";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-reanimated";
 import Colors from "../../../constants/Colors";
+import {useQuery} from "@tanstack/react-query";
+import {getUser} from "../../../api";
+import {useAppSelector} from "../../../app/hooks";
 
 
-const Exchanges = [
-    {
-        id: '1',
-        logo: 'https://play-lh.googleusercontent.com/PjoJoG27miSglVBXoXrxBSLveV6e3EeBPpNY55aiUUBM9Q1RCETKCOqdOkX2ZydqVf0',
-        status: 'Active',
-        rank: "3",
-        exchange:'3',
-        exchangeName: 'Coinbase'
-    }, {
-        id: '2',
-        logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Binance_Logo.svg/1200px-Binance_Logo.svg.png',
-        status: 'Active',
-        rank: "1",
-        exchange:'1',
-        exchangeName: 'Binance'
-    },{
-        id: '3',
-        logo: 'https://static-00.iconduck.com/assets.00/kraken-icon-512x512-icmwhmh8.png',
-        status: 'Inactive',
-        rank: "1",
-        exchange:'4',
-        exchangeName: 'Kraken'
-    },{
-        id: '4',
-        logo: 'https://assets.staticimg.com/cms/media/3gfl2DgVUqjJ8FnkC7QxhvPmXmPgpt42FrAqklVMr.png',
-        status: 'Inactive',
-        rank: "1",
-        exchange:'2',
-        exchangeName: 'Kucoin'
-    }
-]
+
 
 
 interface prop {
-    continueAsset:(exchange:string)=>void,
+    continueAsset:(exchange:string,status:'0'|'1',apiKey:string,apiSecrete:string)=>void,
     item: {
         id: string,
         exchangeName: string,
+        apiSecrete:string,
         logo: string,
-        status: string,
+        status: '0'|'1',
+        apiKey: string,
         exchange: string,
         rank: string,
     }
 }
 
 const ExchangeCard = ({item,continueAsset}: prop) => {
+
     return (
         <Animated.View key={item.id} layout={Layout.easing(Easing.bounce).delay(100)}
                        entering={FadeInDown.springify()} exiting={FadeOutDown}>
-            <Pressable onPress={()=>continueAsset(item.exchange)} style={styles.exchangeCard}>
+            <Pressable onPress={()=>continueAsset(item.exchange,item.status,item.apiKey,item.apiSecrete)} style={styles.exchangeCard}>
                 <View style={styles.exchangeCardTop}>
 
 
@@ -69,9 +45,9 @@ const ExchangeCard = ({item,continueAsset}: prop) => {
                     </View>
 
                     <Text style={[styles.status,{
-                        color: item.status == 'Active' ? Colors.success : Colors.textDisable
+                        color: item.status == '1' ? Colors.success : Colors.textDisable
                     }]}>
-                        {item.status}
+                        {item.status == '1' ?'Active' : 'inActive'}
                     </Text>
 
                 </View>
@@ -97,12 +73,28 @@ const ExchangeCard = ({item,continueAsset}: prop) => {
 
 const SelectExchange = ({navigation}: RootStackScreenProps<'SelectExchange'>) => {
 
+    const user = useAppSelector(state => state.user)
+    const {userData, User_Details} = user
 
+    const {data, isRefetching, refetch,} = useQuery(
+        [`user-data`, User_Details.id],
+        () => getUser(User_Details.id),
+        {})
+    const continueAsset = (exchange:string, status:'0'|'1',apiKey:string,apiSecrete:string) =>{
+        if(status == '1'){
+            navigation.navigate('SelectAsset',{
+                exchange
+            })
+        }else{
+            navigation.navigate('ViewAPIBinding', {
+                exchange,
+                apiKey,
+                apiSecrete,
+                isBound:status
+            })
 
-    const continueAsset = (exchange:string) =>{
-        navigation.navigate('SelectAsset',{
-            exchange
-        })
+        }
+
     }
     const renderItem = useCallback(
         ({item}: any) => <ExchangeCard continueAsset={continueAsset} item={item}/>,
@@ -111,6 +103,48 @@ const SelectExchange = ({navigation}: RootStackScreenProps<'SelectExchange'>) =>
 
 
     const keyExtractor = useCallback((item: { id: string; }) => item.id, [],);
+
+
+
+    const Exchanges = [
+        {
+            id: '1',
+            logo: 'https://play-lh.googleusercontent.com/PjoJoG27miSglVBXoXrxBSLveV6e3EeBPpNY55aiUUBM9Q1RCETKCOqdOkX2ZydqVf0',
+            status: data.data["User Details"][0].coinbaseprobind,
+            apiSecrete:data.data['User Details'][0].coinbaseprosecret,
+            apiKey:data.data['User Details'][0].coinbaseproapi,
+            rank: "3",
+            exchange:'3',
+            exchangeName: 'Coinbase'
+        }, {
+            id: '2',
+            logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Binance_Logo.svg/1200px-Binance_Logo.svg.png',
+            status:  data.data["User Details"][0].binancebind,
+            apiSecrete:data.data['User Details'][0].binancescret,
+            apiKey: data.data['User Details'][0].binanceapi,
+            rank: "1",
+            exchange:'1',
+            exchangeName: 'Binance'
+        },{
+            id: '3',
+            logo: 'https://static-00.iconduck.com/assets.00/kraken-icon-512x512-icmwhmh8.png',
+            status: data.data["User Details"][0].krakenbind,
+            apiSecrete: data.data['User Details'][0].krakensecret,
+            apiKey: data.data['User Details'][0].krakenapi,
+            rank: "1",
+            exchange:'4',
+            exchangeName: 'Kraken'
+        },{
+            id: '4',
+            logo: 'https://assets.staticimg.com/cms/media/3gfl2DgVUqjJ8FnkC7QxhvPmXmPgpt42FrAqklVMr.png',
+            status: data.data["User Details"][0].kucoinbind,
+            apiSecrete: data.data['User Details'][0].kucoinsecret,
+            apiKey: data.data['User Details'][0].kucoinapi,
+            rank: "1",
+            exchange:'2',
+            exchangeName: 'Kucoin'
+        }
+    ]
 
 
     return (

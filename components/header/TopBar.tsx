@@ -6,6 +6,7 @@ import {Octicons} from "@expo/vector-icons";
 import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../helpers/normalize";
 import {Fonts} from "../../constants/Fonts";
 import FastImage from "react-native-fast-image";
+import {useAppSelector} from "../../app/hooks";
 
 
 interface props {
@@ -17,6 +18,9 @@ const TopBar = ({ profilePhoto, userName}: props) => {
 
     const navigation = useNavigation()
 
+
+    const user = useAppSelector(state => state.user)
+    const {User_Details} = user
     const openNotifications = () => {
        navigation.navigate('NewsScreen')
     }
@@ -67,10 +71,10 @@ const TopBar = ({ profilePhoto, userName}: props) => {
                 </View>
                 <View style={styles.userDetails}>
                     <Text style={styles.greeting}>
-                        {greeting}, {userName}
+                       {userName}
                     </Text>
                     <Text style={styles.tag}>
-                        Welcome back
+                        {User_Details.plan}
                     </Text>
                 </View>
             </TouchableOpacity>
@@ -123,6 +127,7 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.faktumBold,
         fontSize: fontPixel(14),
         color: "#fff",
+        textTransform:'capitalize'
     },
     tag: {
         fontFamily: Fonts.faktumRegular,

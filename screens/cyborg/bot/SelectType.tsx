@@ -12,12 +12,14 @@ import {LinearGradient} from "expo-linear-gradient";
 import HorizontalLine from "../../../components/HorizontalLine";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from 'react-native-reanimated';
 import {RootStackScreenProps} from "../../../types";
+import AllStrategy from "./strategy/AllStrategy";
 
 const SelectType = ({navigation}:RootStackScreenProps<'SelectType'>) => {
 
     const selectContinue = () => {
       navigation.navigate('SelectExchange')
     }
+
 
     return (
         <SafeAreaView style={styles.safeArea}>

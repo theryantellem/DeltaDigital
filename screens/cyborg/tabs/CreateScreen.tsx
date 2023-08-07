@@ -6,7 +6,7 @@ import {LinearGradient} from "expo-linear-gradient";
 import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../../helpers/normalize";
 import TopBar from "../../../components/header/TopBar";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-reanimated";
-import {Entypo, FontAwesome, MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
+import {Entypo, FontAwesome, Ionicons, MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import {Fonts} from "../../../constants/Fonts";
 import Colors from "../../../constants/Colors";
 import {RootTabScreenProps} from "../../../types";
@@ -17,6 +17,9 @@ const CreateScreen = ({navigation}: RootTabScreenProps<'Create'>) => {
     const {userData, User_Details} = user
     const startBot = () => {
         navigation.navigate('SelectType')
+    }
+    const selectStrategy = () => {
+        navigation.navigate('AllStrategy')
     }
 
     return (
@@ -46,10 +49,10 @@ const CreateScreen = ({navigation}: RootTabScreenProps<'Create'>) => {
                         <TouchableOpacity
                             onPress={startBot}
                             activeOpacity={0.8} style={[styles.plan,
-                            {backgroundColor: '#090A1C'}]}>
+                            {backgroundColor: '#090A1C', marginBottom:20,}]}>
                             <View style={styles.planTop}>
+                                <Ionicons name="create-outline" size={20} color={Colors.primary} />
 
-                                <MaterialCommunityIcons name="robot" size={20} color={Colors.primary}/>
 
 
                             </View>
@@ -76,12 +79,15 @@ const CreateScreen = ({navigation}: RootTabScreenProps<'Create'>) => {
 
 
                         <TouchableOpacity
-
+onPress={selectStrategy}
                             activeOpacity={0.8} style={[styles.plan,
-                            {backgroundColor: '#090A1C'}]}>
-                            <View style={styles.planTop}>
+                            {
+                                backgroundColor: '#090A1C',
 
-                                <MaterialIcons name="group-add" size={20} color="#fff"/>
+                            }]}>
+                            <View style={styles.planTop}>
+                                <Ionicons name="copy-outline" size={20} color="#fff" />
+
                             </View>
 
 
@@ -104,7 +110,7 @@ const CreateScreen = ({navigation}: RootTabScreenProps<'Create'>) => {
                         </TouchableOpacity>
 
 
-                        <TouchableOpacity
+                       {/* <TouchableOpacity
 
                             activeOpacity={0.8} style={[styles.plan,
                             {backgroundColor: '#090A1C'}]}>
@@ -132,7 +138,7 @@ const CreateScreen = ({navigation}: RootTabScreenProps<'Create'>) => {
                                 <Entypo name="chevron-right" size={20} color="#60687E"/>
 
                             </View>
-                        </TouchableOpacity>
+                        </TouchableOpacity>*/}
 
                     </Animated.View>
 
@@ -164,9 +170,10 @@ const styles = StyleSheet.create({
     },
 
     planContainer: {
+
         width: '100%',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         height: heightPixel(630)
     },
     plan: {

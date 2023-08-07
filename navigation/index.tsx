@@ -50,6 +50,8 @@ import LogScreen from "../screens/cyborg/strategy/LogScreen";
 import ContactUs from "../screens/cyborg/profile/ContactUs";
 import FeedbackRecord from "../screens/cyborg/profile/FeedbackRecord";
 import Quantitative from "../screens/cyborg/Quantitative";
+import AllStrategy from "../screens/cyborg/bot/strategy/AllStrategy";
+import ViewStrategy from "../screens/cyborg/bot/strategy/ViewStrategy";
 
 
 export default function Navigation({colorScheme}: { colorScheme: ColorSchemeName }) {
@@ -197,6 +199,8 @@ function RootNavigator() {
                 <Stack.Screen name={"ContactUs"} component={ContactUs}/>
                 <Stack.Screen name={"FeedbackRecord"} component={FeedbackRecord}/>
                 <Stack.Screen name={"Quantitative"} component={Quantitative}/>
+                <Stack.Screen name={"AllStrategy"} component={AllStrategy}/>
+                <Stack.Screen name={"ViewStrategy"} component={ViewStrategy}/>
 
                 <Stack.Screen name={"LeaderBoard"} component={LeaderBoard}/>
 

@@ -154,7 +154,7 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
 
 
                         </TouchableOpacity>
-
+{/*
                         <TouchableOpacity onPress={()=>navigate('SyncStrategy')} activeOpacity={0.6} style={styles.profileButton}>
 
                             <View style={styles.leftContent}>
@@ -171,7 +171,7 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
                             <Octicons name="chevron-right" size={20} color="#979797"/>
 
 
-                        </TouchableOpacity>
+                        </TouchableOpacity>*/}
 
 
                         <TouchableOpacity onPress={() => navigate('Earnings')} activeOpacity={0.6}
@@ -273,7 +273,7 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
                         </TouchableOpacity>
 
 
-                        <TouchableOpacity onPress={() => navigate('CouncellerScreen')} activeOpacity={0.6}
+                       {/* <TouchableOpacity onPress={() => navigate('CouncellerScreen')} activeOpacity={0.6}
                                           style={styles.profileButton}>
 
                             <View style={styles.leftContent}>
@@ -289,7 +289,7 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
                             <Octicons name="chevron-right" size={20} color="#979797"/>
 
 
-                        </TouchableOpacity>
+                        </TouchableOpacity>*/}
 
 
                     </View>

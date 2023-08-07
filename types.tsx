@@ -29,6 +29,8 @@ import ViewAPIBinding from "./screens/cyborg/profile/ViewAPIBinding";
 import LogScreen from "./screens/cyborg/strategy/LogScreen";
 import ContactUs from "./screens/cyborg/profile/ContactUs";
 import Quantitative from "./screens/cyborg/Quantitative";
+import AllStrategy from "./screens/cyborg/bot/strategy/AllStrategy";
+import ViewStrategy from "./screens/cyborg/bot/strategy/ViewStrategy";
 
 
 
@@ -87,8 +89,9 @@ export type RootStackParamList = {
         apiKey:string,
         apiSecrete:string,
         isBound:'0'|'1',
-
     };
+    AllStrategy:undefined
+    ViewStrategy:undefined
     ContactUs:undefined
     FeedbackRecord:undefined
     Quantitative:undefined
