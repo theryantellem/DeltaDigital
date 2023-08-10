@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Text, TouchableOpacity, View, StyleSheet} from 'react-native';
 import Colors from "../../constants/Colors";
 import {Ionicons} from "@expo/vector-icons";
-import {fontPixel, heightPixel, pixelSizeHorizontal} from "../../helpers/normalize";
+import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../helpers/normalize";
 import {Fonts} from "../../constants/Fonts";
 import {useNavigation} from "@react-navigation/native";
 
@@ -11,10 +11,13 @@ interface props {
     title?: string,
     subTitle?: string,
     headerAction?:()=>void,
-    headerButton?:JSX.Element
+    headerButton?:JSX.Element,
+    step?:boolean,
+    currentStep?:string,
+    totalStep?:string,
 }
 
-const HeaderWithTitle = ({title, subTitle,headerButton,headerAction}: props) => {
+const HeaderWithTitle = ({title, subTitle,headerButton,headerAction,step,currentStep,totalStep}: props) => {
 
     const {goBack} = useNavigation()
 
@@ -32,10 +35,26 @@ const HeaderWithTitle = ({title, subTitle,headerButton,headerAction}: props) => 
                 </Text>
 
             </View>
+            {
+               !step  &&
 
             <TouchableOpacity onPress={headerAction} style={styles.rightBtn}>
                 {headerButton}
             </TouchableOpacity>
+            }
+            {
+                step &&
+            <TouchableOpacity style={styles.count}>
+
+                <Text style={[styles.countText, {
+                    color: Colors.text,
+                }]}>
+                    {currentStep}/<Text style={{
+                    color: "#a7a7a7"
+                }}>{totalStep}</Text>
+                </Text>
+            </TouchableOpacity>
+            }
         </View>
     );
 
@@ -71,11 +90,24 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.faktumSemiBold
     },
     titleWrap:{
-        width: '35%',
+        width: '45%',
+
         alignItems:'center',
         justifyContent:'center',
         height:'100%'
-    }
+    },
+    count: {
+        width: '20%',
+        height: 40,
+        paddingHorizontal:10,
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+    },
+    countText: {
+
+        fontSize: fontPixel(14),
+        fontFamily: Fonts.faktumMedium
+    },
 })
 
 export default HeaderWithTitle;

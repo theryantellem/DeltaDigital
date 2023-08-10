@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
     planTitle: {
         fontFamily: Fonts.faktumBold,
         fontSize: fontPixel(40),
-        color: Colors.primary
+        color: Colors.text
     },
     planDescription: {
         fontFamily: Fonts.faktumRegular,

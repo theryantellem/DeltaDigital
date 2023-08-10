@@ -31,6 +31,11 @@ import ContactUs from "./screens/cyborg/profile/ContactUs";
 import Quantitative from "./screens/cyborg/Quantitative";
 import AllStrategy from "./screens/cyborg/bot/strategy/AllStrategy";
 import ViewStrategy from "./screens/cyborg/bot/strategy/ViewStrategy";
+import BotDirection from "./screens/cyborg/bot/FeaturesBot/BotDirection";
+import AutoConfig from "./screens/cyborg/bot/FeaturesBot/AutoConfig";
+import SetAmount from "./screens/cyborg/bot/FeaturesBot/manual_config/SetAmount";
+import CustomizeEntries from "./screens/cyborg/bot/FeaturesBot/manual_config/CustomizeEntries";
+import AdditionalSettings from "./screens/cyborg/bot/FeaturesBot/manual_config/AdditionalSettings";
 
 
 
@@ -92,6 +97,15 @@ export type RootStackParamList = {
     };
     AllStrategy:undefined
     ViewStrategy:undefined
+    FeaturesSelectAsset:undefined
+    SelectConfig:undefined
+    FeaturesSelectExchange:undefined
+    AutoConfig:undefined
+    SetAmount:undefined
+    EntriesScreen:undefined
+    CustomizeEntries:undefined
+    AdditionalSettings:undefined
+    BotDirection:undefined
     ContactUs:undefined
     FeedbackRecord:undefined
     Quantitative:undefined

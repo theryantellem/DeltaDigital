@@ -16,7 +16,20 @@ export interface DataState {
     hideBalance: boolean,
     hideSaveBalance: boolean,
     hideMissionBalance: boolean,
+    featureBotAuto: {},
+    featureBotManualConfig: {
+        amount:string,
+        strategyPeriod:string,
+        initialEntryAmount:string,
+        numberOfEntry:string,
 
+    },
+    featuresBotData: {
+        assetName:string,
+        assetSymbol:string,
+        direction:string,
+        configType:string
+    },
     notificationData: [TaskInterface]
 
 }
@@ -31,10 +44,22 @@ const initialState: DataState = {
     saveAmountToWithdraw: '',
     hideBalance: false,
     hideSaveBalance: false,
+    featureBotAuto: {
 
-    notificationData: [
-
-    ].reverse()
+    },
+    featureBotManualConfig: {
+        amount:'',
+        strategyPeriod:'',
+        initialEntryAmount:'',
+        numberOfEntry:'',
+    },
+    featuresBotData: {
+        assetName:'',
+        assetSymbol:'',
+        direction:'',
+        configType:'',
+    },
+    notificationData: [].reverse()
 
 }
 
@@ -87,12 +112,33 @@ export const dataSlice = createSlice({
         },
 
         removeNotificationItem: (state, action) => {
-          //  const { index,id } = action.payload.notification;
-            const newData=  state.notificationData.filter((item,index) => index !== action.payload.notification.index);
+            //  const { index,id } = action.payload.notification;
+            const newData = state.notificationData.filter((item, index) => index !== action.payload.notification.index);
 
-          state.notificationData = newData
+            state.notificationData = newData
 
         },
+        updateFeatureBotData: (state, action) => {
+
+
+            state.featuresBotData = {...state.featuresBotData, ...action.payload}
+        },
+
+       clearFeatureBotData: (state) => {
+
+
+            state.featuresBotData = {
+                assetName:'',
+                assetSymbol:'',
+                direction:'',
+                configType:'',
+            }
+        },
+
+        updateBotManualConfig: (state, action) => {
+            state.featureBotManualConfig = {...state.featureBotManualConfig, ...action.payload}
+        },
+
         cleanData: () => initialState
 
     },
@@ -100,11 +146,11 @@ export const dataSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const {
-
+    updateBotManualConfig,
     cleanData,
-
+    clearFeatureBotData,
     setHideBalance,
-
+    updateFeatureBotData,
     setHideMissionBalance,
     setSaveAmountToWithdraw,
     setAmountToWithdraw,

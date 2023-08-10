@@ -129,10 +129,10 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
                                                         onRefresh={refresh}/>}
             >
                 <LinearGradient style={styles.dashboard}
-                                colors={['#e813e1', "#690152", '#030D34']}
-
-                                start={{x: 1.8, y: 0}}
-                                end={{x: 1.5, y: 0.8,}}
+                                colors={[ "#A13AD1",'#030D34', '#0B0811']}
+                               // colors={['#e813e1', "#690152", '#030D34']}
+                                start={{x: 1.5, y: 0}}
+                                end={{x: 1.2, y: 1,}}
 
                     // locations={[0.1, 0.7,]}
                 >
@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
         color: "#fff",
     },
     overviewBtn: {
-        backgroundColor: "#690152",
+        backgroundColor: "#A13AD1",
         width: widthPixel(90),
         height: 30,
         alignItems: 'center',

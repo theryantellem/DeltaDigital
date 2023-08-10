@@ -22,6 +22,7 @@ interface Props extends TextInputProps {
     password?: boolean;
     leftIcon?: boolean | React.ReactNode;
     icon?: boolean | React.ReactNode;
+    imageUri?: string;
     rightIcon?: boolean | React.ReactNode;
     focus?: boolean;
     rightText?: boolean;
@@ -56,13 +57,14 @@ const BottomSheetInput: FC<Props> = ({
                                          action,
                                          passState,
                                          labelColor,
+    imageUri,
                                          ...props
                                      }) => {
 
 
     let validationColor, validationLabelColor;
 
-    validationColor = !touched ? Colors.border : focus ? Colors.primaryLight : error ? Colors.errorRed : "#fff"
+    validationColor = !touched ? Colors.border : focus ? Colors.purplePrimary : error ? Colors.errorRed : "#fff"
     validationLabelColor = !touched ? Colors.textDark : focus ? Colors.textDark : error ? Colors.errorRed :"#fff"
 
     return (
@@ -113,7 +115,7 @@ const BottomSheetInput: FC<Props> = ({
                     <View style={styles.leftIcon}>
 
                         <View style={styles.Icon}>
-                            <Image source={{uri:'https://cdn-icons-png.flaticon.com/512/5968/5968260.png'}} style={styles.logo}/>
+                            <Image source={{uri:imageUri}} style={styles.logo}/>
                         </View>
                     </View>
                 }

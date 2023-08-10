@@ -2,11 +2,12 @@ import React, {useCallback, useState} from 'react';
 
 import {Text, View, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import {useFocusEffect, useNavigation} from "@react-navigation/native";
-import {Octicons} from "@expo/vector-icons";
+import {FontAwesome5, Octicons} from "@expo/vector-icons";
 import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../helpers/normalize";
 import {Fonts} from "../../constants/Fonts";
 import FastImage from "react-native-fast-image";
 import {useAppSelector} from "../../app/hooks";
+import Colors from "../../constants/Colors";
 
 
 interface props {
@@ -26,6 +27,9 @@ const TopBar = ({ profilePhoto, userName}: props) => {
     }
     const openProfile = () => {
        navigation.navigate('UserAccount')
+    }
+    const openAssets = () => {
+       navigation.navigate('Assets')
     }
 
     const [greeting, setGreeting] = useState('');
@@ -80,9 +84,14 @@ const TopBar = ({ profilePhoto, userName}: props) => {
             </TouchableOpacity>
 
             <View style={styles.rightButton}>
-                <TouchableOpacity onPress={openNotifications} activeOpacity={0.6}>
-                    <Octicons name="bell" size={20} color="#fff"/>
+                <TouchableOpacity onPress={openNotifications} activeOpacity={0.6} style={styles.topButton}>
+                    <Octicons name="bell" size={18} color="#fff"/>
 
+
+                </TouchableOpacity>
+                <TouchableOpacity onPress={openAssets} activeOpacity={0.6} style={styles.topButton}>
+
+                    <FontAwesome5 name="coins" size={16} color={Colors.text}/>
 
                 </TouchableOpacity>
 
@@ -156,13 +165,21 @@ const styles = StyleSheet.create({
         height: '100%'
     },
     rightButton: {
-        width: widthPixel(50),
+        width: widthPixel(80),
         height: '90%',
 
         flexDirection: 'row',
-        justifyContent: 'flex-end',
+        justifyContent: 'space-between',
         alignItems: 'center',
     },
+    topButton:{
+        width:35,
+        height:35,
+       // backgroundColor:Colors.text,
+        borderRadius:30,
+        alignItems:'center',
+        justifyContent:'center'
+    }
 })
 
 export default TopBar;

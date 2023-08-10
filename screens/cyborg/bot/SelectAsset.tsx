@@ -19,25 +19,6 @@ import TextInput from "../../../components/inputs/TextInput";
 import SearchInput from "../../../components/inputs/SearchInput";
 
 
-const AssetData = [
-    {
-        id: '1',
-        image: 'https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/512/Ethereum-ETH-icon.png',
-        coinName: 'Ethereum',
-        symbol: 'ETH/USDT',
-        price: 6090,
-        balance: '0.9993',
-    }, {
-        id: '2',
-        image: 'https://cdn-icons-png.flaticon.com/512/5968/5968260.png',
-        coinName: 'Bitcoin',
-        symbol: 'BTC/USDT',
-        price: 26090,
-        balance: '1.9993',
-    }
-]
-
-
 interface props {
     continueAsset: () => void,
     item: {
@@ -167,7 +148,9 @@ const SelectAsset = ({navigation,route}: RootStackScreenProps<'SelectAsset'>) =>
     }) => item.id, [],);
     const {data, refetch,isLoading} = useQuery([`quantitativeStrategies`], () => quantitativeStrategies(User_Details.id))
   //  console.log("********************quantitativeStrategies********************")
-   // console.log(data.data['Operation Strategy'])
+
+
+    // console.log(data.data['Operation Strategy'])
     const refresh = () => {
         setRefreshing(true)
        refetch()

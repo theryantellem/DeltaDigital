@@ -52,6 +52,15 @@ import FeedbackRecord from "../screens/cyborg/profile/FeedbackRecord";
 import Quantitative from "../screens/cyborg/Quantitative";
 import AllStrategy from "../screens/cyborg/bot/strategy/AllStrategy";
 import ViewStrategy from "../screens/cyborg/bot/strategy/ViewStrategy";
+import FeaturesSelectAsset from "../screens/cyborg/bot/FeaturesBot/SelectAsset";
+import BotDirection from "../screens/cyborg/bot/FeaturesBot/BotDirection";
+import SelectConfig from "../screens/cyborg/bot/FeaturesBot/SelectConfig";
+import FeaturesSelectExchange from "../screens/cyborg/bot/FeaturesBot/FeaturesSelectExchange";
+import AutoConfig from "../screens/cyborg/bot/FeaturesBot/AutoConfig";
+import SetAmount from "../screens/cyborg/bot/FeaturesBot/manual_config/SetAmount";
+import EntriesScreen from "../screens/cyborg/bot/FeaturesBot/manual_config/EntriesScreen";
+import CustomizeEntries from "../screens/cyborg/bot/FeaturesBot/manual_config/CustomizeEntries";
+import AdditionalSettings from "../screens/cyborg/bot/FeaturesBot/manual_config/AdditionalSettings";
 
 
 export default function Navigation({colorScheme}: { colorScheme: ColorSchemeName }) {
@@ -201,7 +210,16 @@ function RootNavigator() {
                 <Stack.Screen name={"Quantitative"} component={Quantitative}/>
                 <Stack.Screen name={"AllStrategy"} component={AllStrategy}/>
                 <Stack.Screen name={"ViewStrategy"} component={ViewStrategy}/>
+                <Stack.Screen name={"FeaturesSelectAsset"} component={FeaturesSelectAsset}/>
 
+                <Stack.Screen name={"BotDirection"} component={BotDirection}/>
+                <Stack.Screen name={"SelectConfig"} component={SelectConfig}/>
+                <Stack.Screen name={"FeaturesSelectExchange"} component={FeaturesSelectExchange}/>
+                <Stack.Screen name={"AutoConfig"} component={AutoConfig}/>
+                <Stack.Screen name={"SetAmount"} component={SetAmount}/>
+                <Stack.Screen name={"EntriesScreen"} component={EntriesScreen}/>
+                <Stack.Screen name={"CustomizeEntries"} component={CustomizeEntries}/>
+                <Stack.Screen name={"AdditionalSettings"} component={AdditionalSettings}/>
                 <Stack.Screen name={"LeaderBoard"} component={LeaderBoard}/>
 
 

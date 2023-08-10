@@ -628,3 +628,36 @@ export const binanceTicker = async () => {
     ])
 
 }
+
+
+export const allAssets = {
+
+    tickers: async ({pageParam = 1}: {  pageParam: number }) => {
+
+        const myHeaders = {
+            'Content-Type': 'application/json',
+        }
+        let timeoutId: NodeJS.Timeout
+
+
+        const requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+        };
+
+        //https://dev.brace.com.ng/notifications?status=pending
+        return Promise.race([
+            fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=${pageParam}&sparkline=false&locale=en`, requestOptions)
+                .then(response => response.json()),
+            new Promise((resolve, reject) => {
+                timeoutId = setTimeout(() => reject(new Error('Timeout')), 20000)
+
+                //  clearTimeout(timeoutId)
+            }).then(() => {
+                clearTimeout(timeoutId)
+            })
+
+        ])
+
+    }
+}
