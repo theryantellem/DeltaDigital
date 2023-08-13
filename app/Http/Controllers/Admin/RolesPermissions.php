@@ -14,7 +14,7 @@ class RolesPermissions extends Controller
      */
     public function index()
     {
-        $data['roles'] = [];
+        $data['roles'] = Role::get();
 
         return view('admin.roles.index',$data);
     }

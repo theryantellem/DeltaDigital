@@ -14,6 +14,8 @@ class Admin extends Authenticatable
 
     protected $guarded = [];
 
+    protected $guard = 'admin';
+
     /**
      * Define the route model binding key for a given model.
      */

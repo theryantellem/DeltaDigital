@@ -9,7 +9,6 @@ class DashboardController extends Controller
 {
     function index()
     {
-        return redirect()->route('admin.cyborg.strategy.index');
 
         return view('admin.dashboard.index');
     }
