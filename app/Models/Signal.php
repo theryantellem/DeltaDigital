@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
-use App\Enums\AdminStatus;
+use App\Enums\SignalMarketStatus;
+use App\Enums\SignalOrderTypeEnum;
+use App\Enums\SignalStatusEnum;
 use App\Traits\GeneratesUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Admin extends Authenticatable
+class Signal extends Model
 {
-    use HasFactory, GeneratesUuid, HasRoles;
+    use HasFactory, SoftDeletes, GeneratesUuid;
 
     protected $guarded = [];
 
@@ -34,7 +36,19 @@ class Admin extends Authenticatable
         return $this->where('uuid', $value)->firstOrFail();
     }
 
+    public function educator()
+    {
+        return $this->belongsTo(Admin::class, 'admin_id');
+    }
+
+    /**
+     * Write code on Method
+     *
+     * @return response()
+     */
     protected $casts = [
-        'status' => AdminStatus::class
+        'order_type' => SignalOrderTypeEnum::class,
+        'status' => SignalStatusEnum::class,
+        'market_status' => SignalMarketStatus::class
     ];
 }

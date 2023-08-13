@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\Cyborg\MarketController;
 use App\Http\Controllers\Admin\Cyborg\StrategyController;
 use App\Http\Controllers\Admin\Cyborg\TradeSettingsController;
 use App\Http\Controllers\Admin\NewsManagement;
+use App\Http\Controllers\Admin\RolesPermissions;
 use App\Http\Controllers\Admin\SupportTicket;
 use App\Http\Controllers\Admin\UserManagementController;
 use Illuminate\Support\Facades\Route;
@@ -59,6 +60,8 @@ Route::middleware(['auth:admin'])->group(function () {
     });
 
     Route::resource('banners', BannerController::class);
+
+    Route::resource('roles',RolesPermissions::class);
 
 
 });

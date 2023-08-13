@@ -28,9 +28,23 @@ class Navigation
                 //     'hasPermission' => true
                 // ]
             ],
-            'Cyborg' => (object) [
+            // 'Cyborg' => (object) [
+            //     (object) [
+            //         'name'  => 'Strategies',
+            //         'route' => 'admin.cyborg.strategy.index',
+            //         'icon'  => 'bi bi-house-fill fs-3',
+            //         'hasPermission' => true
+            //     ]
+            // ],
+            'Signal' => (object) [
                 (object) [
-                    'name'  => 'Strategies',
+                    'name'  => 'Manage Signals',
+                    'route' => 'admin.cyborg.strategy.index',
+                    'icon'  => 'bi bi-house-fill fs-3',
+                    'hasPermission' => true
+                ],
+                (object) [
+                    'name'  => 'Manage Educators',
                     'route' => 'admin.cyborg.strategy.index',
                     'icon'  => 'bi bi-house-fill fs-3',
                     'hasPermission' => true
@@ -52,6 +66,12 @@ class Navigation
                 (object) [
                     'name'  => 'Support Tickets',
                     'route' => 'admin.tickets.index',
+                    'icon'  => 'bi bi-house-fill fs-3',
+                    'hasPermission' => true
+                ],
+                (object) [
+                    'name'  => 'Roles Management',
+                    'route' => 'admin.roles.index',
                     'icon'  => 'bi bi-house-fill fs-3',
                     'hasPermission' => true
                 ]
