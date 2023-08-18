@@ -61,6 +61,7 @@ import SetAmount from "../screens/cyborg/bot/FeaturesBot/manual_config/SetAmount
 import EntriesScreen from "../screens/cyborg/bot/FeaturesBot/manual_config/EntriesScreen";
 import CustomizeEntries from "../screens/cyborg/bot/FeaturesBot/manual_config/CustomizeEntries";
 import AdditionalSettings from "../screens/cyborg/bot/FeaturesBot/manual_config/AdditionalSettings";
+import FinalPreview from "../screens/cyborg/bot/FeaturesBot/FinalPreview";
 
 
 export default function Navigation({colorScheme}: { colorScheme: ColorSchemeName }) {
@@ -220,6 +221,7 @@ function RootNavigator() {
                 <Stack.Screen name={"EntriesScreen"} component={EntriesScreen}/>
                 <Stack.Screen name={"CustomizeEntries"} component={CustomizeEntries}/>
                 <Stack.Screen name={"AdditionalSettings"} component={AdditionalSettings}/>
+                <Stack.Screen name={"FinalPreview"} component={FinalPreview}/>
                 <Stack.Screen name={"LeaderBoard"} component={LeaderBoard}/>
 
 

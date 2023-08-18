@@ -50,7 +50,7 @@ const HeaderWithTitle = ({title, subTitle,headerButton,headerAction,step,current
                     color: Colors.text,
                 }]}>
                     {currentStep}/<Text style={{
-                    color: "#a7a7a7"
+                    color: currentStep == totalStep ? "#fff" : "#a7a7a7"
                 }}>{totalStep}</Text>
                 </Text>
             </TouchableOpacity>

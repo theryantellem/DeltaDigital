@@ -133,36 +133,26 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                     onPress={CyborgHome}
                     activeOpacity={0.8} style={[styles.plan,
                     {backgroundColor: '#090A1C',   width: CARD_WIDTH,}]}>
-                    <View style={styles.planTop}>
+                    <View style={styles.planLeft}>
                         <View style={styles.imageCover}>
                             {card.icon}
 
                         </View>
 
+                        <View style={styles.planBottomLeft}>
 
 
-                        <View style={styles.APYPill}>
-                            <Text style={styles.apyText}>
-                                {card.description}
-                            </Text>
                         </View>
+
+
                     </View>
 
 
-                    <View style={styles.planBottom}>
-                        <View style={styles.planBottomLeft}>
-                            <Text style={styles.planTitle}>
-                                {card.name}
-                            </Text>
-                            <View style={styles.planDescriptionWrap}>
-                                <Text style={styles.planDescription}>
-                                    {currencyFormatter('en-US', 'USD').format(card.balance)}
-                                </Text>
-                            </View>
 
-                        </View>
 
-                        <Entypo name="chevron-right" size={20} color="#60687E"/>
+                    <View style={styles.planRight}>
+
+
 
                     </View>
                 </TouchableOpacity>
@@ -216,7 +206,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                         </View>
                         <View style={styles.userDetails}>
                             <Text style={styles.greeting}>
-                                {greeting}, {User_Details.username}
+                                Hello, {User_Details.username}
                             </Text>
                             <Text style={styles.tag}>
                                 Welcome back
@@ -232,13 +222,10 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                             showsVerticalScrollIndicator={false}>
                     <View style={styles.introTextWrap}>
                         <Text style={styles.titleText}>
-                            Delta Signal
+                            Delta Digital
                         </Text>
 
-                        <Text style={styles.textSub}>
-                            Safe & secure way to send and
-                            spend on what you want
-                        </Text>
+
                     </View>
 
 
@@ -248,6 +235,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                         !isLoading &&
 
                     <Animated.ScrollView
+
                         layout={Layout.easing(Easing.bounce).delay(100)} entering={FadeInDown.springify()} exiting={FadeOutDown}
                         showsHorizontalScrollIndicator={false}
                         horizontal // Change the direction to horizontal
@@ -261,6 +249,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                             bottom: 0,
                             right: SPACING_FOR_CARD_INSET // Right spacing for the very last card
                         }}
+
                         contentContainerStyle={{ // contentInset alternative for Android
                             paddingHorizontal: Platform.OS === 'android' ? SPACING_FOR_CARD_INSET : 0// Horizontal spacing before and after the ScrollView
                         }}
@@ -357,18 +346,31 @@ const styles = StyleSheet.create({
     planContainer: {
         width: '100%',
         alignItems: 'center',
+
         justifyContent: 'space-between',
         height: heightPixel(630)
     },
+
+    planLeft:{
+      width:'50%',
+      height:'90%',
+        alignItems:'flex-start'
+    },
+    planRight:{
+      width:'45%',
+      height:'100%',
+
+    },
     plan: {
+        flexDirection:'row',
         marginRight: 15,
         height: heightPixel(400),
         width: '100%',
-        borderRadius: 10,
+        borderRadius: 30,
         paddingHorizontal: 15,
         paddingVertical: 10,
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-evenly'
     },
     planBottom: {
         width: '100%',
@@ -420,9 +422,9 @@ const styles = StyleSheet.create({
     },
     introTextWrap: {
         height: heightPixel(140),
-        width: '70%',
-        alignItems: 'center',
-        justifyContent: 'center',
+        width: '100%',
+        alignItems: 'flex-start',
+        justifyContent: 'space-evenly',
     },
     titleText: {
         fontFamily: Fonts.faktumBold,
@@ -437,8 +439,8 @@ const styles = StyleSheet.create({
     },
     imageCover:{
 
-        height:65,
-        width:65,
+        height:45,
+        width:45,
         alignItems:'center',
         justifyContent:'center',
 

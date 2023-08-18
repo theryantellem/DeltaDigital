@@ -23,6 +23,14 @@ export interface DataState {
         initialEntryAmount:string,
         numberOfEntry:string,
 
+        riskPreference: 'Conservative'|'Relaxed',
+        leverage: string,
+        tradeExitStrategy: string,
+        tradeEntry: string,
+        leastPrice: string,
+        stopLoss: string
+
+
     },
     featuresBotData: {
         assetName:string,
@@ -52,6 +60,13 @@ const initialState: DataState = {
         strategyPeriod:'',
         initialEntryAmount:'',
         numberOfEntry:'',
+        riskPreference: 'Conservative',
+        leverage: '',
+        tradeExitStrategy: '',
+        tradeEntry: '',
+        leastPrice: '',
+        stopLoss: ''
+
     },
     featuresBotData: {
         assetName:'',

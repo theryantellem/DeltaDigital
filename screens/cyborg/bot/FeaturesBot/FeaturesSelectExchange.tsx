@@ -38,7 +38,7 @@ const ExchangeCard = ({item,continueAsset}: prop) => {
     return (
         <Animated.View key={item.id} layout={Layout.easing(Easing.bounce).delay(100)}
                        entering={FadeInDown.springify()} exiting={FadeOutDown}>
-            <Pressable onPress={()=>continueAsset(item.exchange,item.status,item.apiKey,item.apiSecrete)} style={styles.exchangeCard}>
+            <Pressable onPress={()=>continueAsset(item.exchangeName,item.status,item.apiKey,item.apiSecrete)} style={styles.exchangeCard}>
                 <View style={styles.exchangeCardTop}>
 
 
@@ -77,19 +77,28 @@ const FeaturesSelectExchange = ({navigation}: RootStackScreenProps<'FeaturesSele
 
     const dispatch = useAppDispatch()
     const user = useAppSelector(state => state.user)
+    const dataSlice = useAppSelector(state => state.data)
     const {userData, User_Details} = user
+    const { featuresBotData} = dataSlice
 
     const {data, isRefetching, refetch,isLoading} = useQuery(
         [`user-data`, User_Details.id],
         () => getUser(User_Details.id),
         {})
+
+
     const continueAsset = (exchange:string, status:'0'|'1',apiKey:string,apiSecrete:string) =>{
         const updatedData = {
             exchange
         };
         dispatch(updateFeatureBotData(updatedData));
         if(status == '1'){
-            navigation.navigate('AutoConfig')
+            if(featuresBotData.configType == 'Auto'){
+                navigation.navigate('AutoConfig')
+            }else{
+                navigation.navigate('SetAmount')
+            }
+
         }else{
             navigation.navigate('ViewAPIBinding', {
                 exchange,

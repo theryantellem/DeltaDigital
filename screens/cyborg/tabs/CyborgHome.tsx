@@ -179,7 +179,7 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
                                     <Text style={styles.overviewText}>
                                         Overview
                                     </Text>
-                                    <Octicons name="chevron-right" size={14} color="#fff"/>
+                                    <Octicons name="chevron-right" size={14} color="#A13AD1"/>
 
                                 </TouchableOpacity>
                             </View>
@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
         color: "#fff",
     },
     overviewBtn: {
-        backgroundColor: "#A13AD1",
+        backgroundColor: "#fff",
         width: widthPixel(90),
         height: 30,
         alignItems: 'center',
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
         marginRight: 5,
         fontFamily: Fonts.faktumMedium,
         fontSize: fontPixel(12),
-        color: "#fff",
+        color: "#A13AD1",
     },
     earnedToday: {
         justifyContent: 'center',

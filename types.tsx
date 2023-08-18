@@ -36,6 +36,7 @@ import AutoConfig from "./screens/cyborg/bot/FeaturesBot/AutoConfig";
 import SetAmount from "./screens/cyborg/bot/FeaturesBot/manual_config/SetAmount";
 import CustomizeEntries from "./screens/cyborg/bot/FeaturesBot/manual_config/CustomizeEntries";
 import AdditionalSettings from "./screens/cyborg/bot/FeaturesBot/manual_config/AdditionalSettings";
+import FinalPreview from "./screens/cyborg/bot/FeaturesBot/FinalPreview";
 
 
 
@@ -96,7 +97,9 @@ export type RootStackParamList = {
         isBound:'0'|'1',
     };
     AllStrategy:undefined
-    ViewStrategy:undefined
+    ViewStrategy: {
+        id:string
+    }
     FeaturesSelectAsset:undefined
     SelectConfig:undefined
     FeaturesSelectExchange:undefined
@@ -105,6 +108,7 @@ export type RootStackParamList = {
     EntriesScreen:undefined
     CustomizeEntries:undefined
     AdditionalSettings:undefined
+    FinalPreview:undefined
     BotDirection:undefined
     ContactUs:undefined
     FeedbackRecord:undefined

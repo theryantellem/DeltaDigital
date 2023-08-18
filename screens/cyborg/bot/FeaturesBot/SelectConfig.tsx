@@ -22,11 +22,9 @@ const SelectConfig = ({navigation}: RootStackScreenProps<'SelectConfig'>) => {
             configType
         };
         dispatch(updateFeatureBotData(updatedData));
-        if(configType == 'Auto'){
+
             navigation.navigate('FeaturesSelectExchange')
-        }else{
-            navigation.navigate('SetAmount')
-        }
+
 
 
     }

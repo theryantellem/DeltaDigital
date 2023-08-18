@@ -2,7 +2,7 @@ import React, {useCallback, useState} from 'react';
 
 import {Text, View, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import {useFocusEffect, useNavigation} from "@react-navigation/native";
-import {FontAwesome5, Octicons} from "@expo/vector-icons";
+import {FontAwesome5, Ionicons, Octicons} from "@expo/vector-icons";
 import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../helpers/normalize";
 import {Fonts} from "../../constants/Fonts";
 import FastImage from "react-native-fast-image";
@@ -84,14 +84,15 @@ const TopBar = ({ profilePhoto, userName}: props) => {
             </TouchableOpacity>
 
             <View style={styles.rightButton}>
+
                 <TouchableOpacity onPress={openNotifications} activeOpacity={0.6} style={styles.topButton}>
                     <Octicons name="bell" size={18} color="#fff"/>
 
-
                 </TouchableOpacity>
+
                 <TouchableOpacity onPress={openAssets} activeOpacity={0.6} style={styles.topButton}>
 
-                    <FontAwesome5 name="coins" size={16} color={Colors.text}/>
+                    <Ionicons name="md-wallet-outline" size={20} color={Colors.text} />
 
                 </TouchableOpacity>
 
@@ -165,7 +166,7 @@ const styles = StyleSheet.create({
         height: '100%'
     },
     rightButton: {
-        width: widthPixel(80),
+        width: widthPixel(75),
         height: '90%',
 
         flexDirection: 'row',

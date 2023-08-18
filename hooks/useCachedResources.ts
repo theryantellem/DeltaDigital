@@ -23,6 +23,12 @@ export default function useCachedResources() {
           'faktum-extra-bold': require('../assets/fonts/Faktum-ExtraBold.otf'),
           'faktum-regular-italics': require('../assets/fonts/Faktum-RegularItalic.otf'),
           'faktum-med-italics': require('../assets/fonts/Faktum-MediumItalic.otf'),
+
+          'montserrat-bold': require('../assets/fonts/montserrat/Montserrat-Bold.ttf'),
+          'montserrat-regular': require('../assets/fonts/montserrat/Montserrat-Regular.ttf'),
+          'montserrat-medium': require('../assets/fonts/montserrat/Montserrat-Medium.ttf'),
+          'montserrat-semi-bold': require('../assets/fonts/montserrat/Montserrat-SemiBold.ttf'),
+          'montserrat-extra-bold': require('../assets/fonts/montserrat/Montserrat-ExtraBold.ttf'),
         });
       } catch (e) {
         // We might want to provide this error information to an error reporting service

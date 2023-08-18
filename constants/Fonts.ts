@@ -1,9 +1,9 @@
 export const Fonts = {
-    faktumBold:'faktum-bold',
-    faktumRegular:'faktum-regular',
-    faktumMedium:'faktum-medium',
-    faktumSemiBold:'faktum-semi-bold',
+    faktumBold:'montserrat-bold',
+    faktumRegular:'montserrat-regular',
+    faktumMedium:'montserrat-medium',
+    faktumSemiBold:'montserrat-semi-bold',
     faktumMedItalic:'faktum-med-italics',
     faktumRegItalic:'faktum-regular-italics',
-    faktumExtraBold:'faktum-extra-bold',
+    faktumExtraBold:'montserrat-extra-bold',
 }

@@ -7,14 +7,15 @@ import {SafeAreaProvider} from "react-native-safe-area-context";
 import 'react-native-gesture-handler';
 import {PersistQueryClientProvider} from "@tanstack/react-query-persist-client";
 import {createSyncStoragePersister} from "@tanstack/query-sync-storage-persister";
-import {MutationCache, QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {focusManager, MutationCache, QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {persistor, store} from "./app/store";
 import {PersistGate} from 'redux-persist/integration/react';
 import {Provider} from "react-redux";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import ToastAnimated from "./components/toast";
-import React from "react";
+import React, {useEffect} from "react";
 import {Portal, PortalProvider} from "@gorhom/portal";
+import {logoutUser, setLockUser, setUserLastSession} from "./app/slices/userSlice";
 
 enableScreens()
 
@@ -49,6 +50,43 @@ export default function App() {
 
     const isLoadingComplete = useCachedResources();
     const colorScheme = useColorScheme();
+
+
+
+    const logout = () => {
+        store.dispatch(logoutUser())
+    }
+   /* useEffect(() => {
+        if (focusManager.isFocused()) {
+
+            getToken().then((res) => {
+
+                if (!res) {
+
+                    logout()
+                    store.dispatch(setLockUser({
+                        lockUser: false
+                    }))
+                    store.dispatch(setUserLastSession({
+                        cleanLastActive: ''
+                    }))
+                } else if (res.exp * 1000 < Date.now()) {
+
+                    logout()
+                    store.dispatch(setLockUser({
+                        lockUser: false
+                    }))
+                    store.dispatch(setUserLastSession({
+                        cleanLastActive: ''
+                    }))
+                }
+            })
+
+        }
+    });*/
+
+
+
     if (!isLoadingComplete) {
         return null;
     } else {

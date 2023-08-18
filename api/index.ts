@@ -479,6 +479,7 @@ body
     ])
 
 }
+
 export const quantitativeStrategies = async (userId:string) => {
     let Token = await SecureStore.getItemAsync('delta-signal-token');
 
@@ -590,6 +591,66 @@ export const getFeedback = async (userId:string) => {
 
     return Promise.race([
         fetch(`${LIVE_PROD_URL}/Feedback`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])
+
+}
+export const getStrategies = async (userId:string) => {
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+
+    const myHeaders = {
+        "TOKEN": Token,
+        "ID": userId
+    }
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+
+    };
+
+    return Promise.race([
+        fetch('https://backend.deltacyborg.pro/Api/Mobile/getCopyList', requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])
+
+}
+
+
+export const copyTrade = async ({body,userId}:{userId: string,body:any}) => {
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+
+    const myHeaders = {
+        "TOKEN": Token,
+        "ID": userId
+    }
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body
+    };
+
+    return Promise.race([
+        fetch(`https://backend.deltacyborg.pro/Api/Mobile/Copytrade`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
