@@ -12,7 +12,7 @@ import Colors from "../../../../constants/Colors";
 import {useQuery} from "@tanstack/react-query";
 import {getUser} from "../../../../api";
 import {useAppDispatch, useAppSelector} from "../../../../app/hooks";
-import {updateFeatureBotData} from "../../../../app/slices/dataSlice";
+import {updateFeatureBotData, updateFuturesBot} from "../../../../app/slices/dataSlice";
 import AutoConfig from "./AutoConfig";
 
 
@@ -91,7 +91,7 @@ const FeaturesSelectExchange = ({navigation}: RootStackScreenProps<'FeaturesSele
         const updatedData = {
             exchange
         };
-        dispatch(updateFeatureBotData(updatedData));
+        dispatch(updateFuturesBot({exchange}));
         if(status == '1'){
             if(featuresBotData.configType == 'Auto'){
                 navigation.navigate('AutoConfig')

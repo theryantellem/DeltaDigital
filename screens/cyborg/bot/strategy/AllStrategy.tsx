@@ -38,6 +38,7 @@ import {letUserIn, setLockUser, setUserLastSession} from "../../../../app/slices
 import * as SecureStore from "expo-secure-store";
 import * as Haptics from "expo-haptics";
 import {addNotificationItem} from "../../../../app/slices/dataSlice";
+import ToastAnimated from "../../../../components/toast";
 
 
 interface props {
@@ -172,7 +173,7 @@ const AllStrategy = ({navigation}: RootStackScreenProps<'AllStrategy'>) => {
 
             onSuccess: async (data) => {
                 // alert(message)
-console.log(data)
+
                 if (data.status == 1) {
 
                            navigation.navigate('SuccessScreen',{
@@ -355,6 +356,7 @@ console.log(data)
 
 
                     </View>
+                    <ToastAnimated/>
                 </LinearGradient>
             </SafeAreaView>
 

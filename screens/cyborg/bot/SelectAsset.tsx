@@ -13,14 +13,15 @@ import {currencyFormatter, titleCase, wait} from "../../../helpers";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-reanimated";
 import {getUser, quantitativeStrategies} from "../../../api";
 import {useQuery} from "@tanstack/react-query";
-import {useAppSelector} from "../../../app/hooks";
+import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {FlashList} from "@shopify/flash-list";
 import TextInput from "../../../components/inputs/TextInput";
 import SearchInput from "../../../components/inputs/SearchInput";
+import {updateBot} from "../../../app/slices/dataSlice";
 
 
 interface props {
-    continueAsset: () => void,
+    continueAsset: (market:string) => void,
     item: {
         id: string,
         Quantity: string,
@@ -85,7 +86,7 @@ const AssetCard = ({item, continueAsset}: props) => {
     return (
         <Animated.View key={item.Market} layout={Layout.easing(Easing.ease)}
                        entering={FadeInDown} exiting={FadeOutDown}>
-            <Pressable onPress={continueAsset} style={styles.AssetCard}>
+            <Pressable onPress={()=>continueAsset(item.Market)} style={styles.AssetCard}>
 
                 <View style={styles.assetIcon}>
                     <View style={styles.assetCardIcon}>
@@ -127,14 +128,17 @@ const AssetCard = ({item, continueAsset}: props) => {
 }
 
 const SelectAsset = ({navigation,route}: RootStackScreenProps<'SelectAsset'>) => {
-
+    const dispatch = useAppDispatch()
     const {exchange} = route.params
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
     const [refreshing, setRefreshing] = useState(false);
     const [searchValue, setSearchValue] = useState('');
-    const continueAsset = () => {
+    const continueAsset = (market:string) => {
         navigation.navigate('TradeSetting')
+        dispatch(updateBot({
+            market
+        }))
     }
 
     const renderItem = useCallback(

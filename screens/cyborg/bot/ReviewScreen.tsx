@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Text, View, StyleSheet} from 'react-native';
+import {Text, View, StyleSheet, ActivityIndicator} from 'react-native';
 import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -10,12 +10,188 @@ import Colors from "../../../constants/Colors";
 import {fontPixel, heightPixel} from "../../../helpers/normalize";
 import {Fonts} from "../../../constants/Fonts";
 import {MyButton} from "../../../components/MyButton";
+import {useAppDispatch, useAppSelector} from "../../../app/hooks";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {botTradeSetting, startTradingBotFuture} from "../../../api";
+import * as Haptics from "expo-haptics";
+import {addNotificationItem} from "../../../app/slices/dataSlice";
+import ToastAnimated from "../../../components/toast";
 
 const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
 
+    const queryClient = useQueryClient()
+    const dispatch = useAppDispatch()
+    const dataSlice = useAppSelector(state => state.data)
+    const {tradeSetting} = dataSlice
 
+    const user = useAppSelector(state => state.user)
+    const {User_Details} = user
+
+
+    const strategyPeriodShot = tradeSetting.one_shot == '1' ? '1' : '0'
+    const strategyPeriodCycle = tradeSetting.cycle == '1' ? '1' : '0'
+
+
+    const {mutate: createBot, isLoading, isSuccess, error} = useMutation(['bot-Trade-Setting'], botTradeSetting,
+
+        {
+
+            onSuccess: async (data) => {
+                // alert(message)
+
+                if (data.status == 1) {
+                    navigation.navigate('BotSuccess',{
+                        amount:tradeSetting.firstbuy_amount,
+                        market:tradeSetting.market,
+                    })
+                   /* navigation.navigate('SuccessScreen', {
+                        title: 'Successfull',
+                        message: 'Trading Bot created',
+                        type: 'success'
+                    })*/
+
+
+                } else {
+                    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+                    dispatch(addNotificationItem({
+                        id: Math.random(),
+                        type: 'error',
+                        body: data.data,
+                    }))
+
+                }
+            },
+
+            onError: (err) => {
+
+
+            },
+            onSettled: () => {
+                queryClient.invalidateQueries(['bot-Trade-Setting']);
+            }
+
+        })
+
+
+    const {
+        mutate: createFutureBot,
+        isLoading: loading
+    } = useMutation(['start-Trading-Bot-Future'], startTradingBotFuture,
+
+        {
+
+            onSuccess: async (data) => {
+                // alert(message)
+
+                if (data.status == 1) {
+                    navigation.navigate('BotSuccess',{
+                        amount:tradeSetting.firstbuy_amount,
+                        market:tradeSetting.market,
+                    })
+                    /*navigation.navigate('SuccessScreen', {
+                        title: 'Successful',
+                        message: 'Trading Bot created',
+                        type: 'success'
+                    })*/
+
+
+                } else {
+                    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+                    dispatch(addNotificationItem({
+                        id: Math.random(),
+                        type: 'error',
+                        body: data.data,
+                    }))
+
+                }
+            },
+
+            onError: (err) => {
+
+
+            },
+            onSettled: () => {
+                queryClient.invalidateQueries(['start-Trading-Bot-Future']);
+            }
+
+        })
+
+
+    const Exchanges = [
+        {
+            id: '1',
+            logo: 'https://play-lh.googleusercontent.com/PjoJoG27miSglVBXoXrxBSLveV6e3EeBPpNY55aiUUBM9Q1RCETKCOqdOkX2ZydqVf0',
+
+            exchange: '3',
+            exchangeName: 'Coinbase'
+        }, {
+            id: '2',
+            logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Binance_Logo.svg/1200px-Binance_Logo.svg.png',
+
+            exchange: '1',
+            exchangeName: 'Binance'
+        }, {
+            id: '3',
+            logo: 'https://static-00.iconduck.com/assets.00/kraken-icon-512x512-icmwhmh8.png',
+
+            exchange: '4',
+            exchangeName: 'Kraken'
+        }, {
+            id: '4',
+            logo: 'https://assets.staticimg.com/cms/media/3gfl2DgVUqjJ8FnkC7QxhvPmXmPgpt42FrAqklVMr.png',
+
+            exchange: '2',
+            exchangeName: 'Kucoin'
+        }
+    ]
     const botComplete = () => {
-      navigation.navigate('BotSuccess')
+
+    }
+
+    const editSetting = () => {
+        navigation.goBack()
+    }
+
+
+    const startBot = () => {
+        if (tradeSetting.trade_type == '1') {
+            const formData = new FormData()
+            formData.append('firstbuy_amount', tradeSetting.firstbuy_amount)
+            formData.append('double_position', tradeSetting.double_position)
+            formData.append('margin_limit', tradeSetting.margin_limit)
+            formData.append('profit_ratio', tradeSetting.profit_ratio)
+            formData.append('whole_ratio', tradeSetting.whole_ratio)
+            formData.append('whole_stop', tradeSetting.whole_stop)
+            formData.append('price_drop', tradeSetting.price_drop)
+            formData.append('first_ratio', tradeSetting.first_ratio)
+            formData.append('cycle', tradeSetting.cycle)
+            formData.append('profit_callback', tradeSetting.profit_callback)
+            formData.append('one_shot', tradeSetting.one_shot)
+            formData.append('exchange', tradeSetting.exchange)
+            formData.append('trade_type', tradeSetting.trade_type)
+            formData.append('direction', tradeSetting.direction)
+            formData.append('market', tradeSetting.market)
+            createFutureBot({body: formData, userId: User_Details.id})
+        }
+        if (tradeSetting.trade_type == '0') {
+            const formData = new FormData()
+            formData.append('firstbuy_amount', tradeSetting.firstbuy_amount)
+            formData.append('double_position', tradeSetting.double_position)
+            formData.append('margin_limit', tradeSetting.margin_limit)
+            formData.append('profit_ratio', tradeSetting.profit_ratio)
+            formData.append('whole_ratio', tradeSetting.whole_ratio)
+            formData.append('whole_stop', tradeSetting.whole_stop)
+            formData.append('price_drop', tradeSetting.price_drop)
+            formData.append('first_ratio', tradeSetting.first_ratio)
+            formData.append('cycle', tradeSetting.cycle)
+            formData.append('profit_callback', tradeSetting.profit_callback)
+            formData.append('one_shot', tradeSetting.one_shot)
+            formData.append('exchange', tradeSetting.exchange)
+            formData.append('trade_type', tradeSetting.trade_type)
+            formData.append('market', tradeSetting.market)
+            createBot({body: formData, userId: User_Details.id})
+        }
+
     }
 
     return (
@@ -63,7 +239,8 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
 
 
                                 <Text style={styles.DetailsText}>
-                                    Binance
+
+                                    {Exchanges.find(exchange => exchange.exchange == tradeSetting.exchange)?.exchangeName}
                                 </Text>
 
                             </View>
@@ -71,9 +248,9 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
                             <View style={styles.Details}>
                                 <View style={styles.DetailsLeft}>
                                     <Text style={styles.DetailTitleText}>
-                                        Margin call
+                                        First Buy Amount
                                     </Text>
-                                    <Text style={[styles.DetailTitleText, {
+                                    <Text onPress={editSetting} style={[styles.DetailTitleText, {
                                         color: Colors.primaryLight,
                                         marginLeft: 15,
                                         fontSize: fontPixel(14)
@@ -81,7 +258,7 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
                                         Edit</Text>
                                 </View>
                                 <Text style={[styles.DetailsText, {}]}>
-                                    12
+                                    {tradeSetting.firstbuy_amount}
                                 </Text>
 
                             </View>
@@ -91,7 +268,7 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
                                     <Text style={styles.DetailTitleText}>
                                         Stop loss
                                     </Text>
-                                    <Text style={[styles.DetailTitleText, {
+                                    <Text onPress={editSetting} style={[styles.DetailTitleText, {
                                         color: Colors.primaryLight,
                                         marginLeft: 15,
                                         fontSize: fontPixel(14)
@@ -103,7 +280,8 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
                                     fontFamily: Fonts.faktumMedium,
 
                                 }]}>
-                                    34%
+                                    {tradeSetting.whole_stop}
+
                                 </Text>
 
                             </View>
@@ -113,7 +291,7 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
                                     <Text style={styles.DetailTitleText}>
                                         Profit callback
                                     </Text>
-                                    <Text style={[styles.DetailTitleText, {
+                                    <Text onPress={editSetting} style={[styles.DetailTitleText, {
                                         color: Colors.primaryLight,
                                         marginLeft: 15,
                                         fontSize: fontPixel(14)
@@ -124,7 +302,7 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
                                     fontFamily: Fonts.faktumMedium,
 
                                 }]}>
-                                    120
+                                    {tradeSetting.profit_callback}
                                 </Text>
 
                             </View>
@@ -138,7 +316,7 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
                                     fontFamily: Fonts.faktumMedium,
 
                                 }]}>
-                                    65
+                                    {tradeSetting.profit_ratio}
                                 </Text>
 
                             </View>
@@ -150,7 +328,10 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
                                     fontFamily: Fonts.faktumMedium,
 
                                 }]}>
-                                    One shot
+
+                                    {strategyPeriodShot == '1' && 'One Shot'}
+                                    {strategyPeriodCycle == '1' && 'Cycle'}
+
                                 </Text>
 
                             </View>
@@ -178,9 +359,10 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
                                 </Text>
                                 <Text style={[styles.DetailsText, {
                                     fontFamily: Fonts.faktumSemiBold,
-                                    color: Colors.success
+                                    color: Colors.success,
+                                    textTransform: 'uppercase'
                                 }]}>
-                                    BTC/USDT
+                                    {tradeSetting.market}
                                 </Text>
 
                             </View>
@@ -195,25 +377,35 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
                                 Type
                             </Text>
                             <Text style={styles.DetailsText}>
-                                Spot
+
+                                {tradeSetting.trade_type == '1' ? 'Futures' : 'Spot'}
                             </Text>
                         </View>
 
                     </View>
 
-
+                    <ToastAnimated/>
                 </KeyboardAwareScrollView>
 
-                <MyButton onPress={botComplete} style={[styles.button, {
+                <MyButton onPress={startBot} style={[styles.button, {
                     backgroundColor: Colors.primary
                 }]}>
-                    <Text style={styles.buttonTxt}>
-                        Continue
-                    </Text>
+                    {
+                        isLoading && loading && <ActivityIndicator size='small' color={"#fff"}/>
+                    }
+
+                    {
+                        !isLoading && !loading &&
+                        <Text style={styles.buttonTxt}>
+                            Continue
+                        </Text>
+                    }
+
                 </MyButton>
 
 
             </LinearGradient>
+
         </SafeAreaView>
     );
 };
@@ -278,7 +470,7 @@ const styles = StyleSheet.create({
     DetailTitleText: {
         color: "#fff",
         fontFamily: Fonts.faktumMedium,
-        fontSize: fontPixel(16),
+        fontSize: fontPixel(14),
     },
     head: {
         height: heightPixel(55),

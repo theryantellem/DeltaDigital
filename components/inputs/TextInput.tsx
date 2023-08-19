@@ -64,7 +64,7 @@ const BottomSheetInput: FC<Props> = ({
 
     let validationColor, validationLabelColor;
 
-    validationColor = !touched ? Colors.border : focus ? Colors.purplePrimary : error ? Colors.errorRed : "#fff"
+    validationColor = !touched ? Colors.border : focus ? "#fff" : error ? Colors.errorRed : Colors.borderColor
     validationLabelColor = !touched ? Colors.textDark : focus ? Colors.textDark : error ? Colors.errorRed :"#fff"
 
     return (

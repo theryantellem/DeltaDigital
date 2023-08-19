@@ -663,6 +663,35 @@ export const copyTrade = async ({body,userId}:{userId: string,body:any}) => {
     ])
 
 }
+export const startTradingBotFuture = async ({body,userId}:{userId: string,body:any}) => {
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+
+    const myHeaders = {
+        "TOKEN": Token,
+        "ID": userId
+    }
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body
+    };
+
+    return Promise.race([
+        fetch(`https://backend.deltacyborg.pro/Api/Mobile/Copytrade`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])
+
+}
 
 
 export const binanceTicker = async () => {

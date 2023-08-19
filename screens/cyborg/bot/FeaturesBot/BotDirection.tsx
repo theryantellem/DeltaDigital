@@ -24,7 +24,7 @@ const BotDirection = ({navigation}:RootStackScreenProps<'BotDirection'>) => {
            direction
         };
         dispatch(updateFeatureBotData(updatedData));
-navigation.navigate('SelectConfig')
+navigation.navigate('TradeSetting')
     }
     return (
         <SafeAreaView style={styles.safeArea}>

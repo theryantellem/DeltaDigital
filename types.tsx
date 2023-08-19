@@ -56,7 +56,9 @@ export type RootStackParamList = {
     CyborgBottomTab: NavigatorScreenParams<RootTabParamList> | undefined;
     NewsScreen: undefined;
     SelectType: undefined;
-    SelectExchange: undefined;
+    SelectExchange: {
+        type:'spot'|'futures'
+    };
     SelectAsset: {
 
         exchange:string
@@ -64,7 +66,10 @@ export type RootStackParamList = {
     TradeSetting: undefined;
     ReviewScreen: undefined;
     OverView: undefined;
-    BotSuccess: undefined;
+    BotSuccess: {
+        amount:string,
+        market:string
+    };
     UserAccount: undefined;
     DepositScreen: undefined;
     Withdrawal: {

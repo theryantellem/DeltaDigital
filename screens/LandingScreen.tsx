@@ -98,7 +98,8 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
             btnBg: "#fff",
             balance: Asset?.data?.total_assets,
             description: " Spot/Future",
-            icon:   <Image source={require('../assets/images/cyborg-logo.png')} style={styles.imageLogo}/>,
+            image:  <Image source={require('../assets/images/robots/cyborg.png')} style={styles.imageRobot}/>,
+            icon:   <Image source={require('../assets/images/logos/cyborg1.png')} style={styles.imageLogo}/>,
 
         },
         {
@@ -109,7 +110,12 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
             action: CyborgHome,
             btnBg: "#fff",
             description: "Learn",
-            icon:   <Image source={require('../assets/images/cyborg-logo.png')} style={styles.imageLogo}/>,
+            image:  <Image source={require('../assets/images/robots/Finix.png')} style={styles.imageRobot}/>,
+            icon:   <Image source={require('../assets/images/logos/cyborlogo.png')} style={{
+                width:50,
+                height:'100%',
+                resizeMode:'cover'
+            }}/>,
 
         },
         {
@@ -120,7 +126,11 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
             action: CyborgHome,
             btnBg: "#fff",
             description: "Forex",
-            icon:   <Image source={require('../assets/images/signal.jpeg')} style={styles.imageLogo}/>,
+            image: <Image source={require('../assets/images/robots/cyborg.png')} style={styles.imageRobot}/>,
+            icon:   <Image source={require('../assets/images/signal.jpeg')} style={{
+                width:65,
+                height:'100%',
+                resizeMode:'cover'}}/>,
 
         },
     ]
@@ -135,6 +145,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                     {backgroundColor: '#090A1C',   width: CARD_WIDTH,}]}>
                     <View style={styles.planLeft}>
                         <View style={styles.imageCover}>
+
                             {card.icon}
 
                         </View>
@@ -151,7 +162,9 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
 
 
                     <View style={styles.planRight}>
-
+<View style={styles.imageRobotWrap}>
+    {card.image}
+</View>
 
 
                     </View>
@@ -352,6 +365,7 @@ const styles = StyleSheet.create({
     },
 
     planLeft:{
+
       width:'50%',
       height:'90%',
         alignItems:'flex-start'
@@ -360,6 +374,16 @@ const styles = StyleSheet.create({
       width:'45%',
       height:'100%',
 
+    },
+    imageRobotWrap:{
+        width:'100%',
+        alignItems:'center',
+        justifyContent:'center'
+    },
+    imageRobot:{
+height:'90%',
+        width:'90%',
+        resizeMode:'cover'
     },
     plan: {
         flexDirection:'row',
@@ -439,8 +463,8 @@ const styles = StyleSheet.create({
     },
     imageCover:{
 
-        height:45,
-        width:45,
+        height:55,
+        width:'100%',
         alignItems:'center',
         justifyContent:'center',
 
@@ -448,8 +472,9 @@ const styles = StyleSheet.create({
     imageLogo:{
         width:'100%',
         height:'100%',
-        resizeMode:'cover',
+        resizeMode:'center'
     },
+
     loading: {
         flex:1,
         width:'100%',

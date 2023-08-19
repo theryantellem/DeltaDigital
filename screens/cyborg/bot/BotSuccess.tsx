@@ -13,7 +13,8 @@ import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-re
 import {RootStackScreenProps} from "../../../types";
 import HorizontalLine from "../../../components/HorizontalLine";
 
-const BotSuccess = ({navigation}: RootStackScreenProps<'BotSuccess'>) => {
+const BotSuccess = ({navigation,route}: RootStackScreenProps<'BotSuccess'>) => {
+    const {market,amount} = route.params
     const goNextScreen = () => {
         navigation.navigate('CyborgBottomTab', {
             screen: 'CyborgHome'
@@ -72,7 +73,7 @@ const BotSuccess = ({navigation}: RootStackScreenProps<'BotSuccess'>) => {
                                     Amount
                                 </Text>
                                 <Text style={styles.amountText}>
-                                    $3,030
+                                    {amount}
                                 </Text>
                             </View>
 
@@ -80,10 +81,10 @@ const BotSuccess = ({navigation}: RootStackScreenProps<'BotSuccess'>) => {
 
                             <View style={styles.rowDetails}>
                                 <Text style={styles.amountText}>
-                                    Exchange
+                                    Market
                                 </Text>
                                 <Text style={styles.amountText}>
-                                 Binance
+                                    {market}
                                 </Text>
                             </View>
                         </View>

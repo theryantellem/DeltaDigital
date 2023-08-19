@@ -22,11 +22,17 @@ import {
 import {
     BottomSheetDefaultBackdropProps
 } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
+import {useAppDispatch} from "../../../app/hooks";
+import {updateBot} from "../../../app/slices/dataSlice";
 
 const SelectType = ({navigation}: RootStackScreenProps<'SelectType'>) => {
-
+    const dispatch = useAppDispatch()
     const selectContinue = () => {
-        navigation.navigate('SelectExchange')
+        navigation.navigate('SelectExchange', {
+            type: 'spot'
+        })
+        dispatch(updateBot({trade_type: '0'}))
+
     }
 
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -42,7 +48,6 @@ const SelectType = ({navigation}: RootStackScreenProps<'SelectType'>) => {
     const handleClose = useCallback(() => {
         bottomSheetModalRef.current?.close();
     }, []);
-
 
 
     // variables
@@ -63,7 +68,11 @@ const SelectType = ({navigation}: RootStackScreenProps<'SelectType'>) => {
 
     const selectFeaturesContinue = () => {
         handleClose()
-        navigation.navigate('FeaturesSelectAsset')
+        navigation.navigate('SelectExchange', {
+            type: 'futures'
+        })
+        dispatch(updateBot({trade_type: '1'}))
+
     }
     return (
         <>
@@ -426,7 +435,7 @@ const styles = StyleSheet.create({
         color: Colors.text
     },
     warningText: {
-        textAlign:'center',
+        textAlign: 'center',
         fontSize: fontPixel(14),
         fontFamily: Fonts.faktumMedium,
         color: Colors.tintText

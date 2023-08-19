@@ -21,6 +21,12 @@ import {
 } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types';
 import {Ionicons, MaterialIcons} from "@expo/vector-icons";
 import SelectInput from "../../../components/inputs/SelectInput";
+import {append} from "react-native-svg/lib/typescript/lib/Matrix2D";
+import {useAppDispatch, useAppSelector} from "../../../app/hooks";
+import {addNotificationItem, updateBot} from "../../../app/slices/dataSlice";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {botTradeSetting, copyTrade} from "../../../api";
+import * as Haptics from "expo-haptics";
 
 
 const SWITCH_TRACK_COLOR = {
@@ -36,6 +42,28 @@ const formSchema = yup.object().shape({
         /^[1-9][0-9]*$/,
         "Invalid number type"
     ),
+
+    strategyPeriod: yup.string().required('Strategy Period is required'),
+
+    first_position_drop: yup.string()
+        .when('strategyPeriod', {
+            is: (val: string) => val == 'Cycle',
+            then: (schema) => schema.trim().required('Price Drop is required').matches(
+                /^[1-9][0-9]*$/,
+                "Invalid number type"
+            ),
+            otherwise: (schema) => schema.notRequired(),
+        }),
+    highest_price: yup.string()
+        .when('strategyPeriod', {
+            is: (val: string) => val == 'Cycle',
+            then: (schema) => schema.trim().required('Highest price is required').matches(
+                /^[1-9][0-9]*$/,
+                "Invalid number type"
+            ),
+            otherwise: (schema) => schema.notRequired(),
+        }),
+
     marginLimit: yup.string().required('Margin Limit call is required').matches(
         /^[1-9][0-9]*$/,
         "Invalid number type"
@@ -49,6 +77,10 @@ const formSchema = yup.object().shape({
         /^[1-9][0-9]*$/,
         "Invalid number type"
     ),
+    whole_position_stop_loss: yup.string().required('Whole position stop loss is required').matches(
+        /^[1-9][0-9]*$/,
+        "Invalid number type"
+    ),
     buy_in_callback: yup.string().required('Buy in callback is required').matches(
         /^[1-9][0-9]*$/,
         "Invalid number type"
@@ -58,13 +90,24 @@ const formSchema = yup.object().shape({
 
 const StrategyPeriod = [
     {
-    title: "Cycle",
-    id: '1'
-} ,
+        title: "Cycle",
+        id: '1'
+    },
     {
-    title: "One-Shot",
-    id: '2'
-}
+        title: "One-Shot",
+        id: '2'
+    }
+]
+
+const DirectionData = [
+    {
+        title: "Long",
+        id: '1'
+    },
+    {
+        title: "Short",
+        id: '2'
+    }
 ]
 
 
@@ -79,7 +122,7 @@ interface itemProps {
 
 const SelectValue = ({selected, item, action}: itemProps) => (
     <TouchableOpacity onPress={() => action(item.title, item.id)} style={[styles.selectBtn, {
-        borderBottomColor:Colors.borderColor,
+        borderBottomColor: Colors.borderColor,
     }]}>
 
         <View style={styles.item}>
@@ -99,7 +142,37 @@ const SelectValue = ({selected, item, action}: itemProps) => (
     </TouchableOpacity>
 )
 
+const SelectValueDir = ({selected, item, action}: itemProps) => (
+    <TouchableOpacity onPress={() => action(item.title, item.id)} style={[styles.selectBtn, {
+        borderBottomColor: Colors.borderColor,
+    }]}>
+
+        <View style={styles.item}>
+            {
+                selected === item.title ? <Ionicons name="ios-checkbox" size={14} color={Colors.primary}/>
+                    :
+                    <MaterialIcons name="check-box-outline-blank" size={14} color={Colors.tintText}/>
+            }
+
+
+            <Text style={styles.itemText}>
+                {item.title}
+            </Text>
+
+
+        </View>
+    </TouchableOpacity>
+)
+
 const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
+
+    const dispatch = useAppDispatch()
+
+    const dataSlice  = useAppSelector(state => state.data)
+    const {tradeSetting} = dataSlice
+
+    const [direction, setDirection] = useState('Long');
+
 
     const [selected, setSelected] = useState('');
     const [amountContent, setAmountContent] = useState('');
@@ -128,6 +201,17 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
         bankSheetRef.current?.close();
     }, []);
 
+
+
+
+    const directionSheetRef = useRef<BottomSheet>(null);
+    const handleSnapPressDirection = useCallback((index: number) => {
+        directionSheetRef.current?.snapToIndex(index);
+    }, []);
+    const handleCloseDirection = useCallback(() => {
+        directionSheetRef.current?.close();
+    }, []);
+
     const renderBackdrop = useCallback(
         (props: JSX.IntrinsicAttributes & BottomSheetDefaultBackdropProps) => (
             <BottomSheetBackdrop
@@ -141,6 +225,7 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
         ),
         []
     );
+
 
 
 
@@ -162,7 +247,7 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
             amount: '',
             marginLimit: '',
             takeProfit: '',
-
+            direction:'',
             buy_in_callback: '',
             highest_price: '',
             first_position_drop: '',
@@ -173,10 +258,59 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
 
         },
         onSubmit: (values) => {
-            const {amount} = values;
+            const {
+                amount,
+                marginLimit,
+                takeProfit,
+                buy_in_callback,
+                highest_price,
+                first_position_drop,
+                strategyPeriod, whole_position_stop_loss,
+                whole_position_take_profit_callback
+            } = values;
+
+            const strategyPeriodShot = strategyPeriod == 'Cycle' ? '0' : '1'
+            const strategyPeriodCycle = strategyPeriod == 'Cycle' ? '1' : '0'
 
 
+
+            dispatch(updateBot({
+                firstbuy_amount:amount,
+                double_position:switchToggle ? '2' : '1',
+                margin_limit:marginLimit,
+                profit_ratio:whole_position_take_profit_callback,
+                whole_ratio:'2',
+                whole_stop:whole_position_stop_loss,
+                price_drop:first_position_drop,
+                first_ratio:3,
+                cycle:strategyPeriodCycle,
+                profit_callback:whole_position_take_profit_callback,
+                one_shot:strategyPeriodShot
+            }))
+            /*
+             id: 19201
+             firstbuy_amount: 15
+             double_position: 1
+             margin_limit: 4
+             profit_ratio: 1
+             whole_ratio: 0
+             first_call: 2|2|4|3
+             first_ratio: 2|2|4|4
+             second_call: 0
+             second_ratio: 0
+             third_call: 0
+             third_ratio: 0
+             forth_call: 0
+             forth_ratio: 0
+             fifth_call: 0
+             fifth_ratio: 0
+             profit_callback: 0
+             cycle: 1
+             one_short: 0
+             whole_stop:100
+             */
             navigation.navigate('ReviewScreen')
+
         }
     });
 
@@ -188,10 +322,21 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
         handleChange('strategyPeriod')(title)
     }, [])
 
+    const switchDir= useCallback(async (title: string) => {
+        setDirection(title)
+        handleCloseDirection()
+        handleChange('direction')(title)
+    }, [])
+
 
     const renderItem = useCallback(({item}: any) => (
         <SelectValue selected={selected} item={item} action={switchItem}/>
     ), [selected]);
+
+
+    const renderItemDir = useCallback(({item}: any) => (
+        <SelectValueDir selected={direction} item={item} action={switchDir}/>
+    ), [direction]);
 
 
     return (
@@ -317,20 +462,29 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                                 label="Whole position take profit ratio"/>
 
 
-                            <View style={styles.switchWrap}>
-                                <Text style={styles.label}>
-                                    Whole position stop loss <Text style={{color: Colors.success}}>{value}</Text>
-                                </Text>
-                                <Slider
-                                    style={{width: '100%', height: 40}}
-                                    minimumValue={1}
-                                    step={1}
-                                    maximumValue={100}
-                                    onValueChange={(value) => setValue(value)}
-                                    minimumTrackTintColor={Colors.primary}
-                                    maximumTrackTintColor="#787880"
-                                />
-                            </View>
+
+
+
+                            <TextInput
+
+                                placeholder="Stop loss"
+                                keyboardType={"number-pad"}
+                                touched={touched.whole_position_stop_loss}
+                                error={touched.whole_position_stop_loss && errors.whole_position_stop_loss}
+
+                                onChangeText={(e) => {
+                                    handleChange('whole_position_stop_loss')(e);
+
+                                }}
+
+                                onBlur={(e) => {
+                                    handleBlur('whole_position_stop_loss')(e);
+
+
+                                }}
+
+                                value={values.whole_position_stop_loss}
+                                label="Whole position stop loss"/>
 
 
                             <TextInput
@@ -375,7 +529,7 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
 
                             <SelectInput
                                 editable={false}
-                                action={() =>handleSnapPress(1)}
+                                action={() => handleSnapPress(1)}
                                 label='Strategy period'
                                 autoCapitalize='none'
                                 keyboardType='default'
@@ -391,49 +545,79 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                                 Btn={true}
                             />
 
+                            {
+                                tradeSetting.trade_type == '1'
+                                &&
 
-                            <TextInput
-
-                                placeholder="0"
-                                keyboardType={"number-pad"}
-                                touched={touched.highest_price}
-                                error={touched.highest_price && errors.highest_price}
-
-                                onChangeText={(e) => {
-                                    handleChange('highest_price')(e);
-                                    setTakeProfit(e);
-                                }}
-
-                                onBlur={(e) => {
-                                    handleBlur('highest_price')(e);
-
-                                }}
-
-                                value={values.highest_price}
-                                label="Highest price"/>
-
-
-                            <TextInput
-
-                                placeholder="0"
-                                keyboardType={"number-pad"}
-                                touched={touched.first_position_drop}
-                                error={touched.first_position_drop && errors.first_position_drop}
+                            <SelectInput
+                                editable={false}
+                                action={() => handleSnapPressDirection(1)}
+                                label='Direction'
+                                autoCapitalize='none'
+                                keyboardType='default'
+                                returnKeyType='next'
+                                returnKeyLabel='next'
 
                                 onChangeText={(e) => {
-                                    handleChange('first_position_drop')(e);
-                                    setTakeProfit(e);
+                                    setDirection(e)
                                 }}
+                                defaultValue={direction}
+                                icon='chevron-down'
+                                value={values.direction}
+                                Btn={true}
+                            />
+                            }
 
-                                onBlur={(e) => {
-                                    handleBlur('first_position_drop')(e);
-
-                                }}
-
-                                value={values.first_position_drop}
-                                label="First position drop"/>
+                            {
+                                strategyPeriod == 'Cycle' &&
 
 
+                                <>
+
+                                    <TextInput
+
+                                        placeholder="0"
+                                        keyboardType={"number-pad"}
+                                        touched={touched.highest_price}
+                                        error={touched.highest_price && errors.highest_price}
+
+                                        onChangeText={(e) => {
+                                            handleChange('highest_price')(e);
+                                            setTakeProfit(e);
+                                        }}
+
+                                        onBlur={(e) => {
+                                            handleBlur('highest_price')(e);
+
+                                        }}
+
+                                        value={values.highest_price}
+                                        label="Highest price"/>
+
+
+                                    <TextInput
+
+                                        placeholder="0"
+                                        keyboardType={"number-pad"}
+                                        touched={touched.first_position_drop}
+                                        error={touched.first_position_drop && errors.first_position_drop}
+
+                                        onChangeText={(e) => {
+                                            handleChange('first_position_drop')(e);
+                                            setTakeProfit(e);
+                                        }}
+
+                                        onBlur={(e) => {
+                                            handleBlur('first_position_drop')(e);
+
+                                        }}
+
+                                        value={values.first_position_drop}
+                                        label="First position drop"/>
+
+                                </>
+
+                            }
                         </View>
 
 
@@ -484,6 +668,49 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
 
                 <BottomSheetFlatList data={StrategyPeriod}
                                      renderItem={renderItem}
+                                     keyExtractor={keyExtractor}
+                                     contentContainerStyle={styles.flatList}
+                                     showsVerticalScrollIndicator={false}/>
+
+            </BottomSheet>
+
+
+
+
+            <BottomSheet
+
+                index={0}
+                ref={directionSheetRef}
+                snapPoints={snapPoints}
+                backdropComponent={renderBackdrop}
+                backgroundStyle={{
+                    backgroundColor: Colors.dark.background,
+                }}
+                handleIndicatorStyle={{backgroundColor: "#fff"}}
+            >
+                <View style={styles.sheetHead}>
+
+                    <View style={{
+                        width: '5%'
+                    }}/>
+
+                    <Text style={styles.sheetTitle}>
+                        Direction
+                    </Text>
+
+                    <TouchableOpacity onPress={handleCloseDirection} style={[styles.dismiss, {
+                        backgroundColor: Colors.textDark,
+
+
+                    }]}>
+                        <Ionicons name="close-sharp" size={20} color={Colors.text}/>
+                    </TouchableOpacity>
+
+                </View>
+
+
+                <BottomSheetFlatList data={DirectionData}
+                                     renderItem={renderItemDir}
                                      keyExtractor={keyExtractor}
                                      contentContainerStyle={styles.flatList}
                                      showsVerticalScrollIndicator={false}/>
@@ -604,7 +831,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: fontPixel(18),
         fontFamily: Fonts.faktumMedium,
-        color:Colors.tintText
+        color: Colors.tintText
     },
     dismiss: {
 

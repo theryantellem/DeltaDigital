@@ -17,13 +17,48 @@ export interface DataState {
     hideSaveBalance: boolean,
     hideMissionBalance: boolean,
     featureBotAuto: {},
-    featureBotManualConfig: {
-        amount:string,
-        strategyPeriod:string,
-        initialEntryAmount:string,
-        numberOfEntry:string,
+    tradeSetting: {
+        firstbuy_amount: string,
+        double_position: string,
+        margin_limit: string
+        profit_ratio: string,
+        whole_ratio: string
+        whole_stop: string,
+        price_drop: string
+        first_ratio: string,
+        cycle: string,
+        profit_callback: string
+        one_shot: string,
+        trade_type: string,
+        exchange: string,
+        market: string,
+        direction: 'Long' | 'Short'
+    },
+    tradeSettingFutures: {
+        firstbuy_amount: string,
+        double_position: string,
+        margin_limit: string
+        profit_ratio: string,
+        whole_ratio: string
+        whole_stop: string,
+        price_drop: string
+        first_ratio: string,
+        cycle: string,
+        profit_callback: string
+        one_shot: string,
+        trade_type: string,
+        exchange: string,
+        market: string,
+        direction: 'Long' | 'Short'
+    }
 
-        riskPreference: 'Conservative'|'Relaxed',
+    featureBotManualConfig: {
+        amount: string,
+        strategyPeriod: string,
+        initialEntryAmount: string,
+        numberOfEntry: string,
+
+        riskPreference: 'Conservative' | 'Relaxed',
         leverage: string,
         tradeExitStrategy: string,
         tradeEntry: string,
@@ -33,10 +68,10 @@ export interface DataState {
 
     },
     featuresBotData: {
-        assetName:string,
-        assetSymbol:string,
-        direction:string,
-        configType:string
+        assetName: string,
+        assetSymbol: string,
+        direction: string,
+        configType: string
     },
     notificationData: [TaskInterface]
 
@@ -52,14 +87,48 @@ const initialState: DataState = {
     saveAmountToWithdraw: '',
     hideBalance: false,
     hideSaveBalance: false,
-    featureBotAuto: {
+    tradeSetting: {
 
+        firstbuy_amount: '',
+        double_position: '',
+        margin_limit: '',
+        profit_ratio: '',
+        whole_ratio: '',
+        whole_stop: '',
+        price_drop: '',
+        first_ratio: '',
+        cycle: '',
+        profit_callback: '',
+        one_shot: '',
+        trade_type: '0',
+        exchange: '',
+        market: '',
+        direction: 'Long'
     },
+    tradeSettingFutures: {
+        firstbuy_amount: '',
+        double_position: '',
+        margin_limit: '',
+        profit_ratio: '',
+        whole_ratio: '',
+        whole_stop: '',
+        price_drop: '',
+        first_ratio: '',
+        cycle: '',
+        profit_callback: '',
+        one_shot: '',
+        trade_type: '1',
+        exchange: '',
+        market:'',
+        direction: 'Long'
+    },
+
+    featureBotAuto: {},
     featureBotManualConfig: {
-        amount:'',
-        strategyPeriod:'',
-        initialEntryAmount:'',
-        numberOfEntry:'',
+        amount: '',
+        strategyPeriod: '',
+        initialEntryAmount: '',
+        numberOfEntry: '',
         riskPreference: 'Conservative',
         leverage: '',
         tradeExitStrategy: '',
@@ -69,10 +138,10 @@ const initialState: DataState = {
 
     },
     featuresBotData: {
-        assetName:'',
-        assetSymbol:'',
-        direction:'',
-        configType:'',
+        assetName: '',
+        assetSymbol: '',
+        direction: '',
+        configType: '',
     },
     notificationData: [].reverse()
 
@@ -123,7 +192,9 @@ export const dataSlice = createSlice({
         },
 
         removeSingleNotification: (state, action) => {
-            state.notificationData = state.notificationData.filter((item: { index: any; }) => item.index !== action.payload.index)
+            state.notificationData = state.notificationData.filter((item: {
+                index: any;
+            }) => item.index !== action.payload.index)
         },
 
         removeNotificationItem: (state, action) => {
@@ -139,19 +210,26 @@ export const dataSlice = createSlice({
             state.featuresBotData = {...state.featuresBotData, ...action.payload}
         },
 
-       clearFeatureBotData: (state) => {
+        clearFeatureBotData: (state) => {
 
 
             state.featuresBotData = {
-                assetName:'',
-                assetSymbol:'',
-                direction:'',
-                configType:'',
+                assetName: '',
+                assetSymbol: '',
+                direction: '',
+                configType: '',
             }
         },
 
         updateBotManualConfig: (state, action) => {
             state.featureBotManualConfig = {...state.featureBotManualConfig, ...action.payload}
+        },
+
+        updateBot: (state, action) => {
+            state.tradeSetting = {...state.tradeSetting, ...action.payload}
+        },
+        updateFuturesBot: (state, action) => {
+            state.tradeSettingFutures = {...state.tradeSettingFutures, ...action.payload}
         },
 
         cleanData: () => initialState
@@ -170,6 +248,8 @@ export const {
     setSaveAmountToWithdraw,
     setAmountToWithdraw,
     setAmountToSend,
+    updateBot,
+    updateFuturesBot,
     setAmountToDeposit,
     addNotificationItem,
     removeSingleNotification,
