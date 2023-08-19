@@ -80,6 +80,9 @@ const PersonalIncome = () => {
     const [refreshing, setRefreshing] = useState(false);
     useRefreshOnFocus(refetch)
 
+   // console.log("*********************DATA******************")
+   // console.log(data.data['Personal Income List'].slice(0,2))
+
     const renderHeader = useCallback(() => (
         <View style={[styles.topDashboard]}>
 
@@ -92,26 +95,28 @@ const PersonalIncome = () => {
 
                 <View style={styles.rankWrap}>
                     <Text style={styles.rankText}>
-                        2
+
+                        {data.data['Personal Income List'][0].level}
                     </Text>
                     <Ionicons name="caret-up" size={20} color={Colors.success}/>
                 </View>
 
                 <View style={[styles.leaderboard, styles.leaderboardOne]}>
+
                     <Image
-                        source={{uri: 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'}}
+                        source={{uri: data.data['Personal Income List'][0].idcard ?  'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' :  data.data['Personal Income List'][0].idcard}}
                         style={styles.streakImage}/>
 
                     <View style={[styles.leaderboardScore, {
                         backgroundColor: Colors.purplePrimary,
                     }]}>
                         <Text style={styles.streakText}>
-                            32999
+                            {data.data['Personal Income List'][0].reward_total}
                         </Text>
                     </View>
                 </View>
                 <Text style={[styles.leaderboardText, {}]}>
-                    Micheal
+                    {data.data['Personal Income List'][0].username}
                 </Text>
             </Animated.View>
 
@@ -133,27 +138,31 @@ const PersonalIncome = () => {
                     <Text style={[styles.rankText, {
                         marginBottom: 5,
                     }]}>
-                        1
+                        {data.data['Personal Income List'][1].level}
                     </Text>
                     <FontAwesome5 name="crown" size={24} color={Colors.pendingYellow}/>
                 </View>
                 <Animated.View entering={FadeInDown.springify()}
                                exiting={FadeOutDown} layout={Layout.easing(Easing.ease).delay(20)}
                                style={[styles.leaderboard, styles.leaderboardCenter]}>
+
                     <Image
-                        source={{uri: 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'}}
+                        source={{uri: data.data['Personal Income List'][1].idcard ?  'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' :  data.data['Personal Income List'][0].idcard}}
                         style={styles.streakImage}/>
+
 
                     <View style={[styles.leaderboardScore, {
                         backgroundColor: Colors.primary,
                     }]}>
                         <Text style={styles.streakText}>
-                            44,345
+
+                            {data.data['Personal Income List'][1].reward_total}
                         </Text>
                     </View>
                 </Animated.View>
                 <Text style={[styles.leaderboardText, {}]}>
-                    OrjiAce
+
+                    {data.data['Personal Income List'][1].username}
                 </Text>
             </View>
 
@@ -167,26 +176,28 @@ const PersonalIncome = () => {
 
                 <View style={styles.rankWrap}>
                     <Text style={styles.rankText}>
-                        3
+                        {data.data['Personal Income List'][2].level}
                     </Text>
                     <Ionicons name="caret-down" size={20} color={Colors.primary}/>
                 </View>
 
                 <View style={[styles.leaderboard, styles.leaderboardOne]}>
+
                     <Image
-                        source={{uri: 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'}}
+                        source={{uri: data.data['Personal Income List'][2].idcard ?  'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' :  data.data['Personal Income List'][0].idcard}}
                         style={styles.streakImage}/>
+
 
                     <View style={[styles.leaderboardScore, {
                         backgroundColor: Colors.purplePrimary,
                     }]}>
                         <Text style={styles.streakText}>
-                            32999
+                            {data.data['Personal Income List'][2].reward_total}
                         </Text>
                     </View>
                 </View>
                 <Text style={[styles.leaderboardText, {}]}>
-                    Micheal
+                    {data.data['Personal Income List'][2].username}
                 </Text>
             </Animated.View>
         </View>
@@ -317,13 +328,13 @@ const styles = StyleSheet.create({
 
         color: "#fff",
         fontFamily: Fonts.faktumBold,
-        fontSize: fontPixel(14)
+        fontSize: fontPixel(12)
     },
     leaderboardText: {
         textTransform: 'capitalize',
         color: Colors.text,
         fontFamily: Fonts.faktumSemiBold,
-        fontSize: fontPixel(16)
+        fontSize: fontPixel(14)
     },
 
 

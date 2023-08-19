@@ -70,7 +70,6 @@ const LeaderBoard = () => {
     // const {data,refetch} = useQuery(['user-Leaderboard'], ()=>getLeaderboard(User_Details.id))
     const {data: circleLeaderboard} = useQuery(['Circle-leaderboard'], () => getCircleleaderboard(userData.id))
 
-    console.log("**********************LEADERBOARD**********************")
 
 
     return (

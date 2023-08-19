@@ -13,9 +13,10 @@ import Colors from "../../constants/Colors";
 interface props {
     profilePhoto?: string,
     userName?: string,
+    homeDash?: boolean,
 }
 
-const TopBar = ({ profilePhoto, userName}: props) => {
+const TopBar = ({ profilePhoto, userName,homeDash}: props) => {
 
     const navigation = useNavigation()
 
@@ -57,7 +58,9 @@ const TopBar = ({ profilePhoto, userName}: props) => {
 
 
     return (
-        <View style={styles.topBar}>
+        <View style={[styles.topBar,{
+            width:homeDash ? '90%' : '100%',
+        }]}>
             <TouchableOpacity onPress={openProfile} activeOpacity={0.8} style={styles.leftButton}>
                 <View style={styles.userImageWrap}>
 
@@ -104,7 +107,7 @@ const TopBar = ({ profilePhoto, userName}: props) => {
 
 const styles = StyleSheet.create({
     topBar: {
-        width: '100%',
+
         height: heightPixel(90),
 
         alignItems: 'center',

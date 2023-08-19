@@ -18,7 +18,7 @@ import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../../
 import {Fonts} from "../../../constants/Fonts";
 import {RootStackScreenProps} from "../../../types";
 import {useQuery} from "@tanstack/react-query";
-import {getNewstrategy} from "../../../api";
+import {binanceTicker, getNewstrategy} from "../../../api";
 import {useAppSelector} from "../../../app/hooks";
 import {MyButton} from "../../../components/MyButton";
 
@@ -28,16 +28,26 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
 
+
+    const {data:tickers,refetch:fetchTickers,isLoading:fetchingTickers}= useQuery(['binanceTicker'],binanceTicker)
+
+    const tickerRes = tickers?.find((ticker: { symbol: string; }) => ticker.symbol == market.replace('/', '') )
+
+
     const formdata = new FormData()
     formdata.append('market', market)
     formdata.append('exchange', exchange)
-    const {data: newStrategy, refetch: fetchNewStrategy, isLoading} = useQuery([`get-new-strategy-${market}`, User_Details.id],
+    const {
+        data: newStrategy,
+        refetch: fetchNewStrategy,
+        isLoading
+    } = useQuery([`get-new-strategy-${market}`, User_Details.id],
         () => getNewstrategy({body: formdata, userId: User_Details.id}))
 
     useRefreshOnFocus(fetchNewStrategy)
 
 
-   // console.log("********************quantitativeStrategies********************")
+    // console.log("********************quantitativeStrategies********************")
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -72,7 +82,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                                 <View style={styles.balanceTop}>
 
                                     <View style={styles.balanceTitle}>
-                                        <Text style={[styles.balText,{
+                                        <Text style={[styles.balText, {
                                             color: Colors.success
                                         }]}>
 
@@ -100,7 +110,9 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
 
 
                             <View style={styles.topDetails}>
-                                <View style={styles.interestGained}>
+                                <View style={[styles.interestGained,{
+
+                                }]}>
 
 
                                     <TouchableOpacity activeOpacity={0.7}
@@ -247,7 +259,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
 
                                         <Text style={[styles.logBalance, {}]}>
 
-                                         0
+                                            {currencyFormatter('en-US','USD').format(tickerRes.lastPrice)}
                                         </Text>
 
 
@@ -277,7 +289,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                                             color: Colors.errorRed
                                         }]}>
 
-                                    0
+                                            0
                                         </Text>
 
 
@@ -289,7 +301,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                             </View>
 
 
-                 {/*           <View style={styles.moreButtonContainer}>
+                            {/*           <View style={styles.moreButtonContainer}>
 
 
                                 <TouchableOpacity activeOpacity={0.6}
@@ -369,6 +381,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
 
 
                             <View style={[styles.spotlightContainer, {marginTop: 15,}]}>
+
                                 <View style={styles.spotlight}>
 
                                     <Text style={styles.spotlightTitle}>
@@ -390,8 +403,9 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
 
                                     </Text>
                                 </View>
+                            </View>
 
-
+                            <View style={[styles.spotlightContainer,]}>
                                 <View style={styles.spotlight}>
 
                                     <Text style={styles.spotlightTitle}>
@@ -402,10 +416,6 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                                     </Text>
                                 </View>
 
-                            </View>
-
-
-                            <View style={styles.spotlightContainer}>
                                 <View style={styles.spotlight}>
 
                                     <Text style={styles.spotlightTitle}>
@@ -417,6 +427,12 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                                         n/a
                                     </Text>
                                 </View>
+
+                            </View>
+
+
+                            <View style={styles.spotlightContainer}>
+
                                 <View style={styles.spotlight}>
 
                                     <Text style={styles.spotlightTitle}>
@@ -582,11 +598,11 @@ const styles = StyleSheet.create({
     },
     interestGained: {
         marginTop: 20,
-        width: '30%',
-
+        width: '32%',
+backgroundColor:"#000",
         height: heightPixel(60),
         alignItems: 'flex-start',
-
+paddingHorizontal:5,
     },
     interestGainedAmount: {
         width: '100%',
@@ -674,10 +690,11 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
     },
     spotlight: {
-        height: heightPixel(40),
-
-        minWidth: widthPixel(60),
-
+        height: heightPixel(45),
+        backgroundColor: Colors.secondary,
+        width: '45%',
+        borderRadius: 5,
+        margin: 10,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',

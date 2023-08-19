@@ -162,11 +162,11 @@ const tickerRes = tickers?.find((ticker: { symbol: string; }) => ticker.symbol =
               }]}>
                {parseFloat(tickerRes.priceChangePercent).toFixed(3)}%
               </Text>
-              <Text style={[styles.cardValue,{
+              {/*<Text style={[styles.cardValue,{
                   color: "#ccc"
               }]}>
                   {dayjs.unix(tickerRes.closeTime).format('hh:m A')}
-              </Text>
+              </Text>*/}
           </View>
       </Pressable>
   )
@@ -188,6 +188,8 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
     const [refreshing, setRefreshing] = useState(false);
 
     const {data:tickers,refetch:fetchTickers,isLoading:fetchingTickers}= useQuery(['binanceTicker'],binanceTicker)
+
+
 //   const {data:tickers}= useQuery(['binanceTicker'],binanceTicker)
 
 
@@ -509,13 +511,16 @@ const styles = StyleSheet.create({
         fontSize: fontPixel(14),
     },
     quantitativeCard: {
-       // backgroundColor:'red',
-        marginVertical:pixelSizeVertical(15),
+        borderRadius:8,
+        paddingVertical:15,
+        paddingRight:10,
+        backgroundColor:"#000",
+        marginVertical:pixelSizeVertical(8),
         flexDirection: 'row',
         alignItems: 'flex-start',
         justifyContent: 'space-between',
         width:'100%',
-        height: heightPixel(80),
+        height: heightPixel(100),
     },
     leftInfo: {
         width: '42%',

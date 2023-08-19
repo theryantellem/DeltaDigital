@@ -32,6 +32,7 @@ export interface DataState {
         trade_type: string,
         exchange: string,
         market: string,
+        id:string,
         direction: 'Long' | 'Short'
     },
     tradeSettingFutures: {
@@ -88,7 +89,7 @@ const initialState: DataState = {
     hideBalance: false,
     hideSaveBalance: false,
     tradeSetting: {
-
+id:'',
         firstbuy_amount: '',
         double_position: '',
         margin_limit: '',

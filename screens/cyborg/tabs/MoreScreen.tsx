@@ -26,13 +26,10 @@ import ToastAnimated from "../../../components/toast";
 import {addNotificationItem} from "../../../app/slices/dataSlice";
 
 
-
-
 const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
 
-const dispatch = useAppDispatch()
+    const dispatch = useAppDispatch()
     const [copied, setCopied] = useState(false);
-
 
 
     const user = useAppSelector(state => state.user)
@@ -70,7 +67,7 @@ const dispatch = useAppDispatch()
         []
     );
 
-    const navigate = (screen: 'LeaderBoard' | 'NewsScreen'|'Quantitative') => {
+    const navigate = (screen: 'LeaderBoard' | 'NewsScreen' | 'Quantitative') => {
         navigation.navigate(screen)
     }
 
@@ -113,16 +110,17 @@ const dispatch = useAppDispatch()
                                 showsVerticalScrollIndicator={false}>
 
                         <TopBar
-                            profilePhoto={ User_Details.image? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'}
+                            profilePhoto={User_Details.image ? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'}
                             userName={User_Details.username}/>
 
 
                         <View style={styles.buttonContainer}>
                             <View style={styles.moreButtonContainer}>
+
                                 <TouchableOpacity onPress={() => navigate('LeaderBoard')} activeOpacity={0.6}
                                                   style={styles.dashButton}>
                                     <View style={styles.dashIcon}>
-                                        <Ionicons name="ios-bar-chart-outline" size={20} color="#fff"/>
+                                        <Ionicons name="ios-bar-chart-outline" size={18} color="#fff"/>
                                     </View>
                                     <Text style={styles.dashText}>
                                         Leaderboard
@@ -131,12 +129,13 @@ const dispatch = useAppDispatch()
                                 </TouchableOpacity>
 
 
-                                <TouchableOpacity onPress={()=>navigate('Quantitative')} activeOpacity={0.6} style={styles.dashButton}>
+                                <TouchableOpacity onPress={() => navigate('Quantitative')} activeOpacity={0.6}
+                                                  style={styles.dashButton}>
                                     <View style={styles.dashIcon}>
-                                        <AntDesign name="profile" size={20} color="#fff"/>
+                                        <AntDesign name="profile" size={18} color="#fff"/>
                                     </View>
                                     <Text style={styles.dashText}>
-                                        Quantitative
+                                        Active trades
                                     </Text>
                                 </TouchableOpacity>
 
@@ -144,7 +143,7 @@ const dispatch = useAppDispatch()
                                 <TouchableOpacity onPress={() => navigate('NewsScreen')} activeOpacity={0.6}
                                                   style={styles.dashButton}>
                                     <View style={styles.dashIcon}>
-                                        <Ionicons name="card-outline" size={24} color="#fff"/>
+                                        <Ionicons name="card-outline" size={18} color="#fff"/>
                                     </View>
                                     <Text style={styles.dashText}>
                                         News
@@ -152,17 +151,11 @@ const dispatch = useAppDispatch()
                                 </TouchableOpacity>
 
 
-                            </View>
-
-
-                            <View style={styles.moreButtonContainer}>
-
-
                                 <TouchableOpacity onPress={handlePresentModalPress} activeOpacity={0.6}
                                                   style={styles.dashButton}>
                                     <View style={[styles.dashIcon,
-                                        {backgroundColor: Colors.secondary}]}>
-                                        <AntDesign name="adduser" size={20} color="#fff"/>
+                                      ]}>
+                                        <AntDesign name="adduser" size={18} color="#fff"/>
                                     </View>
                                     <Text style={styles.dashText}>
                                         Invite
@@ -170,9 +163,10 @@ const dispatch = useAppDispatch()
                                 </TouchableOpacity>
 
 
-                                <TouchableOpacity activeOpacity={0.6} style={styles.dashButton}>
+                                <TouchableOpacity onPress={() => navigate('AllStrategy')} activeOpacity={0.6}
+                                                  style={styles.dashButton}>
                                     <View style={styles.dashIcon}>
-                                        <MaterialCommunityIcons name="tune-vertical-variant" size={20} color="#fff"/>
+                                        <MaterialCommunityIcons name="tune-vertical-variant" size={18} color="#fff"/>
                                     </View>
                                     <Text style={styles.dashText}>
                                         Strategy
@@ -180,7 +174,7 @@ const dispatch = useAppDispatch()
 
                                 </TouchableOpacity>
 
-
+                                {/*
                                 <TouchableOpacity disabled activeOpacity={0.6} style={styles.dashButton}>
                                     <View style={[styles.dashIcon,]}>
 
@@ -189,7 +183,7 @@ const dispatch = useAppDispatch()
                                     <Text style={styles.dashText}>
                                         Member center
                                     </Text>
-                                </TouchableOpacity>
+                                </TouchableOpacity>*/}
 
 
                             </View>
@@ -201,7 +195,6 @@ const dispatch = useAppDispatch()
                     </ScrollView>
                 </LinearGradient>
             </SafeAreaView>
-
 
 
             <Portal>
@@ -279,11 +272,12 @@ const dispatch = useAppDispatch()
                                             right position
                                         </Text>
 
-                                        <TouchableOpacity onPress={copyRightLink} activeOpacity={0.7} style={styles.copyButton}>
+                                        <TouchableOpacity onPress={copyRightLink} activeOpacity={0.7}
+                                                          style={styles.copyButton}>
                                             <Text style={styles.copyButtonTxt}>
                                                 Copy URL
                                             </Text>
-                                            <Ionicons name="md-copy-outline" size={18} color="#fff" />
+                                            <Ionicons name="md-copy-outline" size={18} color="#fff"/>
                                         </TouchableOpacity>
                                     </View>
                                 </View>
@@ -316,11 +310,12 @@ const dispatch = useAppDispatch()
                                             right position
                                         </Text>
 
-                                        <TouchableOpacity onPress={copyLeftLink} activeOpacity={0.7} style={styles.copyButton}>
+                                        <TouchableOpacity onPress={copyLeftLink} activeOpacity={0.7}
+                                                          style={styles.copyButton}>
                                             <Text style={styles.copyButtonTxt}>
                                                 Copy URL
                                             </Text>
-                                            <Ionicons name="md-copy-outline" size={18} color="#fff" />
+                                            <Ionicons name="md-copy-outline" size={18} color="#fff"/>
                                         </TouchableOpacity>
                                     </View>
                                 </View>
@@ -334,7 +329,6 @@ const dispatch = useAppDispatch()
                 </BottomSheetModalProvider>
 
             </Portal>
-
 
 
         </>
@@ -372,23 +366,27 @@ const styles = StyleSheet.create({
     },
     moreButtonContainer: {
         width: '100%',
-        height: heightPixel(120),
-        flexDirection: 'row',
-        justifyContent: 'space-evenly',
-        alignItems: 'center'
+        height: heightPixel(420),
+
+        alignItems: 'flex-start'
     },
     dashButton: {
-        width: heightPixel(100),
+        marginVertical:pixelSizeVertical(12),
+     paddingHorizontal:pixelSizeHorizontal(10),
+backgroundColor:Colors.secondary,
+        width: '100%',
+        borderRadius:40,
         height: heightPixel(80),
-
+        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'flex-start'
 
     },
     dashIcon: {
-        width: 55,
-        height: 55,
-        backgroundColor: Colors.secondary,
+        marginRight: 8,
+        width: 45,
+        height: 45,
+        backgroundColor: Colors.textDark,
         borderRadius: 100,
         alignItems: 'center',
         justifyContent: "center"
@@ -396,7 +394,7 @@ const styles = StyleSheet.create({
     dashText: {
         color: Colors.text,
         fontSize: fontPixel(14),
-        fontFamily: Fonts.faktumRegular
+        fontFamily: Fonts.faktumMedium
     },
     mainCard: {
         backgroundColor: '#fff',
@@ -472,19 +470,19 @@ const styles = StyleSheet.create({
     },
 
     contentContainer: {
-        marginTop:10,
+        marginTop: 10,
         paddingHorizontal: pixelSizeHorizontal(10),
         width: '100%',
         justifyContent: 'center',
         alignItems: 'center'
     },
-    qrBoxWrap:{
-marginVertical:pixelSizeVertical(10),
-        width:'100%',
-        height:heightPixel(180),
-        alignItems:'center',
-        flexDirection:'row',
-        justifyContent:"space-between",
+    qrBoxWrap: {
+        marginVertical: pixelSizeVertical(10),
+        width: '100%',
+        height: heightPixel(180),
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: "space-between",
     },
     qrCode: {
         alignItems: 'center',
@@ -496,47 +494,47 @@ marginVertical:pixelSizeVertical(10),
         backgroundColor: "#151722",
 
     },
-    inviteDetails:{
+    inviteDetails: {
         alignItems: 'center',
         justifyContent: 'space-evenly',
         width: heightPixel(180),
         height: '100%',
 
     },
-    copyButtonTitle:{
-        flexDirection:'row',
-        alignItems:'center',
-        justifyContent:'space-between',
+    copyButtonTitle: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         width: '90%',
     },
-    copyButton:{
-        backgroundColor:Colors.secondary,
-        borderWidth:1,
-        borderRadius:10,
-        borderColor:"#3179FF",
-        flexDirection:'row',
-        height:40,
-        alignItems:'center',
-        justifyContent:'space-evenly',
+    copyButton: {
+        backgroundColor: Colors.secondary,
+        borderWidth: 1,
+        borderRadius: 10,
+        borderColor: "#3179FF",
+        flexDirection: 'row',
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
         width: '90%',
     },
-    copyButtonTxt:{
+    copyButtonTxt: {
         fontSize: fontPixel(14),
         fontFamily: Fonts.faktumMedium,
         color: "#CCCCCC"
     },
-    copyTxt:{
+    copyTxt: {
         fontSize: fontPixel(14),
         fontFamily: Fonts.faktumMedium,
         color: Colors.text,
-        alignSelf:'flex-start'
+        alignSelf: 'flex-start'
     },
-    linkText:{
+    linkText: {
         width: '90%',
-        lineHeight:heightPixel(18),
+        lineHeight: heightPixel(18),
         fontSize: fontPixel(12),
         fontFamily: Fonts.faktumRegular,
-        color:"#cccc"
+        color: "#cccc"
     }
 
 })

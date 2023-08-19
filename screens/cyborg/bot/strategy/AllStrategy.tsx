@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
 import {
     Text,
@@ -177,7 +177,7 @@ const AllStrategy = ({navigation}: RootStackScreenProps<'AllStrategy'>) => {
                 if (data.status == 1) {
 
                            navigation.navigate('SuccessScreen',{
-                               title:'Successfull',
+                               title:'Successful',
                                message:'Trade copied',
                                type:'success'
                            })
@@ -281,6 +281,18 @@ const AllStrategy = ({navigation}: RootStackScreenProps<'AllStrategy'>) => {
         }
     ]
 
+
+    const [filterStrategies, setFilterStrategies] = useState([]);
+
+    useEffect(() => {
+        if (!isLoading && data && data?.data['copy system']) {
+            const filtered = data?.data['copy system'].filter((strategy: { Market: string | string[]; }) =>
+                strategy?.Market?.includes(searchValue.toUpperCase().trim())
+            )
+            setFilterStrategies(filtered)
+        }
+    }, [data,searchValue]);
+
     const refresh = () => {
         setRefreshing(true)
         refetch()
@@ -338,7 +350,7 @@ const AllStrategy = ({navigation}: RootStackScreenProps<'AllStrategy'>) => {
 
                                 scrollEnabled
                                 showsVerticalScrollIndicator={false}
-                                data={data.data['copy system']}
+                                data={filterStrategies}
                                 renderItem={renderItem}
                                 keyExtractor={keyExtractor}
                                 onEndReachedThreshold={0.3}

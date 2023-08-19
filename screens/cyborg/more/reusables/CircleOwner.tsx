@@ -92,26 +92,27 @@ const CircleOwner = () => {
 
                 <View style={styles.rankWrap}>
                     <Text style={styles.rankText}>
-                        2
+                        {data.data['Circle Owner income list'][0].level}
                     </Text>
                     <Ionicons name="caret-up" size={20} color={Colors.success}/>
                 </View>
 
                 <View style={[styles.leaderboard, styles.leaderboardOne]}>
                     <Image
-                        source={{uri: 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'}}
+                        source={{uri: data.data['Circle Owner income list'][0].idcard ?  'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' :  data.data['Personal Income List'][0].idcard}}
                         style={styles.streakImage}/>
+
 
                     <View style={[styles.leaderboardScore, {
                         backgroundColor: Colors.purplePrimary,
                     }]}>
                         <Text style={styles.streakText}>
-                            32999
+                            {data.data['Circle Owner income list'][0]['Total Income']}
                         </Text>
                     </View>
                 </View>
                 <Text style={[styles.leaderboardText, {}]}>
-                    Micheal
+                    {data.data['Circle Owner income list'][0].username}
                 </Text>
             </Animated.View>
 
@@ -141,19 +142,19 @@ const CircleOwner = () => {
                                exiting={FadeOutDown} layout={Layout.easing(Easing.ease).delay(20)}
                                style={[styles.leaderboard, styles.leaderboardCenter]}>
                     <Image
-                        source={{uri: 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'}}
+                        source={{uri: data.data['Circle Owner income list'][1].idcard ?  'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' :  data.data['Personal Income List'][0].idcard}}
                         style={styles.streakImage}/>
 
                     <View style={[styles.leaderboardScore, {
                         backgroundColor: Colors.primary,
                     }]}>
                         <Text style={styles.streakText}>
-                            44,345
+                            {data.data['Circle Owner income list'][1]['Total Income']}
                         </Text>
                     </View>
                 </Animated.View>
                 <Text style={[styles.leaderboardText, {}]}>
-                    OrjiAce
+                    {data.data['Circle Owner income list'][1].username}
                 </Text>
             </View>
 
@@ -167,26 +168,28 @@ const CircleOwner = () => {
 
                 <View style={styles.rankWrap}>
                     <Text style={styles.rankText}>
-                        3
+                        {data.data['Circle Owner income list'][2].level}
                     </Text>
                     <Ionicons name="caret-down" size={20} color={Colors.primary}/>
                 </View>
 
                 <View style={[styles.leaderboard, styles.leaderboardOne]}>
+
                     <Image
-                        source={{uri: 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'}}
+                        source={{uri: data.data['Circle Owner income list'][2].idcard ?  'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' :  data.data['Personal Income List'][0].idcard}}
                         style={styles.streakImage}/>
+
 
                     <View style={[styles.leaderboardScore, {
                         backgroundColor: Colors.purplePrimary,
                     }]}>
                         <Text style={styles.streakText}>
-                            32999
+                            {data.data['Circle Owner income list'][2]['Total Income']}
                         </Text>
                     </View>
                 </View>
                 <Text style={[styles.leaderboardText, {}]}>
-                    Micheal
+                    {data.data['Circle Owner income list'][2].username}
                 </Text>
             </Animated.View>
         </View>
@@ -323,7 +326,7 @@ const styles = StyleSheet.create({
         textTransform: 'capitalize',
         color: Colors.text,
         fontFamily: Fonts.faktumSemiBold,
-        fontSize: fontPixel(16)
+        fontSize: fontPixel(14)
     },
 
 

@@ -7,7 +7,7 @@ import {LinearGradient} from "expo-linear-gradient";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import {RootStackScreenProps} from "../../../types";
 import Colors from "../../../constants/Colors";
-import {fontPixel, heightPixel} from "../../../helpers/normalize";
+import {fontPixel, heightPixel, pixelSizeHorizontal} from "../../../helpers/normalize";
 import {Fonts} from "../../../constants/Fonts";
 import {MyButton} from "../../../components/MyButton";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
@@ -16,6 +16,7 @@ import {botTradeSetting, startTradingBotFuture} from "../../../api";
 import * as Haptics from "expo-haptics";
 import {addNotificationItem} from "../../../app/slices/dataSlice";
 import ToastAnimated from "../../../components/toast";
+import HorizontalLine from "../../../components/HorizontalLine";
 
 const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
 
@@ -82,7 +83,7 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
 
             onSuccess: async (data) => {
                 // alert(message)
-
+console.log(data)
                 if (data.status == 1) {
                     navigation.navigate('BotSuccess',{
                         amount:tradeSetting.firstbuy_amount,
@@ -100,7 +101,7 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
                     dispatch(addNotificationItem({
                         id: Math.random(),
                         type: 'error',
-                        body: data.data,
+                        body: data.error,
                     }))
 
                 }
@@ -170,6 +171,7 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
             formData.append('exchange', tradeSetting.exchange)
             formData.append('trade_type', tradeSetting.trade_type)
             formData.append('direction', tradeSetting.direction)
+            formData.append('id', tradeSetting.id)
             formData.append('market', tradeSetting.market)
             createFutureBot({body: formData, userId: User_Details.id})
         }
@@ -189,6 +191,7 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
             formData.append('exchange', tradeSetting.exchange)
             formData.append('trade_type', tradeSetting.trade_type)
             formData.append('market', tradeSetting.market)
+            formData.append('id', tradeSetting.id)
             createBot({body: formData, userId: User_Details.id})
         }
 
@@ -320,7 +323,7 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
                                 </Text>
 
                             </View>
-                            <View style={styles.Details}>
+                                       <View style={styles.Details}>
                                 <Text style={styles.DetailTitleText}>
                                     Strategy period
                                 </Text>
@@ -371,7 +374,7 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
 
 
                         <View style={[styles.Details, {
-                            height: heightPixel(30)
+
                         }]}>
                             <Text style={styles.DetailTitleText}>
                                 Type
@@ -382,27 +385,52 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
                             </Text>
                         </View>
 
+
+
                     </View>
 
                     <ToastAnimated/>
                 </KeyboardAwareScrollView>
 
+                {
+                    tradeSetting.trade_type == '0' &&
+
                 <MyButton onPress={startBot} style={[styles.button, {
                     backgroundColor: Colors.primary
                 }]}>
                     {
-                        isLoading && loading && <ActivityIndicator size='small' color={"#fff"}/>
+                        isLoading  && <ActivityIndicator size='small' color={"#fff"}/>
                     }
 
                     {
-                        !isLoading && !loading &&
+                        !isLoading  &&
                         <Text style={styles.buttonTxt}>
-                            Continue
+                            Create bot
                         </Text>
                     }
 
                 </MyButton>
+                }
 
+                {
+                    tradeSetting.trade_type == '1' &&
+
+                    <MyButton onPress={startBot} style={[styles.button, {
+                    backgroundColor: Colors.primary
+                }]}>
+                    {
+                   loading && <ActivityIndicator size='small' color={"#fff"}/>
+                    }
+
+                    {
+                      !loading &&
+                        <Text style={styles.buttonTxt}>
+                            Create bot
+                        </Text>
+                    }
+
+                </MyButton>
+                }
 
             </LinearGradient>
 
@@ -440,19 +468,21 @@ const styles = StyleSheet.create({
     DetailsRowMiddle: {
         height: heightPixel(140),
         marginTop: 30,
-        borderTopColor: Colors.borderColor,
-        borderTopWidth: 1,
+     //   borderTopColor: Colors.borderColor,
+       // borderTopWidth: 1,
 
         width: '100%',
         alignItems: 'center',
         justifyContent: 'space-evenly'
     },
     Details: {
-        height: heightPixel(45),
-        width: '90%',
-
+        height: heightPixel(55),
+        width: '100%',
+borderBottomWidth:1,
+paddingHorizontal:pixelSizeHorizontal(20),
+        borderBottomColor:Colors.borderColor,
         flexDirection: "row",
-        alignItems: 'flex-end',
+        alignItems: 'center',
         justifyContent: 'space-between',
     },
     DetailsLeft: {

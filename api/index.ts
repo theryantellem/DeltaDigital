@@ -679,7 +679,40 @@ export const startTradingBotFuture = async ({body,userId}:{userId: string,body:a
     };
 
     return Promise.race([
-        fetch(`https://backend.deltacyborg.pro/Api/Mobile/Copytrade`, requestOptions)
+        fetch(`https://backend.deltacyborg.pro/Api/Mobile/tradesetting`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])
+
+}
+
+export const startStopBot = async ({body,userId}:{userId: string,body:any}) => {
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+
+//.set('id', ID_OF_THE_STRATEGY_PAIR_SELECTED)
+      //  .set('startbot', STATUS) // 1 ON, 0 off
+
+    const myHeaders = {
+        "TOKEN": Token,
+        "ID": userId
+    }
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body
+    };
+
+    return Promise.race([
+        fetch(`${LIVE_PROD_URL}/Api/Mobile/start`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)

@@ -21,7 +21,7 @@ import {updateBot} from "../../../app/slices/dataSlice";
 
 
 interface props {
-    continueAsset: (market:string) => void,
+    continueAsset: (market:string,id:string) => void,
     item: {
         id: string,
         Quantity: string,
@@ -84,9 +84,9 @@ const AssetCard = ({item, continueAsset}: props) => {
 
 
     return (
-        <Animated.View key={item.Market} layout={Layout.easing(Easing.ease)}
+        <Animated.View key={item.id} layout={Layout.easing(Easing.ease)}
                        entering={FadeInDown} exiting={FadeOutDown}>
-            <Pressable onPress={()=>continueAsset(item.Market)} style={styles.AssetCard}>
+            <Pressable onPress={()=>continueAsset(item.Market, item.id)} style={styles.AssetCard}>
 
                 <View style={styles.assetIcon}>
                     <View style={styles.assetCardIcon}>
@@ -134,10 +134,11 @@ const SelectAsset = ({navigation,route}: RootStackScreenProps<'SelectAsset'>) =>
     const {User_Details} = user
     const [refreshing, setRefreshing] = useState(false);
     const [searchValue, setSearchValue] = useState('');
-    const continueAsset = (market:string) => {
+    const continueAsset = (market:string,id:string) => {
         navigation.navigate('TradeSetting')
         dispatch(updateBot({
-            market
+            market,
+            id
         }))
     }
 

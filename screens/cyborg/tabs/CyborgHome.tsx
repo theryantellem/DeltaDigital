@@ -8,7 +8,7 @@ import {
     TouchableOpacity,
     Dimensions,
     ScrollView,
-    Pressable, RefreshControl, ActivityIndicator
+    Pressable, RefreshControl, ActivityIndicator, ImageBackground
 } from 'react-native';
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -110,6 +110,10 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
     return (
 
         <SafeAreaView style={styles.safeArea}>
+
+            {/*<ImageBackground source={require('../../../assets/images/Background-cyborg.jpg')}*/}
+            {/*                 resizeMode={'cover'}*/}
+            {/*                 style={styles.dashboardBackground}>*/}
             {/*     <LinearGradient style={styles.background}
 
 
@@ -128,7 +132,7 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
                         refreshControl={<RefreshControl tintColor={Colors.primary} refreshing={refreshing}
                                                         onRefresh={refresh}/>}
             >
-                <LinearGradient style={styles.dashboard}
+             {/*   <LinearGradient style={styles.dashboard}
                                 colors={[ "#A13AD1",'#030D34', '#0B0811']}
                                // colors={['#e813e1', "#690152", '#030D34']}
                                 start={{x: 1.5, y: 0}}
@@ -136,17 +140,21 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
 
                     // locations={[0.1, 0.7,]}
                 >
+*/}
+<View style={styles.dashboard}>
 
 
-                    <TopBar
-                        profilePhoto={User_Details.image ? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'}
-                        userName={User_Details.username}/>
+                <ImageBackground source={require('../../../assets/images/Blackbackground.jpg')}
+                                 resizeMode={'cover'}
+                                 style={styles.dashboardImage}>
+
+                    <TopBar homeDash profilePhoto={User_Details.image ? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'} userName={User_Details.username}/>
 
                     <View style={styles.dashboardInfo}>
                         <View style={styles.cyborgInfo}>
                             <Text style={styles.cyborgName}>Cyborg</Text>
                             <View style={styles.logoCover}>
-                                <Image source={require('../../../assets/images/cyborg-logo.png')}
+                                <Image source={require('../../../assets/images/logos/cyborlogo.png')}
                                        style={styles.logoCyborg}/>
                             </View>
                         </View>
@@ -237,8 +245,8 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
                         </View>
                     </View>
 
-
-                </LinearGradient>
+                </ImageBackground>
+</View>
 
 
                 <View style={styles.portfolioHead}>
@@ -325,9 +333,15 @@ const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
         width: '100%',
-        backgroundColor: "#141621",
+        backgroundColor: "#000",
         alignItems: 'center',
         paddingBottom: Platform.OS === 'ios' ? -40 : 0
+    },
+    dashboardBackground:{
+        width: '100%',
+        alignItems: 'center',
+        flex: 1,
+
     },
     scrollView: {
 
@@ -340,15 +354,25 @@ const styles = StyleSheet.create({
         // paddingHorizontal: pixelSizeHorizontal(20),
     },
     dashboard: {
+
+
         width: '96%',
         height: heightPixel(440),
         alignItems: 'center',
         borderRadius: 30,
-        paddingHorizontal: pixelSizeHorizontal(20),
+overflow:'hidden',
+    },
+    dashboardImage:{
+       // paddingHorizontal: pixelSizeHorizontal(20),
+        resizeMode:'cover',
+        width:'100%',
+        height:'100%',
+        borderRadius: 30,
+        alignItems: 'center',
     },
     dashboardInfo: {
 
-        width: '100%',
+        width: '90%',
         height: heightPixel(300),
         alignItems: 'center',
     },
@@ -361,8 +385,8 @@ const styles = StyleSheet.create({
     },
     cyborgName: {
         marginRight: 10,
-        fontFamily: Fonts.faktumRegular,
-        fontSize: fontPixel(28),
+        fontFamily: Fonts.faktumBold,
+        fontSize: fontPixel(30),
         color: "#fff"
     },
     logoCover: {
