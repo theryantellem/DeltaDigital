@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
 import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -17,6 +17,10 @@ const ContactUs = ({navigation}: RootStackScreenProps<'ContactUs'>) => {
         navigation.navigate('FeedbackRecord')
     }
 
+    const addTicket = () => {
+      navigation.navigate('CreateTicket')
+    }
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <LinearGradient style={styles.background}
@@ -29,16 +33,16 @@ const ContactUs = ({navigation}: RootStackScreenProps<'ContactUs'>) => {
             >
 
 
-                <HeaderWithTitle title='My Counceller' headerAction={feedbacks}
+                <HeaderWithTitle title='Contact us' headerAction={feedbacks}
                                  headerButton={<Ionicons name="ios-document-text-outline" size={24} color="#fff"/>}/>
-                <KeyboardAwareScrollView style={{
+                <ScrollView style={{
                     width: '100%'
                 }} contentContainerStyle={styles.scrollView} scrollEnabled showsVerticalScrollIndicator={false}>
 
                     <View style={styles.helpRowsContainer}>
 
 
-                        <TouchableOpacity activeOpacity={0.8} style={[styles.helpRows, {
+                        <TouchableOpacity onPress={()=>addTicket()} activeOpacity={0.8} style={[styles.helpRows, {
                             borderBottomWidth: 1,
                             borderBottomColor: Colors.borderColor,
                         }]}>
@@ -53,7 +57,7 @@ const ContactUs = ({navigation}: RootStackScreenProps<'ContactUs'>) => {
                         </TouchableOpacity>
 
 
-                        <TouchableOpacity activeOpacity={0.7}
+                        <TouchableOpacity onPress={addTicket} activeOpacity={0.7}
                                           style={[styles.helpRows, {
                                               borderBottomWidth: 1,
                                               borderBottomColor: Colors.borderColor,
@@ -70,7 +74,7 @@ const ContactUs = ({navigation}: RootStackScreenProps<'ContactUs'>) => {
                         </TouchableOpacity>
 
 
-                        <TouchableOpacity activeOpacity={0.7}
+                        <TouchableOpacity onPress={addTicket} activeOpacity={0.7}
                                           style={[styles.helpRows, {
                                               borderBottomWidth: 1,
                                               borderBottomColor: Colors.borderColor,
@@ -87,7 +91,7 @@ const ContactUs = ({navigation}: RootStackScreenProps<'ContactUs'>) => {
                         </TouchableOpacity>
 
 
-                        <TouchableOpacity activeOpacity={0.7}
+                        <TouchableOpacity onPress={addTicket} activeOpacity={0.7}
                                           style={[styles.helpRows, {
                                               borderBottomWidth: 1,
                                               borderBottomColor: Colors.borderColor,
@@ -104,7 +108,7 @@ const ContactUs = ({navigation}: RootStackScreenProps<'ContactUs'>) => {
                         </TouchableOpacity>
 
 
-                        <TouchableOpacity activeOpacity={0.7}
+                        <TouchableOpacity onPress={addTicket} activeOpacity={0.7}
                                           style={[styles.helpRows, {
                                               borderBottomWidth: 1,
                                               borderBottomColor: Colors.borderColor,
@@ -120,7 +124,7 @@ const ContactUs = ({navigation}: RootStackScreenProps<'ContactUs'>) => {
 
                         </TouchableOpacity>
 
-                        <TouchableOpacity activeOpacity={0.7}
+                        <TouchableOpacity onPress={addTicket} activeOpacity={0.7}
                                           style={[styles.helpRows, {
                                               borderBottomWidth: 1,
                                               borderBottomColor: Colors.borderColor,
@@ -140,7 +144,7 @@ const ContactUs = ({navigation}: RootStackScreenProps<'ContactUs'>) => {
                     </View>
 
 
-                </KeyboardAwareScrollView>
+                </ScrollView>
             </LinearGradient>
         </SafeAreaView>
     );

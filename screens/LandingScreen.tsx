@@ -83,6 +83,12 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
     const CyborgHome = () => {
         navigation.navigate('CyborgBottomTab')
     }
+    const StarfoxHome = () => {
+
+    }
+    const FinixHome = () => {
+
+    }
 
 
     const cards = [
@@ -103,7 +109,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
             balance: 0,
             bg: "#090A1C",
             id: "2",
-            action: CyborgHome,
+            action: FinixHome,
             btnBg: "#fff",
             description: "Learn",
             image: <Image source={require('../assets/images/robots/Finix.png')} style={styles.imageRobot}/>,
@@ -119,7 +125,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
             balance: 0,
             bg: "#090A1C",
             id: "3",
-            action: CyborgHome,
+            action: StarfoxHome,
             btnBg: "#fff",
             description: "Forex",
             image: <Image source={require('../assets/images/robots/cyborg.png')} style={styles.imageRobot}/>,
@@ -144,7 +150,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
             return (
                 <TouchableOpacity
                     key={card.id}
-                    onPress={CyborgHome}
+                    onPress={card.action}
                     activeOpacity={0.8} style={[styles.plan,
                     {backgroundColor: '#000000', width: CARD_WIDTH,}]}>
                     <View style={styles.planLeft}>
@@ -156,6 +162,10 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                             {card.icon}
 
                         </View>
+
+                        {
+                            card.id == '1' &&
+                        <>
 
                         <View style={styles.planBottomLeft}>
                             <Text style={styles.balText}>
@@ -203,8 +213,9 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
 
 
                         </View>
+                        </>
 
-
+                    }
                     </View>
 
 

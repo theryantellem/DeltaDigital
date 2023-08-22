@@ -44,7 +44,7 @@ const SettingsScreen = ({navigation}: RootStackScreenProps<'SettingsScreen'>) =>
 
                     <View style={styles.content}>
 
-                    <TouchableOpacity activeOpacity={0.6} style={styles.profileButton}>
+                 {/*   <TouchableOpacity activeOpacity={0.6} style={styles.profileButton}>
 
                         <View style={styles.leftContent}>
 
@@ -60,7 +60,7 @@ const SettingsScreen = ({navigation}: RootStackScreenProps<'SettingsScreen'>) =>
                         <Octicons name="chevron-right" size={20} color="#979797"/>
 
 
-                    </TouchableOpacity>
+                    </TouchableOpacity>*/}
 
 
                         <TouchableOpacity activeOpacity={0.6} style={styles.profileButton}>

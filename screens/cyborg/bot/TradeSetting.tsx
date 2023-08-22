@@ -19,11 +19,11 @@ import BottomSheet, {BottomSheetBackdrop, BottomSheetFlatList} from "@gorhom/bot
 import {
     BottomSheetDefaultBackdropProps
 } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types';
-import {Ionicons, MaterialIcons} from "@expo/vector-icons";
+import {Ionicons, MaterialIcons, Octicons} from "@expo/vector-icons";
 import SelectInput from "../../../components/inputs/SelectInput";
 import {append} from "react-native-svg/lib/typescript/lib/Matrix2D";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
-import {addNotificationItem, updateBot} from "../../../app/slices/dataSlice";
+import {addNotificationItem, clearTradeSetting, updateBot} from "../../../app/slices/dataSlice";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {botTradeSetting, copyTrade} from "../../../api";
 import * as Haptics from "expo-haptics";
@@ -44,17 +44,17 @@ const formSchema = yup.object().shape({
     ),
 
     strategyPeriod: yup.string().required('Strategy Period is required'),
-
-    first_position_drop: yup.string()
-        .when('strategyPeriod', {
-            is: (val: string) => val == 'Cycle',
-            then: (schema) => schema.trim().required('Price Drop is required').matches(
-                /^[1-9][0-9]*$/,
-                "Invalid number type"
-            ),
-            otherwise: (schema) => schema.notRequired(),
-        }),
-    highest_price: yup.string()
+    /*
+        first_position_drop: yup.string()
+            .when('strategyPeriod', {
+                is: (val: string) => val == 'Cycle',
+                then: (schema) => schema.trim().required('Price Drop is required').matches(
+                    /^[1-9][0-9]*$/,
+                    "Invalid number type"
+                ),
+                otherwise: (schema) => schema.notRequired(),
+            }),*/
+    /*highest_price: yup.string()
         .when('strategyPeriod', {
             is: (val: string) => val == 'Cycle',
             then: (schema) => schema.trim().required('Highest price is required').matches(
@@ -62,7 +62,7 @@ const formSchema = yup.object().shape({
                 "Invalid number type"
             ),
             otherwise: (schema) => schema.notRequired(),
-        }),
+        }),*/
 
     marginLimit: yup.string().required('Margin Limit call is required').matches(
         /^[1-9][0-9]*$/,
@@ -168,21 +168,32 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
 
     const dispatch = useAppDispatch()
 
-    const dataSlice  = useAppSelector(state => state.data)
+    const dataSlice = useAppSelector(state => state.data)
     const {tradeSetting} = dataSlice
 
     const [direction, setDirection] = useState('Long');
 
 
     const [selected, setSelected] = useState('');
-    const [amountContent, setAmountContent] = useState('');
+    const [amountContent, setAmountContent] = useState(tradeSetting.firstbuy_amount);
     const [focusAmount, setFocusAmount] = useState(false);
 
-    const [takeProfit, setTakeProfit] = useState('');
+    const [takeProfit, setTakeProfit] = useState(tradeSetting.profit_ratio);
     const [focusTakeProfit, setFocusTakeProfit] = useState(false);
 
-    const [marginLimitCall, setMarginLimitCall] = useState('');
+    const [marginLimitCall, setMarginLimitCall] = useState(tradeSetting.margin_limit);
     const [focusMarginLimitCall, setFocusMarginLimitCall] = useState(false);
+
+    const [whole_stop, setWhole_stop] = useState(tradeSetting.whole_stop);
+    const [focusWhole_stop, setFocusWhole_stop] = useState(false);
+
+
+    const [buy_in_callback, setBuy_in_callback] = useState('');
+    const [focusBuy_in_callback, setFocusBuy_in_callback] = useState(false);
+
+
+    const [whole_position_take_profit_callback, setWhole_position_take_profit_callback] = useState(tradeSetting.profit_callback);
+    const [focusWhole_position_take_profit_callback, setFocusWhole_position_take_profit_callback] = useState(false);
 
     const [value, setValue] = useState(0);
 
@@ -200,8 +211,6 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
     const handleClose = useCallback(() => {
         bankSheetRef.current?.close();
     }, []);
-
-
 
 
     const directionSheetRef = useRef<BottomSheet>(null);
@@ -227,10 +236,6 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
     );
 
 
-
-
-
-
     const {
         resetForm,
         handleChange, handleSubmit, handleBlur,
@@ -244,21 +249,22 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
     } = useFormik({
         validationSchema: formSchema,
         initialValues: {
-            amount: '',
-            marginLimit: '',
-            takeProfit: '',
-            direction:'',
-            buy_in_callback: '',
+            amount: amountContent,
+            marginLimit: marginLimitCall,
+            takeProfit: takeProfit,
+            direction: '',
+            buy_in_callback: buy_in_callback,
             highest_price: '',
             first_position_drop: '',
             strategyPeriod: 'Cycle', //One-Shot
-            whole_position_stop_loss: '',
-            whole_position_take_profit_callback: '',
+            whole_position_stop_loss: whole_stop,
+            whole_position_take_profit_callback: whole_position_take_profit_callback,
 
 
         },
         onSubmit: (values) => {
             const {
+                direction,
                 amount,
                 marginLimit,
                 takeProfit,
@@ -272,46 +278,34 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
             const strategyPeriodShot = strategyPeriod == 'Cycle' ? '0' : '1'
             const strategyPeriodCycle = strategyPeriod == 'Cycle' ? '1' : '0'
 
+            if (tradeSetting.m_ratio !== '' && tradeSetting.price_drop !== '') {
 
 
-            dispatch(updateBot({
-                firstbuy_amount:amount,
-                double_position:switchToggle ? '2' : '1',
-                margin_limit:marginLimit,
-                profit_ratio:whole_position_take_profit_callback,
-                whole_ratio:'2',
-                whole_stop:whole_position_stop_loss,
-                price_drop:first_position_drop,
-                first_ratio:3,
-                cycle:strategyPeriodCycle,
-                profit_callback:whole_position_take_profit_callback,
-                one_shot:strategyPeriodShot
-            }))
-            /*
-             id: 19201
-             firstbuy_amount: 15
-             double_position: 1
-             margin_limit: 4
-             profit_ratio: 1
-             whole_ratio: 0
-             first_call: 2|2|4|3
-             first_ratio: 2|2|4|4
-             second_call: 0
-             second_ratio: 0
-             third_call: 0
-             third_ratio: 0
-             forth_call: 0
-             forth_ratio: 0
-             fifth_call: 0
-             fifth_ratio: 0
-             profit_callback: 0
-             cycle: 1
-             one_short: 0
-             whole_stop:100
-             */
+                dispatch(updateBot({
+                    firstbuy_amount: amount,
+                    double_position: switchToggle ? '2' : '1',
+                    margin_limit: marginLimit,
+                    profit_ratio: takeProfit,
+                    whole_ratio: highest_price,
+                    whole_stop: whole_position_stop_loss,
+                    first_ratio: first_position_drop,
+                    cycle: strategyPeriodCycle,
+                    profit_callback: whole_position_take_profit_callback,
+                    direction,
+                    one_shot: strategyPeriodShot
+                }))
+
             navigation.navigate('ReviewScreen')
+        }else {
+                dispatch(addNotificationItem({
+                    id: Math.random(),
+                    type: 'error',
+                    body: 'Margin configuration is missing.'
+                }))
+            }
 
         }
+
     });
 
 
@@ -322,7 +316,7 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
         handleChange('strategyPeriod')(title)
     }, [])
 
-    const switchDir= useCallback(async (title: string) => {
+    const switchDir = useCallback(async (title: string) => {
         setDirection(title)
         handleCloseDirection()
         handleChange('direction')(title)
@@ -338,6 +332,18 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
         <SelectValueDir selected={direction} item={item} action={switchDir}/>
     ), [direction]);
 
+    const marginConfig = () => {
+        dispatch(updateBot({
+
+            margin_limit: marginLimitCall,
+        }))
+        navigation.navigate('MarginConfiguration', {
+            numrows: parseInt(marginLimitCall)
+        })
+    }
+const clearData = () => {
+    dispatch(clearTradeSetting())
+}
 
     return (
         <>
@@ -353,7 +359,7 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                 >
 
 
-                    <HeaderWithTitle title='Trade setting'/>
+                    <HeaderWithTitle title='Trade setting' clearData={clearData}/>
                     <KeyboardAwareScrollView style={{
                         width: '100%'
                     }} contentContainerStyle={styles.scrollView} scrollEnabled
@@ -423,6 +429,7 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                                 onFocus={() => setFocusMarginLimitCall(true)}
                                 onChangeText={(e) => {
                                     handleChange('marginLimit')(e);
+
                                     setMarginLimitCall(e);
                                 }}
 
@@ -436,8 +443,18 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                                 defaultValue={marginLimitCall}
                                 value={values.marginLimit}
                                 label="Margin call limit"/>
+                            {
+                                marginLimitCall &&
 
+                                <TouchableOpacity style={styles.margingConfig} onPress={marginConfig}>
+                                    <Text style={styles.margingConfigText}>
+                                        Margin configuration
+                                    </Text>
 
+                                    <Octicons name="chevron-right" size={24} color="#fff"/>
+                                </TouchableOpacity>
+
+                            }
                             <TextInput
 
                                 placeholder="Take profit ratio"
@@ -462,9 +479,6 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                                 label="Whole position take profit ratio"/>
 
 
-
-
-
                             <TextInput
 
                                 placeholder="Stop loss"
@@ -474,15 +488,17 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
 
                                 onChangeText={(e) => {
                                     handleChange('whole_position_stop_loss')(e);
-
+                                    setWhole_stop(e)
                                 }}
+                                onFocus={() => setFocusWhole_stop(true)}
 
                                 onBlur={(e) => {
                                     handleBlur('whole_position_stop_loss')(e);
-
+                                    setFocusWhole_stop(false);
 
                                 }}
-
+                                defaultValue={whole_stop}
+                                focus={focusWhole_stop}
                                 value={values.whole_position_stop_loss}
                                 label="Whole position stop loss"/>
 
@@ -493,17 +509,18 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                                 keyboardType={"number-pad"}
                                 touched={touched.whole_position_take_profit_callback}
                                 error={touched.whole_position_take_profit_callback && errors.whole_position_take_profit_callback}
-
+                                onFocus={() => setFocusWhole_position_take_profit_callback(true)}
                                 onChangeText={(e) => {
                                     handleChange('whole_position_take_profit_callback')(e);
-                                    setTakeProfit(e);
+                                    setWhole_position_take_profit_callback(e);
                                 }}
 
                                 onBlur={(e) => {
                                     handleBlur('whole_position_take_profit_callback')(e);
-
+                                    setFocusWhole_position_take_profit_callback(false);
                                 }}
-
+                                defaultValue={whole_position_take_profit_callback}
+                                focus={focusWhole_position_take_profit_callback}
                                 value={values.whole_position_take_profit_callback}
                                 label="Whole position take profit callback"/>
 
@@ -513,17 +530,18 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                                 keyboardType={"number-pad"}
                                 touched={touched.buy_in_callback}
                                 error={touched.buy_in_callback && errors.buy_in_callback}
-
+                                onFocus={() => setFocusBuy_in_callback(true)}
                                 onChangeText={(e) => {
                                     handleChange('buy_in_callback')(e);
-                                    setTakeProfit(e);
+                                    setBuy_in_callback(e);
                                 }}
 
                                 onBlur={(e) => {
                                     handleBlur('buy_in_callback')(e);
-
+                                    setFocusBuy_in_callback(false);
                                 }}
-
+                                focus={focusBuy_in_callback}
+                                defaultValue={buy_in_callback}
                                 value={values.buy_in_callback}
                                 label="Buy in callback"/>
 
@@ -549,23 +567,23 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                                 tradeSetting.trade_type == '1'
                                 &&
 
-                            <SelectInput
-                                editable={false}
-                                action={() => handleSnapPressDirection(1)}
-                                label='Direction'
-                                autoCapitalize='none'
-                                keyboardType='default'
-                                returnKeyType='next'
-                                returnKeyLabel='next'
+                                <SelectInput
+                                    editable={false}
+                                    action={() => handleSnapPressDirection(1)}
+                                    label='Direction'
+                                    autoCapitalize='none'
+                                    keyboardType='default'
+                                    returnKeyType='next'
+                                    returnKeyLabel='next'
 
-                                onChangeText={(e) => {
-                                    setDirection(e)
-                                }}
-                                defaultValue={direction}
-                                icon='chevron-down'
-                                value={values.direction}
-                                Btn={true}
-                            />
+                                    onChangeText={(e) => {
+                                        setDirection(e)
+                                    }}
+                                    defaultValue={direction}
+                                    icon='chevron-down'
+                                    value={values.direction}
+                                    Btn={true}
+                                />
                             }
 
                             {
@@ -592,7 +610,7 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                                         }}
 
                                         value={values.highest_price}
-                                        label="Highest price"/>
+                                        label="Highest price (optional)"/>
 
 
                                     <TextInput
@@ -613,7 +631,7 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                                         }}
 
                                         value={values.first_position_drop}
-                                        label="First position drop"/>
+                                        label="First position drop (optional)"/>
 
                                 </>
 
@@ -624,11 +642,21 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                     </KeyboardAwareScrollView>
 
                     <MyButton onPress={() => handleSubmit()} disabled={!isValid} style={[styles.button, {
-                        backgroundColor: !isValid ? Colors.border : Colors.primary
+                        // backgroundColor: !isValid ? Colors.border : Colors.primary
                     }]}>
-                        <Text style={styles.buttonTxt}>
-                            Continue
-                        </Text>
+                        <LinearGradient style={styles.createBtnGradient}
+                                        colors={[isValid ? '#e602df' : '#ccc', isValid ? '#4406b0' : Colors.secondary]}
+
+                                        start={{x: 1, y: 0}}
+                                        end={{x: 0.1, y: 0.3,}}
+
+                            // locations={[0.1, 0.7,]}
+                        >
+                            <Text style={styles.buttonTxt}>
+                                Continue
+                            </Text>
+
+                        </LinearGradient>
                     </MyButton>
 
                 </LinearGradient>
@@ -673,8 +701,6 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                                      showsVerticalScrollIndicator={false}/>
 
             </BottomSheet>
-
-
 
 
             <BottomSheet
@@ -747,14 +773,14 @@ const styles = StyleSheet.create({
     },
 
     planMessage: {
-        width: '80%',
+        width: '90%',
         marginTop: 10,
     },
     planMessageTxt: {
-
+        lineHeight: 20,
         color: Colors.tintText,
         fontSize: fontPixel(14),
-        fontFamily: Fonts.faktumRegular
+        fontFamily: Fonts.faktumMedium
     },
     authContainer: {
         marginTop: 20,
@@ -779,6 +805,13 @@ const styles = StyleSheet.create({
         width: '90%',
         bottom: 0,
         justifyContent: 'center',
+    },
+    createBtnGradient: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     buttonTxt: {
         fontFamily: Fonts.faktumBold,
@@ -849,6 +882,49 @@ const styles = StyleSheet.create({
 
         elevation: 3,
     },
+
+
+    marginConfigDataText: {
+
+        fontSize: fontPixel(14),
+        fontFamily: Fonts.faktumBold,
+        color: Colors.text
+    },
+
+    addMarginButton: {
+        width: 55,
+        height: 55,
+        borderRadius: 35,
+        backgroundColor: Colors.purplePrimary,
+        alignItems: 'center',
+        justifyContent: 'center',
+
+    },
+    btnText: {
+        textAlign: 'center',
+        fontSize: fontPixel(14),
+        fontFamily: Fonts.faktumBold,
+        color: Colors.text
+    },
+
+    margingConfig: {
+        width: '100%',
+        marginBottom: 25,
+        borderRadius: 10,
+        height: 55,
+        backgroundColor: Colors.secondary,
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingHorizontal: pixelSizeHorizontal(20),
+    },
+    margingConfigText: {
+
+        fontSize: fontPixel(14),
+        fontFamily: Fonts.faktumBold,
+        color: Colors.text
+    }
+
 })
 
 export default TradeSetting;

@@ -15,7 +15,7 @@ import {Fonts} from "../../../../constants/Fonts";
 import {useQuery} from "@tanstack/react-query";
 import {getLeaderboard} from "../../../../api";
 import {useAppSelector} from "../../../../app/hooks";
-import {useRefreshOnFocus, wait} from "../../../../helpers";
+import {currencyFormatter, useRefreshOnFocus, wait} from "../../../../helpers";
 import {FlashList} from "@shopify/flash-list";
 
 
@@ -80,6 +80,11 @@ const CircleOwner = () => {
     const [refreshing, setRefreshing] = useState(false);
     useRefreshOnFocus(refetch)
 
+
+    const leaderoard1 = data?.data['Circle Owner income list'].sort((a, b) => parseFloat(b['Total Income']) - parseFloat(a['Total Income']));
+
+   const LeaderBoardRank = !isLoading &&  leaderoard1.slice(0,3)
+
     const renderHeader = useCallback(() => (
         <View style={[styles.topDashboard]}>
 
@@ -92,14 +97,14 @@ const CircleOwner = () => {
 
                 <View style={styles.rankWrap}>
                     <Text style={styles.rankText}>
-                        {data.data['Circle Owner income list'][0].level}
+                   2
                     </Text>
                     <Ionicons name="caret-up" size={20} color={Colors.success}/>
                 </View>
 
                 <View style={[styles.leaderboard, styles.leaderboardOne]}>
                     <Image
-                        source={{uri: data.data['Circle Owner income list'][0].idcard ?  'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' :  data.data['Personal Income List'][0].idcard}}
+                        source={{uri: !LeaderBoardRank[1]?.idcard ?  'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' :  LeaderBoardRank[0]?.idcard}}
                         style={styles.streakImage}/>
 
 
@@ -107,12 +112,12 @@ const CircleOwner = () => {
                         backgroundColor: Colors.purplePrimary,
                     }]}>
                         <Text style={styles.streakText}>
-                            {data.data['Circle Owner income list'][0]['Total Income']}
+                            {LeaderBoardRank[1]['Total Income']}
                         </Text>
                     </View>
                 </View>
                 <Text style={[styles.leaderboardText, {}]}>
-                    {data.data['Circle Owner income list'][0].username}
+                    {LeaderBoardRank[1]?.username}
                 </Text>
             </Animated.View>
 
@@ -142,19 +147,19 @@ const CircleOwner = () => {
                                exiting={FadeOutDown} layout={Layout.easing(Easing.ease).delay(20)}
                                style={[styles.leaderboard, styles.leaderboardCenter]}>
                     <Image
-                        source={{uri: data.data['Circle Owner income list'][1].idcard ?  'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' :  data.data['Personal Income List'][0].idcard}}
+                        source={{uri: !LeaderBoardRank[0]?.idcard ?  'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' :  LeaderBoardRank[0]?.idcard}}
                         style={styles.streakImage}/>
 
                     <View style={[styles.leaderboardScore, {
                         backgroundColor: Colors.primary,
                     }]}>
                         <Text style={styles.streakText}>
-                            {data.data['Circle Owner income list'][1]['Total Income']}
+                            {LeaderBoardRank[0]['Total Income']}
                         </Text>
                     </View>
                 </Animated.View>
                 <Text style={[styles.leaderboardText, {}]}>
-                    {data.data['Circle Owner income list'][1].username}
+                    {LeaderBoardRank[0]?.username}
                 </Text>
             </View>
 
@@ -168,7 +173,7 @@ const CircleOwner = () => {
 
                 <View style={styles.rankWrap}>
                     <Text style={styles.rankText}>
-                        {data.data['Circle Owner income list'][2].level}
+                    3
                     </Text>
                     <Ionicons name="caret-down" size={20} color={Colors.primary}/>
                 </View>
@@ -176,7 +181,7 @@ const CircleOwner = () => {
                 <View style={[styles.leaderboard, styles.leaderboardOne]}>
 
                     <Image
-                        source={{uri: data.data['Circle Owner income list'][2].idcard ?  'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' :  data.data['Personal Income List'][0].idcard}}
+                        source={{uri: !LeaderBoardRank[2]?.idcard ?  'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' :  LeaderBoardRank[2]?.idcard}}
                         style={styles.streakImage}/>
 
 
@@ -184,16 +189,16 @@ const CircleOwner = () => {
                         backgroundColor: Colors.purplePrimary,
                     }]}>
                         <Text style={styles.streakText}>
-                            {data.data['Circle Owner income list'][2]['Total Income']}
+                            {LeaderBoardRank[2]['Total Income']}
                         </Text>
                     </View>
                 </View>
                 <Text style={[styles.leaderboardText, {}]}>
-                    {data.data['Circle Owner income list'][2].username}
+                    {LeaderBoardRank[2]?.username}
                 </Text>
             </Animated.View>
         </View>
-    ), []);
+    ), [LeaderBoardRank]);
 
 
     const renderItem = useCallback(({item}) => (

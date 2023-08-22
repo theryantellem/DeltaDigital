@@ -37,6 +37,8 @@ import SetAmount from "./screens/cyborg/bot/FeaturesBot/manual_config/SetAmount"
 import CustomizeEntries from "./screens/cyborg/bot/FeaturesBot/manual_config/CustomizeEntries";
 import AdditionalSettings from "./screens/cyborg/bot/FeaturesBot/manual_config/AdditionalSettings";
 import FinalPreview from "./screens/cyborg/bot/FeaturesBot/FinalPreview";
+import CreateTicket from "./screens/cyborg/profile/pages/CreateTicket";
+import MarginConfiguration from "./screens/cyborg/bot/MarginConfiguration";
 
 
 
@@ -80,13 +82,21 @@ export type RootStackParamList = {
     RewardDetails: undefined;
     SettingsScreen: undefined;
     Earnings: undefined;
+    TransactionRecords: {
+        records:[]
+    };
     ApiBinding: undefined;
+    MarginConfiguration: {
+        numrows:number
+    };
     TransferScreen: undefined;
     Assets: undefined;
     LeaderBoard: undefined;
+    CreateTicket: undefined;
     CouncellerScreen: undefined;
     SyncStrategy: undefined;
     LogScreen: {
+        id:string,
         market:string,
         exchange:string
     };

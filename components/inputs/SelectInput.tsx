@@ -40,7 +40,7 @@ const SelectInput = ({
 
     let validationColor;
 
-    validationColor = !touched ? Colors.border : error ? Colors.border : Colors.border
+    validationColor = !touched ? Colors.borderColor : error ? Colors.errorRed : Colors.borderColor
 
     return (
         <View style={{

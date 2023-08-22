@@ -86,8 +86,9 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
         navigation.navigate('OverView')
     }
 
-    const seeLogs = (exchange: string, market: string) => {
+    const seeLogs = (exchange: string, market: string, id:string) => {
         navigation.navigate('LogScreen', {
+            id,
             exchange,
             market
         })
@@ -277,7 +278,7 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
                         <Animated.View key={item.id} layout={Layout.easing(Easing.bounce).delay(100)}
                                        entering={FadeInDown.springify()}
                                        exiting={FadeOutDown}>
-                            <Pressable onPress={() => seeLogs(item.exchange, item.Market)} style={styles.AssetCard}>
+                            <Pressable onPress={() => seeLogs(item.exchange, item.Market, item.id)} style={styles.AssetCard}>
 
                                 <View style={styles.assetIcon}>
                                     <View style={styles.assetCardIcon}>

@@ -81,7 +81,7 @@ const SelectExchange = ({navigation, route}: RootStackScreenProps<'SelectExchang
         dispatch(updateBot({
             exchange,
         }))
-        if (type == 'spot') {
+
 
 
             if (status == '1') {
@@ -97,12 +97,7 @@ const SelectExchange = ({navigation, route}: RootStackScreenProps<'SelectExchang
                 })
 
             }
-        } else {
 
-            navigation.navigate('SelectAsset', {
-                exchange
-            })
-        }
 
 
     }

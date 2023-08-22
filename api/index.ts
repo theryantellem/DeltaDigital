@@ -487,6 +487,7 @@ export const quantitativeStrategies = async (userId:string) => {
         "TOKEN": Token,
         "ID": userId
     }
+
     let timeoutId: NodeJS.Timeout
 
     const requestOptions = {
@@ -712,7 +713,39 @@ export const startStopBot = async ({body,userId}:{userId: string,body:any}) => {
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/Api/Mobile/start`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/start`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])
+
+}
+export const sendTicketFeedback = async ({body,userId}:{userId: string,body:any}) => {
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+
+//.set('id', ID_OF_THE_STRATEGY_PAIR_SELECTED)
+      //  .set('startbot', STATUS) // 1 ON, 0 off
+
+    const myHeaders = {
+        "TOKEN": Token,
+        "ID": userId
+    }
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body
+    };
+
+    return Promise.race([
+        fetch(`${LIVE_PROD_URL}/SendFeedback`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)

@@ -160,7 +160,7 @@ const tickerRes = tickers?.find((ticker: { symbol: string; }) => ticker.symbol =
               <Text style={[styles.cardValue,{
                   color:parseInt(tickerRes.priceChangePercent) > 0 ? Colors.successChart : Colors.errorRed
               }]}>
-               {parseFloat(tickerRes.priceChangePercent).toFixed(3)}%
+               Chng%: {parseFloat(tickerRes.priceChangePercent).toFixed(3)}
               </Text>
               {/*<Text style={[styles.cardValue,{
                   color: "#ccc"
@@ -277,12 +277,43 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
 
             <View style={styles.balanceGraph}>
 
+                {
+                    selectedExchange == 'Binance' &&
+
                 <Text
                     style={styles.balance}>
 
-                    {currencyFormatter('en-US', 'USD').format(0)}
+                    {currencyFormatter('en-US', 'USD').format(data?.data?.binance_balance)}
                 </Text>
+                }
+                {
+                    selectedExchange == 'Kucoin' &&
 
+                <Text
+                    style={styles.balance}>
+
+                    {currencyFormatter('en-US', 'USD').format(data?.data?.kucoin_balance)}
+                </Text>
+                }
+                {
+                    selectedExchange == 'Coinbase' &&
+
+                <Text
+                    style={styles.balance}>
+
+                    {currencyFormatter('en-US', 'USD').format(data?.data?.coinbasepro_balance)}
+                </Text>
+                }
+
+                {
+                    selectedExchange == 'Kraken' &&
+
+                <Text
+                    style={styles.balance}>
+
+                    {currencyFormatter('en-US', 'USD').format(data?.data?.kraken_balance)}
+                </Text>
+                }
             </View>
 
         </View>
@@ -330,6 +361,7 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
 
 
 
+
     return (
         <>
 
@@ -345,7 +377,7 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
             >
 
 
-                <HeaderWithTitle title='Quantitative'/>
+                <HeaderWithTitle title='Active trades'/>
                 <View style={styles.flatList}>
 
                     {

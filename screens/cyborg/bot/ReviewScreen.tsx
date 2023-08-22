@@ -14,7 +14,7 @@ import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {botTradeSetting, startTradingBotFuture} from "../../../api";
 import * as Haptics from "expo-haptics";
-import {addNotificationItem} from "../../../app/slices/dataSlice";
+import {addNotificationItem, clearTradeSetting} from "../../../app/slices/dataSlice";
 import ToastAnimated from "../../../components/toast";
 import HorizontalLine from "../../../components/HorizontalLine";
 
@@ -41,15 +41,15 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
                 // alert(message)
 
                 if (data.status == 1) {
-                    navigation.navigate('BotSuccess',{
-                        amount:tradeSetting.firstbuy_amount,
-                        market:tradeSetting.market,
+                    navigation.navigate('BotSuccess', {
+                        amount: tradeSetting.firstbuy_amount,
+                        market: tradeSetting.market,
                     })
-                   /* navigation.navigate('SuccessScreen', {
-                        title: 'Successfull',
-                        message: 'Trading Bot created',
-                        type: 'success'
-                    })*/
+                    /* navigation.navigate('SuccessScreen', {
+                         title: 'Successfull',
+                         message: 'Trading Bot created',
+                         type: 'success'
+                     })*/
 
 
                 } else {
@@ -83,12 +83,13 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
 
             onSuccess: async (data) => {
                 // alert(message)
-console.log(data)
+                console.log(data)
                 if (data.status == 1) {
-                    navigation.navigate('BotSuccess',{
-                        amount:tradeSetting.firstbuy_amount,
-                        market:tradeSetting.market,
+                    navigation.navigate('BotSuccess', {
+                        amount: tradeSetting.firstbuy_amount,
+                        market: tradeSetting.market,
                     })
+                    dispatch(clearTradeSetting())
                     /*navigation.navigate('SuccessScreen', {
                         title: 'Successful',
                         message: 'Trading Bot created',
@@ -164,6 +165,7 @@ console.log(data)
             formData.append('whole_ratio', tradeSetting.whole_ratio)
             formData.append('whole_stop', tradeSetting.whole_stop)
             formData.append('price_drop', tradeSetting.price_drop)
+            formData.append('m_ratio', tradeSetting.m_ratio)
             formData.append('first_ratio', tradeSetting.first_ratio)
             formData.append('cycle', tradeSetting.cycle)
             formData.append('profit_callback', tradeSetting.profit_callback)
@@ -174,6 +176,34 @@ console.log(data)
             formData.append('id', tradeSetting.id)
             formData.append('market', tradeSetting.market)
             createFutureBot({body: formData, userId: User_Details.id})
+
+
+            //$id,
+              //  $firstbuy_amount,
+              //  $double_position,
+               // $margin_limit,
+               // $profit_ratio,
+               // $whole_ratio,
+
+                //$first_call *,
+              //  $first_ratio *,
+              //  $second_call *,
+            //    $second_ratio *,
+             //   $third_call *,
+             //   $third_ratio*,
+             //   $forth_call *,
+               // $forth_ratio *,
+               // $fifth_call *,
+              //  $fifth_ratio *,
+
+
+               // $profit_callback,
+                //$cycle,
+              //  $one_short,
+              //  $whole_stop,
+              //  $trade_type = 0,
+               // $direction = 'Long',
+              //  $userId = null
         }
         if (tradeSetting.trade_type == '0') {
             const formData = new FormData()
@@ -323,7 +353,7 @@ console.log(data)
                                 </Text>
 
                             </View>
-                                       <View style={styles.Details}>
+                            <View style={styles.Details}>
                                 <Text style={styles.DetailTitleText}>
                                     Strategy period
                                 </Text>
@@ -373,9 +403,7 @@ console.log(data)
                         </View>
 
 
-                        <View style={[styles.Details, {
-
-                        }]}>
+                        <View style={[styles.Details, {}]}>
                             <Text style={styles.DetailTitleText}>
                                 Type
                             </Text>
@@ -386,51 +414,66 @@ console.log(data)
                         </View>
 
 
-
                     </View>
 
-                    <ToastAnimated/>
+
                 </KeyboardAwareScrollView>
+
 
                 {
                     tradeSetting.trade_type == '0' &&
-
                 <MyButton onPress={startBot} style={[styles.button, {
-                    backgroundColor: Colors.primary
+                    // backgroundColor: !isValid ? Colors.border : Colors.primary
                 }]}>
-                    {
-                        isLoading  && <ActivityIndicator size='small' color={"#fff"}/>
-                    }
+                    <LinearGradient style={styles.createBtnGradient}
+                                    colors={['#e602df', '#4406b0']}
 
-                    {
-                        !isLoading  &&
-                        <Text style={styles.buttonTxt}>
-                            Create bot
-                        </Text>
-                    }
+                                    start={{x: 1, y: 0}}
+                                    end={{x: 0.1, y: 0.3,}}
 
+                        // locations={[0.1, 0.7,]}
+                    >
+                        {
+                            isLoading && <ActivityIndicator size='small' color={"#fff"}/>
+                        }
+                        {
+                            !isLoading &&
+                            <Text style={styles.buttonTxt}>
+                                Create bot
+                            </Text>
+                        }
+
+                    </LinearGradient>
                 </MyButton>
                 }
 
                 {
                     tradeSetting.trade_type == '1' &&
-
-                    <MyButton onPress={startBot} style={[styles.button, {
-                    backgroundColor: Colors.primary
+                <MyButton onPress={startBot} style={[styles.button, {
+                    // backgroundColor: !isValid ? Colors.border : Colors.primary
                 }]}>
-                    {
-                   loading && <ActivityIndicator size='small' color={"#fff"}/>
-                    }
+                    <LinearGradient style={styles.createBtnGradient}
+                                    colors={['#e602df', '#4406b0']}
 
-                    {
-                      !loading &&
-                        <Text style={styles.buttonTxt}>
-                            Create bot
-                        </Text>
-                    }
+                                    start={{x: 1, y: 0}}
+                                    end={{x: 0.1, y: 0.3,}}
 
+                        // locations={[0.1, 0.7,]}
+                    >
+                        {
+                            loading && <ActivityIndicator size='small' color={"#fff"}/>
+                        }
+                        {
+                            !loading &&
+                            <Text style={styles.buttonTxt}>
+                                Create bot
+                            </Text>
+                        }
+
+                    </LinearGradient>
                 </MyButton>
                 }
+
 
             </LinearGradient>
 
@@ -468,8 +511,8 @@ const styles = StyleSheet.create({
     DetailsRowMiddle: {
         height: heightPixel(140),
         marginTop: 30,
-     //   borderTopColor: Colors.borderColor,
-       // borderTopWidth: 1,
+        //   borderTopColor: Colors.borderColor,
+        // borderTopWidth: 1,
 
         width: '100%',
         alignItems: 'center',
@@ -478,9 +521,9 @@ const styles = StyleSheet.create({
     Details: {
         height: heightPixel(55),
         width: '100%',
-borderBottomWidth:1,
-paddingHorizontal:pixelSizeHorizontal(20),
-        borderBottomColor:Colors.borderColor,
+        borderBottomWidth: 1,
+        paddingHorizontal: pixelSizeHorizontal(20),
+        borderBottomColor: Colors.borderColor,
         flexDirection: "row",
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -521,6 +564,14 @@ paddingHorizontal:pixelSizeHorizontal(20),
         fontFamily: Fonts.faktumBold,
         fontSize: fontPixel(18),
         color: "#fff"
+    },
+    createBtnGradient: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection:'row'
     },
 })
 

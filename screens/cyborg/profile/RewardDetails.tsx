@@ -141,13 +141,13 @@ const RewardDetails = () => {
 
                 <View style={styles.contentMsgRight}>
 
-                    <Text style={[styles.contentMsgTxt, {
+                 {/*   <Text style={[styles.contentMsgTxt, {
                         fontFamily: Fonts.faktumMedium,
                         fontSize: fontPixel(14)
                     }]}>
                         View details
                     </Text>
-                    <Ionicons name="chevron-forward" size={16} color={Colors.text}/>
+                    <Ionicons name="chevron-forward" size={16} color={Colors.text}/>*/}
 
                 </View>
             </TouchableOpacity>

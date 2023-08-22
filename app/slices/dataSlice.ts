@@ -25,6 +25,7 @@ export interface DataState {
         whole_ratio: string
         whole_stop: string,
         price_drop: string
+        m_ratio: string
         first_ratio: string,
         cycle: string,
         profit_callback: string
@@ -32,7 +33,7 @@ export interface DataState {
         trade_type: string,
         exchange: string,
         market: string,
-        id:string,
+        id: string,
         direction: 'Long' | 'Short'
     },
     tradeSettingFutures: {
@@ -43,6 +44,7 @@ export interface DataState {
         whole_ratio: string
         whole_stop: string,
         price_drop: string
+        mt_ratio: string
         first_ratio: string,
         cycle: string,
         profit_callback: string
@@ -89,7 +91,7 @@ const initialState: DataState = {
     hideBalance: false,
     hideSaveBalance: false,
     tradeSetting: {
-id:'',
+        id: '',
         firstbuy_amount: '',
         double_position: '',
         margin_limit: '',
@@ -97,6 +99,7 @@ id:'',
         whole_ratio: '',
         whole_stop: '',
         price_drop: '',
+        m_ratio: '',
         first_ratio: '',
         cycle: '',
         profit_callback: '',
@@ -105,6 +108,7 @@ id:'',
         exchange: '',
         market: '',
         direction: 'Long'
+
     },
     tradeSettingFutures: {
         firstbuy_amount: '',
@@ -120,7 +124,7 @@ id:'',
         one_shot: '',
         trade_type: '1',
         exchange: '',
-        market:'',
+        market: '',
         direction: 'Long'
     },
 
@@ -229,6 +233,27 @@ export const dataSlice = createSlice({
         updateBot: (state, action) => {
             state.tradeSetting = {...state.tradeSetting, ...action.payload}
         },
+        clearTradeSetting:(state) =>{
+            state.tradeSetting ={
+                id: '',
+                firstbuy_amount: '',
+                double_position: '',
+                margin_limit: '',
+                profit_ratio: '',
+                whole_ratio: '',
+                whole_stop: '',
+                price_drop: '',
+                m_ratio: '',
+                first_ratio: '',
+                cycle: '',
+                profit_callback: '',
+                one_shot: '',
+                trade_type: '0',
+                exchange: '',
+                market: '',
+                direction: 'Long'
+            }
+        },
         updateFuturesBot: (state, action) => {
             state.tradeSettingFutures = {...state.tradeSettingFutures, ...action.payload}
         },
@@ -249,6 +274,7 @@ export const {
     setSaveAmountToWithdraw,
     setAmountToWithdraw,
     setAmountToSend,
+    clearTradeSetting,
     updateBot,
     updateFuturesBot,
     setAmountToDeposit,

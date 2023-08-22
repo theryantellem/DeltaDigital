@@ -17,21 +17,32 @@ import {currencyFormatter, useRefreshOnFocus} from "../../../helpers";
 import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../../helpers/normalize";
 import {Fonts} from "../../../constants/Fonts";
 import {RootStackScreenProps} from "../../../types";
-import {useQuery} from "@tanstack/react-query";
-import {binanceTicker, getNewstrategy} from "../../../api";
-import {useAppSelector} from "../../../app/hooks";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {binanceTicker, getNewstrategy, startStopBot, startTradingBotFuture} from "../../../api";
+import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {MyButton} from "../../../components/MyButton";
+import * as Haptics from "expo-haptics";
+import {addNotificationItem} from "../../../app/slices/dataSlice";
+import ToastAnimated from "../../../components/toast";
 
 
 const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
-    const {exchange, market} = route.params
+
+    const queryClient = useQueryClient()
+    const dispatch = useAppDispatch()
+
+    const {exchange, market, id} = route.params
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
 
 
-    const {data:tickers,refetch:fetchTickers,isLoading:fetchingTickers}= useQuery(['binanceTicker'],binanceTicker)
+    const {
+        data: tickers,
+        refetch: fetchTickers,
+        isLoading: fetchingTickers
+    } = useQuery(['binanceTicker'], binanceTicker)
 
-    const tickerRes = tickers?.find((ticker: { symbol: string; }) => ticker.symbol == market.replace('/', '') )
+    const tickerRes = tickers?.find((ticker: { symbol: string; }) => ticker.symbol == market.replace('/', ''))
 
 
     const formdata = new FormData()
@@ -44,11 +55,83 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
     } = useQuery([`get-new-strategy-${market}`, User_Details.id],
         () => getNewstrategy({body: formdata, userId: User_Details.id}))
 
+
+    let old_price = newStrategy?.data['Operation Strategy'][0].Quantity * newStrategy?.data['Operation Strategy'][0].Avg_Price;
+    let new_value = newStrategy?.data['Operation Strategy'][0].Quantity * tickerRes?.lastPrice;
+    let finalvalue = new_value - old_price;
+
+    /*   if(finalvalue >= 0){
+           element.floating_profit = finalvalue;
+       }
+       else{
+           element.floating_loss = finalvalue;
+       }*/
+    const {
+        mutate,
+        isLoading: loading
+    } = useMutation(['start-Stop-Bot'], startStopBot,
+
+        {
+
+            onSuccess: async (data) => {
+                // alert(message)
+
+                if (data.status == 1) {
+
+                    navigation.navigate('SuccessScreen', {
+                        title: 'Successful',
+                        message: `${market} Trading Bot Status updated`,
+                        type: 'success'
+                    })
+
+
+                } else {
+                    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+                    dispatch(addNotificationItem({
+                        id: Math.random(),
+                        type: 'error',
+                        body: data.error,
+                    }))
+
+                }
+            },
+
+            onError: (err) => {
+
+
+            },
+            onSettled: () => {
+                queryClient.invalidateQueries(['start-Stop-Bot']);
+            }
+
+        })
+
     useRefreshOnFocus(fetchNewStrategy)
 
+    const stopBot = () => {
 
-    // console.log("********************quantitativeStrategies********************")
+        const formdata = new FormData()
+        formdata.append('id', id)
+        formdata.append('startbot', '0')
+        mutate({body: formdata, userId: User_Details.id})
+    }
 
+    const startBot = () => {
+
+        const formdata = new FormData()
+        formdata.append('id', id)
+        formdata.append('startbot', '1')
+        mutate({body: formdata, userId: User_Details.id})
+    }
+
+    const openTransactionRecs = () => {
+navigation.navigate('TransactionRecords',{
+    records:newStrategy?.data['Transaction records']
+})
+    }
+    //console.log("********************quantitativeStrategies********************")
+
+    // console.log(newStrategy?.data['Transaction records'])
     return (
         <SafeAreaView style={styles.safeArea}>
             <LinearGradient style={styles.background}
@@ -61,7 +144,8 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
             >
 
 
-                <HeaderWithTitle title='Logs'/>
+                <HeaderWithTitle title='Logs' headerAction={openTransactionRecs}
+                                 headerButton={<Ionicons name="ios-document-text-outline" size={24} color="#fff"/>}/>
                 {
                     isLoading &&
                     <View style={styles.loading}>
@@ -110,9 +194,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
 
 
                             <View style={styles.topDetails}>
-                                <View style={[styles.interestGained,{
-
-                                }]}>
+                                <View style={[styles.interestGained, {}]}>
 
 
                                     <TouchableOpacity activeOpacity={0.7}
@@ -259,7 +341,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
 
                                         <Text style={[styles.logBalance, {}]}>
 
-                                            {currencyFormatter('en-US','USD').format(tickerRes.lastPrice)}
+                                            {currencyFormatter('en-US', 'USD').format(tickerRes?.lastPrice)}
                                         </Text>
 
 
@@ -289,7 +371,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                                             color: Colors.errorRed
                                         }]}>
 
-                                            0
+                                            {finalvalue.toFixed(2)}
                                         </Text>
 
 
@@ -424,7 +506,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
 
                                     </Text>
                                     <Text style={[styles.spotlightPercentage, {}]}>
-                                        n/a
+                                        {parseFloat(newStrategy?.data['Operation Strategy'][0].buyin_callback)}
                                     </Text>
                                 </View>
 
@@ -440,7 +522,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
 
                                     </Text>
                                     <Text style={[styles.spotlightPercentage, {}]}>
-                                        n/a
+                                        {parseFloat(newStrategy?.data['Operation Strategy'][0].take_profit_ratio)}
                                     </Text>
                                 </View>
 
@@ -452,6 +534,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                                     </Text>
                                     <Text style={[styles.spotlightPercentage, {}]}>
                                         {parseFloat(newStrategy?.data['Operation Strategy'][0].margin_call_limit)}
+
 
                                     </Text>
                                 </View>
@@ -481,16 +564,19 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                     {
                         newStrategy?.data['Operation Strategy'][0].bot_on == '1' &&
 
-                        <MyButton activeOpacity={0.7}
+                        <MyButton onPress={stopBot} activeOpacity={0.7}
                                   style={[styles.smallButton, {
 
                                       backgroundColor: Colors.primary
                                   }]}>
 
-
-                            <Text style={styles.btnText}>
-                                Stop bot
-                            </Text>
+                            {
+                                loading ? <ActivityIndicator size='small' color={"#fff"}/>
+                                    :
+                                    <Text style={styles.btnText}>
+                                        Stop bot
+                                    </Text>
+                            }
 
 
                         </MyButton>
@@ -499,24 +585,27 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                     {
                         newStrategy?.data['Operation Strategy'][0].bot_on == '0' &&
 
-                        <MyButton activeOpacity={0.7}
+                        <MyButton onPress={startBot} activeOpacity={0.7}
                                   style={[styles.smallButton, {
 
                                       backgroundColor: Colors.success
                                   }]}>
 
+                            {
+                                loading ? <ActivityIndicator size='small' color={"#fff"}/>
+                                    :
+                                    <Text style={styles.btnText}>
+                                        Start bot
+                                    </Text>
 
-                            <Text style={styles.btnText}>
-                                Start bot
-                            </Text>
-
-
+                            }
                         </MyButton>
                     }
 
 
                 </View>
             </LinearGradient>
+            <ToastAnimated/>
         </SafeAreaView>
     );
 };
@@ -599,10 +688,10 @@ const styles = StyleSheet.create({
     interestGained: {
         marginTop: 20,
         width: '32%',
-backgroundColor:"#000",
+        backgroundColor: "#000",
         height: heightPixel(60),
         alignItems: 'flex-start',
-paddingHorizontal:5,
+        paddingHorizontal: 5,
     },
     interestGainedAmount: {
         width: '100%',

@@ -62,6 +62,9 @@ import EntriesScreen from "../screens/cyborg/bot/FeaturesBot/manual_config/Entri
 import CustomizeEntries from "../screens/cyborg/bot/FeaturesBot/manual_config/CustomizeEntries";
 import AdditionalSettings from "../screens/cyborg/bot/FeaturesBot/manual_config/AdditionalSettings";
 import FinalPreview from "../screens/cyborg/bot/FeaturesBot/FinalPreview";
+import CreateTicket from "../screens/cyborg/profile/pages/CreateTicket";
+import TransactionRecords from "../screens/cyborg/strategy/TransactionRecords";
+import MarginConfiguration from "../screens/cyborg/bot/MarginConfiguration";
 
 
 export default function Navigation({colorScheme}: { colorScheme: ColorSchemeName }) {
@@ -184,6 +187,7 @@ function RootNavigator() {
                 <Stack.Screen name={"SelectExchange"} component={SelectExchange}/>
                 <Stack.Screen name={"SelectAsset"} component={SelectAsset}/>
                 <Stack.Screen name={"TradeSetting"} component={TradeSetting}/>
+                <Stack.Screen name={"MarginConfiguration"} component={MarginConfiguration}/>
                 <Stack.Screen name={"ReviewScreen"} component={ReviewScreen}/>
                 <Stack.Screen name={"OverView"} component={OverView}/>
                 <Stack.Screen name={"UserAccount"} component={UserAccount}/>
@@ -206,7 +210,9 @@ function RootNavigator() {
                 <Stack.Screen name={"ViewAPIBinding"} component={ViewAPIBinding}/>
                 <Stack.Screen name={"SyncStrategy"} component={SyncStrategy}/>
                 <Stack.Screen name={"LogScreen"} component={LogScreen}/>
+                <Stack.Screen name={"TransactionRecords"} component={TransactionRecords}/>
                 <Stack.Screen name={"ContactUs"} component={ContactUs}/>
+                <Stack.Screen name={"CreateTicket"} component={CreateTicket}/>
                 <Stack.Screen name={"FeedbackRecord"} component={FeedbackRecord}/>
                 <Stack.Screen name={"Quantitative"} component={Quantitative}/>
                 <Stack.Screen name={"AllStrategy"} component={AllStrategy}/>

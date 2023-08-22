@@ -12,8 +12,17 @@ import {Fonts} from "../../constants/Fonts";
 import {RootStackScreenProps} from "../../types";
 import HorizontalLine from "../../components/HorizontalLine";
 import {FontAwesome5, Ionicons, MaterialIcons} from "@expo/vector-icons";
+import {useAppSelector} from "../../app/hooks";
+import {useQuery} from "@tanstack/react-query";
+import {getAsset} from "../../api";
 
 const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
+
+    const user = useAppSelector(state => state.user)
+    const {User_Details} = user
+
+    const {data: Asset, refetch: fetchAsset, isLoading} = useQuery(['user-Asset'], () => getAsset(User_Details.id))
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <LinearGradient style={styles.background}
@@ -75,7 +84,7 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
                                     {
 
 
-                                        currencyFormatter('en-US', 'USD').format(98765)
+                                        currencyFormatter('en-US', 'USD').format(Asset?.data?.total_assets)
                                     }
                                 </Text>
                             </View>
@@ -96,21 +105,21 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
 
                             <View style={styles.walletCardBody}>
                                 <Text style={styles.cardTitle}>
-                                    Total profit
+                                  Profit earned
                                 </Text>
                                 <Text style={styles.cardText}>
-                                    Total balance
+                                    Trade profits
                                 </Text>
                             </View>
                             <View style={styles.walletCardAmount}>
                                 <Text style={[styles.cardTitle, {
                                     fontSize: fontPixel(14)
                                 }]}>
-                                    {
 
 
-                                        currencyFormatter('en-US', 'USD').format(98765)
-                                    }
+
+                                        {currencyFormatter('en-US', 'USD').format(Asset?.data?.rp_assets)}
+
                                 </Text>
                             </View>
 
@@ -120,21 +129,21 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
                     </Animated.View>
                     <HorizontalLine margin={20}/>
 
-                    <View style={styles.planInfo}>
+                   {/* <View style={styles.planInfo}>
                         <Text style={styles.planTitle}>
                           Others
                         </Text>
 
-                    </View>
+                    </View>*/}
 
-                    <TouchableOpacity style={[styles.walletCard,{
+                  {/*  <TouchableOpacity style={[styles.walletCard,{
                         borderWidth:1,
                         borderColor:Colors.secondary,
                     }]} activeOpacity={0.9}>
                         <View style={styles.logoCircle}>
 
-                            {/*<Image source={require('../../../assets/images/brace-icon.png')}
-                                       style={styles.logo}/>*/}
+                            <Image source={require('../../../assets/images/brace-icon.png')}
+                                       style={styles.logo}/>
                             <FontAwesome5 name="compress-arrows-alt" size={20} color="#ffff" />
 
                         </View>
@@ -160,7 +169,7 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
                         </View>
 
                     </TouchableOpacity>
-
+*/}
 
                 </ScrollView>
             </LinearGradient>

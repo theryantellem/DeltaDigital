@@ -14,18 +14,25 @@ interface props {
     headerButton?:JSX.Element,
     step?:boolean,
     currentStep?:string,
+    clearData?:()=>void,
     totalStep?:string,
 }
 
-const HeaderWithTitle = ({title, subTitle,headerButton,headerAction,step,currentStep,totalStep}: props) => {
+const HeaderWithTitle = ({title, clearData,subTitle,headerButton,headerAction,step,currentStep,totalStep}: props) => {
 
     const {goBack} = useNavigation()
+const goBackNav = () => {
+    if (clearData) {
+        clearData()
+    }
+    goBack()
 
+}
     return (
         <View style={styles.topBar}>
             <TouchableOpacity style={[styles.backBtn, {
                 //backgroundColor: '#030D34',
-            }]} onPress={goBack}>
+            }]} onPress={goBackNav}>
                 <Ionicons name="md-chevron-back" color={"#fff"} size={heightPixel(24)}/>
             </TouchableOpacity>
 
@@ -90,7 +97,7 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.faktumSemiBold
     },
     titleWrap:{
-        width: '45%',
+        width: '50%',
 
         alignItems:'center',
         justifyContent:'center',

@@ -83,6 +83,10 @@ const PersonalIncome = () => {
    // console.log("*********************DATA******************")
    // console.log(data.data['Personal Income List'].slice(0,2))
 
+
+    const leaderoard1 = data?.data['Personal Income List'].sort((a: { total_profit: string; }, b: { total_profit: string; }) => parseFloat(b.total_profit) - parseFloat(a.total_profit));
+
+   const LeaderBoardRank = !isLoading && leaderoard1.slice(0,3)
     const renderHeader = useCallback(() => (
         <View style={[styles.topDashboard]}>
 
@@ -96,7 +100,7 @@ const PersonalIncome = () => {
                 <View style={styles.rankWrap}>
                     <Text style={styles.rankText}>
 
-                        {data.data['Personal Income List'][0].level}
+                    2
                     </Text>
                     <Ionicons name="caret-up" size={20} color={Colors.success}/>
                 </View>
@@ -104,19 +108,19 @@ const PersonalIncome = () => {
                 <View style={[styles.leaderboard, styles.leaderboardOne]}>
 
                     <Image
-                        source={{uri: data.data['Personal Income List'][0].idcard ?  'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' :  data.data['Personal Income List'][0].idcard}}
+                        source={{uri: !LeaderBoardRank[1]?.idcard ?  'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' :  LeaderBoardRank[1]?.idcard}}
                         style={styles.streakImage}/>
 
                     <View style={[styles.leaderboardScore, {
                         backgroundColor: Colors.purplePrimary,
                     }]}>
                         <Text style={styles.streakText}>
-                            {data.data['Personal Income List'][0].reward_total}
+                            {LeaderBoardRank[1]?.total_profit}
                         </Text>
                     </View>
                 </View>
                 <Text style={[styles.leaderboardText, {}]}>
-                    {data.data['Personal Income List'][0].username}
+                    {LeaderBoardRank[1]?.username}
                 </Text>
             </Animated.View>
 
@@ -138,7 +142,7 @@ const PersonalIncome = () => {
                     <Text style={[styles.rankText, {
                         marginBottom: 5,
                     }]}>
-                        {data.data['Personal Income List'][1].level}
+                  1
                     </Text>
                     <FontAwesome5 name="crown" size={24} color={Colors.pendingYellow}/>
                 </View>
@@ -147,7 +151,7 @@ const PersonalIncome = () => {
                                style={[styles.leaderboard, styles.leaderboardCenter]}>
 
                     <Image
-                        source={{uri: data.data['Personal Income List'][1].idcard ?  'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' :  data.data['Personal Income List'][0].idcard}}
+                        source={{uri: !LeaderBoardRank[0]?.idcard ?  'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' :  LeaderBoardRank[0]?.idcard}}
                         style={styles.streakImage}/>
 
 
@@ -156,13 +160,13 @@ const PersonalIncome = () => {
                     }]}>
                         <Text style={styles.streakText}>
 
-                            {data.data['Personal Income List'][1].reward_total}
+                            {LeaderBoardRank[0]?.total_profit}
                         </Text>
                     </View>
                 </Animated.View>
                 <Text style={[styles.leaderboardText, {}]}>
 
-                    {data.data['Personal Income List'][1].username}
+                    {LeaderBoardRank[0]?.username}
                 </Text>
             </View>
 
@@ -176,7 +180,7 @@ const PersonalIncome = () => {
 
                 <View style={styles.rankWrap}>
                     <Text style={styles.rankText}>
-                        {data.data['Personal Income List'][2].level}
+                   3
                     </Text>
                     <Ionicons name="caret-down" size={20} color={Colors.primary}/>
                 </View>
@@ -184,7 +188,7 @@ const PersonalIncome = () => {
                 <View style={[styles.leaderboard, styles.leaderboardOne]}>
 
                     <Image
-                        source={{uri: data.data['Personal Income List'][2].idcard ?  'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' :  data.data['Personal Income List'][0].idcard}}
+                        source={{uri: !LeaderBoardRank[2]?.idcard ?  'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' :  LeaderBoardRank[0]?.idcard}}
                         style={styles.streakImage}/>
 
 
@@ -192,16 +196,20 @@ const PersonalIncome = () => {
                         backgroundColor: Colors.purplePrimary,
                     }]}>
                         <Text style={styles.streakText}>
-                            {data.data['Personal Income List'][2].reward_total}
+                            {LeaderBoardRank[2]?.total_profit}
                         </Text>
                     </View>
                 </View>
                 <Text style={[styles.leaderboardText, {}]}>
-                    {data.data['Personal Income List'][2].username}
+                    {LeaderBoardRank[2]?.username}
                 </Text>
             </Animated.View>
         </View>
-    ), []);
+    ), [leaderoard1]);
+
+
+
+
 
 
     const renderItem = useCallback(({item}) => (
@@ -232,7 +240,7 @@ const PersonalIncome = () => {
                     onRefresh={refetch}
                     scrollEnabled
                     showsVerticalScrollIndicator={false}
-                    data={data.data['Personal Income List']}
+                    data={data?.data['Personal Income List']}
                     renderItem={renderItem}
                     keyExtractor={keyExtractor}
                     onEndReachedThreshold={0.3}
@@ -318,7 +326,7 @@ const styles = StyleSheet.create({
         bottom: -10,
         borderRadius: 30,
         paddingHorizontal: pixelSizeHorizontal(10),
-        minWidth: widthPixel(16),
+        minWidth: widthPixel(80),
         height: heightPixel(20),
         alignItems: 'center',
 
