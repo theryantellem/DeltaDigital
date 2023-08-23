@@ -232,7 +232,7 @@ const PersonalIncome = () => {
                 isLoading && <ActivityIndicator color={Colors.primary} size='small'/>
             }
             {
-                !isLoading && data &&
+                !isLoading && data && data?.data['Personal Income List'] !== null &&
                 <FlashList
                     estimatedItemSize={200}
                     ListHeaderComponent={renderHeader}

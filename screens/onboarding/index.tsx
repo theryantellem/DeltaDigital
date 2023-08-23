@@ -10,12 +10,14 @@ import Colors from "../../constants/Colors";
 import {Fonts} from "../../constants/Fonts";
 import {RootStackScreenProps} from "../../types";
 
-const OnBoardingScreen = ({navigation}:RootStackScreenProps<'OnBoardingScreen'>) => {
+const OnBoardingScreen = ({skip}: { skip: () => void }) => {
 
     const loginNow = () => {
-navigation.navigate('Auth',{
+/*navigation.navigate('Auth',{
     screen:'SignInScreen'
-})
+})*/
+        skip()
+
     }
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -28,7 +30,7 @@ navigation.navigate('Auth',{
                 <OnboardScreen/>
 
                 <View style={styles.bottom}>
-                    <MyButton onPress={loginNow} style={{
+                    <MyButton onPress={skip} style={{
                         justifyContent: 'center',
                         width:'70%',
                         backgroundColor:Colors.primary

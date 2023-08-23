@@ -14,7 +14,7 @@ import HorizontalLine from "../../components/HorizontalLine";
 import {FontAwesome5, Ionicons, MaterialIcons} from "@expo/vector-icons";
 import {useAppSelector} from "../../app/hooks";
 import {useQuery} from "@tanstack/react-query";
-import {getAsset} from "../../api";
+import {getAsset, getRevenueDetails} from "../../api";
 
 const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
 
@@ -22,6 +22,12 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
     const {User_Details} = user
 
     const {data: Asset, refetch: fetchAsset, isLoading} = useQuery(['user-Asset'], () => getAsset(User_Details.id))
+
+    const {
+        data:revenue,
+        refetch:fetchRevenue,
+
+    } = useQuery(['get-RevenueDetails',User_Details.id], () => getRevenueDetails(User_Details.id))
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -74,7 +80,7 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
                                     Account balance
                                 </Text>
                                 <Text style={styles.cardText}>
-                                    Total balance
+                                    Total Balance
                                 </Text>
                             </View>
                             <View style={styles.walletCardAmount}>
@@ -92,9 +98,7 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
                         </TouchableOpacity>
 
 
-                        <TouchableOpacity style={[styles.walletCard,{
-                            backgroundColor: Colors.secondary,
-                        }]} activeOpacity={0.9}>
+                        <TouchableOpacity style={[styles.walletCard,{backgroundColor: Colors.secondary,}]} activeOpacity={0.9}>
                             <View style={styles.logoCircle}>
 
                                 {/*<Image source={require('../../../assets/images/brace-icon.png')}
@@ -105,10 +109,10 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
 
                             <View style={styles.walletCardBody}>
                                 <Text style={styles.cardTitle}>
-                                  Profit earned
+                                    Available Trading Fee
                                 </Text>
                                 <Text style={styles.cardText}>
-                                    Trade profits
+                                    Trade fee
                                 </Text>
                             </View>
                             <View style={styles.walletCardAmount}>
@@ -129,31 +133,30 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
                     </Animated.View>
                     <HorizontalLine margin={20}/>
 
-                   {/* <View style={styles.planInfo}>
+                    <View style={styles.planInfo}>
                         <Text style={styles.planTitle}>
                           Others
                         </Text>
 
-                    </View>*/}
+                    </View>
 
-                  {/*  <TouchableOpacity style={[styles.walletCard,{
+                    <TouchableOpacity style={[styles.walletCard,{
                         borderWidth:1,
-                        borderColor:Colors.secondary,
+                        borderColor:Colors.borderColor,
                     }]} activeOpacity={0.9}>
                         <View style={styles.logoCircle}>
 
-                            <Image source={require('../../../assets/images/brace-icon.png')}
-                                       style={styles.logo}/>
-                            <FontAwesome5 name="compress-arrows-alt" size={20} color="#ffff" />
+
+                            <MaterialIcons name="attach-money" size={20} color="#ffff" />
 
                         </View>
 
                         <View style={styles.walletCardBody}>
                             <Text style={styles.cardTitle}>
-                                Direct earnings
+                         Total profits
                             </Text>
                             <Text style={styles.cardText}>
-                                Counted every hour
+                               Cumulative profit earned
                             </Text>
                         </View>
                         <View style={styles.walletCardAmount}>
@@ -163,13 +166,48 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
                                 {
 
 
-                                    currencyFormatter('en-US', 'USD').format(765)
+                                    currencyFormatter('en-US', 'USD').format(revenue.data.total_profit)
                                 }
                             </Text>
                         </View>
 
                     </TouchableOpacity>
-*/}
+
+
+                    <TouchableOpacity style={[styles.walletCard,{
+                        marginTop:20,
+                        borderWidth:1,
+                        borderColor:Colors.borderColor,
+                    }]} activeOpacity={0.9}>
+                        <View style={styles.logoCircle}>
+
+                            <MaterialIcons name="attach-money" size={20} color="#ffff" />
+
+
+                        </View>
+
+                        <View style={styles.walletCardBody}>
+                            <Text style={styles.cardTitle}>
+                         Todays profits
+                            </Text>
+                            <Text style={styles.cardText}>
+                           Profit earned today
+                            </Text>
+                        </View>
+                        <View style={styles.walletCardAmount}>
+                            <Text style={[styles.cardTitle, {
+                                fontSize: fontPixel(14)
+                            }]}>
+                                {
+
+
+                                    currencyFormatter('en-US', 'USD').format(revenue?.data?.today_profit)
+                                }
+                            </Text>
+                        </View>
+
+                    </TouchableOpacity>
+
 
                 </ScrollView>
             </LinearGradient>
@@ -238,12 +276,12 @@ const styles = StyleSheet.create({
     },
     cardTitle: {
         fontFamily: Fonts.faktumBold,
-        fontSize: fontPixel(16),
+        fontSize: fontPixel(14),
         color: Colors.text,
     },
     cardText: {
         fontFamily: Fonts.faktumRegular,
-        fontSize: fontPixel(14),
+        fontSize: fontPixel(12),
         color: "#6B7280",
     },
     walletCardAmount: {

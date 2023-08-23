@@ -221,7 +221,7 @@ const CircleOwner = () => {
                 isLoading && <ActivityIndicator color={Colors.primary} size='small'/>
             }
             {
-                !isLoading && data &&
+                !isLoading && data && data?.data['Circle Owner income list'] !== null &&
                 <FlashList
                     estimatedItemSize={200}
                     ListHeaderComponent={renderHeader}
@@ -229,7 +229,7 @@ const CircleOwner = () => {
                     onRefresh={refetch}
                     scrollEnabled
                     showsVerticalScrollIndicator={false}
-                    data={data.data['Circle Owner income list']}
+                    data={data?.data['Circle Owner income list']}
                     renderItem={renderItem}
                     keyExtractor={keyExtractor}
                     onEndReachedThreshold={0.3}

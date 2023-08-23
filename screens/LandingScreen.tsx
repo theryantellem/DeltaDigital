@@ -51,7 +51,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
     const [greeting, setGreeting] = useState('');
 
 
-    const {data: Asset, refetch: fetchAsset} = useQuery(['user-Asset'], () => getAsset(User_Details.id))
+    const {data: Asset, refetch: fetchAsset,isLoading:loading} = useQuery(['user-Asset'], () => getAsset(User_Details.id))
 
     //const {} =  useQuery(['checkUserPlan',User_Details.id],()=>checkUserPlan(User_Details.id))
 
@@ -104,7 +104,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
             icon: <Image source={require('../assets/images/logos/cyborlogo.png')} style={styles.imageLogo}/>,
 
         },
-        {
+       /* {
             name: 'Finix',
             balance: 0,
             bg: "#090A1C",
@@ -119,8 +119,8 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                 resizeMode: 'cover'
             }}/>,
 
-        },
-        {
+        },*/
+       /* {
             name: 'Starfox',
             balance: 0,
             bg: "#090A1C",
@@ -135,7 +135,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                 resizeMode: 'cover'
             }}/>,
 
-        },
+        },*/
     ]
 
     const {
@@ -186,8 +186,9 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                             </Text>
 
                             {
-                                strategy &&
-                                strategy?.data['Operation Strategy'].slice(0, 2).map((item: {
+                                !loadingStrategy &&
+                                strategy &&  strategy?.data &&
+                                strategy?.data['Operation Strategy']?.slice(0, 2).map((item: {
                                     [x: string]: any;
                                     id: React.Key | null | undefined;
                                     Market: string,
@@ -231,6 +232,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
         })
     }
 
+    console.log(strategy)
 
     useRefreshOnFocus(refetch)
 
@@ -298,7 +300,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
 
 
                     {
-                        !isLoading &&
+                        !isLoading && !loading &&
 
                         <Animated.ScrollView
 

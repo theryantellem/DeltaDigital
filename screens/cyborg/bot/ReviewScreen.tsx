@@ -39,12 +39,13 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
 
             onSuccess: async (data) => {
                 // alert(message)
-
+                console.log(data)
                 if (data.status == 1) {
                     navigation.navigate('BotSuccess', {
                         amount: tradeSetting.firstbuy_amount,
                         market: tradeSetting.market,
                     })
+                    dispatch(clearTradeSetting())
                     /* navigation.navigate('SuccessScreen', {
                          title: 'Successfull',
                          message: 'Trading Bot created',
@@ -57,7 +58,7 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
                     dispatch(addNotificationItem({
                         id: Math.random(),
                         type: 'error',
-                        body: data.data,
+                        body: data.error,
                     }))
 
                 }
@@ -65,7 +66,7 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
 
             onError: (err) => {
 
-
+                console.log(err)
             },
             onSettled: () => {
                 queryClient.invalidateQueries(['bot-Trade-Setting']);
@@ -83,7 +84,7 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
 
             onSuccess: async (data) => {
                 // alert(message)
-                console.log(data)
+
                 if (data.status == 1) {
                     navigation.navigate('BotSuccess', {
                         amount: tradeSetting.firstbuy_amount,
@@ -110,7 +111,7 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
 
             onError: (err) => {
 
-
+console.log(err)
             },
             onSettled: () => {
                 queryClient.invalidateQueries(['start-Trading-Bot-Future']);
@@ -164,46 +165,18 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
             formData.append('profit_ratio', tradeSetting.profit_ratio)
             formData.append('whole_ratio', tradeSetting.whole_ratio)
             formData.append('whole_stop', tradeSetting.whole_stop)
-            formData.append('price_drop', tradeSetting.price_drop)
-            formData.append('m_ratio', tradeSetting.m_ratio)
-            formData.append('first_ratio', tradeSetting.first_ratio)
+            formData.append('first_call', tradeSetting.price_drop)
+            formData.append('first_ratio', tradeSetting.m_ratio)
             formData.append('cycle', tradeSetting.cycle)
             formData.append('profit_callback', tradeSetting.profit_callback)
-            formData.append('one_shot', tradeSetting.one_shot)
-            formData.append('exchange', tradeSetting.exchange)
+            formData.append('one_short', tradeSetting.one_shot)
+          //  formData.append('exchange', tradeSetting.exchange)
             formData.append('trade_type', tradeSetting.trade_type)
             formData.append('direction', tradeSetting.direction)
             formData.append('id', tradeSetting.id)
             formData.append('market', tradeSetting.market)
             createFutureBot({body: formData, userId: User_Details.id})
-
-
-            //$id,
-              //  $firstbuy_amount,
-              //  $double_position,
-               // $margin_limit,
-               // $profit_ratio,
-               // $whole_ratio,
-
-                //$first_call *,
-              //  $first_ratio *,
-              //  $second_call *,
-            //    $second_ratio *,
-             //   $third_call *,
-             //   $third_ratio*,
-             //   $forth_call *,
-               // $forth_ratio *,
-               // $fifth_call *,
-              //  $fifth_ratio *,
-
-
-               // $profit_callback,
-                //$cycle,
-              //  $one_short,
-              //  $whole_stop,
-              //  $trade_type = 0,
-               // $direction = 'Long',
-              //  $userId = null
+            console.log(formData)
         }
         if (tradeSetting.trade_type == '0') {
             const formData = new FormData()
@@ -213,16 +186,19 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
             formData.append('profit_ratio', tradeSetting.profit_ratio)
             formData.append('whole_ratio', tradeSetting.whole_ratio)
             formData.append('whole_stop', tradeSetting.whole_stop)
-            formData.append('price_drop', tradeSetting.price_drop)
-            formData.append('first_ratio', tradeSetting.first_ratio)
+
+            formData.append('first_call', tradeSetting.price_drop)
+            formData.append('first_ratio', tradeSetting.m_ratio)
             formData.append('cycle', tradeSetting.cycle)
             formData.append('profit_callback', tradeSetting.profit_callback)
-            formData.append('one_shot', tradeSetting.one_shot)
-            formData.append('exchange', tradeSetting.exchange)
-            formData.append('trade_type', tradeSetting.trade_type)
+            formData.append('one_short', tradeSetting.one_shot)
+          //  formData.append('exchange', tradeSetting.exchange)
+           // formData.append('trade_type', tradeSetting.trade_type)
             formData.append('market', tradeSetting.market)
             formData.append('id', tradeSetting.id)
+
             createBot({body: formData, userId: User_Details.id})
+
         }
 
     }

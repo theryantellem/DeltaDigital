@@ -4,7 +4,7 @@ import {Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator,
 import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
-import {Ionicons, Octicons} from "@expo/vector-icons";
+import {Feather, Ionicons, Octicons} from "@expo/vector-icons";
 import Colors from "../../../constants/Colors";
 import {currencyFormatter, useRefreshOnFocus, wait} from "../../../helpers";
 import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPixel} from "../../../helpers/normalize";
@@ -26,6 +26,7 @@ interface RewardItem {
 
 
 const RewardItem = ({item}: RewardItem) => {
+
     return (
         <View style={styles.transactionCard}>
 
@@ -74,7 +75,7 @@ const RewardDetails = () => {
         refetch,
         isLoading,
         isRefetching
-    } = useQuery(['get-RewardDetails'], () => getRewardDetails(User_Details.id))
+    } = useQuery(['get-RewardDetails',User_Details.id], () => getRewardDetails(User_Details.id))
 
 
     useRefreshOnFocus(refetch)
@@ -184,7 +185,7 @@ const RewardDetails = () => {
                         isLoading && <ActivityIndicator color={Colors.primary} size='small'/>
                     }
                     {
-                        !isLoading && data &&
+                        !isLoading && data && data?.data?.All !== null &&
                         <FlashList
                             estimatedItemSize={200}
                             ListHeaderComponent={renderHeader}
@@ -192,7 +193,7 @@ const RewardDetails = () => {
                             onRefresh={refetch}
                             scrollEnabled
                             showsVerticalScrollIndicator={false}
-                            data={data.data.All}
+                            data={data?.data?.All.filter((reward: { Details: string; }) => reward.Details !== 'CIRCLE FEE EARN')}
                             renderItem={renderItem}
                             keyExtractor={keyExtractor}
                             estimatedListSize={{height: 70, width: 320}}

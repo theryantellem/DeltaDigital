@@ -65,6 +65,11 @@ import FinalPreview from "../screens/cyborg/bot/FeaturesBot/FinalPreview";
 import CreateTicket from "../screens/cyborg/profile/pages/CreateTicket";
 import TransactionRecords from "../screens/cyborg/strategy/TransactionRecords";
 import MarginConfiguration from "../screens/cyborg/bot/MarginConfiguration";
+import TradeSettingStrategy from "../screens/cyborg/strategy/TradeSettingStrategy";
+import LogsMarginConfiguration from "../screens/cyborg/strategy/LogsMarginConfiguration";
+import RevenueScreen from "../screens/cyborg/profile/RevenueScreen";
+import AllRevenue from "../screens/cyborg/profile/pages/AllRevenue";
+import TwoFactorAuth from "../screens/cyborg/profile/pages/TwoFactorAuth";
 
 
 export default function Navigation({colorScheme}: { colorScheme: ColorSchemeName }) {
@@ -159,14 +164,14 @@ function RootNavigator() {
     return (
         <Stack.Navigator screenOptions={{
             headerShown: false,
-
-        }} initialRouteName={ !isAuthenticated ? "OnBoardingScreen" : 'LandingScreen'}>
+animation:'slide_from_right'
+        }} initialRouteName={ !isAuthenticated ? "Auth" : 'LandingScreen'}>
 
 
             {
                 !isAuthenticated &&
             <Stack.Group>
-            <Stack.Screen name={"OnBoardingScreen"} component={OnBoardingScreen}/>
+
             <Stack.Screen name={"Auth"} component={AuthNavigator}/>
 
             </Stack.Group>
@@ -187,6 +192,10 @@ function RootNavigator() {
                 <Stack.Screen name={"SelectExchange"} component={SelectExchange}/>
                 <Stack.Screen name={"SelectAsset"} component={SelectAsset}/>
                 <Stack.Screen name={"TradeSetting"} component={TradeSetting}/>
+                <Stack.Screen name={"TradeSettingStrategy"} component={TradeSettingStrategy}/>
+                <Stack.Screen name={"LogsMarginConfiguration"} component={LogsMarginConfiguration}/>
+                <Stack.Screen name={"RevenueScreen"} component={RevenueScreen}/>
+                <Stack.Screen name={"AllRevenue"} component={AllRevenue}/>
                 <Stack.Screen name={"MarginConfiguration"} component={MarginConfiguration}/>
                 <Stack.Screen name={"ReviewScreen"} component={ReviewScreen}/>
                 <Stack.Screen name={"OverView"} component={OverView}/>
@@ -200,6 +209,7 @@ function RootNavigator() {
                 <Stack.Screen name={"Earnings"} component={Earnings}/>
                 <Stack.Screen name={"SettingsScreen"} component={SettingsScreen}/>
                 <Stack.Screen name={"WithdrawalAmount"} component={WithdrawalAmount}/>
+                <Stack.Screen name={"TwoFactorAuth"} component={TwoFactorAuth}/>
 
                 <Stack.Screen name={"BotSuccess"} options={{animation: 'slide_from_bottom'}} component={BotSuccess}/>
                 <Stack.Screen name={"SuccessScreen"} options={{animation: 'slide_from_bottom'}} component={SuccessScreen}/>
@@ -218,6 +228,7 @@ function RootNavigator() {
                 <Stack.Screen name={"AllStrategy"} component={AllStrategy}/>
                 <Stack.Screen name={"ViewStrategy"} component={ViewStrategy}/>
                 <Stack.Screen name={"FeaturesSelectAsset"} component={FeaturesSelectAsset}/>
+
 
                 <Stack.Screen name={"BotDirection"} component={BotDirection}/>
                 <Stack.Screen name={"SelectConfig"} component={SelectConfig}/>

@@ -67,7 +67,7 @@ interface itemProps {
 
 interface props {
     tickers:[],
-    continueAsset: (exchange:string,market:string) => void,
+    continueAsset: (exchange:string,id:string,market:string) => void,
     item: {
         id: string,
         exchange: string,
@@ -110,7 +110,7 @@ const QuantitativeItem = ({item,tickers,continueAsset}:props) => {
 const tickerRes = tickers?.find((ticker: { symbol: string; }) => ticker.symbol == item.Market.replace('/', '') )
 
   return(
-      <Pressable onPress={()=>continueAsset(item.exchange,item.Market)} style={styles.quantitativeCard}>
+      <Pressable onPress={()=>continueAsset(item.exchange,item.id,item.Market)} style={styles.quantitativeCard}>
 
           <View style={styles.leftInfo}>
 
@@ -233,10 +233,11 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
         <SelectValue selected={tabExchange} item={item} action={switchItem}/>
     ), [tabExchange]);
 
-    const seeLogs = (exchange:string,market:string) =>{
+    const seeLogs = (exchange:string,id:string,market:string) =>{
         navigation.navigate('LogScreen',{
+            id,
+            market,
             exchange,
-            market
         })
     }
 
@@ -351,7 +352,7 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
     const [filterAssets, setFilterAssets] = useState([]);
 
     useEffect(() => {
-        if (!isLoading && data && data?.data['Operation Strategy']) {
+        if (!isLoading && data && data?.data['Operation Strategy'] && data?.data['Operation Strategy'] !== null) {
           const filtered = data?.data['Operation Strategy'].filter((item: { exchange: string; }) => item.exchange == tabExchange)?.filter((assets: { Market: string | string[]; }) =>
                 assets?.Market?.includes(searchValue.toUpperCase().trim())
             )

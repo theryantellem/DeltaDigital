@@ -142,8 +142,7 @@ const EditProfile = () => {
                             onFocus={() => setFocusUsername(true)}
 
                             onBlur={(e) => {
-                                handleBlur('username')(e);
-                                setFocusUsername(false);
+
                             }}
 
                             label="UUID / Customer ID"/>
@@ -174,7 +173,18 @@ const EditProfile = () => {
                             }}
 
                             defaultValue={dayjs.unix(User_Details.expires).format('ddd, DD MMM YYYY')}
-                            label="Subscription Expiry"/>
+                            label="Expiry"/>
+
+                        <TextInput
+                            editable={false}
+                            inputBg={Colors.secondary}
+
+                            onFocus={() => setFocusUsername(true)}
+
+
+
+                            defaultValue={User_Details.plan}
+                            label="Title"/>
 
 
                     </View>

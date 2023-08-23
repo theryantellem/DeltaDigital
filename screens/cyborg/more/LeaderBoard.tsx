@@ -101,6 +101,7 @@ const LeaderBoard = () => {
                         <SegmentedControl tabs={["Personal Income List", "Circle Owner Income List",]}
                                           currentIndex={tabIndex}
                                           onChange={handleTabsChange}
+
                                           segmentedControlBackgroundColor={Colors.tintPrimary}
                                           activeSegmentBackgroundColor={Colors.primary}
                                           activeTextColor={Colors.textDark}

@@ -63,7 +63,7 @@ const SettingsScreen = ({navigation}: RootStackScreenProps<'SettingsScreen'>) =>
                     </TouchableOpacity>*/}
 
 
-                        <TouchableOpacity activeOpacity={0.6} style={styles.profileButton}>
+                       {/* <TouchableOpacity activeOpacity={0.6} style={styles.profileButton}>
 
                         <View style={styles.leftContent}>
 
@@ -91,10 +91,10 @@ const SettingsScreen = ({navigation}: RootStackScreenProps<'SettingsScreen'>) =>
 
 
                     </TouchableOpacity>
+*/}
 
 
-
-                        <TouchableOpacity activeOpacity={0.6} style={styles.profileButton}>
+                        <TouchableOpacity onPress={()=>navigation.navigate('TwoFactorAuth')} activeOpacity={0.6} style={styles.profileButton}>
 
                             <View style={styles.leftContent}>
 
@@ -113,7 +113,7 @@ const SettingsScreen = ({navigation}: RootStackScreenProps<'SettingsScreen'>) =>
 
 
 
-                        <TouchableOpacity activeOpacity={0.6} style={styles.profileButton}>
+                     {/*   <TouchableOpacity activeOpacity={0.6} style={styles.profileButton}>
 
                             <View style={styles.leftContent}>
 
@@ -130,7 +130,7 @@ const SettingsScreen = ({navigation}: RootStackScreenProps<'SettingsScreen'>) =>
 
 
                         </TouchableOpacity>
-
+*/}
                     </View>
                 </ScrollView>
             </LinearGradient>

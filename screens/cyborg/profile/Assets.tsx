@@ -150,7 +150,7 @@ const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
 
                             </View>
                             <Text style={styles.walletAddressTxt}>
-                                <Text style={{color: Colors.errorRed}}>{Asset?.data?.rp_assets}</Text> Total fee
+                                <Text style={{color: Colors.errorRed}}>{Asset?.data?.rp_assets}</Text> Available Fee
                             </Text>
                         </View>
                         <View style={styles.walletAddress}>
@@ -233,8 +233,8 @@ const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
                             }
                             <IF condition={tabIndex == 0}>
                             {
-                                !isLoading && Asset &&
-                                Asset.data['Deposit Records'].slice(0, 30).map((({address, Date, amount, Asset, TX}:
+                                !isLoading && Asset && Asset?.data['Deposit Records'] !== null &&
+                                Asset?.data['Deposit Records']?.slice(0, 30).map((({address, Date, amount, Asset, TX}:
                                                                                      {
                                                                                          address: string,
                                                                                          Date: string,
@@ -281,8 +281,8 @@ const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
                             </IF>
                             <IF condition={tabIndex == 1}>
                             {
-                                !isLoading && Asset &&
-                                Asset.data['Withdraw Records'].filter(asset => asset.address !== "RP Transfer").slice(0, 30).map((({address, Date, amount, Asset, TX}:
+                                !isLoading && Asset && Asset?.data['Withdraw Records'] !== null &&
+                                Asset?.data['Withdraw Records'].filter(asset => asset.address !== "RP Transfer").slice(0, 30).map((({address, Date, amount, Asset, TX}:
                                                                                      {
                                                                                          address: string,
                                                                                          Date: string,
@@ -329,8 +329,8 @@ const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
                             </IF>
                             <IF condition={tabIndex == 2}>
                             {
-                                !isLoading && Asset &&
-                                Asset.data['Withdraw Records'].filter(asset => asset.address == "RP Transfer").slice(0, 30).map((({address, Date, amount, Asset, TX}:
+                                !isLoading && Asset &&  Asset.data['Withdraw Records'] !== null &&
+                                Asset?.data['Withdraw Records'].filter(asset => asset.address == "RP Transfer").slice(0, 30).map((({address, Date, amount, Asset, TX}:
                                                                                      {
                                                                                          address: string,
                                                                                          Date: string,

@@ -36,6 +36,10 @@ export interface DataState {
         id: string,
         direction: 'Long' | 'Short'
     },
+    logTradeSetting:{
+        m_ratio: string
+        price_drop: string,
+    }
     tradeSettingFutures: {
         firstbuy_amount: string,
         double_position: string,
@@ -109,6 +113,10 @@ const initialState: DataState = {
         market: '',
         direction: 'Long'
 
+    },
+    logTradeSetting:{
+        m_ratio: '',
+        price_drop:''
     },
     tradeSettingFutures: {
         firstbuy_amount: '',
@@ -233,6 +241,9 @@ export const dataSlice = createSlice({
         updateBot: (state, action) => {
             state.tradeSetting = {...state.tradeSetting, ...action.payload}
         },
+        updateBotSetting: (state, action) => {
+            state.logTradeSetting = {...state.logTradeSetting, ...action.payload}
+        },
         clearTradeSetting:(state) =>{
             state.tradeSetting ={
                 id: '',
@@ -276,6 +287,7 @@ export const {
     setAmountToSend,
     clearTradeSetting,
     updateBot,
+    updateBotSetting,
     updateFuturesBot,
     setAmountToDeposit,
     addNotificationItem,

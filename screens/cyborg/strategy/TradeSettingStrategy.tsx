@@ -1,6 +1,6 @@
 import React, {useCallback, useMemo, useRef, useState} from 'react';
 
-import {Text, View, StyleSheet, Switch, TouchableOpacity} from 'react-native';
+import {Text, View, StyleSheet, Switch, TouchableOpacity, ActivityIndicator} from 'react-native';
 import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -164,27 +164,32 @@ const SelectValueDir = ({selected, item, action}: itemProps) => (
     </TouchableOpacity>
 )
 
-const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
+const TradeSettingStrategy = ({navigation, route}: RootStackScreenProps<'TradeSettingStrategy'>) => {
 
+    const {id, dataLogs} = route.params
     const dispatch = useAppDispatch()
+    const queryClient = useQueryClient()
 
     const dataSlice = useAppSelector(state => state.data)
-    const {tradeSetting} = dataSlice
+    const {logTradeSetting} = dataSlice
+
+    const user = useAppSelector(state => state.user)
+    const {User_Details} = user
 
     const [direction, setDirection] = useState('Long');
 
 
     const [selected, setSelected] = useState('');
-    const [amountContent, setAmountContent] = useState(tradeSetting.firstbuy_amount);
+    const [amountContent, setAmountContent] = useState(dataLogs.firstbuyinamount);
     const [focusAmount, setFocusAmount] = useState(false);
 
-    const [takeProfit, setTakeProfit] = useState(tradeSetting.profit_ratio);
+    const [takeProfit, setTakeProfit] = useState(dataLogs.take_profit_ratio);
     const [focusTakeProfit, setFocusTakeProfit] = useState(false);
 
-    const [marginLimitCall, setMarginLimitCall] = useState(tradeSetting.margin_limit);
+    const [marginLimitCall, setMarginLimitCall] = useState(dataLogs.margin_call_limit);
     const [focusMarginLimitCall, setFocusMarginLimitCall] = useState(false);
 
-    const [whole_stop, setWhole_stop] = useState(tradeSetting.whole_stop);
+    const [whole_stop, setWhole_stop] = useState(dataLogs.stopprice);
     const [focusWhole_stop, setFocusWhole_stop] = useState(false);
 
 
@@ -192,7 +197,7 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
     const [focusWhole_ratio, setFocusWhole_ratio] = useState(false);
 
 
-    const [whole_position_take_profit_callback, setWhole_position_take_profit_callback] = useState(tradeSetting.profit_callback);
+    const [whole_position_take_profit_callback, setWhole_position_take_profit_callback] = useState('');
     const [focusWhole_position_take_profit_callback, setFocusWhole_position_take_profit_callback] = useState(false);
 
     const [value, setValue] = useState(0);
@@ -234,6 +239,48 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
         ),
         []
     );
+
+
+    const {mutate, isLoading, isSuccess, error} = useMutation(['bot-Trade-Setting'], botTradeSetting,
+
+        {
+
+            onSuccess: async (data) => {
+                // alert(message)
+
+                if (data.status == 1) {
+                    /*  navigation.navigate('BotSuccess', {
+                          amount: amountContent,
+                          market: dataLogs.Market,
+                      })*/
+                    dispatch(clearTradeSetting())
+                    navigation.navigate('SuccessScreen', {
+                        title: 'Successful',
+                        message: 'Trading Bot Setting Updated',
+                        type: 'success'
+                    })
+
+
+                } else {
+                    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+                    dispatch(addNotificationItem({
+                        id: Math.random(),
+                        type: 'error',
+                        body: data.error,
+                    }))
+
+                }
+            },
+
+            onError: (err) => {
+
+                console.log(err)
+            },
+            onSettled: () => {
+                queryClient.invalidateQueries(['bot-Trade-Setting']);
+            }
+
+        })
 
 
     const {
@@ -278,25 +325,39 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
             const strategyPeriodShot = strategyPeriod == 'Cycle' ? '0' : '1'
             const strategyPeriodCycle = strategyPeriod == 'Cycle' ? '1' : '0'
 
-            if (tradeSetting.m_ratio !== '' && tradeSetting.price_drop !== '') {
+            if (logTradeSetting.m_ratio !== '' && logTradeSetting.price_drop !== '') {
 
 
                 dispatch(updateBot({
-                    firstbuy_amount: amount,
-                    double_position: switchToggle ? '1' : '0',
-                    margin_limit: marginLimit,
-                    profit_ratio: takeProfit,
-                    whole_ratio: whole_ratio,
-                    whole_stop: whole_position_stop_loss,
-                   // first_ratio: first_position_drop,
-                    cycle: strategyPeriodCycle,
+
+                    // first_ratio: first_position_drop,
+
                     profit_callback: whole_position_take_profit_callback,
                     direction,
-                    one_shot: strategyPeriodShot
+
                 }))
 
-            navigation.navigate('ReviewScreen')
-        }else {
+                const formData = new FormData()
+                formData.append('firstbuy_amount', amount)
+                formData.append('double_position', switchToggle ? '1' : '0',)
+                formData.append('margin_limit', marginLimit)
+                formData.append('profit_ratio', takeProfit)
+                formData.append('whole_ratio', whole_ratio)
+                formData.append('whole_stop', whole_position_stop_loss)
+
+                formData.append('first_call', logTradeSetting.price_drop)
+                formData.append('first_ratio', logTradeSetting.m_ratio)
+                formData.append('cycle', strategyPeriodCycle)
+                formData.append('profit_callback', whole_position_take_profit_callback)
+                formData.append('one_short', strategyPeriodShot)
+                //  formData.append('exchange', tradeSetting.exchange)
+                // formData.append('trade_type', tradeSetting.trade_type)
+                formData.append('market', dataLogs.Market)
+                formData.append('id', id)
+
+                mutate({body: formData, userId: User_Details.id})
+
+            } else {
                 dispatch(addNotificationItem({
                     id: Math.random(),
                     type: 'error',
@@ -337,13 +398,16 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
 
             margin_limit: marginLimitCall,
         }))
-        navigation.navigate('MarginConfiguration', {
-            numrows: parseInt(marginLimitCall)
+        navigation.navigate('LogsMarginConfiguration', {
+            numrows: parseInt(marginLimitCall),
+            price_drop: dataLogs["Price drop"].join('|'),
+            m_ratio: dataLogs["Martingale ratio"].join('|')
         })
     }
-const clearData = () => {
-    dispatch(clearTradeSetting())
-}
+
+    const clearData = () => {
+        dispatch(clearTradeSetting())
+    }
 
     return (
         <>
@@ -359,7 +423,7 @@ const clearData = () => {
                 >
 
 
-                    <HeaderWithTitle title='Trade setting' clearData={clearData}/>
+                    <HeaderWithTitle title={`Trade setting`} clearData={clearData}/>
                     <KeyboardAwareScrollView style={{
                         width: '100%'
                     }} contentContainerStyle={styles.scrollView} scrollEnabled
@@ -370,7 +434,7 @@ const clearData = () => {
                             <View style={styles.planMessage}>
                                 <Text style={styles.planMessageTxt}>
                                     The first buy-in amount is calculated according to the currency pair, principle and
-                                    trade unit
+                                    trade unit {dataLogs.Market}
                                 </Text>
                             </View>
                         </View>
@@ -563,28 +627,6 @@ const clearData = () => {
                                 Btn={true}
                             />
 
-                            {
-                                tradeSetting.trade_type == '1'
-                                &&
-
-                                <SelectInput
-                                    editable={false}
-                                    action={() => handleSnapPressDirection(1)}
-                                    label='Direction'
-                                    autoCapitalize='none'
-                                    keyboardType='default'
-                                    returnKeyType='next'
-                                    returnKeyLabel='next'
-
-                                    onChangeText={(e) => {
-                                        setDirection(e)
-                                    }}
-                                    defaultValue={direction}
-                                    icon='chevron-down'
-                                    value={values.direction}
-                                    Btn={true}
-                                />
-                            }
 
                             {
                                 strategyPeriod == 'Cycle' &&
@@ -652,9 +694,17 @@ const clearData = () => {
 
                             // locations={[0.1, 0.7,]}
                         >
-                            <Text style={styles.buttonTxt}>
-                                Continue
-                            </Text>
+                            {
+                                isLoading && <ActivityIndicator size='small' color={"#fff"}/>
+                            }
+
+                            {
+                                !isLoading &&
+
+                                <Text style={styles.buttonTxt}>
+                                    Update
+                                </Text>
+                            }
 
                         </LinearGradient>
                     </MyButton>
@@ -927,4 +977,4 @@ const styles = StyleSheet.create({
 
 })
 
-export default TradeSetting;
+export default TradeSettingStrategy;

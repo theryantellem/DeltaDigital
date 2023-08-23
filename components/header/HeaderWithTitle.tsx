@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Text, TouchableOpacity, View, StyleSheet} from 'react-native';
+import {Text, TouchableOpacity, View, StyleSheet, Pressable} from 'react-native';
 import Colors from "../../constants/Colors";
 import {Ionicons} from "@expo/vector-icons";
 import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../helpers/normalize";
@@ -10,24 +10,32 @@ import {useNavigation} from "@react-navigation/native";
 interface props {
     title?: string,
     subTitle?: string,
-    headerAction?:()=>void,
-    headerButton?:JSX.Element,
-    step?:boolean,
-    currentStep?:string,
-    clearData?:()=>void,
-    totalStep?:string,
+    headerAction?: () => void,
+    headerButton?: JSX.Element,
+    step?: boolean,
+    currentStep?: string,
+    clearData?: () => void,
+    totalStep?: string,
+    logAction?: () => void,
+    isButton?: boolean
 }
 
-const HeaderWithTitle = ({title, clearData,subTitle,headerButton,headerAction,step,currentStep,totalStep}: props) => {
+const HeaderWithTitle = ({title, clearData, logAction, isButton, subTitle, headerButton, headerAction, step, currentStep, totalStep}: props) => {
 
     const {goBack} = useNavigation()
-const goBackNav = () => {
-    if (clearData) {
-        clearData()
-    }
-    goBack()
+    const goBackNav = () => {
+        if (clearData) {
+            clearData()
+        }
+        goBack()
 
-}
+    }
+
+    const seeLogs = () => {
+        if (logAction) {
+            logAction()
+        }
+    }
     return (
         <View style={styles.topBar}>
             <TouchableOpacity style={[styles.backBtn, {
@@ -36,31 +44,44 @@ const goBackNav = () => {
                 <Ionicons name="md-chevron-back" color={"#fff"} size={heightPixel(24)}/>
             </TouchableOpacity>
 
-            <View style={styles.titleWrap}>
-                <Text style={styles.title}>
-                    {title}
-                </Text>
+            <Pressable onPress={seeLogs} style={[styles.titleWrap, {}]}>
+                <View style={[
+                    isButton && {
+                    height:'55%',
+                        justifyContent:'center',
+                        borderRadius:5,
+                        backgroundColor: Colors.secondary,
+                        paddingHorizontal: pixelSizeHorizontal(10),
 
-            </View>
+                    }
+
+                ]}>
+
+
+                    <Text style={styles.title}>
+                        {title}
+                    </Text>
+                </View>
+            </Pressable>
             {
-               !step  &&
+                !step &&
 
-            <TouchableOpacity onPress={headerAction} style={styles.rightBtn}>
-                {headerButton}
-            </TouchableOpacity>
+                <TouchableOpacity onPress={headerAction} style={styles.rightBtn}>
+                    {headerButton}
+                </TouchableOpacity>
             }
             {
                 step &&
-            <TouchableOpacity style={styles.count}>
+                <TouchableOpacity style={styles.count}>
 
-                <Text style={[styles.countText, {
-                    color: Colors.text,
-                }]}>
-                    {currentStep}/<Text style={{
-                    color: currentStep == totalStep ? "#fff" : "#a7a7a7"
-                }}>{totalStep}</Text>
-                </Text>
-            </TouchableOpacity>
+                    <Text style={[styles.countText, {
+                        color: Colors.text,
+                    }]}>
+                        {currentStep}/<Text style={{
+                        color: currentStep == totalStep ? "#fff" : "#a7a7a7"
+                    }}>{totalStep}</Text>
+                    </Text>
+                </TouchableOpacity>
             }
         </View>
     );
@@ -96,17 +117,17 @@ const styles = StyleSheet.create({
         fontSize: fontPixel(16),
         fontFamily: Fonts.faktumSemiBold
     },
-    titleWrap:{
+    titleWrap: {
         width: '50%',
 
-        alignItems:'center',
-        justifyContent:'center',
-        height:'100%'
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%'
     },
     count: {
         width: '20%',
         height: 40,
-        paddingHorizontal:10,
+        paddingHorizontal: 10,
         alignItems: 'flex-end',
         justifyContent: 'center',
     },

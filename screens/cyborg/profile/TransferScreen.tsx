@@ -13,13 +13,14 @@ import TextInput from "../../../components/inputs/TextInput";
 import HorizontalLine from "../../../components/HorizontalLine";
 import {Entypo} from "@expo/vector-icons";
 import {MyButton} from "../../../components/MyButton";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {getUser, transferAsset} from "../../../api";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {getAsset, getUser, transferAsset} from "../../../api";
 import {setAuthenticated, updateUserDetails} from "../../../app/slices/userSlice";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {addNotificationItem} from "../../../app/slices/dataSlice";
 import {RootStackScreenProps} from "../../../types";
 import ToastAnimated from "../../../components/toast";
+import {currencyFormatter, useRefreshOnFocus} from "../../../helpers";
 
 
 const formSchema = yup.object().shape({
@@ -35,8 +36,13 @@ const TransferScreen = ({navigation}: RootStackScreenProps<'TransferScreen'>) =>
     const dispatch = useAppDispatch()
     const queryClient = useQueryClient()
 
+
+
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
+
+    const {data: Asset, refetch: fetchAsset,} = useQuery(['user-Asset'], () => getAsset(User_Details.id))
+
 
     const {mutate, isLoading} = useMutation(['transferAsset'], transferAsset, {
         onSuccess: async (data) => {
@@ -94,7 +100,7 @@ const TransferScreen = ({navigation}: RootStackScreenProps<'TransferScreen'>) =>
         }
     });
 
-
+useRefreshOnFocus(fetchAsset)
     return (
         <>
 
@@ -164,7 +170,7 @@ const TransferScreen = ({navigation}: RootStackScreenProps<'TransferScreen'>) =>
                                         Available
                                     </Text>
                                     <Text style={styles.amountText}>
-                                        3030 USDT
+                                        {currencyFormatter('en-US', 'USD').format(Asset?.data?.total_assets)}
                                     </Text>
                                 </View>
 

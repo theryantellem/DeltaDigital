@@ -6,40 +6,7 @@
 import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
 import {CompositeScreenProps, NavigatorScreenParams} from '@react-navigation/native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import SignInScreen from "./screens/auth/SignIn";
-import {CyborgBottomTab} from "./navigation/cyborg";
-import NewsScreen from "./screens/cyborg/NewsScreen";
-import SelectType from "./screens/cyborg/bot/SelectType";
-import SelectAsset from "./screens/cyborg/bot/SelectAsset";
-import TradeSetting from "./screens/cyborg/bot/TradeSetting";
-import ReviewScreen from "./screens/cyborg/bot/ReviewScreen";
-import OverView from "./screens/cyborg/OverView";
-import BotSuccess from "./screens/cyborg/bot/BotSuccess";
-import UserAccount from "./screens/cyborg/UserAccount";
-import Assets from "./screens/cyborg/profile/Assets";
-import DepositScreen from "./screens/cyborg/profile/DepositScreen";
-import Withdrawal from "./screens/cyborg/profile/WIthdrawalAmount";
-import WithdrawalAmount from "./screens/cyborg/profile/WIthdrawalAmount";
-import SettingsScreen from "./screens/cyborg/profile/SettingsScreen";
-import ApiBinding from "./screens/cyborg/profile/ApiBinding";
-import LeaderBoard from "./screens/cyborg/more/LeaderBoard";
-import EditProfile from "./screens/cyborg/profile/EditProfile";
-import CouncellerScreen from "./screens/cyborg/profile/CouncellerScreen";
-import ViewAPIBinding from "./screens/cyborg/profile/ViewAPIBinding";
-import LogScreen from "./screens/cyborg/strategy/LogScreen";
-import ContactUs from "./screens/cyborg/profile/ContactUs";
-import Quantitative from "./screens/cyborg/Quantitative";
-import AllStrategy from "./screens/cyborg/bot/strategy/AllStrategy";
-import ViewStrategy from "./screens/cyborg/bot/strategy/ViewStrategy";
-import BotDirection from "./screens/cyborg/bot/FeaturesBot/BotDirection";
-import AutoConfig from "./screens/cyborg/bot/FeaturesBot/AutoConfig";
-import SetAmount from "./screens/cyborg/bot/FeaturesBot/manual_config/SetAmount";
-import CustomizeEntries from "./screens/cyborg/bot/FeaturesBot/manual_config/CustomizeEntries";
-import AdditionalSettings from "./screens/cyborg/bot/FeaturesBot/manual_config/AdditionalSettings";
-import FinalPreview from "./screens/cyborg/bot/FeaturesBot/FinalPreview";
-import CreateTicket from "./screens/cyborg/profile/pages/CreateTicket";
-import MarginConfiguration from "./screens/cyborg/bot/MarginConfiguration";
-
+import RevenueScreen from "./screens/cyborg/profile/RevenueScreen";
 
 
 declare global {
@@ -59,23 +26,62 @@ export type RootStackParamList = {
     NewsScreen: undefined;
     SelectType: undefined;
     SelectExchange: {
-        type:'spot'|'futures'
+        type: 'spot' | 'futures'
     };
     SelectAsset: {
 
-        exchange:string
+        exchange: string
     };
     TradeSetting: undefined;
+    TradeSettingStrategy: {
+        id: string,
+        dataLogs: {
+            "Avg_Price": string,
+            "FloatingLoss": string,
+            "Log": string,
+            "Market": string,
+            "Martingale ratio": [],
+            "Numbercallmargin": string,
+            "One-shot": string,
+            "Positionamount": string,
+            "Price drop": [],
+            "Quantity": string,
+            "Strategy mode": null,
+            "Strategy ratio": string,
+            "auto compounding": string,
+            "bot_on": string,
+            "buyin_callback": string,
+            "coin image":string,
+            "current_price": string,
+            "cycle": string,
+            "exchange": string,
+            "firstbuy": string,
+            "firstbuyinamount": string,
+            "id": string,
+            "margin_call_limit": string,
+            "open double": string,
+            "rp": string,
+            "stopprice": string,
+            "sync": string,
+            "take_profit_ratio": string,
+            "whole position take profit": string
+        }
+    };
     ReviewScreen: undefined;
+    LogsMarginConfiguration: {
+        numrows:number,
+        m_ratio:string
+        price_drop:string
+    };
     OverView: undefined;
     BotSuccess: {
-        amount:string,
-        market:string
+        amount: string,
+        market: string
     };
     UserAccount: undefined;
     DepositScreen: undefined;
     Withdrawal: {
-        amount:string
+        amount: string
     };
     WithdrawalAmount: undefined;
     EditProfile: undefined;
@@ -83,11 +89,11 @@ export type RootStackParamList = {
     SettingsScreen: undefined;
     Earnings: undefined;
     TransactionRecords: {
-        records:[]
+        records: []
     };
     ApiBinding: undefined;
     MarginConfiguration: {
-        numrows:number
+        numrows: number
     };
     TransferScreen: undefined;
     Assets: undefined;
@@ -96,41 +102,43 @@ export type RootStackParamList = {
     CouncellerScreen: undefined;
     SyncStrategy: undefined;
     LogScreen: {
-        id:string,
-        market:string,
-        exchange:string
+        id: string,
+        market: string,
+        exchange: string
     };
     SuccessScreen: {
-        title:string,
-        message:string,
-        type?:'error'|'success'
+        title: string,
+        message: string,
+        type?: 'error' | 'success'
     };
     ViewAPIBinding: {
-        exchange:string,
-        apiKey:string,
-        apiSecrete:string,
-        isBound:'0'|'1',
+        exchange: string,
+        apiKey: string,
+        apiSecrete: string,
+        isBound: '0' | '1',
     };
-    AllStrategy:undefined
+    AllStrategy: undefined
     ViewStrategy: {
-        id:string
+        id: string
     }
-    FeaturesSelectAsset:undefined
-    SelectConfig:undefined
-    FeaturesSelectExchange:undefined
-    AutoConfig:undefined
-    SetAmount:undefined
-    EntriesScreen:undefined
-    CustomizeEntries:undefined
-    AdditionalSettings:undefined
-    FinalPreview:undefined
-    BotDirection:undefined
-    ContactUs:undefined
-    FeedbackRecord:undefined
-    Quantitative:undefined
+    FeaturesSelectAsset: undefined
+    SelectConfig: undefined
+    FeaturesSelectExchange: undefined
+    AutoConfig: undefined
+    SetAmount: undefined
+    EntriesScreen: undefined
+    CustomizeEntries: undefined
+    AdditionalSettings: undefined
+    FinalPreview: undefined
+    BotDirection: undefined
+    ContactUs: undefined
+    RevenueScreen: undefined
+    AllRevenue: undefined
+    TwoFactorAuth: undefined
+    FeedbackRecord: undefined
+    Quantitative: undefined
 
     //END CYBORG
-
 
 
     OnBoardingScreen: undefined;
@@ -152,7 +160,7 @@ export type AuthStackParamList = {
     ConfirmAccountEmail: {
         email: string
     };
-    ConfirmAccountTwoFA:undefined
+    ConfirmAccountTwoFA: undefined
 
     CreateAccountScreen: undefined;
 

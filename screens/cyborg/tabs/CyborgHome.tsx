@@ -27,7 +27,7 @@ import ToastAnimated from "../../../components/toast";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {addNotificationItem} from "../../../app/slices/dataSlice";
 import {useQuery} from "@tanstack/react-query";
-import {activeStrategy, getAsset, getNewstrategy, getUser} from "../../../api";
+import {activeStrategy, getAsset, getNewstrategy, getRevenueDetails, getUser} from "../../../api";
 
 let width = Dimensions.get("window").width
 
@@ -78,6 +78,11 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
         isLoading: loadingStrategy
     } = useQuery(['activeStrategy'], () => activeStrategy(User_Details.id))
 
+    const {
+        data:revenue,
+        refetch:fetchRevenue,
+
+    } = useQuery(['get-RevenueDetails',User_Details.id], () => getRevenueDetails(User_Details.id))
 
     const openNotifications = () => {
 
@@ -196,11 +201,11 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
 
                             <View style={styles.bottomEarn}>
                                 <Text style={styles.profitText}>
-                                    Profit earned
+                                  Total Profits
                                 </Text>
                                 <Text style={styles.profitBalance}>
 
-                                    {currencyFormatter('en-US', 'USD').format(Asset?.data?.rp_assets)}
+                                    {currencyFormatter('en-US', 'USD').format(revenue?.data?.total_profit)}
 
                                 </Text>
 
@@ -267,8 +272,10 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
                 }
 
                 {
+                    !loadingStrategy &&
                     strategy &&
-                    strategy?.data['Operation Strategy'].map((item: {
+                    strategy?.data && strategy?.data['Operation Strategy'] !== null &&
+                    strategy?.data['Operation Strategy']?.map((item: {
                         [x: string]: any;
                         id: React.Key | null | undefined;
                         Market: string,
@@ -463,7 +470,7 @@ overflow:'hidden',
     },
     overviewText: {
         marginRight: 5,
-        fontFamily: Fonts.faktumMedium,
+        fontFamily: Fonts.faktumSemiBold,
         fontSize: fontPixel(12),
         color: "#A13AD1",
     },

@@ -94,13 +94,13 @@ const ApiBinding = ({navigation}: RootStackScreenProps<'ApiBinding'>) => {
                                         data.data["User Details"][0].coinbaseprobind == '1'
                                             ?
                                             <Text style={[styles.appText, {
-                                                color: Colors.primary
+                                                color: Colors.success
                                             }]}>
-                                                Unbound
+                                                Active
                                             </Text>
                                             :
                                             <Text style={[styles.appText, {
-                                                color: Colors.success
+                                                color:  Colors.primary
                                             }]}>
                                                 Bind
                                             </Text>
@@ -137,13 +137,13 @@ const ApiBinding = ({navigation}: RootStackScreenProps<'ApiBinding'>) => {
                                         data.data["User Details"][0].binancebind == '1'
                                             ?
                                             <Text style={[styles.appText, {
-                                                color: Colors.primary
+                                                color: Colors.success
                                             }]}>
-                                                Unbound
+                                                Active
                                             </Text>
                                             :
                                             <Text style={[styles.appText, {
-                                                color: Colors.success
+                                                color:  Colors.primary
                                             }]}>
                                                 Bind
                                             </Text>
@@ -180,13 +180,13 @@ const ApiBinding = ({navigation}: RootStackScreenProps<'ApiBinding'>) => {
                                         data.data["User Details"][0].krakenbind == '1'
                                             ?
                                             <Text style={[styles.appText, {
-                                                color: Colors.primary
+                                                color: Colors.success
                                             }]}>
-                                                Unbound
+                                                Active
                                             </Text>
                                             :
                                             <Text style={[styles.appText, {
-                                                color: Colors.success
+                                                color:  Colors.primary
                                             }]}>
                                                 Bind
                                             </Text>
@@ -223,13 +223,13 @@ const ApiBinding = ({navigation}: RootStackScreenProps<'ApiBinding'>) => {
                                         data.data["User Details"][0].kucoinbind == '1'
                                             ?
                                             <Text style={[styles.appText, {
-                                                color: Colors.primary
+                                                color: Colors.success
                                             }]}>
-                                                Unbound
+                                                Active
                                             </Text>
                                             :
                                             <Text style={[styles.appText, {
-                                                color: Colors.success
+                                                color:  Colors.primary
                                             }]}>
                                                 Bind
                                             </Text>

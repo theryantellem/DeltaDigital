@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback, useEffect, useMemo, useRef} from 'react';
 
 import {Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator} from 'react-native';
 import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
@@ -22,8 +22,18 @@ import {binanceTicker, getNewstrategy, startStopBot, startTradingBotFuture} from
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {MyButton} from "../../../components/MyButton";
 import * as Haptics from "expo-haptics";
-import {addNotificationItem} from "../../../app/slices/dataSlice";
+import {addNotificationItem, updateBotSetting} from "../../../app/slices/dataSlice";
 import ToastAnimated from "../../../components/toast";
+import {
+    BottomSheetDefaultBackdropProps
+} from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
+import {
+    BottomSheetBackdrop,
+    BottomSheetModal,
+    BottomSheetModalProvider,
+    BottomSheetScrollView
+} from "@gorhom/bottom-sheet";
+import QRCode from "react-native-qrcode-svg";
 
 
 const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
@@ -34,6 +44,37 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
     const {exchange, market, id} = route.params
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
+
+
+    const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+    // callbacks
+    const handlePresentModalPress = useCallback(() => {
+        bottomSheetModalRef.current?.present(1);
+    }, []);
+
+    const handleClose = useCallback(() => {
+        bottomSheetModalRef.current?.close();
+    }, []);
+    const handleSheetChanges = useCallback((index: number) => {
+        console.log('handleSheetChanges', index);
+    }, []);
+
+
+    // variables
+    const snapPoints = useMemo(() => ["1%", "50%", "70%"], []);
+
+
+    const renderBackdrop = useCallback(
+        (props: JSX.IntrinsicAttributes & BottomSheetDefaultBackdropProps) => (
+            <BottomSheetBackdrop
+                {...props}
+                disappearsOnIndex={0}
+                appearsOnIndex={1}
+            />
+        ),
+        []
+    );
 
 
     const {
@@ -125,265 +166,282 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
     }
 
     const openTransactionRecs = () => {
-navigation.navigate('TransactionRecords',{
-    records:newStrategy?.data['Transaction records']
-})
+        navigation.navigate('TransactionRecords', {
+            records: newStrategy?.data['Transaction records']
+        })
     }
-    //console.log("********************quantitativeStrategies********************")
 
-    // console.log(newStrategy?.data['Transaction records'])
+    const tradeSettingStrategy = () => {
+        navigation.navigate('TradeSettingStrategy', {
+            id,
+            dataLogs: newStrategy?.data['Operation Strategy'][0]
+        })
+    }
+
+    useEffect(() => {
+        dispatch(updateBotSetting({
+            price_drop: newStrategy?.data['Operation Strategy'][0]["Price drop"].join('|'),
+            m_ratio: newStrategy?.data['Operation Strategy'][0]["Martingale ratio"].join('|'),
+
+        }))
+    }, []);
+
+
     return (
-        <SafeAreaView style={styles.safeArea}>
-            <LinearGradient style={styles.background}
-                            colors={['#04074E', '#141621',]}
+        <>
 
-                            start={{x: 2.5, y: 0}}
-                            end={{x: 1.5, y: 0.8,}}
-                // locations={[0.1, 0.7,]}
+            <SafeAreaView style={styles.safeArea}>
+                <LinearGradient style={styles.background}
+                                colors={['#04074E', '#141621',]}
 
-            >
+                                start={{x: 2.5, y: 0}}
+                                end={{x: 1.5, y: 0.8,}}
+                    // locations={[0.1, 0.7,]}
 
-
-                <HeaderWithTitle title='Logs' headerAction={openTransactionRecs}
-                                 headerButton={<Ionicons name="ios-document-text-outline" size={24} color="#fff"/>}/>
-                {
-                    isLoading &&
-                    <View style={styles.loading}>
-                        <ActivityIndicator size='large' color={Colors.primary}/>
-                    </View>
-                }
-                <ScrollView style={{
-                    width: '100%'
-                }} contentContainerStyle={styles.scrollView} scrollEnabled
-                            showsVerticalScrollIndicator={false}>
+                >
 
 
+                    <HeaderWithTitle isButton logAction={handlePresentModalPress} title='Logs' headerAction={openTransactionRecs}
+                                     headerButton={<Ionicons name="ios-document-text-outline" size={24}
+                                                             color="#fff"/>}/>
                     {
-                        !isLoading && newStrategy &&
-                        <>
+                        isLoading &&
+                        <View style={styles.loading}>
+                            <ActivityIndicator size='large' color={Colors.primary}/>
+                        </View>
+                    }
+                    <ScrollView style={{
+                        width: '100%'
+                    }} contentContainerStyle={styles.scrollView} scrollEnabled
+                                showsVerticalScrollIndicator={false}>
 
-                            <View style={styles.balanceCanvas}>
-                                <View style={styles.balanceTop}>
 
-                                    <View style={styles.balanceTitle}>
-                                        <Text style={[styles.balText, {
-                                            color: Colors.success
+                        {
+                            !isLoading && newStrategy &&
+                            <>
+
+                                <View style={styles.balanceCanvas}>
+                                    <View style={styles.balanceTop}>
+
+                                        <View style={styles.balanceTitle}>
+                                            <Text style={[styles.balText, {
+                                                color: Colors.success
+                                            }]}>
+
+                                                {newStrategy?.data['Operation Strategy'][0].cycle == '1' && 'Cycle'}
+                                                {newStrategy?.data['Operation Strategy'][0]['One-shot'] == '1' && 'One-shot'}
+
+                                            </Text>
+
+                                        </View>
+
+                                        <View style={styles.balanceGraph}>
+
+                                            <Text
+                                                style={styles.balance}>
+                                                {market}
+
+
+                                            </Text>
+
+                                        </View>
+
+                                    </View>
+
+                                </View>
+
+
+                                <View style={styles.topDetails}>
+                                    <View style={[styles.interestGained, {}]}>
+
+
+                                        <TouchableOpacity activeOpacity={0.7}
+                                                          style={[styles.balanceTitle, {
+                                                              justifyContent: 'flex-start',
+
+                                                          }]}>
+                                            <Text style={styles.logTitle}>
+                                                Position amount
+                                            </Text>
+
+
+                                        </TouchableOpacity>
+
+                                        <View style={styles.logWrap}>
+
+
+                                            <Text style={[styles.logBalance, {}]}>
+
+                                                {parseFloat(newStrategy?.data['Operation Strategy'][0].Positionamount).toFixed(4)}
+
+                                            </Text>
+
+
+                                        </View>
+
+                                    </View>
+
+
+                                    <View style={[styles.interestGained, {
+                                        alignItems: 'center'
+                                    }]}>
+
+
+                                        <TouchableOpacity activeOpacity={0.7}
+                                                          style={[styles.balanceTitle, {
+                                                              justifyContent: 'center',
+
+                                                          }]}>
+                                            <Text style={styles.logTitle}>
+                                                Average price
+                                            </Text>
+
+
+                                        </TouchableOpacity>
+
+                                        <View style={[styles.logWrap, {
+                                            alignItems: 'center',
                                         }]}>
 
-                                            {newStrategy?.data['Operation Strategy'][0].cycle == '1' && 'Cycle'}
-                                            {newStrategy?.data['Operation Strategy'][0]['One-shot'] == '1' && 'One-shot'}
 
-                                        </Text>
-
-                                    </View>
-
-                                    <View style={styles.balanceGraph}>
-
-                                        <Text
-                                            style={styles.balance}>
-                                            {market}
+                                            <Text style={[styles.logBalance, {}]}>
+                                                {parseFloat(newStrategy?.data['Operation Strategy'][0].Avg_Price).toFixed(4)}
 
 
-                                        </Text>
+                                            </Text>
+
+
+                                        </View>
 
                                     </View>
 
-                                </View>
 
-                            </View>
+                                    <View style={[styles.interestGained, {alignItems: 'flex-end'}]}>
 
 
-                            <View style={styles.topDetails}>
-                                <View style={[styles.interestGained, {}]}>
+                                        <TouchableOpacity activeOpacity={0.7}
+                                                          style={[styles.balanceTitle, {justifyContent: 'flex-end',}]}>
+                                            <Text style={styles.logTitle}>
+                                                Number of calls
+                                            </Text>
 
 
-                                    <TouchableOpacity activeOpacity={0.7}
-                                                      style={[styles.balanceTitle, {
-                                                          justifyContent: 'flex-start',
+                                        </TouchableOpacity>
 
-                                                      }]}>
-                                        <Text style={styles.logTitle}>
-                                            Position amount
-                                        </Text>
-
-
-                                    </TouchableOpacity>
-
-                                    <View style={styles.logWrap}>
-
-
-                                        <Text style={[styles.logBalance, {}]}>
-
-                                            {parseFloat(newStrategy?.data['Operation Strategy'][0].Positionamount).toFixed(4)}
-
-                                        </Text>
-
-
-                                    </View>
-
-                                </View>
-
-
-                                <View style={[styles.interestGained, {
-                                    alignItems: 'center'
-                                }]}>
-
-
-                                    <TouchableOpacity activeOpacity={0.7}
-                                                      style={[styles.balanceTitle, {
-                                                          justifyContent: 'center',
-
-                                                      }]}>
-                                        <Text style={styles.logTitle}>
-                                            Average price
-                                        </Text>
-
-
-                                    </TouchableOpacity>
-
-                                    <View style={[styles.logWrap, {
-                                        alignItems: 'center',
-                                    }]}>
-
-
-                                        <Text style={[styles.logBalance, {}]}>
-                                            {parseFloat(newStrategy?.data['Operation Strategy'][0].Avg_Price).toFixed(4)}
-
-
-                                        </Text>
-
-
-                                    </View>
-
-                                </View>
-
-
-                                <View style={[styles.interestGained, {alignItems: 'flex-end'}]}>
-
-
-                                    <TouchableOpacity activeOpacity={0.7}
-                                                      style={[styles.balanceTitle, {justifyContent: 'flex-end',}]}>
-                                        <Text style={styles.logTitle}>
-                                            Number of calls
-                                        </Text>
-
-
-                                    </TouchableOpacity>
-
-                                    <View style={[styles.logWrap, {
-                                        alignItems: 'flex-end',
-                                    }]}>
-
-
-                                        <Text style={[styles.logBalance, {}]}>
-
-                                            {parseFloat(newStrategy?.data['Operation Strategy'][0].Numbercallmargin)}
-                                        </Text>
-
-
-                                    </View>
-
-                                </View>
-
-
-                            </View>
-
-
-                            <View style={styles.topDetails}>
-                                <View style={styles.interestGained}>
-
-
-                                    <TouchableOpacity activeOpacity={0.7}
-                                                      style={[styles.balanceTitle, {
-                                                          justifyContent: 'flex-start',
-
-                                                      }]}>
-                                        <Text style={styles.logTitle}>
-                                            Position quantity
-                                        </Text>
-
-
-                                    </TouchableOpacity>
-
-                                    <View style={styles.logWrap}>
-
-
-                                        <Text style={[styles.logBalance, {}]}>
-
-                                            {parseFloat(newStrategy?.data['Operation Strategy'][0].Quantity).toFixed(4)}
-                                        </Text>
-
-
-                                    </View>
-
-                                </View>
-
-
-                                <View style={[styles.interestGained, {alignItems: 'center'}]}>
-
-
-                                    <TouchableOpacity activeOpacity={0.7}
-                                                      style={[styles.balanceTitle, {
-                                                          justifyContent: 'center',
-
-                                                      }]}>
-                                        <Text style={styles.logTitle}>
-                                            Current price
-                                        </Text>
-
-
-                                    </TouchableOpacity>
-
-                                    <View style={[styles.logWrap, {
-                                        alignItems: 'center',
-                                    }]}>
-
-
-                                        <Text style={[styles.logBalance, {}]}>
-
-                                            {currencyFormatter('en-US', 'USD').format(tickerRes?.lastPrice)}
-                                        </Text>
-
-
-                                    </View>
-
-                                </View>
-
-
-                                <View style={[styles.interestGained, {alignItems: 'flex-end'}]}>
-
-
-                                    <TouchableOpacity activeOpacity={0.7}
-                                                      style={[styles.balanceTitle, {justifyContent: 'flex-end',}]}>
-                                        <Text style={styles.logTitle}>
-                                            Floating loss
-                                        </Text>
-
-
-                                    </TouchableOpacity>
-
-                                    <View style={[styles.logWrap, {
-                                        alignItems: 'flex-end',
-                                    }]}>
-
-
-                                        <Text style={[styles.logBalance, {
-                                            color: Colors.errorRed
+                                        <View style={[styles.logWrap, {
+                                            alignItems: 'flex-end',
                                         }]}>
 
-                                            {finalvalue.toFixed(2)}
-                                        </Text>
 
+                                            <Text style={[styles.logBalance, {}]}>
+
+                                                {parseFloat(newStrategy?.data['Operation Strategy'][0].Numbercallmargin)}
+                                            </Text>
+
+
+                                        </View>
 
                                     </View>
+
 
                                 </View>
 
 
-                            </View>
+                                <View style={styles.topDetails}>
+                                    <View style={styles.interestGained}>
 
 
-                            {/*           <View style={styles.moreButtonContainer}>
+                                        <TouchableOpacity activeOpacity={0.7}
+                                                          style={[styles.balanceTitle, {
+                                                              justifyContent: 'flex-start',
+
+                                                          }]}>
+                                            <Text style={styles.logTitle}>
+                                                Position quantity
+                                            </Text>
+
+
+                                        </TouchableOpacity>
+
+                                        <View style={styles.logWrap}>
+
+
+                                            <Text style={[styles.logBalance, {}]}>
+
+                                                {parseFloat(newStrategy?.data['Operation Strategy'][0].Quantity).toFixed(4)}
+                                            </Text>
+
+
+                                        </View>
+
+                                    </View>
+
+
+                                    <View style={[styles.interestGained, {alignItems: 'center'}]}>
+
+
+                                        <TouchableOpacity activeOpacity={0.7}
+                                                          style={[styles.balanceTitle, {
+                                                              justifyContent: 'center',
+
+                                                          }]}>
+                                            <Text style={styles.logTitle}>
+                                                Current price
+                                            </Text>
+
+
+                                        </TouchableOpacity>
+
+                                        <View style={[styles.logWrap, {
+                                            alignItems: 'center',
+                                        }]}>
+
+
+                                            <Text style={[styles.logBalance, {}]}>
+
+                                                {currencyFormatter('en-US', 'USD').format(tickerRes?.lastPrice)}
+                                            </Text>
+
+
+                                        </View>
+
+                                    </View>
+
+
+                                    <View style={[styles.interestGained, {alignItems: 'flex-end'}]}>
+
+
+                                        <TouchableOpacity activeOpacity={0.7}
+                                                          style={[styles.balanceTitle, {justifyContent: 'flex-end',}]}>
+                                            <Text style={styles.logTitle}>
+                                                Floating loss
+                                            </Text>
+
+
+                                        </TouchableOpacity>
+
+                                        <View style={[styles.logWrap, {
+                                            alignItems: 'flex-end',
+                                        }]}>
+
+
+                                            <Text style={[styles.logBalance, {
+                                                color: Colors.errorRed
+                                            }]}>
+
+                                                {finalvalue.toFixed(2)}
+                                            </Text>
+
+
+                                        </View>
+
+                                    </View>
+
+
+                                </View>
+
+
+                                {/*           <View style={styles.moreButtonContainer}>
 
 
                                 <TouchableOpacity activeOpacity={0.6}
@@ -425,7 +483,7 @@ navigation.navigate('TransactionRecords',{
                             </View>*/}
 
 
-                            {/*<View style={[styles.moreButtonContainer, {}]}>
+                                {/*<View style={[styles.moreButtonContainer, {}]}>
 
 
                                 <TouchableOpacity activeOpacity={0.6} style={styles.dashButton}>
@@ -462,151 +520,222 @@ navigation.navigate('TransactionRecords',{
                             </View>*/}
 
 
-                            <View style={[styles.spotlightContainer, {marginTop: 15,}]}>
+                                <View style={[styles.spotlightContainer, {marginTop: 15,}]}>
 
-                                <View style={styles.spotlight}>
+                                    <View style={styles.spotlight}>
 
-                                    <Text style={styles.spotlightTitle}>
-                                        Initial Buy
-                                    </Text>
-                                    <Text style={[styles.spotlightPercentage, {}]}>
-                                        {parseFloat(newStrategy?.data['Operation Strategy'][0].firstbuyinamount)}
+                                        <Text style={styles.spotlightTitle}>
+                                            Initial Buy
+                                        </Text>
+                                        <Text style={[styles.spotlightPercentage, {}]}>
+                                            {parseFloat(newStrategy?.data['Operation Strategy'][0].firstbuyinamount)}
 
-                                    </Text>
+                                        </Text>
+                                    </View>
+
+                                    <View style={styles.spotlight}>
+
+                                        <Text style={styles.spotlightTitle}>
+                                            Buy in callback
+                                        </Text>
+                                        <Text style={[styles.spotlightPercentage, {}]}>
+                                            {parseFloat(newStrategy?.data['Operation Strategy'][0].buyin_callback)}
+
+                                        </Text>
+                                    </View>
                                 </View>
 
-                                <View style={styles.spotlight}>
+                                <View style={[styles.spotlightContainer,]}>
+                                    <View style={styles.spotlight}>
 
-                                    <Text style={styles.spotlightTitle}>
-                                        Buy in callback
-                                    </Text>
-                                    <Text style={[styles.spotlightPercentage, {}]}>
-                                        {parseFloat(newStrategy?.data['Operation Strategy'][0].buyin_callback)}
+                                        <Text style={styles.spotlightTitle}>
+                                            Take profit ratio
+                                        </Text>
+                                        <Text style={[styles.spotlightPercentage, {}]}>
+                                            {parseFloat(newStrategy?.data['Operation Strategy'][0].take_profit_ratio)}
+                                        </Text>
+                                    </View>
 
-                                    </Text>
-                                </View>
-                            </View>
+                                    <View style={styles.spotlight}>
 
-                            <View style={[styles.spotlightContainer,]}>
-                                <View style={styles.spotlight}>
-
-                                    <Text style={styles.spotlightTitle}>
-                                        Take profit ratio
-                                    </Text>
-                                    <Text style={[styles.spotlightPercentage, {}]}>
-                                        {parseFloat(newStrategy?.data['Operation Strategy'][0].take_profit_ratio)}
-                                    </Text>
-                                </View>
-
-                                <View style={styles.spotlight}>
-
-                                    <Text style={styles.spotlightTitle}>
-                                        Earning callbacks
+                                        <Text style={styles.spotlightTitle}>
+                                            Earning callbacks
 
 
-                                    </Text>
-                                    <Text style={[styles.spotlightPercentage, {}]}>
-                                        {parseFloat(newStrategy?.data['Operation Strategy'][0].buyin_callback)}
-                                    </Text>
-                                </View>
+                                        </Text>
+                                        <Text style={[styles.spotlightPercentage, {}]}>
+                                            {parseFloat(newStrategy?.data['Operation Strategy'][0].buyin_callback)}
+                                        </Text>
+                                    </View>
 
-                            </View>
-
-
-                            <View style={styles.spotlightContainer}>
-
-                                <View style={styles.spotlight}>
-
-                                    <Text style={styles.spotlightTitle}>
-                                        Margin call drop
-
-                                    </Text>
-                                    <Text style={[styles.spotlightPercentage, {}]}>
-                                        {parseFloat(newStrategy?.data['Operation Strategy'][0].take_profit_ratio)}
-                                    </Text>
                                 </View>
 
 
-                                <View style={styles.spotlight}>
+                                <View style={styles.spotlightContainer}>
 
-                                    <Text style={styles.spotlightTitle}>
-                                        Margin call limit
-                                    </Text>
-                                    <Text style={[styles.spotlightPercentage, {}]}>
-                                        {parseFloat(newStrategy?.data['Operation Strategy'][0].margin_call_limit)}
+                                    <View style={styles.spotlight}>
+
+                                        <Text style={styles.spotlightTitle}>
+                                            Margin call drop
+
+                                        </Text>
+                                        <Text style={[styles.spotlightPercentage, {}]}>
+                                            {parseFloat(newStrategy?.data['Operation Strategy'][0].take_profit_ratio)}
+                                        </Text>
+                                    </View>
 
 
-                                    </Text>
+                                    <View style={styles.spotlight}>
+
+                                        <Text style={styles.spotlightTitle}>
+                                            Margin call limit
+                                        </Text>
+                                        <Text style={[styles.spotlightPercentage, {}]}>
+                                            {parseFloat(newStrategy?.data['Operation Strategy'][0].margin_call_limit)}
+
+
+                                        </Text>
+                                    </View>
+
                                 </View>
+                            </>
 
-                            </View>
-                        </>
-
-                    }
+                        }
 
 
-                </ScrollView>
+                    </ScrollView>
 
-                <View style={styles.buttonRow}>
-                    <MyButton activeOpacity={0.7}
-                              style={[styles.smallButton, {
-                                  backgroundColor: Colors.secondary
-                              }]}>
-
-
-                        <Text style={styles.btnText}>
-                            Trade setting
-                        </Text>
-
-
-                    </MyButton>
-
-                    {
-                        newStrategy?.data['Operation Strategy'][0].bot_on == '1' &&
-
-                        <MyButton onPress={stopBot} activeOpacity={0.7}
+                    <View style={styles.buttonRow}>
+                        <MyButton onPress={tradeSettingStrategy} activeOpacity={0.7}
                                   style={[styles.smallButton, {
-
-                                      backgroundColor: Colors.primary
+                                      backgroundColor: Colors.secondary
                                   }]}>
 
-                            {
-                                loading ? <ActivityIndicator size='small' color={"#fff"}/>
-                                    :
-                                    <Text style={styles.btnText}>
-                                        Stop bot
-                                    </Text>
-                            }
+
+                            <Text style={styles.btnText}>
+                                Trade setting
+                            </Text>
 
 
                         </MyButton>
-                    }
 
-                    {
-                        newStrategy?.data['Operation Strategy'][0].bot_on == '0' &&
+                        {
+                            newStrategy?.data['Operation Strategy'][0].bot_on == '1' &&
 
-                        <MyButton onPress={startBot} activeOpacity={0.7}
-                                  style={[styles.smallButton, {
+                            <MyButton onPress={stopBot} activeOpacity={0.7}
+                                      style={[styles.smallButton, {
 
-                                      backgroundColor: Colors.success
-                                  }]}>
+                                          backgroundColor: Colors.primary
+                                      }]}>
 
-                            {
-                                loading ? <ActivityIndicator size='small' color={"#fff"}/>
-                                    :
-                                    <Text style={styles.btnText}>
-                                        Start bot
-                                    </Text>
-
-                            }
-                        </MyButton>
-                    }
+                                {
+                                    loading ? <ActivityIndicator size='small' color={"#fff"}/>
+                                        :
+                                        <Text style={styles.btnText}>
+                                            Stop bot
+                                        </Text>
+                                }
 
 
-                </View>
-            </LinearGradient>
-            <ToastAnimated/>
-        </SafeAreaView>
+                            </MyButton>
+                        }
+
+                        {
+                            newStrategy?.data['Operation Strategy'][0].bot_on == '0' &&
+
+                            <MyButton onPress={startBot} activeOpacity={0.7}
+                                      style={[styles.smallButton, {
+
+                                          backgroundColor: Colors.success
+                                      }]}>
+
+                                {
+                                    loading ? <ActivityIndicator size='small' color={"#fff"}/>
+                                        :
+                                        <Text style={styles.btnText}>
+                                            Start bot
+                                        </Text>
+
+                                }
+                            </MyButton>
+                        }
+
+
+                    </View>
+                </LinearGradient>
+                <ToastAnimated/>
+            </SafeAreaView>
+
+            <BottomSheetModalProvider>
+
+
+                <BottomSheetModal
+                    ref={bottomSheetModalRef}
+                    animateOnMount
+                    index={1}
+                    snapPoints={snapPoints}
+                    backdropComponent={renderBackdrop}
+                    style={{
+                        paddingHorizontal: pixelSizeHorizontal(20)
+                    }}
+                    backgroundStyle={{
+                        backgroundColor: Colors.dark.background,
+                    }}
+                    handleIndicatorStyle={{backgroundColor: "#fff"}}
+
+                >
+                    <BottomSheetScrollView style={styles.sheetScrollView} contentContainerStyle={{
+                        width: '100%',
+                        alignItems: 'center',
+                        justifyContent:'center'
+                    }}>
+
+                        <View style={[styles.sheetHead, {
+                            height: 40,
+                        }]}>
+
+
+                            <Text style={[styles.sheetTitle, {
+                                fontSize: fontPixel(14),
+                                color: Colors.text
+                            }]}>
+                                Logs
+                            </Text>
+                            <TouchableOpacity onPress={handleClose}
+                                              style={[styles.dismiss, {
+                                                  backgroundColor: "#11192E"
+                                              }]}>
+                                <Ionicons name="close-sharp" size={20} color={"#fff"}/>
+                            </TouchableOpacity>
+                        </View>
+
+                        <View style={styles.contentContainer}>
+                            <View style={styles.toastIconWrap}>
+                                <View style={[styles.toastIcon, {
+                                    backgroundColor: Colors.textDark,
+                                }]}>
+                                    <Ionicons name="warning-outline" size={18} color={Colors.errorRed}/>
+
+                                </View>
+                            </View>
+
+                            <View style={styles.toastBody}>
+
+
+                                <Text style={styles.logText}>
+                                    {newStrategy?.data['Operation Strategy'][0].Log}
+                                </Text>
+                            </View>
+                        </View>
+
+
+                    </BottomSheetScrollView>
+                </BottomSheetModal>
+
+            </BottomSheetModalProvider>
+
+
+        </>
     );
 };
 
@@ -837,7 +966,72 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'rgba(0,0,0,0.3)'
+    },
+    sheetScrollView: {
+        width: '100%',
+        marginTop: 10,
+        backgroundColor: Colors.dark.background,
+    },
+    sheetHead: {
+        // paddingHorizontal: pixelSizeHorizontal(20),
+        height: 60,
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row'
     }
+    ,
+    sheetTitle: {
+        fontSize: fontPixel(18),
+        fontFamily: Fonts.faktumBold,
+        color: Colors.light.text
+    },
+    dismiss: {
+        position: 'absolute',
+        right: 10,
+        borderRadius: 30,
+        height: 30,
+        width: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
+
+    },
+    contentContainer: {
+        marginTop: 40,
+        paddingHorizontal: pixelSizeHorizontal(10),
+        width: '100%',
+        height:100,
+
+        justifyContent: 'center',
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+    },
+    toastIconWrap: {
+        height: '70%',
+
+        width: '8%',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+    },
+    toastBody: {
+        width: '90%',
+
+        marginLeft: 10,
+    },
+    logText: {
+        lineHeight: heightPixel(18),
+        color: Colors.text,
+        fontFamily: Fonts.faktumBold,
+        fontSize: fontPixel(14),
+    },
+    toastIcon: {
+        width: 30,
+        height: 30,
+        borderRadius: 40,
+        alignItems: 'center',
+        justifyContent: 'center'
+
+    },
 })
 
 export default LogScreen;

@@ -123,7 +123,7 @@ const BottomSheetInput: FC<Props> = ({
 
                     {...props}
                     placeholder={placeholder}
-
+keyboardAppearance='dark'
                     placeholderTextColor={"#9CA3AF"}
                     style={[styles.input, {
                         width: password || leftIcon || rightIcon || icon ? '88%' : '100%',

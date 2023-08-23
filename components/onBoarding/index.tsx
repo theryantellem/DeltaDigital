@@ -25,20 +25,20 @@ const slides = [
     {
         id: '1',
        // lottiePath:require('../../assets/gifs/walkthrough-gifs/lottie/lf20_iftkuuwh.json'),
-        title: 'Pay',
-        message: 'Create trading smart trading bot with ease.',
+        title: 'Send',
+        message: 'Send and receive crypto.',
     },
     {
         id: '2',
         //lottiePath:require('../../assets/gifs/walkthrough-gifs/lottie/lf20_lkfovt2k.json'),
-        title: 'Save',
-        message: 'Save for the rainy days and earn upto 20% APY',
+        title: 'Trade Spot',
+        message: 'Trading smart with ease.',
     },
     {
         id: '3',
         //lottiePath:require('../../assets/gifs/walkthrough-gifs/lottie/lf20_cjpxgxe7.json'),
-        title: 'Spend',
-        message: 'Safe & secure way to send and spend on what you want',
+        title: 'Trade Futures',
+        message: 'Trading Futures using smart trading bot',
     },
 
 

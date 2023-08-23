@@ -8,7 +8,7 @@ import FastImage from "react-native-fast-image";
 import {
     Feather,
     FontAwesome,
-    FontAwesome5,
+    FontAwesome5, Fontisto,
     Foundation,
     Ionicons,
     MaterialCommunityIcons,
@@ -28,7 +28,7 @@ import {useRefreshOnFocus} from "../../helpers";
 import {useDispatch} from "react-redux";
 import * as SecureStore from "expo-secure-store";
 import {logoutUser} from "../../app/slices/userSlice";
-import EditProfile from "./profile/EditProfile";
+
 
 
 const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
@@ -38,7 +38,7 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
 
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
-    const navigate = (screen: 'Assets' | 'RewardDetails' | 'SettingsScreen' | 'ApiBinding' |
+    const navigate = (screen: 'Assets' | 'RewardDetails' | 'SettingsScreen' | 'ApiBinding' | 'RevenueScreen' |
         'Earnings' | 'EditProfile' | 'CouncellerScreen' | 'SyncStrategy' | 'ContactUs') => {
         navigation.navigate(screen)
     }
@@ -110,7 +110,7 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
                         </TouchableOpacity>
 
 
-                        <View style={styles.braceIDContainer}>
+                        {/*<View style={styles.braceIDContainer}>
 
                             <View style={styles.linkIcon}>
                                 <FontAwesome name="diamond" size={20} color="#2EBD85"/>
@@ -129,7 +129,7 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
 
                             <View style={styles.rightIcon}>
                             </View>
-                        </View>
+                        </View>*/}
 
 
                     </View>
@@ -245,6 +245,25 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
                                 </View>
                                 <Text style={styles.profileTxt}>
                                     Assets
+                                </Text>
+                            </View>
+
+                            <Octicons name="chevron-right" size={20} color="#979797"/>
+
+
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={() => navigate('RevenueScreen')} activeOpacity={0.6}
+                                          style={styles.profileButton}>
+
+                            <View style={styles.leftContent}>
+
+                                <View style={styles.buttonIcon}>
+
+                                    <Fontisto name="money-symbol"  size={20} color={Colors.lightColor} />
+                                </View>
+                                <Text style={styles.profileTxt}>
+                                    Revenue
                                 </Text>
                             </View>
 

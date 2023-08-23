@@ -285,7 +285,7 @@ const AllStrategy = ({navigation}: RootStackScreenProps<'AllStrategy'>) => {
     const [filterStrategies, setFilterStrategies] = useState([]);
 
     useEffect(() => {
-        if (!isLoading && data && data?.data['copy system']) {
+        if (!isLoading && data && data?.data['copy system'] && data?.data['copy system'] !== null) {
             const filtered = data?.data['copy system'].filter((strategy: { Market: string | string[]; }) =>
                 strategy?.Market?.includes(searchValue.toUpperCase().trim())
             )

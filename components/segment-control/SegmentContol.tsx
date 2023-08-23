@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
         width:'100%'
     },
     textStyles: {
-        fontSize: fontPixel(18),
+        fontSize: fontPixel(14),
         textAlign: 'center',
         textTransform:'capitalize',
         fontFamily: Fonts.faktumSemiBold

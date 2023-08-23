@@ -13,9 +13,16 @@ import {PersistGate} from 'redux-persist/integration/react';
 import {Provider} from "react-redux";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import ToastAnimated from "./components/toast";
-import React, {useEffect} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Portal, PortalProvider} from "@gorhom/portal";
 import {logoutUser, setLockUser, setUserLastSession} from "./app/slices/userSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import OnBoardingScreen from "./screens/onboarding";
+import * as Notifications from 'expo-notifications';
+import * as SecureStore from "expo-secure-store";
+import {getFcmToken, getFcmTokenFromLocalStorage, requestUserPermission,    notificationListener} from "./notificationConfig";
+import inAppMessaging from '@react-native-firebase/in-app-messaging';
+
 
 enableScreens()
 
@@ -47,14 +54,46 @@ const queryClient = new QueryClient({
 
 
 export default function App() {
+    const [firstLaunch, setFirstLaunch] = useState(true);
 
+    const [expoPushToken, setExpoPushToken] = useState('');
+    const [notification, setNotification] = useState(false);
+    //const notificationListener = useRef();
+    const responseListener = useRef();
+    const fcmToken = SecureStore.getItemAsync('app_fcmtoken');
+    const [generatedToken, setGeneratedToken] = useState('');
+    const [upUser, setUpUser] = useState('');
     const isLoadingComplete = useCachedResources();
     const colorScheme = useColorScheme();
 
+    async function bootstrap() {
+        await inAppMessaging()
+            .setMessagesDisplaySuppressed(true)
+            .then(response => {
+                console.log(response);
+            });
+    }
 
+    useEffect(() => {
+        AsyncStorage.getItem("Delta_Digital_user_first_time")
+            .then((value) => {
+                if (value === null) {
+                    setFirstLaunch(true);
+                } else if (value == 'false') {
 
+                    setFirstLaunch(false);
+                }
+            })
+            .catch((err) => {
+                //   console.log("Error @brace_user_first_time: ", err);
+            });
+    }, []);
     const logout = () => {
         store.dispatch(logoutUser())
+    }
+    const skip = async () => {
+        await AsyncStorage.setItem('Delta_Digital_user_first_time', 'false');
+        setFirstLaunch(false)
     }
    /* useEffect(() => {
         if (focusManager.isFocused()) {
@@ -86,6 +125,53 @@ export default function App() {
     });*/
 
 
+    useEffect(() => {
+        const fetchToken = async () => {
+            const token = await getFcmToken();
+            const BearerToken = await SecureStore.getItemAsync('token');
+
+            if (token) {
+
+                setGeneratedToken(token);
+                let timeoutId: NodeJS.Timeout
+                const body = JSON.stringify({
+                    pushToken: token,
+                })
+                const myHeaders = {
+                    'Content-Type': 'application/json',
+                    'x-access-token': `${BearerToken}`
+                }
+                const requestOptions = {
+                    method: 'POST',
+                    headers: myHeaders,
+                    body: body,
+                };
+               /* const promise = Promise.race([
+                    fetch(`${BASE_URL}/profile`, requestOptions)
+                        .then(response => response.json()),
+                    new Promise((resolve, reject) => {
+                        //  clearTimeout(timeoutId)
+                        timeoutId = setTimeout(() => reject(new Error('Timeout')), 20000)
+                    }).then(() => {
+                        clearTimeout(timeoutId)
+                    })
+
+                ])*/
+
+
+            }
+        };
+
+        const fetchTokenByLocal = async () => {
+            await getFcmTokenFromLocalStorage();
+        };
+        void fetchToken();
+        void fetchTokenByLocal();
+        void requestUserPermission();
+        void notificationListener();
+
+
+    }, []);
 
     if (!isLoadingComplete) {
         return null;
@@ -112,8 +198,12 @@ export default function App() {
                                 <SafeAreaProvider>
                                     <StatusBar style="light"/>
                                     <PortalProvider>
+                                        {firstLaunch ?
+                                            <OnBoardingScreen skip={skip}/>
+                                            :
                                         <Navigation colorScheme={colorScheme}/>
 
+                                        }
                                     </PortalProvider>
                                 </SafeAreaProvider>
 

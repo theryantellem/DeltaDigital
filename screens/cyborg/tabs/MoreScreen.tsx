@@ -34,6 +34,8 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
 
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
+
+
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
     // variables

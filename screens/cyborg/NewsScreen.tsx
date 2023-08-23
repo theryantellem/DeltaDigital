@@ -144,7 +144,7 @@ const NewsScreen = ({navigation}: RootStackScreenProps<'NewsScreen'>) => {
 
 
                     {
-                        !isLoading && data &&
+                        !isLoading && data && data?.data?.News !== null &&
                         <FlashList
                             estimatedItemSize={200}
                             refreshing={isLoading}

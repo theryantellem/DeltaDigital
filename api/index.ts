@@ -58,6 +58,7 @@ export const getUser = async (userId: string) => {
     ])
 
 }
+
 export const getRewardDetails = async (userId: string) => {
     let Token = await SecureStore.getItemAsync('delta-signal-token');
     const myHeaders = {
@@ -74,6 +75,66 @@ export const getRewardDetails = async (userId: string) => {
 
     return Promise.race([
         fetch(`${LIVE_PROD_URL}/Rewarddetails`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])
+
+}
+export const getRevenueDetails = async (userId: string) => {
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+    const myHeaders = {
+        "TOKEN": Token,
+        "ID": userId
+    }
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'POST',
+        headers: myHeaders
+
+    };
+
+
+    return Promise.race([
+        fetch(`${LIVE_PROD_URL}/revenue`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])
+
+}
+
+
+export const twoFactorAuth = async ({userId, body}:{userId: string,body:any}) => {
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+    const myHeaders = {
+        "TOKEN": Token,
+        "ID": userId
+    }
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body
+    };
+
+
+    return Promise.race([
+        fetch(`${LIVE_PROD_URL}/GetSet2FA`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -510,37 +571,6 @@ export const quantitativeStrategies = async (userId:string) => {
     ])
 
 }
-export const botTradeSetting = async ({userId,body}:{userId: string,body:any}) => {
-    let Token = await SecureStore.getItemAsync('delta-signal-token');
-
-    const myHeaders = {
-        "TOKEN": Token,
-        "ID": userId,
-        "Content-Type": 'multipart/form-data'
-    }
-    let timeoutId: NodeJS.Timeout
-
-    const requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body
-
-    };
-
-    return Promise.race([
-        fetch(`${LIVE_PROD_URL}/tradesetting`, requestOptions)
-            .then(response => response.json()),
-        new Promise((resolve, reject) => {
-            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
-
-            //  clearTimeout(timeoutId)
-        }).then(() => {
-            clearTimeout(timeoutId)
-        })
-
-    ])
-
-}
 
 
 
@@ -664,6 +694,45 @@ export const copyTrade = async ({body,userId}:{userId: string,body:any}) => {
     ])
 
 }
+
+
+export const botTradeSetting = async ({userId,body}:{userId: string,body:any}) => {
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+
+    const myHeaders = {
+        "TOKEN": Token,
+        "ID": userId,
+        "Content-Type": 'multipart/form-data'
+    }
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body
+
+    };
+
+ /*   return Promise.race([
+        fetch(`https://backend.deltacyborg.pro/Api/Mobile/tradesetting`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])*/
+
+
+   return  fetch("https://backend.deltacyborg.pro/Api/Mobile/tradesetting", requestOptions)
+        .then(response => response.json())
+       // .then(result => console.log(result))
+
+}
+
 export const startTradingBotFuture = async ({body,userId}:{userId: string,body:any}) => {
     let Token = await SecureStore.getItemAsync('delta-signal-token');
 
@@ -679,18 +748,24 @@ export const startTradingBotFuture = async ({body,userId}:{userId: string,body:a
         body
     };
 
-    return Promise.race([
+   /* return Promise.race([
         fetch(`https://backend.deltacyborg.pro/Api/Mobile/tradesetting`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
-            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 50000)
 
             //  clearTimeout(timeoutId)
         }).then(() => {
             clearTimeout(timeoutId)
         })
 
-    ])
+    ])*/
+
+
+
+    return  fetch("https://backend.deltacyborg.pro/Api/Mobile/tradesetting", requestOptions)
+        .then(response => response.json())
+      //  .catch(error => console.log('error', error));
 
 }
 

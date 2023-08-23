@@ -308,8 +308,16 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
                             handleSubmit()
                         }} activeOpacity={0.7}
                                   style={[styles.button, {
-                                      backgroundColor: !isValid ? Colors.disabled : Colors.primary
+                                     // backgroundColor: !isValid ? Colors.disabled : Colors.primary
                                   }]} disabled={!isValid}>
+                            <LinearGradient style={styles.createBtnGradient}
+                                            colors={[isValid ? '#e602df' : '#ccc', isValid ? '#4406b0' : Colors.secondary]}
+
+                                            start={{x: 1, y: 0}}
+                                            end={{x: 0.1, y: 0.3,}}
+
+                                // locations={[0.1, 0.7,]}
+                            >
 
                             {
                                 isLoading ? <ActivityIndicator color={"#fff"} size='small'/>
@@ -319,7 +327,7 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
                                     </Text>
                             }
 
-
+                            </LinearGradient>
                         </MyButton>
                     </KeyboardAwareScrollView>
 
@@ -506,7 +514,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor:'rgba(0,0,0,0.3)'
-    }
+    },
+    createBtnGradient: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 })
 
 export default SignInScreen;

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator} from 'react-native';
 import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
@@ -14,15 +14,45 @@ import {truncateString, useRefreshOnFocus} from "../../../helpers";
 import HorizontalLine from "../../../components/HorizontalLine";
 import {useQuery} from "@tanstack/react-query";
 import {getAsset, getDepositAddress, getRevenues} from "../../../api";
-import {useAppSelector} from "../../../app/hooks";
+import {useAppDispatch, useAppSelector} from "../../../app/hooks";
+import * as Clipboard from "expo-clipboard";
+import {addNotificationItem, clearNotification} from "../../../app/slices/dataSlice";
+import ToastAnimated from "../../../components/toast";
 
 
 const DepositScreen = () => {
     const [copied, setCopied] = useState(false);
-
+const dispatch = useAppDispatch()
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
     const {data,refetch,isLoading} = useQuery(['user-DepositAddress'],()=> getDepositAddress(User_Details.id))
+
+
+    const copyAddress = async () => {
+        await Clipboard.setStringAsync(data.wallet);
+        dispatch(addNotificationItem({
+            id: Math.random(),
+            type: 'info',
+            body: "Wallet address copied 👍",
+        }))
+        setCopied(true)
+    };
+
+    useEffect(() => {
+        // console.log(user)
+        let time: NodeJS.Timeout | undefined;
+        if (copied) {
+
+
+            time = setTimeout(() => {
+              setCopied(false)
+            }, 3000)
+
+        }
+        return () => {
+            clearTimeout(time)
+        };
+    }, [copied])
 
     useRefreshOnFocus(refetch)
     return (
@@ -122,6 +152,8 @@ const DepositScreen = () => {
 
 
                                         <TouchableOpacity
+                                            activeOpacity={0.8}
+                                            onPress={copyAddress}
                                         >
                                             <Ionicons name="ios-copy-outline" size={18}
                                                       color={Colors.text}/>
@@ -171,6 +203,7 @@ const DepositScreen = () => {
                     </>
                     }
                 </ScrollView>
+                <ToastAnimated/>
             </LinearGradient>
         </SafeAreaView>
     );
@@ -289,7 +322,7 @@ minHeight:heightPixel(20),
     },
     copied: {
         color: Colors.primary,
-        fontSize: fontPixel(16),
+        fontSize: fontPixel(14),
         fontFamily: Fonts.faktumBold
     },
 })
