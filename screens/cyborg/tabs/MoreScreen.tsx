@@ -7,7 +7,7 @@ import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical} from "..
 import TopBar from "../../../components/header/TopBar";
 import {Fonts} from "../../../constants/Fonts";
 import Colors from "../../../constants/Colors";
-import {AntDesign, FontAwesome, Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
+import {AntDesign, FontAwesome, Fontisto, Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
 import {RootTabScreenProps} from "../../../types";
 import BottomSheet, {
     BottomSheetBackdrop, BottomSheetBackdropProps,
@@ -69,7 +69,7 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
         []
     );
 
-    const navigate = (screen: 'LeaderBoard' | 'NewsScreen' | 'Quantitative') => {
+    const navigate = (screen: 'LeaderBoard' | 'NewsScreen' | 'Quantitative' |'RevenueScreen') => {
         navigation.navigate(screen)
     }
 
@@ -106,14 +106,13 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
                                 end={{x: 1.5, y: 0.8,}}
                     // locations={[0.1, 0.7,]}
                 >
-
+                    <TopBar
+                        profilePhoto={User_Details.image ? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'}
+                        userName={User_Details.username}/>
 
                     <ScrollView style={{width: '100%',}} contentContainerStyle={styles.scrollView} scrollEnabled
                                 showsVerticalScrollIndicator={false}>
 
-                        <TopBar
-                            profilePhoto={User_Details.image ? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'}
-                            userName={User_Details.username}/>
 
 
                         <View style={styles.buttonContainer}>
@@ -172,6 +171,30 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
                                     </View>
                                     <Text style={styles.dashText}>
                                         Strategy
+                                    </Text>
+
+                                </TouchableOpacity>
+
+                                <TouchableOpacity onPress={() => navigate('ApiBinding')} activeOpacity={0.6}
+                                                  style={styles.dashButton}>
+                                    <View style={styles.dashIcon}>
+
+                                        <MaterialCommunityIcons name="connection" size={18} color="#fff"/>
+                                    </View>
+                                    <Text style={styles.dashText}>
+                                        API Binding
+                                    </Text>
+
+                                </TouchableOpacity>
+
+                                <TouchableOpacity onPress={() => navigate('RevenueScreen')} activeOpacity={0.6}
+                                                  style={styles.dashButton}>
+                                    <View style={styles.dashIcon}>
+                                        <Fontisto name="money-symbol"  size={18} color="#fff" />
+
+                                    </View>
+                                    <Text style={styles.dashText}>
+                                        Revenue
                                     </Text>
 
                                 </TouchableOpacity>

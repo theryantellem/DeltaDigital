@@ -20,9 +20,6 @@ const LogsMarginConfiguration = ({route, navigation}: RootStackScreenProps<'Logs
     const {numrows,m_ratio,price_drop} = route.params
 
 
-    const dataSlice = useAppSelector(state => state.data)
-    const {tradeSetting} = dataSlice
-
 
     const dispatch = useAppDispatch()
     const [numRows, setNumRows] = useState(numrows); // Default to 4 rows

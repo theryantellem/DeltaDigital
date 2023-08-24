@@ -179,7 +179,7 @@ const AllRevenue = () => {
             >
 
 
-                <HeaderWithTitle title='Reward details'/>
+                <HeaderWithTitle title='Reveneu details'/>
 
 
 

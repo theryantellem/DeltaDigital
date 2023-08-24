@@ -280,6 +280,7 @@ export const {
     cleanData,
     clearFeatureBotData,
     setHideBalance,
+    setHideSaveBalance,
     updateFeatureBotData,
     setHideMissionBalance,
     setSaveAmountToWithdraw,

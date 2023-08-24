@@ -79,6 +79,7 @@ interface props {
         cycle: string,
         price: number,
         balance: string,
+        trade_type: string,
     }
 }
 
@@ -148,6 +149,17 @@ const tickerRes = tickers?.find((ticker: { symbol: string; }) => ticker.symbol =
 
                       {item?.cycle == '1' && 'Cycle'}
                       {item['One-shot'] == '1' && 'One-shot'}
+                  </Text>
+              </View>
+              <View style={[styles.tagWrap,{
+                  marginTop:8,
+              }]}>
+                  <Text style={[styles.tagText,{
+                      color: Colors.primary
+                  }]}>
+
+                      {item?.trade_type == '1' && 'Futures'}
+                      {item.trade_type == '0' && 'Spot'}
                   </Text>
               </View>
           </View>
@@ -325,7 +337,7 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
     <SearchInput
 
         placeholder="Search market e.g BTC/ETH"
-        keyboardType={"number-pad"}
+        keyboardType={"default"}
 
         onChangeText={(e) => {
             setSearchValue(e);

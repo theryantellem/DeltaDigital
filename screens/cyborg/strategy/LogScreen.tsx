@@ -235,6 +235,18 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
 
                                         </View>
 
+                                        <View style={styles.balanceTitle}>
+                                            <Text style={[styles.balText, {
+                                                color: Colors.primary
+                                            }]}>
+
+                                                {newStrategy?.data['Operation Strategy'][0].trade_type == '0' && 'Spot'}
+                                                {newStrategy?.data['Operation Strategy'][0].trade_type == '1' && 'Futures'}
+
+                                            </Text>
+
+                                        </View>
+
                                         <View style={styles.balanceGraph}>
 
                                             <Text

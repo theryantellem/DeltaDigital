@@ -28,7 +28,7 @@ const formSchema = yup.object().shape({
 
     apiKey: yup.string().required('API Key is required'),
     APISecrete: yup.string().required('API Secrete is required'),
-    passphrase: yup.string().required('Pass Phrase is required'),
+  //  passphrase: yup.string().required('Pass Phrase is required'),
 
 });
 
@@ -40,6 +40,9 @@ const ViewAPIBinding = ({route, navigation}: RootStackScreenProps<'ViewAPIBindin
     const {exchange, apiSecrete, apiKey, isBound} = route.params
 
     const [copied, setCopied] = useState(false);
+
+
+    const [bindUnbind, setBindUnbind] = useState('');
 
 
     const [userApiKey, setUserApiKey] = useState(apiKey)
@@ -92,7 +95,7 @@ const ViewAPIBinding = ({route, navigation}: RootStackScreenProps<'ViewAPIBindin
 
         },
         onSettled: () => {
-            queryClient.invalidateQueries(['transferAsset']);
+            queryClient.invalidateQueries(['bindAPI']);
         }
     })
 
@@ -118,20 +121,43 @@ const ViewAPIBinding = ({route, navigation}: RootStackScreenProps<'ViewAPIBindin
             const {APISecrete, apiKey, passphrase} = values;
 
 
-            const formData = new FormData()
-            formData.append('api_passphrase', passphrase)
-            formData.append('api_key', apiKey)
-            formData.append('api_secret', APISecrete)
-            formData.append('bind', isBound == '1' ? '0' : '1')
-            formData.append('exchange', exchange)
+            if(bindUnbind == '0') {
 
-            mutate({body: formData, userId: User_Details.id})
 
+                const formData = new FormData()
+                formData.append('api_passphrase', passphrase)
+                formData.append('api_key', apiKey)
+                formData.append('api_secret', APISecrete)
+                formData.append('bind',  '1')
+                formData.append('exchange', exchange)
+
+            }else{
+                const formData = new FormData()
+                formData.append('api_passphrase', passphrase)
+                formData.append('api_key', apiKey)
+                formData.append('api_secret', APISecrete)
+                formData.append('bind',  '0' )
+                formData.append('exchange', exchange)
+
+                mutate({body: formData, userId: User_Details.id})
+            }
 
         }
     });
 
+
+
     return (
+
+        <>
+
+            {
+                isLoading &&
+                <View style={styles.loading}>
+                    <ActivityIndicator size='large' color={Colors.purplePrimary}/>
+                </View>
+            }
+
         <SafeAreaView style={styles.safeArea}>
             <LinearGradient style={styles.background}
                             colors={['#04074E', '#141621',]}
@@ -287,35 +313,35 @@ const ViewAPIBinding = ({route, navigation}: RootStackScreenProps<'ViewAPIBindin
 
                         <View style={styles.buttonRow}>
                             <MyButton onPress={() => {
+                                setBindUnbind('0')
                                 handleSubmit()
                             }} activeOpacity={0.7}
                                       style={[styles.smallButton, {
                                           backgroundColor: !isValid ? Colors.disabled : Colors.purplePrimary
                                       }]} disabled={!isValid}>
 
-                                {
-                                    isLoading ? <ActivityIndicator color={"#fff"} size='small'/>
-                                        :
+
                                         <Text style={styles.btnText}>
                                             UNBIND
                                         </Text>
-                                }
+
 
 
                             </MyButton>
 
-                            <MyButton activeOpacity={0.7}
+                            <MyButton onPress={() => {
+                                setBindUnbind('1')
+                                handleSubmit()
+                            }} activeOpacity={0.7}
                                       style={[styles.smallButton, {
                                           backgroundColor: !isValid ? Colors.disabled : Colors.primary
                                       }]} disabled={!isValid}>
 
-                                {
-                                    isLoading ? <ActivityIndicator color={"#fff"} size='small'/>
-                                        :
+
                                         <Text style={styles.btnText}>
                                             REPLACE
                                         </Text>
-                                }
+
 
 
                             </MyButton>
@@ -328,6 +354,7 @@ const ViewAPIBinding = ({route, navigation}: RootStackScreenProps<'ViewAPIBindin
                 <ToastAnimated/>
             </LinearGradient>
         </SafeAreaView>
+        </>
     );
 };
 
@@ -420,7 +447,20 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between'
-    }
+    },
+    loading: {
+        flex:1,
+        width:'100%',
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        zIndex:1,
+        top: 0,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor:'rgba(0,0,0,0.3)'
+    },
 })
 
 export default ViewAPIBinding;

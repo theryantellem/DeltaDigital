@@ -8,7 +8,7 @@ import {
     Image,
     ActivityIndicator,
     RefreshControl,
-    Pressable
+    Pressable, Keyboard
 } from 'react-native';
 import {RootStackScreenProps} from "../../../../types";
 import HeaderWithTitle from "../../../../components/header/HeaderWithTitle";
@@ -45,6 +45,7 @@ interface props {
     view: (id: string, Market: string) => void,
     item: {
         Market: string,
+        icon: string,
         id: string,
     }
 }
@@ -52,7 +53,9 @@ interface props {
 
 const formSchema = yup.object().shape({
 
-    capital: yup.string().required('Capital is required'),
+    capital: yup.number().required('Capital is required')
+        .min(15, 'Amount must be at least $15')
+        .required('Amount is required'),
 
 
 
@@ -61,13 +64,14 @@ const formSchema = yup.object().shape({
 const ItemData = ({view, item}: props) => {
     return (
         <TouchableOpacity style={styles.walletCard} activeOpacity={0.9}>
-            {/* <View style={styles.logoCircle}>
+           <View style={styles.logoCircle}>
 
                 <Image style={styles.logo}
-                       source={{uri: 'https://unsplash-assets.imgix.net/unsplashplus/header-grid-03.jpg?dpr=2&auto=format&fit=crop&w=218&h=218&q=80'}}/>
+                       source={{uri: `https://backend.deltacyborg.pro/Upload/coin/${item.icon}`}}/>
 
 
-            </View>*/}
+            </View>
+
 
             <View style={styles.walletCardBody}>
                 <Text style={styles.cardTitle}>
@@ -114,7 +118,9 @@ const AllStrategy = ({navigation}: RootStackScreenProps<'AllStrategy'>) => {
         bottomSheetRef.current?.snapToIndex(1);
     }, []);
 
+
     const handleClose = useCallback(() => {
+        Keyboard.dismiss()
         bottomSheetRef.current?.close();
     }, []);
 
@@ -325,9 +331,9 @@ const AllStrategy = ({navigation}: RootStackScreenProps<'AllStrategy'>) => {
 
                     <View style={styles.scrollView}>
                         <SearchInput
-
+keyboardAppearance={'dark'}
                             placeholder="Search Market"
-                            keyboardType={"number-pad"}
+                            keyboardType={"default"}
 
                             onChangeText={(e) => {
                                 setSearchValue(e);
@@ -415,10 +421,10 @@ const AllStrategy = ({navigation}: RootStackScreenProps<'AllStrategy'>) => {
                     <BottomSheetTextInput
 
 
-                        keyboardType={"default"}
+                        keyboardType={"number-pad"}
                         touched={touched.capital}
                         error={touched.capital && errors.capital}
-
+keyboardAppearance={'dark'}
                         onChangeText={(e) => {
                             handleChange('capital')(e);
 
@@ -517,8 +523,8 @@ const styles = StyleSheet.create({
     },
 
     logoCircle: {
-        width: 40,
-        height: 40,
+        width: 30,
+        height: 30,
         borderRadius: 50,
         alignItems: 'center',
         justifyContent: 'center',
@@ -540,7 +546,7 @@ const styles = StyleSheet.create({
     },
     cardTitle: {
         fontFamily: Fonts.faktumBold,
-        fontSize: fontPixel(16),
+        fontSize: fontPixel(14),
         color: Colors.text,
     },
     cardText: {

@@ -27,6 +27,7 @@ import Animated, {
     FadeOutRight,
     Layout
 } from 'react-native-reanimated';
+import {setHideSaveBalance} from "../../../app/slices/dataSlice";
 
 
 interface props {
@@ -86,6 +87,8 @@ const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
     const user = useAppSelector(state => state.user)
     const {userData, User_Details} = user
 
+    const dataSlice = useAppSelector(state => state.data)
+    const {hideSaveBalance} = dataSlice
 
     const [tabIndex, setTabIndex] = useState(0);
     const handleTabsChange = (index: SetStateAction<number>) => {
@@ -104,6 +107,9 @@ const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
     }
 
 
+    const hideMyBalance = () => {
+      dispatch(setHideSaveBalance())
+    }
     return (
         <SafeAreaView style={styles.safeArea}>
             <LinearGradient style={styles.background}
@@ -131,26 +137,42 @@ const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
                     <View style={styles.balanceCanvas}>
                         <View style={styles.balanceTop}>
 
-                            <TouchableOpacity style={styles.balanceTitle}>
+                            <TouchableOpacity onPress={hideMyBalance} style={styles.balanceTitle}>
                                 <Text style={styles.balText}>
                                     Available asset (USDT)
                                 </Text>
-
+                                {
+                                    hideSaveBalance &&
                                 <Ionicons name="eye-off-outline" size={18} color={Colors.text}/>
-
+                                }
+                                {
+                                    !hideSaveBalance &&
+                                    <Ionicons name="eye-outline" size={14} color={"#d9d9d9"}/>
+                                }
                             </TouchableOpacity>
 
                             <View style={styles.balanceGraph}>
-
+                                {
+                                    hideSaveBalance &&
                                 <Text
                                     style={styles.balance}>
 
                                     {currencyFormatter('en-US', 'USD').format(Asset?.data?.total_assets)}
                                 </Text>
+                                }
+                                {
+                                    !hideSaveBalance &&
+                                    <Text style={styles.balance}>
 
+                                        ****
+
+                                    </Text>
+                                }
                             </View>
                             <Text style={styles.walletAddressTxt}>
-                                <Text style={{color: Colors.errorRed}}>{Asset?.data?.rp_assets}</Text> Available Fee
+                                <Text style={{color: Colors.errorRed}}>
+                                    {  hideSaveBalance ?Asset?.data?.rp_assets : '****'}
+                                </Text> Available Fee
                             </Text>
                         </View>
                         <View style={styles.walletAddress}>
@@ -234,7 +256,7 @@ const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
                             <IF condition={tabIndex == 0}>
                             {
                                 !isLoading && Asset && Asset?.data['Deposit Records'] !== null &&
-                                Asset?.data['Deposit Records']?.slice(0, 30).map((({address, Date, amount, Asset, TX}:
+                                Asset?.data['Deposit Records']?.slice(0, 50).map((({address, Date, amount, Asset, TX}:
                                                                                      {
                                                                                          address: string,
                                                                                          Date: string,
@@ -282,7 +304,7 @@ const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
                             <IF condition={tabIndex == 1}>
                             {
                                 !isLoading && Asset && Asset?.data['Withdraw Records'] !== null &&
-                                Asset?.data['Withdraw Records'].filter(asset => asset.address !== "RP Transfer").slice(0, 30).map((({address, Date, amount, Asset, TX}:
+                                Asset?.data['Withdraw Records'].filter(asset => asset.address !== "RP Transfer").slice(0, 50).map((({address, Date, amount, Asset, TX}:
                                                                                      {
                                                                                          address: string,
                                                                                          Date: string,
@@ -330,7 +352,7 @@ const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
                             <IF condition={tabIndex == 2}>
                             {
                                 !isLoading && Asset &&  Asset.data['Withdraw Records'] !== null &&
-                                Asset?.data['Withdraw Records'].filter(asset => asset.address == "RP Transfer").slice(0, 30).map((({address, Date, amount, Asset, TX}:
+                                Asset?.data['Withdraw Records'].filter(asset => asset.address == "RP Transfer").slice(0, 50).map((({address, Date, amount, Asset, TX}:
                                                                                      {
                                                                                          address: string,
                                                                                          Date: string,

@@ -85,7 +85,7 @@ const LeaderBoard = () => {
 
                 <HeaderWithTitle title='Leaderboard'/>
 
-                {
+              {/*  {
                     Platform.OS === 'ios' ?
 
                         <IOSSegmentContol tabs={["Personal Income List", "Circle Owner Income List",]}
@@ -108,7 +108,7 @@ const LeaderBoard = () => {
                                           textColor={"#CDD4D7"}
                                           paddingVertical={pixelSizeVertical(16)}/>
                 }
-
+*/}
 
                 {/*      <View style={[styles.topDashboard]}>
 
@@ -219,13 +219,13 @@ const LeaderBoard = () => {
                             </Text>
                         </Animated.View>
                     </View>*/}
-                <IF condition={tabIndex == 0}>
-                    <PersonalIncome/>
-                </IF>
 
-                <IF condition={tabIndex == 1}>
+                    <PersonalIncome/>
+
+
+              {/*  <IF condition={tabIndex == 1}>
                     <CircleOwner/>
-                </IF>
+                </IF>*/}
 
             </LinearGradient>
         </SafeAreaView>

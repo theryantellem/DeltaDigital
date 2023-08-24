@@ -232,7 +232,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
         })
     }
 
-    console.log(strategy)
+
 
     useRefreshOnFocus(refetch)
 
@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
     planBottomLeft: {
         width: '80%',
         alignItems: 'flex-start',
-        height: 70,
+        height: 80,
         justifyContent: 'flex-start'
     },
     balText: {

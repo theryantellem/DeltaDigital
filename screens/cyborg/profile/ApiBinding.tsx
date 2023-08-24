@@ -87,7 +87,9 @@ const ApiBinding = ({navigation}: RootStackScreenProps<'ApiBinding'>) => {
                                         Coinbase
                                     </Text>
                                 </View>
-                                <TouchableOpacity activeOpacity={0.8}
+                                <TouchableOpacity   onPress={() => editNow(data.data['User Details'][0].coinbaseproapi,
+                                    data.data['User Details'][0].coinbaseprosecret,
+                                    'Coinbase',data.data['User Details'][0].coinbaseprobind)} activeOpacity={0.8}
                                                   style={styles.connectBtn}>
 
                                     {
@@ -130,7 +132,9 @@ const ApiBinding = ({navigation}: RootStackScreenProps<'ApiBinding'>) => {
                                         Binance
                                     </Text>
                                 </View>
-                                <TouchableOpacity activeOpacity={0.8}
+                                <TouchableOpacity onPress={() => editNow(data.data['User Details'][0].binanceapi,
+                                    data.data['User Details'][0].binancescret,
+                                    'Binance',data.data['User Details'][0].binancebind)} activeOpacity={0.8}
                                                   style={styles.connectBtn}>
 
                                     {
@@ -156,7 +160,10 @@ const ApiBinding = ({navigation}: RootStackScreenProps<'ApiBinding'>) => {
                         </TouchableOpacity>
 
 
-                        <TouchableOpacity activeOpacity={0.7} onPress={() => editNow(data.data['User Details'][0].krakenapi,
+                        <TouchableOpacity
+
+                            activeOpacity={0.7}
+                            onPress={() => editNow(data.data['User Details'][0].krakenapi,
                             data.data['User Details'][0].krakensecret,
                             'Kraken',data.data['User Details'][0].krakenbind)}
                                           style={styles.appListCard}>
@@ -173,7 +180,9 @@ const ApiBinding = ({navigation}: RootStackScreenProps<'ApiBinding'>) => {
                                         Kraken
                                     </Text>
                                 </View>
-                                <TouchableOpacity activeOpacity={0.8}
+                                <TouchableOpacity onPress={() => editNow(data.data['User Details'][0].krakenapi,
+                                    data.data['User Details'][0].krakensecret,
+                                    'Kraken',data.data['User Details'][0].krakenbind)} activeOpacity={0.8}
                                                   style={styles.connectBtn}>
 
                                     {
@@ -216,7 +225,9 @@ const ApiBinding = ({navigation}: RootStackScreenProps<'ApiBinding'>) => {
                                         Kucoin
                                     </Text>
                                 </View>
-                                <TouchableOpacity activeOpacity={0.8}
+                                <TouchableOpacity onPress={() => editNow(data.data['User Details'][0].kucoinapi,
+                                    data.data['User Details'][0].kucoinsecret,
+                                    'Kucoin',data.data['User Details'][0].kucoinbind)} activeOpacity={0.8}
                                                   style={styles.connectBtn}>
 
                                     {

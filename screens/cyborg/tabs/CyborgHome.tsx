@@ -25,7 +25,7 @@ import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-re
 import SwipeToast from "../../../components/toast/SwipeToast";
 import ToastAnimated from "../../../components/toast";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
-import {addNotificationItem} from "../../../app/slices/dataSlice";
+import {addNotificationItem, setHideBalance} from "../../../app/slices/dataSlice";
 import {useQuery} from "@tanstack/react-query";
 import {activeStrategy, getAsset, getNewstrategy, getRevenueDetails, getUser} from "../../../api";
 
@@ -66,6 +66,9 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
     const dispatch = useAppDispatch()
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
+
+    const dataSlice = useAppSelector(state => state.data)
+    const {hideBalance} = dataSlice
 
     const {data: Asset, refetch: fetchAsset, isLoading} = useQuery(['user-Asset'], () => getAsset(User_Details.id))
 
@@ -112,7 +115,15 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
         wait(2000).then(() => setRefreshing(false));
     }
 
+    const seeAll = () => {
+      navigation.navigate('Quantitative')
+    }
+    const hideMyBalance = () => {
+      dispatch(setHideBalance())
+    }
+
     useRefreshOnFocus(fetchAsset)
+    useRefreshOnFocus(fetchStrategy)
     return (
 
         <SafeAreaView style={styles.safeArea}>
@@ -167,27 +178,40 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
 
                         <View style={styles.amountContainer}>
 
-                            <TouchableOpacity activeOpacity={0.7}
+                            <TouchableOpacity onPress={hideMyBalance} activeOpacity={0.7}
                                               style={styles.balanceTitle}>
                                 <Text style={styles.balText}>
                                     Account balance
                                 </Text>
-
+                                {
+                                    hideBalance &&
                                 <Ionicons name="eye-off-outline" size={14} color={"#d9d9d9"}/>
-
+                                }
+                                {
+                                    !hideBalance &&
+                                <Ionicons name="eye-outline" size={14} color={"#d9d9d9"}/>
+                                }
 
                             </TouchableOpacity>
 
 
                             <View style={styles.balanceGraph}>
-
-                                <Text
-                                    style={styles.balance}>
+                                {
+                                    !hideBalance &&
+                                <Text style={styles.balance}>
 
                                     {currencyFormatter('en-US', 'USD').format(Asset?.data?.total_assets)}
 
                                 </Text>
+                                }
+                                {
+                                    hideBalance &&
+                                <Text style={styles.balance}>
 
+                                 ****
+
+                                </Text>
+                                }
 
                                 <TouchableOpacity onPress={overView} style={styles.overviewBtn}>
                                     <Text style={styles.overviewText}>
@@ -203,12 +227,23 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
                                 <Text style={styles.profitText}>
                                   Total Profits
                                 </Text>
+                                {
+                                    !hideBalance &&
+
                                 <Text style={styles.profitBalance}>
 
                                     {currencyFormatter('en-US', 'USD').format(revenue?.data?.total_profit)}
 
                                 </Text>
+                                }
+                                {
+                                    hideBalance &&
+                                    <Text style={styles.balance}>
 
+                                        ****
+
+                                    </Text>
+                                }
 
                             </View>
 
@@ -253,6 +288,35 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
 
                 </ImageBackground>
 </View>
+
+                <View  style={styles.contentTop}>
+
+
+                    <View style={styles.contentMsg}>
+
+                        <Text style={[styles.contentMsgTxt, {
+                            fontFamily: Fonts.faktumBold,
+
+                        }]}>
+                            Active trades
+                        </Text>
+
+                    </View>
+
+                    <Pressable onPress={seeAll} style={styles.contentMsgRight}>
+
+                        <Text style={[styles.contentMsgTxt, {
+                            fontFamily: Fonts.faktumMedium,
+                            fontSize: fontPixel(12)
+                        }]}>
+                            See all
+                        </Text>
+                        <Ionicons name="chevron-forward" size={14} color={Colors.text}/>
+
+                    </Pressable>
+                </View>
+
+
 
 
                 <View style={styles.portfolioHead}>
@@ -561,7 +625,42 @@ overflow:'hidden',
         color: Colors.tintText,
         fontSize: fontPixel(12),
         fontFamily: Fonts.faktumMedium
-    }
+    },
+    contentTop: {
+        marginTop:35,
+        flexDirection: 'row',
+        width: '90%',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        height: heightPixel(50),
+        borderBottomColor: Colors.borderColor,
+
+
+
+
+    },
+    contentMsg: {
+
+        height: '100%',
+
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+
+    },
+    contentMsgRight: {
+        width: widthPixel(50),
+        height: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+
+    },
+    contentMsgTxt: {
+
+        fontSize: fontPixel(14),
+        color: Colors.text
+    },
 
 })
 

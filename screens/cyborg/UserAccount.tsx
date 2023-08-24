@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Text, View, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
+import {Text, View, StyleSheet, ScrollView, TouchableOpacity, Platform} from 'react-native';
 import HeaderWithTitle from "../../components/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -109,8 +109,11 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
                             </Text>
                         </TouchableOpacity>
 
+                        {
+                            Platform.OS == 'android'&&
 
-                        {/*<View style={styles.braceIDContainer}>
+
+                        <View style={styles.braceIDContainer}>
 
                             <View style={styles.linkIcon}>
                                 <FontAwesome name="diamond" size={20} color="#2EBD85"/>
@@ -129,8 +132,8 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
 
                             <View style={styles.rightIcon}>
                             </View>
-                        </View>*/}
-
+                        </View>
+                        }
 
                     </View>
                     <HorizontalLine margin={15}/>
