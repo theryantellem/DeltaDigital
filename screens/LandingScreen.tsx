@@ -100,7 +100,9 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
             btnBg: "#fff",
             balance: Asset?.data?.total_assets,
             description: " Spot/Future",
-            image: <Image source={require('../assets/images/robots/cyborg.png')} style={styles.imageRobot}/>,
+            image: <Image source={require('../assets/images/robots/cyborg.png')} style={[styles.imageRobot,{
+                resizeMode: Platform.OS == 'android' ? 'cover' : 'cover'
+            }]}/>,
             icon: <Image source={require('../assets/images/logos/cyborlogo.png')} style={styles.imageLogo}/>,
 
         },
@@ -265,7 +267,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                         <View style={styles.userImageWrap}>
 
 
-                            <FastImage
+                          <FastImage
                                 style={styles.tAvatar}
                                 source={{
                                     uri: User_Details.image ? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png',
@@ -274,6 +276,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                                 }}
                                 resizeMode={FastImage.resizeMode.cover}
                             />
+
 
 
                         </View>
@@ -441,7 +444,7 @@ const styles = StyleSheet.create({
     imageRobot: {
         height: '90%',
         width: '90%',
-        resizeMode: 'cover'
+
     },
     plan: {
         flexDirection: 'row',

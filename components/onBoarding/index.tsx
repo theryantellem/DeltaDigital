@@ -9,7 +9,7 @@ import {
     FlatList,
     ImageProps,
     Platform,
-    Animated
+    Animated, Image
 } from 'react-native';
 import Colors from "../../constants/Colors";
 import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../helpers/normalize";
@@ -24,19 +24,20 @@ const {width} = Dimensions.get('window');
 const slides = [
     {
         id: '1',
-       // lottiePath:require('../../assets/gifs/walkthrough-gifs/lottie/lf20_iftkuuwh.json'),
+        lottiePath:require('../../assets/lottie/4aab936a-069a-4982-a6e4-c553ccf5ef62.gif'),
         title: 'Send',
         message: 'Send and receive crypto.',
     },
     {
         id: '2',
-        //lottiePath:require('../../assets/gifs/walkthrough-gifs/lottie/lf20_lkfovt2k.json'),
+        lottiePath:require('../../assets/lottie/4aab936a-069a-4982-a6e4-c553ccf5ef62.gif'),
         title: 'Trade Spot',
         message: 'Trading smart with ease.',
     },
     {
         id: '3',
-        //lottiePath:require('../../assets/gifs/walkthrough-gifs/lottie/lf20_cjpxgxe7.json'),
+
+        lottiePath:require('../../assets/lottie/4aab936a-069a-4982-a6e4-c553ccf5ef62.gif'),
         title: 'Trade Futures',
         message: 'Trading Futures using smart trading bot',
     },
@@ -79,15 +80,15 @@ const Slide = ({item}: itemProps) => {
                 width
             }]}>
 
-
-                    <LottieView
+<Image source={lottiePath}        style={{height: '100%', width: '100%',}}/>
+                  {/*  <LottieView
                         autoPlay
                         loop
                         ref={animation}
                         style={{height: '100%', width: '100%',}}
                         // Find more Lottie files at https://lottiefiles.com/featured
-                        source={{uri:"https://assets2.lottiefiles.com/packages/lf20_pZNC76QS3J.json"}}
-                    />
+                        source={lottiePath}
+                    />*/}
 
 
             </View>

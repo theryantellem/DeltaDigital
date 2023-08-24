@@ -15,7 +15,7 @@ import {
     MaterialIcons,
     Octicons
 } from '@expo/vector-icons';
-import {fontPixel, heightPixel, widthPixel} from "../../helpers/normalize";
+import {fontPixel, heightPixel, pixelSizeVertical, widthPixel} from "../../helpers/normalize";
 import Colors from "../../constants/Colors";
 import {Fonts} from "../../constants/Fonts";
 import HorizontalLine from "../../components/HorizontalLine";
@@ -465,6 +465,7 @@ const styles = StyleSheet.create({
         color: Colors.text
     },
     logoutText: {
+        marginVertical:pixelSizeVertical(20),
         color: Colors.errorRed,
         fontSize: fontPixel(16),
         fontFamily: Fonts.faktumSemiBold,

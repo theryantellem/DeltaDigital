@@ -242,7 +242,7 @@ const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
                                               onChange={handleTabsChange}
                                               segmentedControlBackgroundColor={Colors.tintPrimary}
                                               activeSegmentBackgroundColor={Colors.primary}
-                                              activeTextColor={Colors.textDark}
+                                              activeTextColor={Colors.text}
                                               textColor={"#CDD4D7"}
                                               paddingVertical={pixelSizeVertical(16)}/>
                     }
@@ -492,11 +492,11 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
     },
     dashButton: {
-        width: heightPixel(70),
-        height: heightPixel(80),
+        width: heightPixel(75),
+        height: heightPixel(85),
 
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-evenly'
 
     },
     dashIcon: {

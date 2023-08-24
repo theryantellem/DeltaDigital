@@ -13,7 +13,7 @@ import {ColorSchemeName, AppState, Pressable} from 'react-native';
 import {RootStackParamList} from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 import {AuthNavigator} from "./AuthNavigation";
-import OnBoardingScreen from "../screens/onboarding";
+
 import LandingScreen from "../screens/LandingScreen";
 import {CyborgBottomTab} from "./cyborg";
 import NewsScreen from "../screens/cyborg/NewsScreen";

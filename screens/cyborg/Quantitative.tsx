@@ -132,7 +132,8 @@ const tickerRes = tickers?.find((ticker: { symbol: string; }) => ticker.symbol =
                       {item.Market}
                   </Text>
                   <Text style={[styles.assetInfo]}>
-                      Price: <Text style={{color: '#fff', fontFamily: Fonts.faktumBold}}>{currencyFormatter('en-US','USD').format(tickerRes.lastPrice)} </Text>
+                      Price: <Text style={{color: '#fff', fontFamily: Fonts.faktumBold}}>{
+                      tickerRes?.lastPrice ? currencyFormatter('en-US','USD').format(tickerRes?.lastPrice) : '0.0'} </Text>
                   </Text>
                   <Text style={styles.assetInfo}>
                       Quantity: <Text
@@ -167,12 +168,12 @@ const tickerRes = tickers?.find((ticker: { symbol: string; }) => ticker.symbol =
           <View style={styles.rightInfo}>
               <Text style={styles.cardValue}>
 
-                  {parseFloat(tickerRes.priceChange).toFixed(2)}%
+                  { tickerRes?.priceChange ? parseFloat(tickerRes?.priceChange).toFixed(2) : '0'}%
               </Text>
               <Text style={[styles.cardValue,{
-                  color:parseInt(tickerRes.priceChangePercent) > 0 ? Colors.successChart : Colors.errorRed
+                  color: parseInt(tickerRes?.priceChangePercent) > 0 ? Colors.successChart : Colors.errorRed
               }]}>
-               Chng%: {parseFloat(tickerRes.priceChangePercent).toFixed(3)}
+               Chng%: { tickerRes?.priceChangePercent ? parseFloat(tickerRes?.priceChangePercent).toFixed(3) : '0'}
               </Text>
               {/*<Text style={[styles.cardValue,{
                   color: "#ccc"
@@ -394,11 +395,11 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
                 <View style={styles.flatList}>
 
                     {
-                        isLoading &&  fetchingTickers && <ActivityIndicator size='small' color={Colors.primary}/>
+                        isLoading  && <ActivityIndicator size='small' color={Colors.primary}/>
                     }
 
                     {
-                        !isLoading && !fetchingTickers && data &&
+                        !isLoading  && data &&
                         <FlashList
                             estimatedItemSize={200}
                             refreshing={isLoading}

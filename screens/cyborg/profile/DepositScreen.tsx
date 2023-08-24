@@ -100,9 +100,10 @@ const dispatch = useAppDispatch()
 
 
                         <QRCode
-                            logo={require('../../../assets/images/cyborg-logo.png')}
+                            logo={require('../../../assets/images/logos/cyborlogo.png')}
                             logoSize={35}
                             size={200}
+
                             value={data.wallet}
                             color={Colors.text}
 
@@ -110,14 +111,14 @@ const dispatch = useAppDispatch()
                         />
 
 
-                        <Text style={{
+                       {/* <Text style={{
                             fontFamily: Fonts.faktumRegular,
                             fontSize: fontPixel(14),
                             color: Colors.tintText
                         }}>
-                            0.5% Transaction fee
+                            0% Transaction fee
                         </Text>
-
+*/}
                     </View>
 
 

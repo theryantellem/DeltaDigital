@@ -198,12 +198,12 @@ export default function App() {
                                 <SafeAreaProvider>
                                     <StatusBar style="light"/>
                                     <PortalProvider>
-                                        {firstLaunch ?
-                                            <OnBoardingScreen skip={skip}/>
-                                            :
+
+                                        {/*    <OnBoardingScreen skip={skip}/>*/}
+
                                         <Navigation colorScheme={colorScheme}/>
 
-                                        }
+
                                     </PortalProvider>
                                 </SafeAreaProvider>
 

@@ -81,9 +81,12 @@ const SegmentedControl = ({
     return (
         <Animated.View style={[
             styles.segmentedControlWrapper,
+            Platform.OS == 'ios' &&
      {
                 borderBottomColor:textColor,
                 borderBottomWidth:0.5,
+
+            },{
                 paddingVertical: paddingVertical,
             }
 

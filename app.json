@@ -4,7 +4,7 @@
     "slug": "delta-signal",
     "scheme": "delta-signal",
     "owner": "delta-signal",
-    "version": "2.1.1",
+    "version": "2.1.3",
     "jsEngine": "hermes",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -28,7 +28,7 @@
       "userInterfaceStyle": "light",
       "bundleIdentifier": "com.deltaSignal.mobile",
       "googleServicesFile": "./GoogleService-Info.plist",
-      "buildNumber": "8",
+      "buildNumber": "10",
       "usesIcloudStorage": true,
       "infoPlist": {
         "remote-notification": "Allow user to receive remote notification",
@@ -40,13 +40,13 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.deltaSignal.mobile",
+      "package": "com.deltadigital.mobile",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "googleServicesFile": "./google-services.json",
-      "versionCode": 8,
+      "versionCode": 10,
       "userInterfaceStyle": "light",
       "permissions": [
         "RECEIVE_BOOT_COMPLETED",

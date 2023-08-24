@@ -86,7 +86,7 @@ const PersonalIncome = () => {
 
     const leaderoard1 = data?.data['Personal Income List'].sort((a: { total_profit: string; }, b: { total_profit: string; }) => parseFloat(b.total_profit) - parseFloat(a.total_profit));
 
-   const LeaderBoardRank = !isLoading && leaderoard1.slice(0,3)
+   const LeaderBoardRank = !isLoading && leaderoard1 !== null && leaderoard1?.slice(0,3)
     const renderHeader = useCallback(() => (
         <View style={[styles.topDashboard]}>
 
@@ -115,7 +115,7 @@ const PersonalIncome = () => {
                         backgroundColor: Colors.purplePrimary,
                     }]}>
                         <Text style={styles.streakText}>
-                            {LeaderBoardRank[1]?.total_profit}
+                            {parseInt(LeaderBoardRank[1]?.total_profit).toFixed(2)}
                         </Text>
                     </View>
                 </View>
@@ -160,7 +160,7 @@ const PersonalIncome = () => {
                     }]}>
                         <Text style={styles.streakText}>
 
-                            {LeaderBoardRank[0]?.total_profit}
+                            {parseInt(LeaderBoardRank[0]?.total_profit).toFixed(2)}
                         </Text>
                     </View>
                 </Animated.View>
@@ -175,7 +175,7 @@ const PersonalIncome = () => {
                 entering={FadeInLeft.springify()}
                 exiting={FadeOutLeft} layout={Layout.easing(Easing.ease).delay(20)}
                 style={[styles.leaderboardWrap, {
-                    height: heightPixel(180),
+                    height: heightPixel(200),
                 }]}>
 
                 <View style={styles.rankWrap}>
@@ -196,7 +196,7 @@ const PersonalIncome = () => {
                         backgroundColor: Colors.purplePrimary,
                     }]}>
                         <Text style={styles.streakText}>
-                            {LeaderBoardRank[2]?.total_profit}
+                            {parseInt(LeaderBoardRank[2]?.total_profit).toFixed(2)}
                         </Text>
                     </View>
                 </View>

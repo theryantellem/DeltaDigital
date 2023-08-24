@@ -115,7 +115,7 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
 
 
 
-                        <View style={styles.buttonContainer}>
+
                             <View style={styles.moreButtonContainer}>
 
                                 <TouchableOpacity onPress={() => navigate('LeaderBoard')} activeOpacity={0.6}
@@ -214,7 +214,6 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
                             </View>
 
 
-                        </View>
 
 
                     </ScrollView>
@@ -273,7 +272,7 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
                                     <View style={styles.qrCode}>
 
                                         <QRCode
-                                            logo={require('../../../assets/images/cyborg-logo.png')}
+                                            logo={require('../../../assets/images/logos/cyborlogo.png')}
                                             logoSize={35}
                                             size={120}
                                             value={User_Details['referral left link']}
@@ -311,7 +310,7 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
                                     <View style={styles.qrCode}>
 
                                         <QRCode
-                                            logo={require('../../../assets/images/cyborg-logo.png')}
+                                            logo={require('../../../assets/images/logos/cyborlogo.png')}
                                             logoSize={35}
                                             size={120}
                                             value={User_Details['referral left link']}
@@ -381,7 +380,7 @@ const styles = StyleSheet.create({
 
 
     buttonContainer: {
-        height: heightPixel(220),
+
 
         width: '100%',
 
@@ -391,7 +390,7 @@ const styles = StyleSheet.create({
     },
     moreButtonContainer: {
         width: '100%',
-        height: heightPixel(420),
+
 
         alignItems: 'flex-start'
     },

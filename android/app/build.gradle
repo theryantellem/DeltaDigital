@@ -113,13 +113,13 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace 'com.deltaSignal.mobile'
+    namespace 'com.deltadigital.mobile'
     defaultConfig {
-        applicationId 'com.deltaSignal.mobile'
+        applicationId 'com.deltadigital.mobile'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 8
-        versionName "2.1.1"
+        versionCode 10
+        versionName "2.1.3"
     }
 
     splits {
