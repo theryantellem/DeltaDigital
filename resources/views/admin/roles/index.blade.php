@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="heading mb-0">Roles Management</h2>
         <div class="d-flex align-items-center">
-            <a href="#" class="btn btn-primary btn-sm ms-2">Create Role</a>
+            <a href="{{ route('admin.roles.create') }}" class="btn btn-primary btn-sm ms-2">Create Role</a>
         </div>
     </div>
 
@@ -16,62 +16,87 @@
                 <table class="table header-border table-responsive-sm">
                     <thead>
                         <tr>
-                            <th>Invoice</th>
-                            <th>User</th>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                            <th>Country</th>
+                            <th>Role Name</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td><a href="javascript:void();">Order #26589</a>
-                            </td>
-                            <td>Herman Beck</td>
-                            <td><span class="text-muted">Oct 16, 2017</span>
-                            </td>
-                            <td>$45.00</td>
-                            <td><span class="badge badge-success">Paid</span>
-                            </td>
-                            <td>EN</td>
-                        </tr>
-                        <tr>
-                            <td><a href="javascript:void();">Order #58746</a>
-                            </td>
-                            <td>Mary Adams</td>
-                            <td><span class="text-muted">Oct 12, 2017</span>
-                            </td>
-                            <td>$245.30</td>
-                            <td><span class="badge badge-info light">Shipped</span>
-                            </td>
-                            <td>CN</td>
-                        </tr>
-                        <tr>
-                            <td><a href="javascript:void();">Order #98458</a>
-                            </td>
-                            <td>Caleb Richards</td>
-                            <td><span class="text-muted">May 18, 2017</span>
-                            </td>
-                            <td>$38.00</td>
-                            <td><span class="badge badge-danger">Shipped</span>
-                            </td>
-                            <td>AU</td>
-                        </tr>
-                        <tr>
-                            <td><a href="javascript:void();">Order #32658</a>
-                            </td>
-                            <td>June Lane</td>
-                            <td><span class="text-muted">Apr 28, 2017</span>
-                            </td>
-                            <td>$77.99</td>
-                            <td><span class="badge badge-success">Paid</span>
-                            </td>
-                            <td>FR</td>
-                        </tr>
+                        @forelse ($roles as $item)
+                            <tr>
+                                <td>
+                                    {{ $item->name }}
+                                </td>
+                                <td class="edit-action">
+                                    @if (!in_array($item->name, ['super_admin', 'default']))
+                                        <a href="{{ route('admin.roles.edit', $item->uuid) }}"
+                                            class="icon-box icon-box-xs bg-primary me-1">
+                                            <i class="fa-solid fa-pencil text-white"></i>
+                                        </a>
+                                    @endif
+                                    @if (!in_array($item->name, ['super_admin', 'default', 'educator']))
+                                        <a href="#" class="icon-box icon-box-xs bg-danger delete-role  ms-1"
+                                            data-url="{{ route('admin.roles.destroy', $item->uuid) }}">
+                                            <i class="fa-solid fa-trash text-white"></i>
+                                        </a>
+                                    @endif
+
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="2">
+                                    <span class="text-center text-warning">no roles created</span>
+                                </td>
+                            </tr>
+                        @endforelse
+
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 @endsection
+@push('scripts')
+    <script>
+        $('.delete-role').click(function(e) {
+            e.preventDefault();
+            var url = $(this).data('url')
+            Swal.fire({
+                title: "Please confirm your intention to delete the role.",
+                showCancelButton: true,
+                confirmButtonText: 'Confirmed',
+                denyButtonText: `No`,
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    $.post(url, {
+                        _token: "{{ csrf_token() }}",
+                        _method: "DELETE"
+                    }).then(function(result) {
+                        if (result.success) {
+                            displayMessage(
+                                result.message,
+                                "success"
+                            );
+                            setTimeout(() => {
+                                location.reload()
+                            }, 1000);
+                        } else {
+                            displayMessage(
+                                result.message,
+                                "error"
+                            );
+                        }
+                    }).catch(function(error) {
+                        console.log(error)
+                        displayMessage(
+                            "Error occured while trying delete role",
+                            "error"
+                        );
+                    })
+                }
+            })
+
+        })
+    </script>
+@endpush

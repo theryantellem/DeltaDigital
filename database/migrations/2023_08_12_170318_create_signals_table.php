@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->uuid('uuid');
             $table->foreignId('admin_id')->index();
-            $table->string('asset_name');
             $table->string('asset_type');
             $table->string('order_type');
             $table->float('entry_price')->default(0.00);
@@ -23,7 +22,7 @@ return new class extends Migration
             $table->float('target_price')->default(0.00);
             $table->text('comment')->nullable();
             $table->string('photo')->nullable();
-            $table->string('chat_photo')->nullable();
+            $table->string('chart_photo')->nullable();
             $table->string('status')->default("active");
             $table->string('market_status')->default("pending");
             $table->softDeletes();

@@ -9,12 +9,12 @@ class Navigation
     {
         return [
             (object) [
-                // (object) [
-                //     'name'  => 'Dashboard',
-                //     'route' => 'admin.dashboard',
-                //     'icon'  => 'bi bi-house-fill fs-3',
-                //     'hasPermission' => true
-                // ],
+                (object) [
+                    'name'  => 'Dashboard',
+                    'route' => 'admin.dashboard',
+                    'icon'  => 'bi bi-house-fill fs-3',
+                    'hasPermission' => true
+                ],
                 // (object) [
                 //     'name'  => 'User Management',
                 //     'route' => 'admin.users.index',
@@ -39,13 +39,13 @@ class Navigation
             'Signal' => (object) [
                 (object) [
                     'name'  => 'Manage Signals',
-                    'route' => 'admin.cyborg.strategy.index',
+                    'route' => 'admin.signals.index',
                     'icon'  => 'bi bi-house-fill fs-3',
                     'hasPermission' => true
                 ],
                 (object) [
                     'name'  => 'Manage Educators',
-                    'route' => 'admin.cyborg.strategy.index',
+                    'route' => 'admin.educators.index',
                     'icon'  => 'bi bi-house-fill fs-3',
                     'hasPermission' => true
                 ]

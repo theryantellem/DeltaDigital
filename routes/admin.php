@@ -8,8 +8,10 @@ use App\Http\Controllers\Admin\Cyborg\ExchangeController;
 use App\Http\Controllers\Admin\Cyborg\MarketController;
 use App\Http\Controllers\Admin\Cyborg\StrategyController;
 use App\Http\Controllers\Admin\Cyborg\TradeSettingsController;
+use App\Http\Controllers\Admin\EducatorController;
 use App\Http\Controllers\Admin\NewsManagement;
 use App\Http\Controllers\Admin\RolesPermissions;
+use App\Http\Controllers\Admin\Signal\SignalController;
 use App\Http\Controllers\Admin\SupportTicket;
 use App\Http\Controllers\Admin\UserManagementController;
 use Illuminate\Support\Facades\Route;
@@ -47,6 +49,11 @@ Route::middleware(['auth:admin'])->group(function () {
         Route::resource('markets', MarketController::class);
     });
 
+    Route::get('get-signals', [SignalController::class, 'getSignals'])->name('signals.all');
+    Route::post('/update-market-status', [SignalController::class, 'updateMarketStatus'])->name('signals.market.status');
+    Route::post('/update-status', [SignalController::class, 'updateStatus'])->name('signals.status');
+    Route::resource('signals', SignalController::class);
+
     Route::resource('administrative', AdminManagementController::class);
 
     Route::prefix('users')->name('users.')->controller(UserManagementController::class)->group(function () {
@@ -59,9 +66,9 @@ Route::middleware(['auth:admin'])->group(function () {
         Route::get('tickets', 'index')->name('index');
     });
 
+    Route::resource('educators', EducatorController::class);
+
     Route::resource('banners', BannerController::class);
 
-    Route::resource('roles',RolesPermissions::class);
-
-
+    Route::resource('roles', RolesPermissions::class);
 });

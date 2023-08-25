@@ -16,7 +16,7 @@ class RolesPermissions extends Controller
     {
         $data['roles'] = Role::get();
 
-        return view('admin.roles.index',$data);
+        return view('admin.roles.index', $data);
     }
 
     /**
@@ -24,7 +24,7 @@ class RolesPermissions extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.roles.create');
     }
 
     /**
@@ -32,7 +32,26 @@ class RolesPermissions extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'role_name' => ['required', 'string', 'max:120'],
+            'permissions' => ['required'],
+            'permissions.*' => ['required'],
+        ]);
+
+        $checkRole = Role::where('name', $request->role_name)->first();
+
+        if ($checkRole) {
+            return back()->with('error', 'a role with this name ' . $request->role_name . ' already exist');
+        }
+
+        $role = Role::create([
+            'name' => $request->role_name,
+            'guard_name' => 'admin'
+        ]);
+
+        $role->syncPermissions($request->permissions);
+
+        return redirect()->route('admin.roles.index')->with('success', ' Role was successfully created.');
     }
 
     /**
@@ -40,23 +59,42 @@ class RolesPermissions extends Controller
      */
     public function show(string $id)
     {
-        //
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($role)
     {
-        //
+        $role = Role::where('uuid', $role)->firstOrFail();
+
+        return view('admin.roles.edit', [
+            'role'      => $role,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $role)
     {
-        //
+        $request->validate([
+            'role_name' => 'required'
+        ]);
+
+        $role = Role::where('uuid', $role)->firstOrFail();
+
+        $checkRole = Role::where('name', $request->role_name)->first();
+
+        if ($checkRole && $request->role_name != $role->name) {
+            return back()->with('error', 'A role with the name ' . $request->role_name . ' already exist');
+        }
+
+        $role->update(['name' => $request->role_name]);
+
+        $role->syncPermissions($request->permissions);
+
+        return  redirect()->route('admin.roles.index')->with('success', ' role was successfully updated.');
     }
 
     /**
@@ -64,6 +102,24 @@ class RolesPermissions extends Controller
      */
     public function destroy(string $id)
     {
-        //
+
+        $role = Role::where('uuid', $id)->first();
+
+        if (!$role) {
+            return response()->json(['success' => false, 'message' => 'Role not found.']);
+        }
+
+        $newRole = Role::where('name', 'default')->first();
+
+        if ($newRole) {
+            $usersWithRole = $role->users;
+
+            foreach ($usersWithRole as $user) {
+                $user->syncRoles([$newRole->id]);
+            }
+        }
+        $role->delete();
+
+        return response()->json(['success' => true, 'message' => ucfirst($role['name']) . ' Role was successfully deleted.']);
     }
 }

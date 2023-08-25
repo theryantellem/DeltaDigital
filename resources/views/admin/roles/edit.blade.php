@@ -9,10 +9,10 @@
 
     <div class="card dz-card">
         <div class="card-body">
-            <form method="POST" action="">{{ route('admin.roles.edit', $role->uuid) }}
+            <form method="POST" action="{{ route('admin.roles.edit', $role->uuid) }}">
                 @csrf
                 @method('PUT')
-                @include('admin.roles.form')
+                <x-role-form-component :role="$role" />
             </form>
         </div>
     </div>
