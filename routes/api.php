@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthenticationController;
 use App\Http\Controllers\Api\BannerController;
+use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\EducatorController;
 use App\Http\Controllers\Api\SignalsController;
 use Illuminate\Support\Facades\Route;
@@ -51,6 +52,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::controller(SignalsController::class)->prefix('signals')->group(function () {
         Route::get('', 'index');
         Route::get('show/{signal}', 'show');
+    });
+
+    Route::controller(ChatController::class)->prefix('chat')->group(function(){
+        Route::get('messages/{educator}', 'messages');
+        Route::post('send/{educator}','sendMessage');
     });
 
     Route::controller(\App\Http\Controllers\Api\NewsController::class)->prefix('news')->group(function () {

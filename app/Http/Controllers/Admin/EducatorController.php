@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\EducatorResource;
 use App\Models\Admin;
+use App\Models\ChatGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -73,6 +74,10 @@ class EducatorController extends Controller
             'email' => $request->email,
             'password' => Hash::make($password),
             'photo' => $imageUrl
+        ]);
+
+        ChatGroup::create([
+            'admin_id' => $educator->id
         ]);
 
         $educator->assignRole('educator');

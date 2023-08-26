@@ -2,19 +2,16 @@
 
 namespace App\Models;
 
-use App\Enums\AdminStatus;
 use App\Traits\GeneratesUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Model;
 
-class Admin extends Authenticatable
+class ChatGroup extends Model
 {
-    use HasFactory, GeneratesUuid, HasRoles;
+    use HasFactory, GeneratesUuid;
+
 
     protected $guarded = [];
-
-    protected $guard = 'admin';
 
     /**
      * Define the route model binding key for a given model.
@@ -36,17 +33,8 @@ class Admin extends Authenticatable
         return $this->where('uuid', $value)->firstOrFail();
     }
 
-    protected $casts = [
-        'status' => AdminStatus::class
-    ];
-
-    function followers()
+    function educator()
     {
-        return $this->hasMany(UserFollower::class, 'admin_id');
-    }
-
-    function chatGroup()
-    {
-        return $this->hasOne(ChatGroup::class, 'admin_id');
+        return $this->belongsTo(Admin::class);
     }
 }
