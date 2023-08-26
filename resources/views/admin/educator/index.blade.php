@@ -41,12 +41,12 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td><span class="text-center">@{{ educatro.email }}</span></td>
+                                        <td><span class="text-center">@{{ educator.email }}</span></td>
                                         <td class="edit-action">
-                                            <a href="#" class="icon-box icon-box-xs bg-primary me-1">
+                                            {{-- <a href="#" class="icon-box icon-box-xs bg-primary me-1">
                                                 <i class="fa-solid fa-pencil text-white"></i>
-                                            </a>
-                                            <a href="#" @click.prevent="deleteSignal(signal)"
+                                            </a> --}}
+                                            <a href="#" @click.prevent="deleteSignal(educator)"
                                                 class="icon-box icon-box-xs bg-danger  ms-1">
                                                 <i class="fa-solid fa-trash text-white"></i>
                                             </a>
@@ -55,7 +55,7 @@
                                 </tbody>
                                 <tbody v-else>
                                     <tr>
-                                        <td colspan="2">
+                                        <td colspan="1">
                                             <span class="text-center text-warning">No educator Created</span>
                                         </td>
                                     </tr>
@@ -82,7 +82,7 @@
                     errors: {},
                     first_name: "",
                     last_name: "",
-                    email:"",
+                    email: "",
                     photo: "",
                     status: [],
                     photo_preview: null
@@ -111,11 +111,8 @@
                     this.photo = "";
                 },
                 getEducators() {
-                    axios.get("{{ route('admin.signals.all') }}").then(response => {
-                        this.signals = response.data.signals;
-                        this.orderTypes = response.data.email
-                        this.marketStatus = response.data.market_status
-                        this.status = response.data.status
+                    axios.get("{{ route('admin.educators.all') }}").then(response => {
+                        this.educators = response.data.educators
                     }).catch(error => {
                         console.log(error);
                     })
@@ -132,14 +129,14 @@
                     formData.append('email', this.email);
                     formData.append('photo', this.photo);
 
-                    axios.post("{{ route('admin.signals.store') }}", formData, {
+                    axios.post("{{ route('admin.educators.store') }}", formData, {
                             headers: {
                                 'Content-Type': 'multipart/form-data'
                             }
                         })
                         .then(response => {
 
-                            this.signals.push(response.data.signal);
+                            this.educators.push(response.data.educator);
 
                             this.email = "";
                             this.first_name = "";
@@ -151,7 +148,7 @@
                             Notiflix.Notify.Success(response.data.message);
                         })
                         .catch(error => {
-
+                            console.log(error)
                             if (error.response && error.response.data && error.response.data.errors) {
                                 // Set validation errors from the backend response
                                 this.errors = error.response.data.errors;
@@ -174,7 +171,7 @@
                         'Delete',
                         'Cancle',
                         function okCb() {
-                            axios.delete(`/admin/signals/${signal.id}`)
+                            axios.delete(`/admin/educators/${signal.id}`)
                                 .then(function(response) {
                                     if (response.data.success) {
                                         Notiflix.Notify.Success(response.data.message);

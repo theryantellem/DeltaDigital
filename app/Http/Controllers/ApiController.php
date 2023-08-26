@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class ApiController extends Controller
 {
-    public function sendResponse($data, $message, $status = 200)
+    public function sendResponse($data, $message=null, $status = 200)
     {
         $response = [
             'success' => true,

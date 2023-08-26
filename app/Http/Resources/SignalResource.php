@@ -16,6 +16,7 @@ class SignalResource extends JsonResource
     {
         return [
             'id' => $this->uuid,
+            'educator' => new EducatorResource($this->educator),
             'asset' => $this->asset_type,
             'order_type' => $this->order_type,
             'entry_price' => $this->entry_price,

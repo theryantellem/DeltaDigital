@@ -9,8 +9,8 @@
         <div class="container-fluid">
             <form>
                 <div class="row">
-                    <div class="col-xl-12 mb-3">
-                        <label for="exampleFormControlInput1" class="form-label">=First Name<span
+                    <div class="col-xl-6 mb-3">
+                        <label for="exampleFormControlInput1" class="form-label">First Name<span
                                 class="text-danger">*</span></label>
                         <input type="text" class="form-control" v-model="first_name" id="exampleFormControlInput1"
                             placeholder="">
@@ -23,10 +23,10 @@
                             placeholder="">
                         <span v-if="errors.last_name" class="text-danger">@{{ errors.last_name[0] }}</span>
                     </div>
-                    <div class="col-xl-6 mb-3">
+                    <div class="col-xl-12 mb-3">
                         <label for="exampleFormControlInput3" class="form-label">Email<span
                                 class="text-danger">*</span></label>
-                        <input type="text" v-model="email" class="form-control" id="exampleFormControlInput3"
+                        <input type="email" v-model="email" class="form-control" id="exampleFormControlInput3"
                             placeholder="">
                         <span v-if="errors.email" class="text-danger">@{{ errors.email[0] }}</span>
                     </div>

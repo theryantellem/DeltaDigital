@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\AuthenticationController;
 use App\Http\Controllers\Api\BannerController;
+use App\Http\Controllers\Api\EducatorController;
+use App\Http\Controllers\Api\SignalsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -36,6 +38,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::controller(\App\Http\Controllers\Api\Cyborg\WalletController::class)->prefix('wallets')->group(function () {
             Route::post('deposit', 'deposit');
         });
+    });
+
+    Route::controller(EducatorController::class)->prefix('educators')->group(function () {
+        Route::get('', 'index');
+        Route::get('/show/{educator}', 'show');
+        Route::get('following', 'following');
+        Route::post('follow', 'follow');
+        Route::post('unfollow', 'unfollow');
+    });
+
+    Route::controller(SignalsController::class)->prefix('signals')->group(function () {
+        Route::get('', 'index');
+        Route::get('show/{signal}', 'show');
     });
 
     Route::controller(\App\Http\Controllers\Api\NewsController::class)->prefix('news')->group(function () {

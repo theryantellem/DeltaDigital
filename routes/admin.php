@@ -66,6 +66,7 @@ Route::middleware(['auth:admin'])->group(function () {
         Route::get('tickets', 'index')->name('index');
     });
 
+    Route::get('educators/all', [EducatorController::class, 'allEducators'])->name('educators.all');
     Route::resource('educators', EducatorController::class);
 
     Route::resource('banners', BannerController::class);

@@ -39,4 +39,9 @@ class Admin extends Authenticatable
     protected $casts = [
         'status' => AdminStatus::class
     ];
+
+    function followers()
+    {
+        return $this->hasMany(UserFollower::class, 'admin_id');
+    }
 }
