@@ -157,7 +157,7 @@ const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
                                 <Text
                                     style={styles.balance}>
 
-                                    {currencyFormatter('en-US', 'USD').format(Asset?.data?.total_assets)}
+                                    {currencyFormatter('en-US', 'USD').format(Asset?.data?.total_assets ? Asset?.data?.total_assets : 0)}
                                 </Text>
                                 }
                                 {

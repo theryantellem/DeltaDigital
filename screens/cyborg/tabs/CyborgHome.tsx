@@ -165,7 +165,8 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
                                  resizeMode={'cover'}
                                  style={styles.dashboardImage}>
 
-                    <TopBar homeDash profilePhoto={User_Details.image ? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'} userName={User_Details.username}/>
+                    <TopBar homeDash profilePhoto={User_Details.image ? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'}
+                            userName={User_Details.username}/>
 
                     <View style={styles.dashboardInfo}>
                         <View style={styles.cyborgInfo}>
@@ -200,7 +201,7 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
                                     !hideBalance &&
                                 <Text style={styles.balance}>
 
-                                    {currencyFormatter('en-US', 'USD').format(Asset?.data?.total_assets)}
+                                    {currencyFormatter('en-US', 'USD').format(Asset?.data?.total_assets ? Asset?.data?.total_assets : 0)}
 
                                 </Text>
                                 }
@@ -232,7 +233,7 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
 
                                 <Text style={styles.profitBalance}>
 
-                                    {currencyFormatter('en-US', 'USD').format(revenue?.data?.total_profit)}
+                                    {currencyFormatter('en-US', 'USD').format(revenue?.data?.total_profit ? revenue?.data?.total_profit  : 0 )}
 
                                 </Text>
                                 }

@@ -1,6 +1,6 @@
 import React, {useCallback, useState} from 'react';
 
-import {Text, View, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity, Image, Platform} from 'react-native';
 import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import {FontAwesome5, Ionicons, Octicons} from "@expo/vector-icons";
 import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../helpers/normalize";
@@ -80,9 +80,13 @@ const TopBar = ({ profilePhoto, userName,homeDash}: props) => {
                     <Text style={styles.greeting}>
                        {userName}
                     </Text>
+                    {
+                        Platform.OS == 'android' &&
+
                     <Text style={styles.tag}>
                         {User_Details.plan}
                     </Text>
+                    }
                 </View>
             </TouchableOpacity>
 

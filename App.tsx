@@ -22,7 +22,7 @@ import * as Notifications from 'expo-notifications';
 import * as SecureStore from "expo-secure-store";
 import {getFcmToken, getFcmTokenFromLocalStorage, requestUserPermission,    notificationListener} from "./notificationConfig";
 import inAppMessaging from '@react-native-firebase/in-app-messaging';
-
+import {BASE_ULR_AUTH, LIVE_PROD_URL} from "@env";
 
 enableScreens()
 
@@ -95,34 +95,63 @@ export default function App() {
         await AsyncStorage.setItem('Delta_Digital_user_first_time', 'false');
         setFirstLaunch(false)
     }
-   /* useEffect(() => {
+    useEffect(() => {
         if (focusManager.isFocused()) {
+            (async () => {
 
-            getToken().then((res) => {
 
-                if (!res) {
-
-                    logout()
-                    store.dispatch(setLockUser({
-                        lockUser: false
-                    }))
-                    store.dispatch(setUserLastSession({
-                        cleanLastActive: ''
-                    }))
-                } else if (res.exp * 1000 < Date.now()) {
-
-                    logout()
-                    store.dispatch(setLockUser({
-                        lockUser: false
-                    }))
-                    store.dispatch(setUserLastSession({
-                        cleanLastActive: ''
-                    }))
+                let Token = await SecureStore.getItemAsync('delta-signal-token');
+                let ID = await SecureStore.getItemAsync('delta-signal-ID');
+                console.log(ID)
+                const myHeaders = {
+                    'Content-Type': 'application/json',
+                    "TOKEN": Token,
+                    "ID": ID
                 }
-            })
+                //  "TOKEN", "2|KOg6Xv9IHSqMTPoZyyXKyTd7R99QAwKcthWTf5pl"
+                let timeoutId: NodeJS.Timeout
 
-        }
-    });*/
+                const requestOptions = {
+                    method: 'POST',
+                    headers: myHeaders
+
+                };
+
+                const promise = Promise.race([
+                    fetch(`${LIVE_PROD_URL}/profile`, requestOptions)
+                        .then(response => response.json()),
+                    new Promise((resolve, reject) => {
+                        timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+                        //  clearTimeout(timeoutId)
+                    }).then(() => {
+                        clearTimeout(timeoutId)
+                    })
+
+
+                ])
+
+                promise.then(res =>{
+                    if(res.data =='Please sign in') {
+                        logout()
+                        store.dispatch(setLockUser({
+                            lockUser: false
+                        }))
+                        store.dispatch(setUserLastSession({
+                            cleanLastActive: ''
+                        }))
+                    }
+                })
+
+            })()
+
+
+
+                }
+
+
+
+    },[]);
 
 
     useEffect(() => {

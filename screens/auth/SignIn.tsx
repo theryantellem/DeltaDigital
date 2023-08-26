@@ -122,6 +122,8 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
                     }))
 
 
+                    SecureStore.setItemAsync('delta-signal-ID', data.data.id)
+
                     SecureStore.setItemAsync('delta-signal-token', data.data.TOKEN).then(() => {
                         getUserInfo(data.data.ID)
                         //   dispatch((updateUserInfo({...data.data.user})))

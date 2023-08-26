@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Text, View, StyleSheet, ScrollView, TouchableOpacity, Image} from 'react-native';
+import {Text, View, StyleSheet, ScrollView, TouchableOpacity, Image, ActivityIndicator} from 'react-native';
 import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -21,19 +21,20 @@ const ApiBinding = ({navigation}: RootStackScreenProps<'ApiBinding'>) => {
     const user = useAppSelector(state => state.user)
     const {userData, User_Details} = user
 
-    const {data, isRefetching, refetch,} = useQuery(
+    const {data, isRefetching, refetch,isLoading} = useQuery(
         [`user-data`, User_Details.id],
         () => getUser(User_Details.id),
         {})
 
 
 
-    const editNow = (apiKey: string, apiSecrete: string, exchange: string,isBound:'0'|'1') => {
+    const editNow = (apiKey: string, apiSecrete: string, exchange: string,isBound:'0'|'1',exchangeName:string) => {
         navigation.navigate('ViewAPIBinding', {
             exchange,
             apiKey,
             apiSecrete,
-            isBound
+            isBound,
+            exchangeName
         })
     }
 
@@ -64,13 +65,19 @@ const ApiBinding = ({navigation}: RootStackScreenProps<'ApiBinding'>) => {
                         </Text>
 
                     </View>
+                    {
+                        isLoading && <ActivityIndicator color={Colors.purplePrimary} size='large'/>
+                    }
+
+                    {
+                        !isLoading &&
 
                     <View style={styles.content}>
 
                         <TouchableOpacity activeOpacity={0.8}
                                           onPress={() => editNow(data.data['User Details'][0].coinbaseproapi,
                                               data.data['User Details'][0].coinbaseprosecret,
-                                              'Coinbase',data.data['User Details'][0].coinbaseprobind)
+                                              '3',data.data['User Details'][0].coinbaseprobind,'Coinbase Pro')
 
                         }
                                           style={styles.appListCard}>
@@ -87,9 +94,9 @@ const ApiBinding = ({navigation}: RootStackScreenProps<'ApiBinding'>) => {
                                         Coinbase
                                     </Text>
                                 </View>
-                                <TouchableOpacity   onPress={() => editNow(data.data['User Details'][0].coinbaseproapi,
-                                    data.data['User Details'][0].coinbaseprosecret,
-                                    'Coinbase',data.data['User Details'][0].coinbaseprobind)} activeOpacity={0.8}
+                                <TouchableOpacity   onPress={() => editNow(data?.data['User Details'][0].coinbaseproapi,
+                                    data?.data['User Details'][0].coinbaseprosecret,
+                                    '3',data?.data['User Details'][0].coinbaseprobind, 'Coinbase Pro')} activeOpacity={0.8}
                                                   style={styles.connectBtn}>
 
                                     {
@@ -117,7 +124,7 @@ const ApiBinding = ({navigation}: RootStackScreenProps<'ApiBinding'>) => {
 
                         <TouchableOpacity  onPress={() => editNow(data.data['User Details'][0].binanceapi,
                             data.data['User Details'][0].binancescret,
-                            'Binance',data.data['User Details'][0].binancebind)}
+                            '1',data.data['User Details'][0].binancebind,'Binance')}
                                            activeOpacity={0.8} style={styles.appListCard}>
                             <View style={styles.listTop}>
                                 <View style={styles.listTopLeft}>
@@ -134,7 +141,7 @@ const ApiBinding = ({navigation}: RootStackScreenProps<'ApiBinding'>) => {
                                 </View>
                                 <TouchableOpacity onPress={() => editNow(data.data['User Details'][0].binanceapi,
                                     data.data['User Details'][0].binancescret,
-                                    'Binance',data.data['User Details'][0].binancebind)} activeOpacity={0.8}
+                                    '1',data.data['User Details'][0].binancebind,'Binance')} activeOpacity={0.8}
                                                   style={styles.connectBtn}>
 
                                     {
@@ -165,7 +172,7 @@ const ApiBinding = ({navigation}: RootStackScreenProps<'ApiBinding'>) => {
                             activeOpacity={0.7}
                             onPress={() => editNow(data.data['User Details'][0].krakenapi,
                             data.data['User Details'][0].krakensecret,
-                            'Kraken',data.data['User Details'][0].krakenbind)}
+                            '4',data.data['User Details'][0].krakenbind,'Kraken')}
                                           style={styles.appListCard}>
                             <View style={styles.listTop}>
                                 <View style={styles.listTopLeft}>
@@ -182,7 +189,7 @@ const ApiBinding = ({navigation}: RootStackScreenProps<'ApiBinding'>) => {
                                 </View>
                                 <TouchableOpacity onPress={() => editNow(data.data['User Details'][0].krakenapi,
                                     data.data['User Details'][0].krakensecret,
-                                    'Kraken',data.data['User Details'][0].krakenbind)} activeOpacity={0.8}
+                                    '4',data.data['User Details'][0].krakenbind,'Kraken')} activeOpacity={0.8}
                                                   style={styles.connectBtn}>
 
                                     {
@@ -209,7 +216,7 @@ const ApiBinding = ({navigation}: RootStackScreenProps<'ApiBinding'>) => {
                         <TouchableOpacity activeOpacity={0.7}
                                           onPress={() => editNow(data.data['User Details'][0].kucoinapi,
                             data.data['User Details'][0].kucoinsecret,
-                            'Kucoin',data.data['User Details'][0].kucoinbind)}
+                            '2',data.data['User Details'][0].kucoinbind, 'Kucoin')}
 
                                           style={styles.appListCard}>
                             <View style={styles.listTop}>
@@ -227,7 +234,7 @@ const ApiBinding = ({navigation}: RootStackScreenProps<'ApiBinding'>) => {
                                 </View>
                                 <TouchableOpacity onPress={() => editNow(data.data['User Details'][0].kucoinapi,
                                     data.data['User Details'][0].kucoinsecret,
-                                    'Kucoin',data.data['User Details'][0].kucoinbind)} activeOpacity={0.8}
+                                    '2',data.data['User Details'][0].kucoinbind,'Kucoin')} activeOpacity={0.8}
                                                   style={styles.connectBtn}>
 
                                     {
@@ -254,6 +261,7 @@ const ApiBinding = ({navigation}: RootStackScreenProps<'ApiBinding'>) => {
 
 
                     </View>
+                    }
                 </ScrollView>
             </LinearGradient>
         </SafeAreaView>

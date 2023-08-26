@@ -122,7 +122,7 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
 
 
 
-                                        {currencyFormatter('en-US', 'USD').format(Asset?.data?.rp_assets)}
+                                        {currencyFormatter('en-US', 'USD').format(Asset?.data?.rp_assets ? Asset?.data?.rp_assets : 0)}
 
                                 </Text>
                             </View>
@@ -166,7 +166,7 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
                                 {
 
 
-                                    currencyFormatter('en-US', 'USD').format(revenue.data.total_profit)
+                                    currencyFormatter('en-US', 'USD').format(revenue.data.total_profit ? revenue.data.total_profit : 0)
                                 }
                             </Text>
                         </View>
@@ -201,7 +201,7 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
                                 {
 
 
-                                    currencyFormatter('en-US', 'USD').format(revenue?.data?.today_profit)
+                                    currencyFormatter('en-US', 'USD').format(revenue?.data?.today_profit ? revenue?.data?.today_profit : 0)
                                 }
                             </Text>
                         </View>

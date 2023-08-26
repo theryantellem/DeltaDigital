@@ -116,6 +116,7 @@ export type RootStackParamList = {
         apiKey: string,
         apiSecrete: string,
         isBound: '0' | '1',
+        exchangeName: string,
     };
     AllStrategy: undefined
     ViewStrategy: {

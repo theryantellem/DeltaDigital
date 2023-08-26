@@ -10,7 +10,7 @@ import {fontPixel, heightPixel, pixelSizeHorizontal} from "../../../helpers/norm
 import {Fonts} from "../../../constants/Fonts";
 import Colors from "../../../constants/Colors";
 import {Ionicons} from "@expo/vector-icons";
-import {truncate, truncateString} from "../../../helpers";
+import {truncate, truncateString, useRefreshOnFocus} from "../../../helpers";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {bindAPI, getUser} from "../../../api";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
@@ -37,7 +37,7 @@ const ViewAPIBinding = ({route, navigation}: RootStackScreenProps<'ViewAPIBindin
 
     const dispatch = useAppDispatch()
     const queryClient = useQueryClient()
-    const {exchange, apiSecrete, apiKey, isBound} = route.params
+    const {exchange, apiSecrete, apiKey, exchangeName,isBound} = route.params
 
     const [copied, setCopied] = useState(false);
 
@@ -75,12 +75,12 @@ const ViewAPIBinding = ({route, navigation}: RootStackScreenProps<'ViewAPIBindin
 
     const {isLoading, mutate} = useMutation(['bindAPI'], bindAPI, {
         onSuccess: async (data) => {
-
+console.log(data)
             if (data.status == 1) {
 
                 navigation.navigate('SuccessScreen', {
                     type: 'success',
-                    title: `${exchange} API Updated successfully`,
+                    title: `${exchangeName} API Updated successfully`,
                     message: data.message
                 })
 
@@ -131,6 +131,7 @@ const ViewAPIBinding = ({route, navigation}: RootStackScreenProps<'ViewAPIBindin
                 formData.append('bind',  '1')
                 formData.append('exchange', exchange)
 
+                mutate({body: formData, userId: User_Details.id})
             }else{
                 const formData = new FormData()
                 formData.append('api_passphrase', passphrase)
@@ -138,15 +139,16 @@ const ViewAPIBinding = ({route, navigation}: RootStackScreenProps<'ViewAPIBindin
                 formData.append('api_secret', APISecrete)
                 formData.append('bind',  '0' )
                 formData.append('exchange', exchange)
+              //  console.log(formData)
 
-                mutate({body: formData, userId: User_Details.id})
+               mutate({body: formData, userId: User_Details.id})
             }
 
         }
     });
 
 
-
+useRefreshOnFocus(refetch)
     return (
 
         <>
@@ -169,7 +171,7 @@ const ViewAPIBinding = ({route, navigation}: RootStackScreenProps<'ViewAPIBindin
             >
 
 
-                <HeaderWithTitle title={`${exchange} API Binding`}/>
+                <HeaderWithTitle title={`${exchangeName} API Binding`}/>
                 <KeyboardAwareScrollView style={{
                     width: '100%'
                 }} contentContainerStyle={styles.scrollView} scrollEnabled
@@ -279,7 +281,7 @@ const ViewAPIBinding = ({route, navigation}: RootStackScreenProps<'ViewAPIBindin
                                 defaultValue={passphrase}
                                 focus={focusPassphrase}
                                 value={values.passphrase}
-                                label="API Passphrase"/>
+                                label="API Passphrase (Optional)"/>
                         }
 
                     </View>
@@ -288,6 +290,7 @@ const ViewAPIBinding = ({route, navigation}: RootStackScreenProps<'ViewAPIBindin
                         isBound == '0'
                         &&
                         <MyButton onPress={() => {
+                            setBindUnbind('0')
                             handleSubmit()
                         }} activeOpacity={0.7}
                                   style={[styles.button, {
@@ -313,7 +316,7 @@ const ViewAPIBinding = ({route, navigation}: RootStackScreenProps<'ViewAPIBindin
 
                         <View style={styles.buttonRow}>
                             <MyButton onPress={() => {
-                                setBindUnbind('0')
+                                setBindUnbind('1')
                                 handleSubmit()
                             }} activeOpacity={0.7}
                                       style={[styles.smallButton, {
@@ -330,7 +333,7 @@ const ViewAPIBinding = ({route, navigation}: RootStackScreenProps<'ViewAPIBindin
                             </MyButton>
 
                             <MyButton onPress={() => {
-                                setBindUnbind('1')
+                                setBindUnbind('0')
                                 handleSubmit()
                             }} activeOpacity={0.7}
                                       style={[styles.smallButton, {
