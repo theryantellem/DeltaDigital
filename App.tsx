@@ -132,6 +132,7 @@ export default function App() {
                 ])
 
                 promise.then(res =>{
+
                     if(res.data =='Please sign in') {
                         logout()
                         store.dispatch(setLockUser({
@@ -151,7 +152,7 @@ export default function App() {
 
 
 
-    },[]);
+    });
 
 
     useEffect(() => {

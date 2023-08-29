@@ -66,9 +66,9 @@ const SuccessScreen = ({navigation, route}: RootStackScreenProps<'SuccessScreen'
                         </Animated.View>
 
 
-                        <Text style={styles.noticeText}>
+                       {/* <Text style={styles.noticeText}>
                             You will be notified as soon as it is completed typically within 5 minutes
-                        </Text>
+                        </Text>*/}
 
                     </View>
 

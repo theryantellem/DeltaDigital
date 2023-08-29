@@ -4,7 +4,7 @@
     "slug": "delta-signal",
     "scheme": "delta-signal",
     "owner": "delta-signal",
-    "version": "2.1.5",
+    "version": "2.1.6",
     "jsEngine": "hermes",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -28,12 +28,12 @@
       "userInterfaceStyle": "light",
       "bundleIdentifier": "com.deltaSignal.mobile",
       "googleServicesFile": "./GoogleService-Info.plist",
-      "buildNumber": "12",
+      "buildNumber": "13",
       "usesIcloudStorage": true,
       "infoPlist": {
         "remote-notification": "Allow user to receive remote notification",
         "NSLocationWhenInUseUsageDescription": "Allow user to receive remote notification",
-        "NSCameraUsageDescription": "This app uses the camera to let user put a photo in his profile page.",
+        "NSCameraUsageDescription": "This app uses the camera to let user's scan a QR code and use the information on the QR code",
         "NSPhotoLibraryUsageDescription": "This app needs to access the camera library so they can upload their profile image.",
         "NSMicrophoneUsageDescription": "Allow Brace to access your microphone"
       },
@@ -46,7 +46,7 @@
         "backgroundColor": "#ffffff"
       },
       "googleServicesFile": "./google-services.json",
-      "versionCode": 12,
+      "versionCode": 13,
       "userInterfaceStyle": "light",
       "permissions": [
         "RECEIVE_BOOT_COMPLETED",

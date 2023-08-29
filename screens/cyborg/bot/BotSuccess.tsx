@@ -38,9 +38,13 @@ const BotSuccess = ({navigation,route}: RootStackScreenProps<'BotSuccess'>) => {
                 }} contentContainerStyle={styles.scrollView} scrollEnabled
                                          showsVerticalScrollIndicator={false}>
 
+
+
+
                     <Animated.View key={'title-info'} layout={Layout.easing(Easing.bounce).delay(100)}
                                    entering={FadeInDown.springify()} exiting={FadeOutDown} style={[styles.topWrap,{
-                        height: heightPixel(80)
+                                       justifyContent: 'space-evenly',
+                        height: heightPixel(140)
                     }]}>
 
 
@@ -70,7 +74,7 @@ const BotSuccess = ({navigation,route}: RootStackScreenProps<'BotSuccess'>) => {
                         <View style={styles.details}>
                             <View style={styles.rowDetails}>
                                 <Text style={styles.amountText}>
-                                    Amount
+                                    First Buy Amount
                                 </Text>
                                 <Text style={styles.amountText}>
                                     {amount}
@@ -92,9 +96,9 @@ const BotSuccess = ({navigation,route}: RootStackScreenProps<'BotSuccess'>) => {
 
 
                     </View>
-                    <Text style={styles.noticeText}>
+                   {/* <Text style={styles.noticeText}>
                         You will be notified as soon as it is completed typically within 5 minutes
-                    </Text>
+                    </Text>*/}
 
                 </KeyboardAwareScrollView>
 
@@ -170,6 +174,8 @@ const styles = StyleSheet.create({
         color: Colors.tintText
     },
     scrollView: {
+
+
         width: '100%',
         alignItems: "center"
     },

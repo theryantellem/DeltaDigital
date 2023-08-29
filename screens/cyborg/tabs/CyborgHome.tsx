@@ -27,7 +27,7 @@ import ToastAnimated from "../../../components/toast";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {addNotificationItem, setHideBalance} from "../../../app/slices/dataSlice";
 import {useQuery} from "@tanstack/react-query";
-import {activeStrategy, getAsset, getNewstrategy, getRevenueDetails, getUser} from "../../../api";
+import {activeStrategy, getAsset, getExchangeBal, getNewstrategy, getRevenueDetails, getUser} from "../../../api";
 
 let width = Dimensions.get("window").width
 
@@ -86,6 +86,12 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
         refetch:fetchRevenue,
 
     } = useQuery(['get-RevenueDetails',User_Details.id], () => getRevenueDetails(User_Details.id))
+    const {
+        data:ExchangeBal,
+        refetch:fetchExchangeBal,
+
+    } = useQuery(['get-Exchange-Bal',User_Details.id], () => getExchangeBal({userId:User_Details.id}))
+
 
     const openNotifications = () => {
 
@@ -124,6 +130,40 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
 
     useRefreshOnFocus(fetchAsset)
     useRefreshOnFocus(fetchStrategy)
+
+
+    const Exchanges = [
+        {
+            id: '1',
+            logo: 'https://play-lh.googleusercontent.com/PjoJoG27miSglVBXoXrxBSLveV6e3EeBPpNY55aiUUBM9Q1RCETKCOqdOkX2ZydqVf0',
+            status: User_Details.coinbaseprobind,
+            rank: "3",
+            exchange: '3',
+            exchangeName: 'Coinbase'
+        }, {
+            id: '2',
+            logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Binance_Logo.svg/1200px-Binance_Logo.svg.png',
+            status: User_Details.binancebind,
+
+            rank: "1",
+            exchange: '1',
+            exchangeName: 'Binance'
+        }, {
+            id: '3',
+            logo: 'https://static-00.iconduck.com/assets.00/kraken-icon-512x512-icmwhmh8.png',
+            status:User_Details.krakenbind,
+            rank: "1",
+            exchange: '4',
+            exchangeName: 'Kraken'
+        }, {
+            id: '4',
+            logo: 'https://assets.staticimg.com/cms/media/3gfl2DgVUqjJ8FnkC7QxhvPmXmPgpt42FrAqklVMr.png',
+            status: User_Details.kucoinbind,
+            rank: "1",
+            exchange: '2',
+            exchangeName: 'Kucoin'
+        }
+    ]
     return (
 
         <SafeAreaView style={styles.safeArea}>
@@ -365,7 +405,9 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
                                         {item.Market}
                                     </Text>
                                     <Text style={styles.coinNameText}>
-                                        Bitcoin
+
+                                        {Exchanges.find(exchange => exchange.exchange == item.exchange)?.exchangeName}
+
                                     </Text>
                                 </View>
 

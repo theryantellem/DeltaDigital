@@ -24,9 +24,7 @@ import SelectInput from "../../../components/inputs/SelectInput";
 import {append} from "react-native-svg/lib/typescript/lib/Matrix2D";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {addNotificationItem, clearTradeSetting, updateBot} from "../../../app/slices/dataSlice";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {botTradeSetting, copyTrade} from "../../../api";
-import * as Haptics from "expo-haptics";
+
 
 
 const SWITCH_TRACK_COLOR = {
@@ -44,25 +42,7 @@ const formSchema = yup.object().shape({
     ),
 
     strategyPeriod: yup.string().required('Strategy Period is required'),
-    /*
-        first_position_drop: yup.string()
-            .when('strategyPeriod', {
-                is: (val: string) => val == 'Cycle',
-                then: (schema) => schema.trim().required('Price Drop is required').matches(
-                    /^[1-9][0-9]*$/,
-                    "Invalid number type"
-                ),
-                otherwise: (schema) => schema.notRequired(),
-            }),*/
-    /*highest_price: yup.string()
-        .when('strategyPeriod', {
-            is: (val: string) => val == 'Cycle',
-            then: (schema) => schema.trim().required('Highest price is required').matches(
-                /^[1-9][0-9]*$/,
-                "Invalid number type"
-            ),
-            otherwise: (schema) => schema.notRequired(),
-        }),*/
+
 
     marginLimit: yup.string().required('Margin Limit call is required').matches(
         /^[1-9][0-9]*$/,
@@ -261,6 +241,13 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
             whole_position_take_profit_callback: whole_position_take_profit_callback,
 
 
+            stop_loss: '',
+            price_above: '',
+            price_below: '',
+            re_capital: '',
+            closing_price: '',
+            entry_call: ''
+
         },
         onSubmit: (values) => {
             const {
@@ -272,7 +259,15 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                 highest_price,
                 first_position_drop,
                 strategyPeriod, whole_position_stop_loss,
-                whole_position_take_profit_callback
+                whole_position_take_profit_callback,
+
+                stop_loss,
+                price_above,
+
+                price_below,
+                re_capital,
+                closing_price,
+                entry_call
             } = values;
 
             const strategyPeriodShot = strategyPeriod == 'Cycle' ? '0' : '1'
@@ -288,15 +283,23 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                     profit_ratio: takeProfit,
                     whole_ratio: whole_ratio,
                     whole_stop: whole_position_stop_loss,
-                   // first_ratio: first_position_drop,
+                    // first_ratio: first_position_drop,
                     cycle: strategyPeriodCycle,
                     profit_callback: whole_position_take_profit_callback,
                     direction,
-                    one_shot: strategyPeriodShot
+                    one_shot: strategyPeriodShot,
+
+                    stop_loss,
+                    price_above,
+
+                    price_below,
+                    re_capital,
+                    closing_price,
+                    entry_call
                 }))
 
-            navigation.navigate('ReviewScreen')
-        }else {
+                navigation.navigate('ReviewScreen')
+            } else {
                 dispatch(addNotificationItem({
                     id: Math.random(),
                     type: 'error',
@@ -341,9 +344,9 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
             numrows: parseInt(marginLimitCall)
         })
     }
-const clearData = () => {
-    dispatch(clearTradeSetting())
-}
+    const clearData = () => {
+        dispatch(clearTradeSetting())
+    }
 
     return (
         <>
@@ -543,7 +546,7 @@ const clearData = () => {
                                 focus={focusWhole_ratio}
                                 defaultValue={whole_ratio}
                                 value={values.whole_ratio}
-                                label="Whole ratio"/>
+                                label="Buy in callback"/>
 
                             <SelectInput
                                 editable={false}
@@ -584,6 +587,121 @@ const clearData = () => {
                                     value={values.direction}
                                     Btn={true}
                                 />
+                            }
+                            {
+                                tradeSetting.trade_type == '1'
+                                &&
+                                <TextInput
+
+                                    placeholder="0"
+                                    keyboardType={"number-pad"}
+                                    touched={touched.stop_loss}
+                                    error={touched.stop_loss && errors.stop_loss}
+
+                                    onChangeText={(e) => {
+                                        handleChange('stop_loss')(e);
+
+                                    }}
+                                    value={values.stop_loss}
+                                    label="Stop loss"/>
+
+
+                            }
+                            {
+                                tradeSetting.trade_type == '1'
+                                &&
+                                <TextInput
+
+                                    placeholder="0"
+                                    keyboardType={"number-pad"}
+                                    touched={touched.price_above}
+                                    error={touched.price_above && errors.price_above}
+
+                                    onChangeText={(e) => {
+                                        handleChange('price_above')(e);
+
+                                    }}
+                                    value={values.price_above}
+                                    label="Price above"/>
+
+
+                            }
+                            {
+                                tradeSetting.trade_type == '1'
+                                &&
+                                <TextInput
+
+                                    placeholder="0"
+                                    keyboardType={"number-pad"}
+                                    touched={touched.price_below}
+                                    error={touched.price_below && errors.price_below}
+
+                                    onChangeText={(e) => {
+                                        handleChange('price_below')(e);
+
+                                    }}
+                                    value={values.price_below}
+                                    label="Price below"/>
+
+
+                            }
+                            {
+                                tradeSetting.trade_type == '1'
+                                &&
+                                <TextInput
+
+                                    placeholder="0"
+                                    keyboardType={"number-pad"}
+                                    touched={touched.re_capital}
+                                    error={touched.re_capital && errors.re_capital}
+
+                                    onChangeText={(e) => {
+                                        handleChange('re_capital')(e);
+
+                                    }}
+                                    value={values.re_capital}
+                                    label="Capital"/>
+
+
+                            }
+
+                            {
+                                tradeSetting.trade_type == '1'
+                                &&
+                                <TextInput
+
+                                    placeholder="0"
+                                    keyboardType={"number-pad"}
+                                    touched={touched.closing_price}
+                                    error={touched.closing_price && errors.closing_price}
+
+                                    onChangeText={(e) => {
+                                        handleChange('closing_price')(e);
+
+                                    }}
+                                    value={values.closing_price}
+                                    label="Closing price"/>
+
+
+                            }
+                            {
+                                tradeSetting.trade_type == '1'
+                                &&
+                                <TextInput
+
+                                    placeholder="0"
+                                    keyboardType={"number-pad"}
+                                    touched={touched.entry_call}
+                                    error={touched.entry_call && errors.entry_call}
+
+                                    onChangeText={(e) => {
+                                        handleChange('entry_call')(e);
+
+                                    }}
+                                    value={values.entry_call}
+                                    label="Entry call"/>
+
+
                             }
 
                             {

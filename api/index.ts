@@ -45,7 +45,7 @@ export const getUser = async (userId: string) => {
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/profile`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/profile?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -801,6 +801,40 @@ export const startStopBot = async ({body,userId}:{userId: string,body:any}) => {
     ])
 
 }
+
+
+export const activateCopyStrategy = async ({id,status,userId}:{userId: string,status:string,id:any}) => {
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+
+//.set('id', ID_OF_THE_STRATEGY_PAIR_SELECTED)
+      //  .set('startbot', STATUS) // 1 ON, 0 off
+
+    const myHeaders = {
+        "TOKEN": Token,
+        "ID": userId
+    }
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+
+    };
+
+    return Promise.race([
+        fetch(`${LIVE_PROD_URL}/activateCopy?id=${id}&status=${status}`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])
+
+}
 export const sendTicketFeedback = async ({body,userId}:{userId: string,body:any}) => {
     let Token = await SecureStore.getItemAsync('delta-signal-token');
 
@@ -891,4 +925,34 @@ export const allAssets = {
         ])
 
     }
+}
+export const getExchangeBal = async ({userId}: {userId:string }) => {
+
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+
+        let timeoutId: NodeJS.Timeout
+        const myHeaders = {
+            "TOKEN": Token,
+            "ID": userId
+        }
+
+        const requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+        };
+
+        return Promise.race([
+            fetch(`${LIVE_PROD_URL}/ExchangeBalance`, requestOptions)
+                .then(response => response.json()),
+            new Promise((resolve, reject) => {
+                timeoutId = setTimeout(() => reject(new Error('Timeout')), 20000)
+
+                //  clearTimeout(timeoutId)
+            }).then(() => {
+                clearTimeout(timeoutId)
+            })
+
+        ])
+
+
 }

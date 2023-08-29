@@ -75,6 +75,7 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
 
     const {data: userInfo, mutate: getUserInfo, isLoading: gettingUser} = useMutation(['user-data'], getUser, {
         onSuccess: async (data) => {
+            console.log(data)
             if (data.status == 1) {
 
                 //console.log(data.data["User Details"][0])
@@ -101,7 +102,7 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
 
             onSuccess: async (data) => {
                 // alert(message)
-
+console.log(data.data.ID)
                 if (data.status == 1) {
 
                     /*         dispatch(addNotificationItem({
@@ -122,7 +123,7 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
                     }))
 
 
-                    SecureStore.setItemAsync('delta-signal-ID', data.data.id)
+                    SecureStore.setItemAsync('delta-signal-ID', data.data.ID)
 
                     SecureStore.setItemAsync('delta-signal-token', data.data.TOKEN).then(() => {
                         getUserInfo(data.data.ID)

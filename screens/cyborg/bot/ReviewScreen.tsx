@@ -175,8 +175,15 @@ console.log(err)
             formData.append('direction', tradeSetting.direction)
             formData.append('id', tradeSetting.id)
             formData.append('market', tradeSetting.market)
+
+            formData.append('stop_loss', tradeSetting.stop_loss)
+            formData.append('price_above', tradeSetting.price_above)
+            formData.append('re_capital', tradeSetting.re_capital)
+            formData.append('closing_price', tradeSetting.closing_price)
+            formData.append('price_below', tradeSetting.price_below)
+            formData.append('entry_call', tradeSetting.entry_call)
             createFutureBot({body: formData, userId: User_Details.id})
-            console.log(formData)
+
         }
         if (tradeSetting.trade_type == '0') {
             const formData = new FormData()
@@ -193,7 +200,7 @@ console.log(err)
             formData.append('profit_callback', tradeSetting.profit_callback)
             formData.append('one_short', tradeSetting.one_shot)
           //  formData.append('exchange', tradeSetting.exchange)
-           // formData.append('trade_type', tradeSetting.trade_type)
+            formData.append('trade_type', '0')
             formData.append('market', tradeSetting.market)
             formData.append('id', tradeSetting.id)
 

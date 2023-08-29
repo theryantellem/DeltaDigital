@@ -17,7 +17,7 @@ import {useRefreshOnFocus} from "../../../helpers";
 
 
 interface prop {
-    continueAsset: (exchange: string, status: '0' | '1', apiKey: string, apiSecrete: string) => void,
+    continueAsset: (exchangeId: string, status: '0' | '1', apiKey: string, apiSecrete: string) => void,
     item: {
         id: string,
         exchangeName: string,
@@ -77,39 +77,8 @@ const SelectExchange = ({navigation, route}: RootStackScreenProps<'SelectExchang
         [`user-data`, User_Details.id],
         () => getUser(User_Details.id),
         {})
-    const continueAsset = (exchange: string, status: '0' | '1', apiKey: string, apiSecrete: string) => {
-        dispatch(updateBot({
-            exchange,
-        }))
 
 
-
-            if (status == '1') {
-                navigation.navigate('SelectAsset', {
-                    exchange
-                })
-            } else {
-                navigation.navigate('ViewAPIBinding', {
-                    exchange,
-                    apiKey,
-                    apiSecrete,
-                    isBound: status
-                })
-
-            }
-
-
-
-    }
-    const renderItem = useCallback(
-        ({item}: any) => <ExchangeCard continueAsset={continueAsset} item={item}/>,
-        [],
-    );
-
-
-    const keyExtractor = useCallback((item: { id: string; }) => item.id, [],);
-
-    useRefreshOnFocus(refetch)
     const Exchanges = [
         {
             id: '1',
@@ -149,6 +118,44 @@ const SelectExchange = ({navigation, route}: RootStackScreenProps<'SelectExchang
             exchangeName: 'Kucoin'
         }
     ]
+
+    const continueAsset = (exchangeId: string, status: '0' | '1', apiKey: string, apiSecrete: string) => {
+        const exchangeName = Exchanges.find(exchange => exchange.exchange == exchangeId)?.exchangeName
+
+        dispatch(updateBot({
+            exchange:exchangeId,
+        }))
+
+
+
+            if (status == '1') {
+                navigation.navigate('SelectAsset', {
+                    exchange:exchangeId
+                })
+            } else {
+                navigation.navigate('ViewAPIBinding', {
+                    exchangeName,
+                    exchange:exchangeId,
+                    apiKey,
+                    apiSecrete,
+                    isBound: status
+                })
+
+            }
+
+
+
+    }
+    const renderItem = useCallback(
+        ({item}: any) => <ExchangeCard continueAsset={continueAsset} item={item}/>,
+        [],
+    );
+
+
+    const keyExtractor = useCallback((item: { id: string; }) => item.id, [],);
+
+    useRefreshOnFocus(refetch)
+
 
 
     return (

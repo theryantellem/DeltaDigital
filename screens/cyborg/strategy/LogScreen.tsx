@@ -1,6 +1,6 @@
-import React, {useCallback, useEffect, useMemo, useRef} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
-import {Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator} from 'react-native';
+import {Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Switch} from 'react-native';
 import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -18,7 +18,7 @@ import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../../
 import {Fonts} from "../../../constants/Fonts";
 import {RootStackScreenProps} from "../../../types";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {binanceTicker, getNewstrategy, startStopBot, startTradingBotFuture} from "../../../api";
+import {activateCopyStrategy, binanceTicker, getNewstrategy, startStopBot, startTradingBotFuture} from "../../../api";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {MyButton} from "../../../components/MyButton";
 import * as Haptics from "expo-haptics";
@@ -34,8 +34,13 @@ import {
     BottomSheetScrollView
 } from "@gorhom/bottom-sheet";
 import QRCode from "react-native-qrcode-svg";
+import HorizontalLine from "../../../components/HorizontalLine";
 
 
+const SWITCH_TRACK_COLOR = {
+    true: Colors.primary,
+    false: Colors.success,
+};
 const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
 
     const queryClient = useQueryClient()
@@ -93,8 +98,11 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
         data: newStrategy,
         refetch: fetchNewStrategy,
         isLoading
-    } = useQuery([`get-new-strategy-${market}`, User_Details.id],
+    } = useQuery([`get-new-strategy-${id}`, User_Details.id],
         () => getNewstrategy({body: formdata, userId: User_Details.id}))
+
+    const [switchToggle, setSwitchToggle] = useState(newStrategy?.data['Operation Strategy'][0]?.active_copy != '0');
+
 
 
     let old_price = newStrategy?.data['Operation Strategy'][0].Quantity * newStrategy?.data['Operation Strategy'][0].Avg_Price;
@@ -107,6 +115,11 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
        else{
            element.floating_loss = finalvalue;
        }*/
+
+    useEffect(() => {
+        setSwitchToggle(newStrategy?.data['Operation Strategy'][0]?.active_copy != '0')
+    }, [newStrategy]);
+
     const {
         mutate,
         isLoading: loading
@@ -143,6 +156,51 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
             },
             onSettled: () => {
                 queryClient.invalidateQueries(['start-Stop-Bot']);
+            }
+
+        })
+
+
+    const {
+        mutate: toggleCopyStatus,
+        isLoading: loadingCopy
+    } = useMutation(['activate-Copy-Strategy'], activateCopyStrategy,
+
+        {
+
+            onSuccess: async (data) => {
+                // alert(message)
+
+                if (data.status == 1) {
+                    fetchNewStrategy()
+                    /*  navigation.navigate('SuccessScreen', {
+                          title: 'Successful',
+                          message: `${market} Trading Bot Status updated`,
+                          type: 'success'
+                      })*/
+                    dispatch(addNotificationItem({
+                        id: Math.random(),
+                        type: 'success',
+                        body: "Strategy Copy status updated!",
+                    }))
+
+                } else {
+                    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+                    dispatch(addNotificationItem({
+                        id: Math.random(),
+                        type: 'error',
+                        body: data.error,
+                    }))
+
+                }
+            },
+
+            onError: (err) => {
+
+
+            },
+            onSettled: () => {
+                queryClient.invalidateQueries(['activate-Copy-Strategy']);
             }
 
         })
@@ -201,7 +259,8 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                 >
 
 
-                    <HeaderWithTitle isButton logAction={handlePresentModalPress} title='Logs' headerAction={openTransactionRecs}
+                    <HeaderWithTitle isButton logAction={handlePresentModalPress} title='Logs'
+                                     headerAction={openTransactionRecs}
                                      headerButton={<Ionicons name="ios-document-text-outline" size={24}
                                                              color="#fff"/>}/>
                     {
@@ -614,7 +673,30 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
 
                         }
 
+                        <HorizontalLine margin={20}/>
+                        {!isLoading && newStrategy?.data['Operation Strategy'][0]?.active_copy !== undefined &&
 
+                            <View style={styles.switchWrap}>
+                            <Text style={styles.label}>
+                                Activate Strategy for copy {loadingCopy && <ActivityIndicator size='small' color={Colors.text}/>}
+                            </Text>
+                            <Switch
+
+                                trackColor={SWITCH_TRACK_COLOR}
+                                thumbColor={switchToggle ? "#fff" : Colors.secondary}
+                                ios_backgroundColor={Colors.tintSuccess}
+                                onValueChange={(toggled) => {
+                                    //setEnableNow(toggled)
+                                    setSwitchToggle(toggled)
+                                    // toggle(toggled)
+                                    toggleCopyStatus({status: toggled ? '1' : '0', id, userId: User_Details.id})
+
+                                }}
+                                value={switchToggle}
+                            />
+                        </View>
+                        }
+                        <HorizontalLine margin={20}/>
                     </ScrollView>
 
                     <View style={styles.buttonRow}>
@@ -699,7 +781,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                     <BottomSheetScrollView style={styles.sheetScrollView} contentContainerStyle={{
                         width: '100%',
                         alignItems: 'center',
-                        justifyContent:'center'
+                        justifyContent: 'center'
                     }}>
 
                         <View style={[styles.sheetHead, {
@@ -726,8 +808,8 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                                 <View style={[styles.toastIcon, {
                                     backgroundColor: Colors.textDark,
                                 }]}>
-                                    <Ionicons name="warning-outline" size={18} color={Colors.errorRed}/>
 
+                                    <FontAwesome name="bell-o" size={18} color={Colors.errorRed}/>
                                 </View>
                             </View>
 
@@ -735,6 +817,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
 
 
                                 <Text style={styles.logText}>
+
                                     {newStrategy?.data['Operation Strategy'][0].Log}
                                 </Text>
                             </View>
@@ -1012,7 +1095,7 @@ const styles = StyleSheet.create({
         marginTop: 40,
         paddingHorizontal: pixelSizeHorizontal(10),
         width: '100%',
-        height:100,
+        height: 100,
 
         justifyContent: 'center',
         flexDirection: 'row',
@@ -1043,6 +1126,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
 
+    },
+    switchWrap: {
+        marginTop: 5,
+        width: '90%',
+        height: 65,
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    label: {
+        color: Colors.text,
+        fontSize: fontPixel(14),
+        fontFamily: Fonts.faktumMedium,
     },
 })
 

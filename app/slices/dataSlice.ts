@@ -34,6 +34,12 @@ export interface DataState {
         exchange: string,
         market: string,
         id: string,
+        price_above:string,
+        "price_below": string,
+        "re_capital": string,
+        stop_loss:string,
+        closing_price:string
+        entry_call:string,
         direction: 'Long' | 'Short'
     },
     logTradeSetting:{

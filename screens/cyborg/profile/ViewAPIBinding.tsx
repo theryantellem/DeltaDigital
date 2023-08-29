@@ -75,7 +75,7 @@ const ViewAPIBinding = ({route, navigation}: RootStackScreenProps<'ViewAPIBindin
 
     const {isLoading, mutate} = useMutation(['bindAPI'], bindAPI, {
         onSuccess: async (data) => {
-console.log(data)
+
             if (data.status == 1) {
 
                 navigation.navigate('SuccessScreen', {
@@ -139,7 +139,7 @@ console.log(data)
                 formData.append('api_secret', APISecrete)
                 formData.append('bind',  '0' )
                 formData.append('exchange', exchange)
-              //  console.log(formData)
+
 
                mutate({body: formData, userId: User_Details.id})
             }
@@ -228,7 +228,7 @@ useRefreshOnFocus(refetch)
                             error={touched.apiKey && errors.apiKey}
                             onFocus={() => setFocusApiKey(true)}
                             onChangeText={(e) => {
-                                handleChange('username')(e);
+                                handleChange('apiKey')(e);
                                 setUserApiKey(e);
                             }}
                             onBlur={(e) => {
@@ -262,7 +262,7 @@ useRefreshOnFocus(refetch)
 
                         {
                             isBound == '0'
-                            &&
+                            && exchangeName !== 'Binance' &&
                             <TextInput
 
                                 placeholder="Passphrase"

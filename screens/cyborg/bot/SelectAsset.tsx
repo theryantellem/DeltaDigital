@@ -9,9 +9,9 @@ import {fontPixel, heightPixel, pixelSizeVertical, widthPixel} from "../../../he
 import Colors from "../../../constants/Colors";
 import {Fonts} from "../../../constants/Fonts";
 import {LineChart} from 'react-native-wagmi-charts';
-import {currencyFormatter, titleCase, wait} from "../../../helpers";
+import {currencyFormatter, titleCase, useRefreshOnFocus, wait} from "../../../helpers";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-reanimated";
-import {getUser, quantitativeStrategies} from "../../../api";
+import {binanceTicker, getUser, quantitativeStrategies} from "../../../api";
 import {useQuery} from "@tanstack/react-query";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {FlashList} from "@shopify/flash-list";
@@ -21,16 +21,19 @@ import {updateBot} from "../../../app/slices/dataSlice";
 
 
 interface props {
+    tickers: [],
     continueAsset: (market:string,id:string) => void,
     item: {
         id: string,
         Quantity: string,
+
         Market: string,
         Avg_Price:string,
         coinName: string,
         symbol: string,
         price: number,
         balance: string,
+        coin: string,
     }
 }
 
@@ -76,12 +79,12 @@ const coinData = [
 ];
 
 
-const AssetCard = ({item, continueAsset}: props) => {
+const AssetCard = ({item, continueAsset,tickers}: props) => {
 
 
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
-
+    const tickerRes = tickers?.find((ticker: { symbol: string; }) => ticker.symbol == item.Market.replace('/', ''))
 
     return (
         <Animated.View key={item.id} layout={Layout.easing(Easing.ease)}
@@ -97,11 +100,9 @@ const AssetCard = ({item, continueAsset}: props) => {
 
                 <View style={styles.coinName}>
                     <Text style={styles.coinSymbol}>
-                        {item.Market}
+                        {item.coin}
                     </Text>
-                    <Text style={styles.coinNameText}>
-                        {item.balance}
-                    </Text>
+
                 </View>
 
                 <View style={styles.assetChart}>
@@ -115,11 +116,11 @@ const AssetCard = ({item, continueAsset}: props) => {
 
                 <View style={styles.priceSection}>
                     <Text style={styles.coinSymbol}>
-                        {currencyFormatter('en-US', 'USD').format(item.Avg_Price)}
+                        <Text style={{color: '#fff', fontFamily: Fonts.faktumBold}}>{
+                            tickerRes?.lastPrice ? currencyFormatter('en-US', 'USD').format(tickerRes?.lastPrice) : '0.0'} </Text>
+
                     </Text>
-                    <Text style={styles.coinNameText}>
-                        {item.Quantity}
-                    </Text>
+
                 </View>
 
             </Pressable>
@@ -142,16 +143,24 @@ const SelectAsset = ({navigation,route}: RootStackScreenProps<'SelectAsset'>) =>
         }))
     }
 
+
+    const {
+        data: tickers,
+        refetch: fetchTickers,
+        isLoading: fetchingTickers
+    } = useQuery(['binanceTicker'], binanceTicker)
+
     const renderItem = useCallback(
-        ({item}: any) => <AssetCard continueAsset={continueAsset} item={item}/>,
-        [],
+        ({item}: any) => <AssetCard tickers={tickers} continueAsset={continueAsset} item={item}/>,
+        [tickers],
     );
 
 
     const keyExtractor = useCallback((item: {
         id: string;
     }) => item.id, [],);
-    const {data, refetch,isLoading} = useQuery([`quantitativeStrategies`], () => quantitativeStrategies(User_Details.id))
+
+    const {data, refetch,isLoading} = useQuery([`quantitativeStrategies`,User_Details.id], () => quantitativeStrategies(User_Details.id))
   //  console.log("********************quantitativeStrategies********************")
 
 
@@ -168,6 +177,8 @@ const SelectAsset = ({navigation,route}: RootStackScreenProps<'SelectAsset'>) =>
             assets?.Market?.includes(searchValue.toUpperCase().trim())
         )
     }
+
+    useRefreshOnFocus(fetchTickers)
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -188,7 +199,7 @@ const SelectAsset = ({navigation,route}: RootStackScreenProps<'SelectAsset'>) =>
                     <SearchInput
 
                         placeholder="Search market pair"
-                        keyboardType={"number-pad"}
+                        keyboardType={"default"}
 
                         onChangeText={(e) => {
                             setSearchValue(e);

@@ -113,12 +113,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     title: {
+        textAlign:'center',
         color: "#fff",
         fontSize: fontPixel(16),
         fontFamily: Fonts.faktumSemiBold
     },
     titleWrap: {
-        width: '50%',
+        width: '52%',
 
         alignItems: 'center',
         justifyContent: 'center',

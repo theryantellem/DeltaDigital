@@ -36,6 +36,14 @@ export type RootStackParamList = {
     TradeSettingStrategy: {
         id: string,
         dataLogs: {
+            trade_type:string,
+
+            price_above:string,
+            "price_below": string,
+            "re_capital": string,
+            stop_loss:string,
+            closing_price:string
+            entry_call:string,
             "Avg_Price": string,
             "FloatingLoss": string,
             "Log": string,

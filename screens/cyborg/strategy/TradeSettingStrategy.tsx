@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
 import {Text, View, StyleSheet, Switch, TouchableOpacity, ActivityIndicator} from 'react-native';
 import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
@@ -23,7 +23,7 @@ import {Ionicons, MaterialIcons, Octicons} from "@expo/vector-icons";
 import SelectInput from "../../../components/inputs/SelectInput";
 import {append} from "react-native-svg/lib/typescript/lib/Matrix2D";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
-import {addNotificationItem, clearTradeSetting, updateBot} from "../../../app/slices/dataSlice";
+import {addNotificationItem, clearTradeSetting, updateBot, updateBotSetting} from "../../../app/slices/dataSlice";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {botTradeSetting, copyTrade} from "../../../api";
 import * as Haptics from "expo-haptics";
@@ -169,6 +169,7 @@ const TradeSettingStrategy = ({navigation, route}: RootStackScreenProps<'TradeSe
     const {id, dataLogs} = route.params
     const dispatch = useAppDispatch()
     const queryClient = useQueryClient()
+    //console.log(dataLogs['whole position take profit'])
 
     const dataSlice = useAppSelector(state => state.data)
     const {logTradeSetting} = dataSlice
@@ -193,14 +194,20 @@ const TradeSettingStrategy = ({navigation, route}: RootStackScreenProps<'TradeSe
     const [focusWhole_stop, setFocusWhole_stop] = useState(false);
 
 
-    const [whole_ratio, setWhole_ratio] = useState('');
+    const [whole_ratio, setWhole_ratio] = useState(dataLogs.buyin_callback);
     const [focusWhole_ratio, setFocusWhole_ratio] = useState(false);
 
 
-    const [whole_position_take_profit_callback, setWhole_position_take_profit_callback] = useState('');
+    const [whole_position_take_profit_callback, setWhole_position_take_profit_callback] = useState(dataLogs['whole position take profit']);
     const [focusWhole_position_take_profit_callback, setFocusWhole_position_take_profit_callback] = useState(false);
 
-    const [value, setValue] = useState(0);
+
+    const [stop_loss, setStop_loss] = useState(dataLogs.stop_loss)
+    const [price_above, setPrice_above] = useState(dataLogs.price_above)
+    const [re_capital, setRe_capital] = useState(dataLogs.re_capital)
+    const [price_below, setPrice_below] = useState(dataLogs.price_below)
+    const [closing_price, setClosing_price] = useState(dataLogs.closing_price)
+    const [entry_call, setEntry_call] = useState(dataLogs.entry_call)
 
     const [switchToggle, setSwitchToggle] = useState(false);
 
@@ -307,6 +314,13 @@ const TradeSettingStrategy = ({navigation, route}: RootStackScreenProps<'TradeSe
             whole_position_stop_loss: whole_stop,
             whole_position_take_profit_callback: whole_position_take_profit_callback,
 
+            stop_loss: stop_loss,
+            price_above: price_above,
+            price_below: price_below,
+            re_capital: re_capital,
+            closing_price: closing_price,
+            entry_call: entry_call,
+
 
         },
         onSubmit: (values) => {
@@ -319,7 +333,14 @@ const TradeSettingStrategy = ({navigation, route}: RootStackScreenProps<'TradeSe
                 highest_price,
                 first_position_drop,
                 strategyPeriod, whole_position_stop_loss,
-                whole_position_take_profit_callback
+                whole_position_take_profit_callback,
+
+                stop_loss,
+                price_above,
+                price_below,
+                re_capital,
+                closing_price,
+                entry_call
             } = values;
 
             const strategyPeriodShot = strategyPeriod == 'Cycle' ? '0' : '1'
@@ -350,7 +371,15 @@ const TradeSettingStrategy = ({navigation, route}: RootStackScreenProps<'TradeSe
                 formData.append('cycle', strategyPeriodCycle)
                 formData.append('profit_callback', whole_position_take_profit_callback)
                 formData.append('one_short', strategyPeriodShot)
-                //  formData.append('exchange', tradeSetting.exchange)
+
+
+                formData.append('trade_type', dataLogs.trade_type)
+                formData.append('stop_loss', stop_loss)
+                formData.append('price_above', price_above)
+                formData.append('capital', re_capital)
+                formData.append('closing_price', closing_price)
+                formData.append('price_below', price_below)
+                formData.append('entry_call', entry_call)
                 // formData.append('trade_type', tradeSetting.trade_type)
                 formData.append('market', dataLogs.Market)
                 formData.append('id', id)
@@ -405,9 +434,20 @@ const TradeSettingStrategy = ({navigation, route}: RootStackScreenProps<'TradeSe
         })
     }
 
+
+    useEffect(() => {
+        dispatch(updateBotSetting({
+            price_drop: dataLogs["Price drop"].join('|'),
+            m_ratio: dataLogs["Martingale ratio"].join('|'),
+
+        }))
+    }, []);
+
+
     const clearData = () => {
         dispatch(clearTradeSetting())
     }
+
 
     return (
         <>
@@ -545,7 +585,7 @@ const TradeSettingStrategy = ({navigation, route}: RootStackScreenProps<'TradeSe
 
                             <TextInput
 
-                                placeholder="Stop loss"
+                                placeholder="0"
                                 keyboardType={"number-pad"}
                                 touched={touched.whole_position_stop_loss}
                                 error={touched.whole_position_stop_loss && errors.whole_position_stop_loss}
@@ -607,7 +647,7 @@ const TradeSettingStrategy = ({navigation, route}: RootStackScreenProps<'TradeSe
                                 focus={focusWhole_ratio}
                                 defaultValue={whole_ratio}
                                 value={values.whole_ratio}
-                                label="Whole ratio"/>
+                                label="Buy in callback"/>
 
                             <SelectInput
                                 editable={false}
@@ -626,6 +666,129 @@ const TradeSettingStrategy = ({navigation, route}: RootStackScreenProps<'TradeSe
                                 value={values.strategyPeriod}
                                 Btn={true}
                             />
+
+                            {
+                                dataLogs.trade_type == '1'
+                                &&
+                                <TextInput
+
+                                    placeholder="0"
+                                    keyboardType={"number-pad"}
+                                    touched={touched.stop_loss}
+                                    error={touched.stop_loss && errors.stop_loss}
+
+                                    onChangeText={(e) => {
+                                        handleChange('stop_loss')(e);
+                                        setStop_loss(e);
+
+                                    }}
+                                    value={values.stop_loss}
+                                    defaultValue={stop_loss}
+                                    label="Stop loss"/>
+
+
+                            }
+                            {
+                                dataLogs.trade_type == '1'
+                                &&
+                                <TextInput
+
+                                    placeholder="0"
+                                    keyboardType={"number-pad"}
+                                    touched={touched.price_above}
+                                    error={touched.price_above && errors.price_above}
+
+                                    onChangeText={(e) => {
+                                        handleChange('price_above')(e);
+                                        setPrice_above(e)
+                                    }}
+                                    value={values.price_above}
+                                    defaultValue={price_above}
+                                    label="Price above"/>
+
+
+                            }
+                            {
+                                dataLogs.trade_type == '1'
+                                &&
+                                <TextInput
+
+                                    placeholder="0"
+                                    keyboardType={"number-pad"}
+                                    touched={touched.price_below}
+                                    error={touched.price_below && errors.price_below}
+
+                                    onChangeText={(e) => {
+                                        handleChange('price_below')(e);
+                                        setPrice_above(price_below)
+                                    }}
+                                    defaultValue={price_below}
+                                    value={values.price_below}
+                                    label="Price below"/>
+
+
+                            }
+                            {
+                                dataLogs.trade_type == '1'
+                                &&
+                                <TextInput
+
+                                    placeholder="0"
+                                    keyboardType={"number-pad"}
+                                    touched={touched.re_capital}
+                                    error={touched.re_capital && errors.re_capital}
+
+                                    onChangeText={(e) => {
+                                        handleChange('re_capital')(e);
+setRe_capital(e)
+                                    }}
+                                    defaultValue={re_capital}
+                                    value={values.re_capital}
+                                    label="Capital"/>
+
+
+                            }
+
+                            {
+                                dataLogs.trade_type == '1'
+                                &&
+                                <TextInput
+
+                                    placeholder="0"
+                                    keyboardType={"number-pad"}
+                                    touched={touched.closing_price}
+                                    error={touched.closing_price && errors.closing_price}
+
+                                    onChangeText={(e) => {
+                                        handleChange('closing_price')(e);
+setClosing_price(e)
+                                    }}
+                                    defaultValue={closing_price}
+                                    value={values.closing_price}
+                                    label="Closing price"/>
+
+
+                            }
+                            {
+                                dataLogs.trade_type == '1'
+                                &&
+                                <TextInput
+
+                                    placeholder="0"
+                                    keyboardType={"number-pad"}
+                                    touched={touched.entry_call}
+                                    error={touched.entry_call && errors.entry_call}
+
+                                    onChangeText={(e) => {
+                                        handleChange('entry_call')(e);
+setEntry_call(e)
+                                    }}
+                                    defaultValue={entry_call}
+                                    value={values.entry_call}
+                                    label="Entry call"/>
+
+
+                            }
 
 
                             {

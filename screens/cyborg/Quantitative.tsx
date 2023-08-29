@@ -31,24 +31,22 @@ import {FlashList} from "@shopify/flash-list";
 import dayjs from "dayjs";
 
 
-
 var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime)
-
 
 
 const Exchange = [
     {
         title: "Binance",
         id: '1'
-    } ,
+    },
     {
         title: "Kucoin",
         id: '2'
     }, {
         title: "Coinbase",
         id: '3'
-    },{
+    }, {
         title: "Kraken",
         id: '4'
     }
@@ -66,26 +64,27 @@ interface itemProps {
 
 
 interface props {
-    tickers:[],
-    continueAsset: (exchange:string,id:string,market:string) => void,
+    tickers: [],
+    continueAsset: (exchange: string, id: string, market: string) => void,
     item: {
         id: string,
         exchange: string,
         Quantity: string,
         Market: string,
-        Avg_Price:string,
+        Avg_Price: string,
         coinName: string,
         symbol: string,
         cycle: string,
         price: number,
         balance: string,
         trade_type: string,
+        coin: string,
     }
 }
 
 const SelectValue = ({selected, item, action}: itemProps) => (
     <TouchableOpacity onPress={() => action(item.title, item.id)} style={[styles.selectBtn, {
-        borderBottomColor:Colors.borderColor,
+        borderBottomColor: Colors.borderColor,
     }]}>
 
         <View style={styles.item}>
@@ -106,83 +105,86 @@ const SelectValue = ({selected, item, action}: itemProps) => (
 )
 
 
-const QuantitativeItem = ({item,tickers,continueAsset}:props) => {
+const QuantitativeItem = ({item, tickers, continueAsset}: props) => {
 
-const tickerRes = tickers?.find((ticker: { symbol: string; }) => ticker.symbol == item.Market.replace('/', '') )
+    const tickerRes = tickers?.find((ticker: { symbol: string; }) => ticker.symbol == item.Market.replace('/', ''))
 
-  return(
-      <Pressable onPress={()=>continueAsset(item.exchange,item.id,item.Market)} style={styles.quantitativeCard}>
+    return (
+        <Pressable onPress={() => continueAsset(item.exchange, item.id, item.Market)} style={styles.quantitativeCard}>
 
-          <View style={styles.leftInfo}>
-
-
-              <View style={styles.assetIcon}>
-                  <View style={styles.assetCardIcon}>
-                      <Image source={{uri:`https://backend.deltacyborg.pro/Upload/coin/${item['coin image']}`}}
-                                       style={styles.logo}/>
+            <View style={styles.leftInfo}>
 
 
-                  </View>
-              </View>
+                <View style={styles.assetIcon}>
+                    <View style={styles.assetCardIcon}>
+                        <Image source={{uri: `https://backend.deltacyborg.pro/Upload/coin/${item['coin image']}`}}
+                               style={styles.logo}/>
 
-              <View style={styles.assetName}>
+
+                    </View>
+                </View>
+
+                <View style={styles.assetName}>
 
 
-                  <Text style={styles.assetNameText}>
-                      {item.Market}
-                  </Text>
-                  <Text style={[styles.assetInfo]}>
-                      Price: <Text style={{color: '#fff', fontFamily: Fonts.faktumBold}}>{
-                      tickerRes?.lastPrice ? currencyFormatter('en-US','USD').format(tickerRes?.lastPrice) : '0.0'} </Text>
-                  </Text>
-                  <Text style={styles.assetInfo}>
-                      Quantity: <Text
-                      style={{color: '#fff', fontFamily: Fonts.faktumBold}}>{parseFloat(item.Quantity).toFixed(4)}</Text>
-                  </Text>
-              </View>
+                    <Text style={styles.assetNameText}>
+                        {item.coin}
+                    </Text>
+                    <Text style={[styles.assetInfo]}>
+                        Price: <Text style={{color: '#fff', fontFamily: Fonts.faktumBold}}>{
+                        tickerRes?.lastPrice ? currencyFormatter('en-US', 'USD').format(tickerRes?.lastPrice) : '0.0'} </Text>
+                    </Text>
+                    <Text style={styles.assetInfo}>
+                        Quantity: <Text
+                        style={{
+                            color: '#fff',
+                            fontFamily: Fonts.faktumBold
+                        }}>{parseFloat(item.Quantity).toFixed(4)}</Text>
+                    </Text>
+                </View>
 
-          </View>
+            </View>
 
-          <View style={styles.centerInfo}>
+            <View style={styles.centerInfo}>
 
-              <View style={styles.tagWrap}>
-                  <Text style={styles.tagText}>
+                <View style={styles.tagWrap}>
+                    <Text style={styles.tagText}>
 
-                      {item?.cycle == '1' && 'Cycle'}
-                      {item['One-shot'] == '1' && 'One-shot'}
-                  </Text>
-              </View>
-              <View style={[styles.tagWrap,{
-                  marginTop:8,
-              }]}>
-                  <Text style={[styles.tagText,{
-                      color: Colors.primary
-                  }]}>
+                        {item?.cycle == '1' && 'Cycle'}
+                        {item['One-shot'] == '1' && 'One-shot'}
+                    </Text>
+                </View>
+                <View style={[styles.tagWrap, {
+                    marginTop: 8,
+                }]}>
+                    <Text style={[styles.tagText, {
+                        color: Colors.primary
+                    }]}>
 
-                      {item?.trade_type == '1' && 'Futures'}
-                      {item.trade_type == '0' && 'Spot'}
-                  </Text>
-              </View>
-          </View>
+                        {item?.trade_type == '1' && 'Futures'}
+                        {item.trade_type == '0' && 'Spot'}
+                    </Text>
+                </View>
+            </View>
 
-          <View style={styles.rightInfo}>
-              <Text style={styles.cardValue}>
+            <View style={styles.rightInfo}>
+                <Text style={styles.cardValue}>
 
-                  { tickerRes?.priceChange ? parseFloat(tickerRes?.priceChange).toFixed(2) : '0'}%
-              </Text>
-              <Text style={[styles.cardValue,{
-                  color: parseInt(tickerRes?.priceChangePercent) > 0 ? Colors.successChart : Colors.errorRed
-              }]}>
-               Chng%: { tickerRes?.priceChangePercent ? parseFloat(tickerRes?.priceChangePercent).toFixed(3) : '0'}
-              </Text>
-              {/*<Text style={[styles.cardValue,{
+                    {tickerRes?.priceChange ? parseFloat(tickerRes?.priceChange).toFixed(2) : '0'}%
+                </Text>
+                <Text style={[styles.cardValue, {
+                    color: parseInt(tickerRes?.priceChangePercent) > 0 ? Colors.successChart : Colors.errorRed
+                }]}>
+                    Chng%: {tickerRes?.priceChangePercent ? parseFloat(tickerRes?.priceChangePercent).toFixed(3) : '0'}
+                </Text>
+                {/*<Text style={[styles.cardValue,{
                   color: "#ccc"
               }]}>
                   {dayjs.unix(tickerRes.closeTime).format('hh:m A')}
               </Text>*/}
-          </View>
-      </Pressable>
-  )
+            </View>
+        </Pressable>
+    )
 }
 
 
@@ -195,12 +197,20 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
 
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
-     const {data,isLoading,refetch} =  useQuery(['quantitativeStrategies',User_Details.id],()=>quantitativeStrategies(User_Details.id))
+    const {
+        data,
+        isLoading,
+        refetch
+    } = useQuery(['quantitativeStrategies', User_Details.id], () => quantitativeStrategies(User_Details.id))
 
 
     const [refreshing, setRefreshing] = useState(false);
 
-    const {data:tickers,refetch:fetchTickers,isLoading:fetchingTickers}= useQuery(['binanceTicker'],binanceTicker)
+    const {
+        data: tickers,
+        refetch: fetchTickers,
+        isLoading: fetchingTickers
+    } = useQuery(['binanceTicker'], binanceTicker)
 
 
 //   const {data:tickers}= useQuery(['binanceTicker'],binanceTicker)
@@ -231,9 +241,6 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
     );
 
 
-
-
-
     const switchItem = useCallback(async (title: string, id: string) => {
         setTabExchange(id)
         setSelectedExchange(title)
@@ -246,8 +253,8 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
         <SelectValue selected={tabExchange} item={item} action={switchItem}/>
     ), [tabExchange]);
 
-    const seeLogs = (exchange:string,id:string,market:string) =>{
-        navigation.navigate('LogScreen',{
+    const seeLogs = (exchange: string, id: string, market: string) => {
+        navigation.navigate('LogScreen', {
             id,
             market,
             exchange,
@@ -262,95 +269,160 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
     ), [tickers])
 
     const renderHeader = useCallback(() => (
-<>
-    <View style={styles.balanceCanvas}>
-        <View style={styles.balanceTop}>
+        <>
+            <View style={styles.balanceCanvas}>
+                <View style={styles.balanceTop}>
 
-            <TouchableOpacity onPress={()=>handleSnapPress(1)} activeOpacity={0.8}>
-                <LinearGradient style={styles.selectExchangeBtn}
-                                colors={Colors.btnGradient}
+                    <TouchableOpacity onPress={() => handleSnapPress(1)} activeOpacity={0.8}>
+                        <LinearGradient style={styles.selectExchangeBtn}
+                                        colors={Colors.btnGradient}
 
-                                start={{x: 1, y: 1}}
-                                end={{x: 0.4, y: 0.5,}}>
-                    <Text style={styles.selectBtnText}>
-                        {selectedExchange}
-                    </Text>
+                                        start={{x: 1, y: 1}}
+                                        end={{x: 0.4, y: 0.5,}}>
+                            <Text style={styles.selectBtnText}>
+                                {selectedExchange}
+                            </Text>
 
-                    <Octicons name="chevron-down" size={20} color="#fff"/>
-                </LinearGradient>
-            </TouchableOpacity>
+                            <Octicons name="chevron-down" size={20} color="#fff"/>
+                        </LinearGradient>
+                    </TouchableOpacity>
 
-            <TouchableOpacity style={styles.balanceTitle}>
-                <Text style={styles.balText}>
-                    {selectedExchange} USDT
-                </Text>
+                    <TouchableOpacity style={styles.balanceTitle}>
+                        <Text style={styles.balText}>
+                            {selectedExchange} USDT (Spot)
+                        </Text>
 
-                <Ionicons name="eye-off-outline" size={18} color={Colors.text}/>
 
-            </TouchableOpacity>
+                    </TouchableOpacity>
 
-            <View style={styles.balanceGraph}>
+                    <View style={styles.balanceGraph}>
 
-                {
-                    selectedExchange == 'Binance' &&
+                        {
+                            selectedExchange == 'Binance' &&
 
-                <Text
-                    style={styles.balance}>
+                            <Text
+                                style={styles.balance}>
 
-                    {currencyFormatter('en-US', 'USD').format(data?.data?.binance_balance)}
-                </Text>
-                }
-                {
-                    selectedExchange == 'Kucoin' &&
+                                {currencyFormatter('en-US', 'USD').format(data?.data?.binance_balance)}
+                            </Text>
+                        }
+                        {
+                            selectedExchange == 'Kucoin' &&
 
-                <Text
-                    style={styles.balance}>
+                            <Text
+                                style={styles.balance}>
 
-                    {currencyFormatter('en-US', 'USD').format(data?.data?.kucoin_balance)}
-                </Text>
-                }
-                {
-                    selectedExchange == 'Coinbase' &&
+                                {currencyFormatter('en-US', 'USD').format(data?.data?.kucoin_balance)}
+                            </Text>
+                        }
+                        {
+                            selectedExchange == 'Coinbase' &&
 
-                <Text
-                    style={styles.balance}>
+                            <Text
+                                style={styles.balance}>
 
-                    {currencyFormatter('en-US', 'USD').format(data?.data?.coinbasepro_balance)}
-                </Text>
-                }
+                                {currencyFormatter('en-US', 'USD').format(data?.data?.coinbasepro_balance)}
+                            </Text>
+                        }
 
-                {
-                    selectedExchange == 'Kraken' &&
+                        {
+                            selectedExchange == 'Kraken' &&
 
-                <Text
-                    style={styles.balance}>
+                            <Text
+                                style={styles.balance}>
 
-                    {currencyFormatter('en-US', 'USD').format(data?.data?.kraken_balance)}
-                </Text>
-                }
+                                {currencyFormatter('en-US', 'USD').format(data?.data?.kraken_balance)}
+
+                            </Text>
+
+                        }
+
+
+                    </View>
+
+
+                    {
+                        selectedExchange == 'Kraken' &&
+
+                        <Text style={styles.walletAddressTxt}>
+                            {currencyFormatter('en-US', 'USD').format(data?.data?.futures_kraken_balance)}
+
+                            <Text style={{
+                                color: "#cccc",
+                                fontSize: fontPixel(12),
+                                fontFamily: Fonts.faktumMedium
+                            }}> (Futures) </Text>
+                        </Text>
+
+                    }
+
+
+                    {
+                        selectedExchange == 'Coinbase' &&
+
+                        <Text style={styles.walletAddressTxt}>
+                            {currencyFormatter('en-US', 'USD').format(data?.data?.futures_coinbasepro_balance)}
+
+                            <Text style={{
+                                color: "#cccc",
+                                fontSize: fontPixel(12),
+                                fontFamily: Fonts.faktumMedium
+                            }}> (Futures) </Text>
+                        </Text>
+
+                    }
+
+                    {
+                        selectedExchange == 'Binance' &&
+
+                        <Text style={styles.walletAddressTxt}>
+                            {currencyFormatter('en-US', 'USD').format(data?.data?.futures_binance_balance)}
+
+                            <Text style={{
+                                color: "#cccc",
+                                fontSize: fontPixel(12),
+                                fontFamily: Fonts.faktumMedium
+                            }}> (Futures) </Text>
+                        </Text>
+
+                    }
+                    {
+                        selectedExchange == 'Kucoin' &&
+
+                        <Text style={styles.walletAddressTxt}>
+                            {currencyFormatter('en-US', 'USD').format(data?.data?.futures_kucoin_balance)}
+
+                            <Text style={{
+                                color: "#cccc",
+                                fontSize: fontPixel(12),
+                                fontFamily: Fonts.faktumMedium
+                            }}> (Futures) </Text>
+                        </Text>
+
+                    }
+
+
+                </View>
+
             </View>
 
-        </View>
 
-    </View>
+            <SearchInput
 
+                placeholder="Search market e.g BTC/ETH"
+                keyboardType={"default"}
 
-    <SearchInput
+                onChangeText={(e) => {
+                    setSearchValue(e);
 
-        placeholder="Search market e.g BTC/ETH"
-        keyboardType={"default"}
+                }}
+                value={searchValue}
+            />
 
-        onChangeText={(e) => {
-            setSearchValue(e);
-
-        }}
-        value={searchValue}
-    />
-
-</>
+        </>
 
 
-    ),[selectedExchange,data])
+    ), [selectedExchange, data])
 
 
     const refresh = () => {
@@ -360,78 +432,71 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
     }
 
 
-
-
     const [filterAssets, setFilterAssets] = useState([]);
 
     useEffect(() => {
         if (!isLoading && data && data?.data['Operation Strategy'] && data?.data['Operation Strategy'] !== null) {
-          const filtered = data?.data['Operation Strategy'].filter((item: { exchange: string; }) => item.exchange == tabExchange)?.filter((assets: { Market: string | string[]; }) =>
+            const filtered = data?.data['Operation Strategy'].filter((item: {
+                exchange: string;
+            }) => item.exchange == tabExchange)?.filter((assets: { Market: string | string[]; }) =>
                 assets?.Market?.includes(searchValue.toUpperCase().trim())
             )
             setFilterAssets(filtered)
         }
-    }, [tabExchange,data,searchValue]);
-
-
+    }, [tabExchange, data, searchValue]);
 
 
     return (
         <>
 
 
-        <SafeAreaView style={styles.safeArea}>
-            <LinearGradient style={styles.background}
-                            colors={Colors.primaryGradient}
+            <SafeAreaView style={styles.safeArea}>
+                <LinearGradient style={styles.background}
+                                colors={Colors.primaryGradient}
 
-                            start={{x: 2.5, y: 0}}
-                            end={{x: 1.5, y: 0.8,}}
-                // locations={[0.1, 0.7,]}
+                                start={{x: 2.5, y: 0}}
+                                end={{x: 1.5, y: 0.8,}}
+                    // locations={[0.1, 0.7,]}
 
-            >
-
-
-                <HeaderWithTitle title='Active trades'/>
-                <View style={styles.flatList}>
-
-                    {
-                        isLoading  && <ActivityIndicator size='small' color={Colors.primary}/>
-                    }
-
-                    {
-                        !isLoading  && data &&
-                        <FlashList
-                            estimatedItemSize={200}
-                            refreshing={isLoading}
-                            ListHeaderComponent={renderHeader}
-
-                            scrollEnabled
-                            showsVerticalScrollIndicator={false}
-                            data={filterAssets}
-                            renderItem={renderItem}
-                            keyExtractor={keyExtractor}
-                            onEndReachedThreshold={0.3}
-                            refreshControl={
-                                <RefreshControl
-                                    tintColor={Colors.text}
-                                    refreshing={refreshing}
-                                    onRefresh={refresh}
-                                />
-                            }
+                >
 
 
-                        />
-                    }
+                    <HeaderWithTitle title='Active trades'/>
+                    <View style={styles.flatList}>
+
+                        {
+                            isLoading && <ActivityIndicator size='small' color={Colors.primary}/>
+                        }
+
+                        {
+                            !isLoading && data &&
+                            <FlashList
+                                estimatedItemSize={200}
+                                refreshing={isLoading}
+                                ListHeaderComponent={renderHeader}
+
+                                scrollEnabled
+                                showsVerticalScrollIndicator={false}
+                                data={filterAssets}
+                                renderItem={renderItem}
+                                keyExtractor={keyExtractor}
+                                onEndReachedThreshold={0.3}
+                                refreshControl={
+                                    <RefreshControl
+                                        tintColor={Colors.text}
+                                        refreshing={refreshing}
+                                        onRefresh={refresh}
+                                    />
+                                }
 
 
+                            />
+                        }
 
 
-
-
-                </View>
-            </LinearGradient>
-        </SafeAreaView>
-
+                    </View>
+                </LinearGradient>
+            </SafeAreaView>
 
 
             <BottomSheet
@@ -474,7 +539,7 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
 
             </BottomSheet>
 
-            </>
+        </>
     );
 };
 
@@ -503,7 +568,7 @@ const styles = StyleSheet.create({
     balanceCanvas: {
         width: '100%',
 
-        height: heightPixel(200),
+        height: heightPixel(230),
         alignItems: 'center',
         justifyContent: 'center',
 
@@ -557,15 +622,15 @@ const styles = StyleSheet.create({
         fontSize: fontPixel(14),
     },
     quantitativeCard: {
-        borderRadius:8,
-        paddingVertical:15,
-        paddingRight:10,
-        backgroundColor:"#000",
-        marginVertical:pixelSizeVertical(8),
+        borderRadius: 8,
+        paddingVertical: 15,
+        paddingRight: 10,
+        backgroundColor: "#000",
+        marginVertical: pixelSizeVertical(8),
         flexDirection: 'row',
         alignItems: 'flex-start',
         justifyContent: 'space-between',
-        width:'100%',
+        width: '100%',
         height: heightPixel(100),
     },
     leftInfo: {
@@ -693,7 +758,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: fontPixel(18),
         fontFamily: Fonts.faktumMedium,
-        color:Colors.tintText
+        color: Colors.tintText
     },
     dismiss: {
 
@@ -710,6 +775,12 @@ const styles = StyleSheet.create({
         shadowRadius: 7.22,
 
         elevation: 3,
+    },
+    walletAddressTxt: {
+
+        color: "#fff",
+        fontFamily: Fonts.faktumSemiBold,
+        fontSize: fontPixel(16)
     },
 
 })
