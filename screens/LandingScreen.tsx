@@ -24,8 +24,8 @@ import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from 'react-native-re
 import {useAppSelector} from "../app/hooks";
 import FastImage from "react-native-fast-image";
 import {useQuery} from "@tanstack/react-query";
-import {activeStrategy, checkUserPlan, getAsset, getUser} from "../api";
-import {currencyFormatter, useRefreshOnFocus} from "../helpers";
+import {activeStrategy, binanceTicker, checkUserPlan, getAsset, getUser, quantitativeStrategies} from "../api";
+import {currencyFormatter, invertNumber, useRefreshOnFocus} from "../helpers";
 
 
 const {width} = Dimensions.get('screen');
@@ -44,6 +44,44 @@ type CardType = {
     icon: string
 }
 
+
+interface itemProps {
+    tickers:[],
+    item:{
+        [x: string]: any;
+        id: React.Key | null | undefined;
+        Market: string,
+        Avg_Price: string ;
+        Quantity: string
+    }
+}
+const Item = ({item,tickers}:itemProps) =>{
+
+    const tickerRes = tickers?.find((ticker: { symbol: string; }) => ticker.symbol == item.Market.replace('/', ''))
+
+
+    let p2 = parseFloat(item?.Quantity) * parseFloat(tickerRes?.lastPrice);
+    let val = (Number(item['Positionamount']) - (p2)) / Number(item['Positionamount']);
+    let finalvalue = val * 100;
+    return(
+        <View  style={styles.assetCardDetails}>
+            <View  style={styles.assetCardIcon}>
+                <Image
+                    source={{uri: `https://backend.deltacyborg.pro/Upload/coin/${item['coin image']}`}}
+                    style={styles.logo}/>
+            </View>
+            <Text style={{
+                color: finalvalue ? invertNumber(parseFloat(finalvalue)) < 0 ?  Colors.errorRed : Colors.successChart : Colors.successChart,
+                fontSize: fontPixel(14),
+                marginLeft: 5,
+                fontFamily: Fonts.faktumMedium
+            }}>
+                {finalvalue ? invertNumber(parseFloat(finalvalue)) : '0.00'}
+            </Text>
+        </View>
+    )
+}
+
 const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
@@ -56,6 +94,12 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
     //const {} =  useQuery(['checkUserPlan',User_Details.id],()=>checkUserPlan(User_Details.id))
 
     const {data, refetch, isLoading} = useQuery(['user-data'], () => getUser(User_Details.id))
+    const {
+        data: tickers,
+        refetch: fetchTickers,
+        isLoading: fetchingTickers
+    } = useQuery(['binanceTicker'], binanceTicker)
+
 
 
     useFocusEffect(
@@ -146,9 +190,24 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
         isLoading: loadingStrategy
     } = useQuery(['activeStrategy'], () => activeStrategy(User_Details.id))
 
+    const {
+        data:strategies,
+        isLoading:loadingStrategies,
+        refetch:fetchStrategies
+    } = useQuery(['quantitativeStrategies', User_Details.id], () => quantitativeStrategies(User_Details.id))
+
+
+
+
+    const TotalBal = parseInt(strategies?.data?.binance_balance) + parseInt(strategies?.data?.futures_binance_balance)
 
     const _renderViews = (views: CardType[]): JSX.Element[] => {
         return views.map(card => {
+
+
+      /*      let old_price = parseInt(card?.Quantity) * parseInt(card?.Avg_Price);
+            let new_value = parseInt(card?.Quantity) * tickerRes?.lastPrice;
+            let finalvalue = new_value - old_price;*/
             return (
                 <TouchableOpacity
                     key={card.id}
@@ -176,7 +235,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                             <Text
                                 style={styles.balance}>
 
-                                {currencyFormatter('en-US', 'USD').format(Asset?.data?.total_assets ? Asset?.data?.total_assets : 0 )}
+                                {currencyFormatter('en-US', 'USD').format(TotalBal)}
 
                             </Text>
 
@@ -197,21 +256,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                                     Avg_Price: number | bigint;
                                     Quantity: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined;
                                 }, index: any) => (
-                                    <View key={item.id} style={styles.assetCardDetails}>
-                                        <View  style={styles.assetCardIcon}>
-                                            <Image
-                                                source={{uri: `https://backend.deltacyborg.pro/Upload/coin/${item['coin image']}`}}
-                                                style={styles.logo}/>
-                                        </View>
-                                        <Text style={{
-                                            color:item.floatingLoss> 1 ? Colors.successChart : Colors.errorRed,
-                                            fontSize: fontPixel(14),
-                                            marginLeft: 5,
-                                            fontFamily: Fonts.faktumMedium
-                                        }}>
-                                            {item.Quantity}
-                                        </Text>
-                                    </View>
+                                  <Item key={item.id} tickers={tickers} item={item}/>
                                 ))}
 
 
@@ -234,15 +279,14 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
         })
     }
 
-
-
+    useRefreshOnFocus(fetchStrategies)
     useRefreshOnFocus(refetch)
 
     return (
         <SafeAreaView style={styles.safeArea}>
             {
 
-                isLoading &&
+           loading &&
                 <View style={styles.loading}>
                     <ActivityIndicator size='large' color={Colors.primary}/>
                 </View>
@@ -465,7 +509,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     planBottomLeft: {
-        width: '80%',
+        width: '100%',
         alignItems: 'flex-start',
         height: 80,
         justifyContent: 'flex-start'
@@ -573,7 +617,7 @@ marginRight:5,
 
     }, balance: {
         fontFamily: Fonts.faktumBold,
-        fontSize: fontPixel(34),
+        fontSize: fontPixel(28),
         color: "#fff",
     },
     assetCardDetails: {

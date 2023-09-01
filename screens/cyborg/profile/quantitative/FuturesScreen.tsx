@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {SetStateAction, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
 import {
     Text,
@@ -8,27 +8,34 @@ import {
     Image,
     RefreshControl,
     ActivityIndicator,
-    Pressable
+    Pressable, Platform
 } from 'react-native';
 import {useQuery} from "@tanstack/react-query";
-import {binanceTicker, quantitativeStrategies} from "../../api";
-import {useAppSelector} from "../../app/hooks";
-import {RootStackScreenProps} from "../../types";
-import Colors from "../../constants/Colors";
-import HeaderWithTitle from "../../components/header/HeaderWithTitle";
-import {SafeAreaView} from "react-native-safe-area-context";
+import {binanceTicker, quantitativeStrategies} from "../../../../api";
+import {useAppSelector} from "../../../../app/hooks";
+
+import Colors from "../../../../constants/Colors";
+
 import {LinearGradient} from "expo-linear-gradient";
 import {Ionicons, MaterialIcons, Octicons} from "@expo/vector-icons";
-import {currencyFormatter, wait} from "../../helpers";
-import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPixel} from "../../helpers/normalize";
-import {Fonts} from "../../constants/Fonts";
-import SearchInput from "../../components/inputs/SearchInput";
-import BottomSheet, {BottomSheetBackdrop, BottomSheetFlatList} from "@gorhom/bottom-sheet";
+import {currencyFormatter, invertNumber, useRefreshOnFocus, wait} from "../../../../helpers";
+import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPixel} from "../../../../helpers/normalize";
+import {Fonts} from "../../../../constants/Fonts";
+import SearchInput from "../../../../components/inputs/SearchInput";
+import BottomSheet, {
+    BottomSheetBackdrop,
+    BottomSheetFlatList,
+    BottomSheetModal,
+    BottomSheetModalProvider
+} from "@gorhom/bottom-sheet";
 import {
     BottomSheetDefaultBackdropProps
 } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
 import {FlashList} from "@shopify/flash-list";
 import dayjs from "dayjs";
+
+
+import {useNavigation} from "@react-navigation/native";
 
 
 var relativeTime = require('dayjs/plugin/relativeTime')
@@ -65,7 +72,7 @@ interface itemProps {
 
 interface props {
     tickers: [],
-    continueAsset: (exchange: string, id: string, market: string) => void,
+    continueAsset: (exchange: string, id: string, market: string,trade_type:string) => void,
     item: {
         id: string,
         exchange: string,
@@ -84,7 +91,7 @@ interface props {
 
 const SelectValue = ({selected, item, action}: itemProps) => (
     <TouchableOpacity onPress={() => action(item.title, item.id)} style={[styles.selectBtn, {
-        borderBottomColor: Colors.borderColor,
+        borderBottomColor: Colors.textPrimary,
     }]}>
 
         <View style={styles.item}>
@@ -109,8 +116,15 @@ const QuantitativeItem = ({item, tickers, continueAsset}: props) => {
 
     const tickerRes = tickers?.find((ticker: { symbol: string; }) => ticker.symbol == item.Market.replace('/', ''))
 
+
+
+    let p2 = parseFloat(item?.Quantity) * parseFloat(tickerRes?.lastPrice);
+    let val = (Number(item['Positionamount']) - (p2)) / Number(item['Positionamount']);
+    let finalvalue = val * 100;
+
+  //  console.log(invertNumber(parseFloat(finalvalue)) )
     return (
-        <Pressable onPress={() => continueAsset(item.exchange, item.id, item.Market)} style={styles.quantitativeCard}>
+        <Pressable onPress={() => continueAsset(item.exchange, item.id, item.Market,item.trade_type)} style={styles.quantitativeCard}>
 
             <View style={styles.leftInfo}>
 
@@ -139,7 +153,7 @@ const QuantitativeItem = ({item, tickers, continueAsset}: props) => {
                         style={{
                             color: '#fff',
                             fontFamily: Fonts.faktumBold
-                        }}>{parseFloat(item.Quantity).toFixed(4)}</Text>
+                        }}>{parseFloat(item.Positionamount).toFixed(4)}</Text>
                     </Text>
                 </View>
 
@@ -154,23 +168,15 @@ const QuantitativeItem = ({item, tickers, continueAsset}: props) => {
                         {item['One-shot'] == '1' && 'One-shot'}
                     </Text>
                 </View>
-                <View style={[styles.tagWrap, {
-                    marginTop: 8,
-                }]}>
-                    <Text style={[styles.tagText, {
-                        color: Colors.primary
-                    }]}>
 
-                        {item?.trade_type == '1' && 'Futures'}
-                        {item.trade_type == '0' && 'Spot'}
-                    </Text>
-                </View>
             </View>
 
             <View style={styles.rightInfo}>
-                <Text style={styles.cardValue}>
+                <Text style={[styles.cardValue,{
+                    color:finalvalue ? invertNumber((finalvalue))   < 0 ?  Colors.errorRed :Colors.successChart : Colors.successChart
+                }]}>
 
-                    {tickerRes?.priceChange ? parseFloat(tickerRes?.priceChange).toFixed(2) : '0'}%
+                    {finalvalue ? invertNumber(parseFloat(finalvalue)) : '0.00'}%
                 </Text>
                 <Text style={[styles.cardValue, {
                     color: parseInt(tickerRes?.priceChangePercent) > 0 ? Colors.successChart : Colors.errorRed
@@ -188,12 +194,17 @@ const QuantitativeItem = ({item, tickers, continueAsset}: props) => {
 }
 
 
-const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
+const FuturesScreenQuantitative = ({}) => {
 
 
+    const navigate = useNavigation()
     const [searchValue, setSearchValue] = useState('');
     const [tabExchange, setTabExchange] = useState('1');
     const [selectedExchange, setSelectedExchange] = useState('Binance')
+
+
+
+
 
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
@@ -214,16 +225,27 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
 
 
 //   const {data:tickers}= useQuery(['binanceTicker'],binanceTicker)
+    // ref
+    const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
+    const snapPoints = useMemo(() => ["35%", "70%"], []);
+    // variables
 
-    const snapPoints = useMemo(() => ["1%", "65%", "70%"], []);
+    // callbacks
+    const handlePresentModalPress = useCallback(() => {
+        bottomSheetModalRef.current?.present();
+    }, []);
+    const handleSheetChanges = useCallback((index: number) => {
+        console.log('handleSheetChanges', index);
+    }, []);
+
     const bankSheetRef = useRef<BottomSheet>(null);
     const keyExtractorExchange = useCallback((item: { id: any; }) => item.id, [],);
     const handleSnapPress = useCallback((index: number) => {
         bankSheetRef.current?.snapToIndex(index);
     }, []);
     const handleClose = useCallback(() => {
-        bankSheetRef.current?.close();
+        bottomSheetModalRef.current?.close();
     }, []);
 
     const renderBackdrop = useCallback(
@@ -253,9 +275,10 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
         <SelectValue selected={tabExchange} item={item} action={switchItem}/>
     ), [tabExchange]);
 
-    const seeLogs = (exchange: string, id: string, market: string) => {
-        navigation.navigate('LogScreen', {
+    const seeLogs = (exchange: string, id: string, market: string,trade_type:string) => {
+        navigate.navigate('LogScreen', {
             id,
+            trade_type,
             market,
             exchange,
         })
@@ -273,7 +296,7 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
             <View style={styles.balanceCanvas}>
                 <View style={styles.balanceTop}>
 
-                    <TouchableOpacity onPress={() => handleSnapPress(1)} activeOpacity={0.8}>
+                    <TouchableOpacity onPress={handlePresentModalPress} activeOpacity={0.8}>
                         <LinearGradient style={styles.selectExchangeBtn}
                                         colors={Colors.btnGradient}
 
@@ -289,7 +312,7 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
 
                     <TouchableOpacity style={styles.balanceTitle}>
                         <Text style={styles.balText}>
-                            {selectedExchange} USDT (Spot)
+                            {selectedExchange} USDT (Futures)
                         </Text>
 
 
@@ -303,7 +326,7 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
                             <Text
                                 style={styles.balance}>
 
-                                {currencyFormatter('en-US', 'USD').format(data?.data?.binance_balance)}
+                                {currencyFormatter('en-US', 'USD').format(data?.data?.futures_binance_balance)}
                             </Text>
                         }
                         {
@@ -312,7 +335,7 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
                             <Text
                                 style={styles.balance}>
 
-                                {currencyFormatter('en-US', 'USD').format(data?.data?.kucoin_balance)}
+                                {currencyFormatter('en-US', 'USD').format(data?.data?.futures_kucoin_balance)}
                             </Text>
                         }
                         {
@@ -321,7 +344,7 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
                             <Text
                                 style={styles.balance}>
 
-                                {currencyFormatter('en-US', 'USD').format(data?.data?.coinbasepro_balance)}
+                                {currencyFormatter('en-US', 'USD').format(data?.data?.futures_coinbasepro_balance)}
                             </Text>
                         }
 
@@ -331,7 +354,7 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
                             <Text
                                 style={styles.balance}>
 
-                                {currencyFormatter('en-US', 'USD').format(data?.data?.kraken_balance)}
+                                {currencyFormatter('en-US', 'USD').format(data?.data?.futures_kraken_balance)}
 
                             </Text>
 
@@ -341,65 +364,7 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
                     </View>
 
 
-                    {
-                        selectedExchange == 'Kraken' &&
 
-                        <Text style={styles.walletAddressTxt}>
-                            {currencyFormatter('en-US', 'USD').format(data?.data?.futures_kraken_balance)}
-
-                            <Text style={{
-                                color: "#cccc",
-                                fontSize: fontPixel(12),
-                                fontFamily: Fonts.faktumMedium
-                            }}> (Futures) </Text>
-                        </Text>
-
-                    }
-
-
-                    {
-                        selectedExchange == 'Coinbase' &&
-
-                        <Text style={styles.walletAddressTxt}>
-                            {currencyFormatter('en-US', 'USD').format(data?.data?.futures_coinbasepro_balance)}
-
-                            <Text style={{
-                                color: "#cccc",
-                                fontSize: fontPixel(12),
-                                fontFamily: Fonts.faktumMedium
-                            }}> (Futures) </Text>
-                        </Text>
-
-                    }
-
-                    {
-                        selectedExchange == 'Binance' &&
-
-                        <Text style={styles.walletAddressTxt}>
-                            {currencyFormatter('en-US', 'USD').format(data?.data?.futures_binance_balance)}
-
-                            <Text style={{
-                                color: "#cccc",
-                                fontSize: fontPixel(12),
-                                fontFamily: Fonts.faktumMedium
-                            }}> (Futures) </Text>
-                        </Text>
-
-                    }
-                    {
-                        selectedExchange == 'Kucoin' &&
-
-                        <Text style={styles.walletAddressTxt}>
-                            {currencyFormatter('en-US', 'USD').format(data?.data?.futures_kucoin_balance)}
-
-                            <Text style={{
-                                color: "#cccc",
-                                fontSize: fontPixel(12),
-                                fontFamily: Fonts.faktumMedium
-                            }}> (Futures) </Text>
-                        </Text>
-
-                    }
 
 
                 </View>
@@ -420,7 +385,6 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
             />
 
         </>
-
 
     ), [selectedExchange, data])
 
@@ -445,23 +409,10 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
         }
     }, [tabExchange, data, searchValue]);
 
+    useRefreshOnFocus(fetchTickers)
 
     return (
         <>
-
-
-            <SafeAreaView style={styles.safeArea}>
-                <LinearGradient style={styles.background}
-                                colors={Colors.primaryGradient}
-
-                                start={{x: 2.5, y: 0}}
-                                end={{x: 1.5, y: 0.8,}}
-                    // locations={[0.1, 0.7,]}
-
-                >
-
-
-                    <HeaderWithTitle title='Active trades'/>
                     <View style={styles.flatList}>
 
                         {
@@ -477,7 +428,7 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
 
                                 scrollEnabled
                                 showsVerticalScrollIndicator={false}
-                                data={filterAssets}
+                                data={filterAssets.filter((market:{trade_type:string}) => market.trade_type == '1')}
                                 renderItem={renderItem}
                                 keyExtractor={keyExtractor}
                                 onEndReachedThreshold={0.3}
@@ -495,14 +446,14 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
 
 
                     </View>
-                </LinearGradient>
-            </SafeAreaView>
 
 
-            <BottomSheet
 
-                index={0}
-                ref={bankSheetRef}
+<BottomSheetModalProvider>
+            <BottomSheetModal
+                animateOnMount
+                index={1}
+                ref={bottomSheetModalRef}
                 snapPoints={snapPoints}
                 backdropComponent={renderBackdrop}
                 backgroundStyle={{
@@ -537,8 +488,8 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
                                      contentContainerStyle={styles.flatListSheet}
                                      showsVerticalScrollIndicator={false}/>
 
-            </BottomSheet>
-
+            </BottomSheetModal>
+</BottomSheetModalProvider>
         </>
     );
 };
@@ -576,7 +527,7 @@ const styles = StyleSheet.create({
     balanceTop: {
 
         width: '100%',
-        height: '85%',
+        height: '80%',
         alignItems: 'center',
         justifyContent: 'space-evenly',
     },
@@ -713,7 +664,6 @@ const styles = StyleSheet.create({
 
 
     selectBtn: {
-        borderRadius: 5,
         marginVertical: pixelSizeVertical(10),
         width: '100%',
         height: heightPixel(50),
@@ -785,4 +735,4 @@ const styles = StyleSheet.create({
 
 })
 
-export default Quantitative;
+export default FuturesScreenQuantitative;

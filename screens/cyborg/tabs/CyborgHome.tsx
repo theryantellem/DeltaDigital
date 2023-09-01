@@ -16,9 +16,9 @@ import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPix
 import TopBar from "../../../components/header/TopBar";
 import {RootTabScreenProps} from "../../../types";
 import {Fonts} from "../../../constants/Fonts";
-import {Ionicons, Octicons} from "@expo/vector-icons";
+import {Ionicons, MaterialCommunityIcons, Octicons} from "@expo/vector-icons";
 import Colors from "../../../constants/Colors";
-import {currencyFormatter, useRefreshOnFocus, wait} from "../../../helpers";
+import {currencyFormatter, invertNumber, useRefreshOnFocus, wait} from "../../../helpers";
 import {LineChart} from "react-native-wagmi-charts";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-reanimated";
@@ -27,7 +27,15 @@ import ToastAnimated from "../../../components/toast";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {addNotificationItem, setHideBalance} from "../../../app/slices/dataSlice";
 import {useQuery} from "@tanstack/react-query";
-import {activeStrategy, getAsset, getExchangeBal, getNewstrategy, getRevenueDetails, getUser} from "../../../api";
+import {
+    activeStrategy,
+    binanceTicker,
+    getAsset,
+    getExchangeBal,
+    getRevenueDetails,
+    getUser, quantitativeStrategies
+} from "../../../api";
+import NoItem from "../../../components/NoItem";
 
 let width = Dimensions.get("window").width
 
@@ -59,6 +67,105 @@ const ChartData = [
         value: 1431205.25,
     },]
 
+interface props {
+    Exchanges: [],
+    tickers: [],
+    seeLogs: (exchange: string, Market: string, id: string,trade_type:string) => void
+    item: {
+        [x: string]: any;
+        id: string;
+        Market: string,
+        trade_type: string,
+        Avg_Price: string;
+        Quantity: string
+    }
+}
+
+
+const HomeTradeCard = ({item, seeLogs, Exchanges, tickers}: props) => {
+
+    const tickerRes = tickers?.find((ticker: { symbol: string; }) => ticker.symbol == item.Market.replace('/', ''))
+
+ /*   let old_price = item?.Quantity * item?.Avg_Price;
+    let new_value = item?.Quantity * parseFloat(tickerRes?.lastPrice);
+    let finalvalue = new_value - old_price;*/
+    let p2 = parseFloat(item?.Quantity) * parseFloat(tickerRes?.lastPrice);
+    let val = (Number(item['Positionamount']) - (p2)) / Number(item['Positionamount']);
+    let finalvalue = val * 100;
+
+    return (
+        <Animated.View key={item.id} layout={Layout.easing(Easing.bounce).delay(100)}
+                       entering={FadeInDown.springify()}
+                       exiting={FadeOutDown}>
+            <Pressable onPress={() => seeLogs(item.exchange, item.Market, item.id, item.trade_type)}
+                       style={styles.AssetCard}>
+
+                <View style={styles.assetIcon}>
+                    <View style={styles.assetCardIcon}>
+                        <Image
+                            source={{uri: `https://backend.deltacyborg.pro/Upload/coin/${item['coin image']}`}}
+                            style={styles.logo}/>
+                    </View>
+                </View>
+
+                <View style={styles.coinName}>
+                    <Text style={styles.coinSymbol}>
+                        {item.Market}
+                    </Text>
+                    <View style={{
+                        justifyContent: 'flex-start',
+                        alignItems: 'center',
+                        flexDirection: 'row'
+                    }}>
+                        <Text style={styles.coinNameText}>
+
+                            {Exchanges.find(exchange => exchange.exchange == item.exchange)?.exchangeName}
+
+                        </Text>
+
+                        <MaterialCommunityIcons name="circle-small" size={14} color={Colors.text} />
+                        <Text style={{
+                            fontSize: 10,
+
+                            color: Colors.pendingYellow
+                        }}>
+                            {item?.trade_type == '1' && 'Futures'}
+                            {item?.trade_type == '0' && 'Spot'}
+                        </Text>
+                    </View>
+
+                </View>
+
+                <View style={styles.assetChart}>
+                    <LineChart.Provider data={ChartData}>
+                        <LineChart height={heightPixel(70)} width={widthPixel(90)}>
+                            <LineChart.Path color={Colors.errorRed}/>
+                        </LineChart>
+                    </LineChart.Provider>
+                </View>
+
+
+                <View style={styles.priceSection}>
+                    <Text style={[styles.coinSymbol, {
+                        color:finalvalue ? invertNumber((finalvalue))   < 0 ?  Colors.errorRed :Colors.successChart : Colors.successChart
+                    }]}>
+
+                        {/* {currencyFormatter('en-US', 'USD').format(item.Avg_Price)}*/}
+
+                        {finalvalue ? invertNumber(parseFloat(finalvalue)) : '0'}
+                    </Text>
+                    <Text style={styles.coinNameText}>
+                        {item.Positionamount}
+                    </Text>
+                </View>
+
+            </Pressable>
+
+
+        </Animated.View>
+    )
+}
+
 
 const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
 
@@ -82,31 +189,38 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
     } = useQuery(['activeStrategy'], () => activeStrategy(User_Details.id))
 
     const {
-        data:revenue,
-        refetch:fetchRevenue,
+        data:strategies,
+        isLoading:loadingStrategies,
+        refetch:fetchStrategies
+    } = useQuery(['quantitativeStrategies', User_Details.id], () => quantitativeStrategies(User_Details.id))
 
-    } = useQuery(['get-RevenueDetails',User_Details.id], () => getRevenueDetails(User_Details.id))
     const {
-        data:ExchangeBal,
-        refetch:fetchExchangeBal,
+        data: revenue,
+        refetch: fetchRevenue,
 
-    } = useQuery(['get-Exchange-Bal',User_Details.id], () => getExchangeBal({userId:User_Details.id}))
+    } = useQuery(['get-RevenueDetails', User_Details.id], () => getRevenueDetails(User_Details.id))
 
 
-    const openNotifications = () => {
+    const {
+        data: tickers,
+        refetch: fetchTickers,
+        isLoading: fetchingTickers
+    } = useQuery(['binanceTicker'], binanceTicker)
 
-    }
+
     const overView = () => {
         navigation.navigate('OverView')
     }
 
-    const seeLogs = (exchange: string, market: string, id:string) => {
+    const seeLogs = (exchange: string, market: string, id: string, trade_type:string) => {
         navigation.navigate('LogScreen', {
             id,
+            trade_type,
             exchange,
             market
         })
     }
+
 
 
     const {data, isRefetching, refetch,} = useQuery(
@@ -122,14 +236,17 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
     }
 
     const seeAll = () => {
-      navigation.navigate('Quantitative')
+        navigation.navigate('ActiveTrades')
     }
     const hideMyBalance = () => {
-      dispatch(setHideBalance())
+        dispatch(setHideBalance())
     }
 
     useRefreshOnFocus(fetchAsset)
     useRefreshOnFocus(fetchStrategy)
+
+    useRefreshOnFocus(fetchRevenue)
+    useRefreshOnFocus(fetchStrategies)
 
 
     const Exchanges = [
@@ -151,7 +268,7 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
         }, {
             id: '3',
             logo: 'https://static-00.iconduck.com/assets.00/kraken-icon-512x512-icmwhmh8.png',
-            status:User_Details.krakenbind,
+            status: User_Details.krakenbind,
             rank: "1",
             exchange: '4',
             exchangeName: 'Kraken'
@@ -164,6 +281,9 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
             exchangeName: 'Kucoin'
         }
     ]
+
+    const TotalBal = parseInt(strategies?.data?.binance_balance) + parseInt(strategies?.data?.futures_binance_balance)
+
     return (
 
         <SafeAreaView style={styles.safeArea}>
@@ -189,7 +309,7 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
                         refreshControl={<RefreshControl tintColor={Colors.primary} refreshing={refreshing}
                                                         onRefresh={refresh}/>}
             >
-             {/*   <LinearGradient style={styles.dashboard}
+                {/*   <LinearGradient style={styles.dashboard}
                                 colors={[ "#A13AD1",'#030D34', '#0B0811']}
                                // colors={['#e813e1', "#690152", '#030D34']}
                                 start={{x: 1.5, y: 0}}
@@ -197,140 +317,143 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
 
                     // locations={[0.1, 0.7,]}
                 >
+
+
 */}
-<View style={styles.dashboard}>
+                <View style={styles.dashboard}>
 
 
-                <ImageBackground source={require('../../../assets/images/Blackbackground.jpg')}
-                                 resizeMode={'cover'}
-                                 style={styles.dashboardImage}>
+                    <ImageBackground source={require('../../../assets/images/Blackbackground.jpg')}
+                                     resizeMode={'cover'}
+                                     style={styles.dashboardImage}>
 
-                    <TopBar homeDash profilePhoto={User_Details.image ? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'}
-                            userName={User_Details.username}/>
+                        <TopBar homeDash
+                                profilePhoto={User_Details.image ? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'}
+                                userName={User_Details.username}/>
 
-                    <View style={styles.dashboardInfo}>
-                        <View style={styles.cyborgInfo}>
-                            <Text style={styles.cyborgName}>Cyborg</Text>
-                            <View style={styles.logoCover}>
-                                <Image source={require('../../../assets/images/logos/cyborlogo.png')}
-                                       style={styles.logoCyborg}/>
+                        <View style={styles.dashboardInfo}>
+                            <View style={styles.cyborgInfo}>
+                                <Text style={styles.cyborgName}>Cyborg</Text>
+                                <View style={styles.logoCover}>
+                                    <Image source={require('../../../assets/images/logos/cyborlogo.png')}
+                                           style={styles.logoCyborg}/>
+                                </View>
                             </View>
-                        </View>
 
-                        <View style={styles.amountContainer}>
+                            <View style={styles.amountContainer}>
 
-                            <TouchableOpacity onPress={hideMyBalance} activeOpacity={0.7}
-                                              style={styles.balanceTitle}>
-                                <Text style={styles.balText}>
-                                    Account balance
-                                </Text>
-                                {
-                                    hideBalance &&
-                                <Ionicons name="eye-off-outline" size={14} color={"#d9d9d9"}/>
-                                }
-                                {
-                                    !hideBalance &&
-                                <Ionicons name="eye-outline" size={14} color={"#d9d9d9"}/>
-                                }
-
-                            </TouchableOpacity>
-
-
-                            <View style={styles.balanceGraph}>
-                                {
-                                    !hideBalance &&
-                                <Text style={styles.balance}>
-
-                                    {currencyFormatter('en-US', 'USD').format(Asset?.data?.total_assets ? Asset?.data?.total_assets : 0)}
-
-                                </Text>
-                                }
-                                {
-                                    hideBalance &&
-                                <Text style={styles.balance}>
-
-                                 ****
-
-                                </Text>
-                                }
-
-                                <TouchableOpacity onPress={overView} style={styles.overviewBtn}>
-                                    <Text style={styles.overviewText}>
-                                        Overview
+                                <TouchableOpacity onPress={hideMyBalance} activeOpacity={0.7}
+                                                  style={styles.balanceTitle}>
+                                    <Text style={styles.balText}>
+                                        Account balance
                                     </Text>
-                                    <Octicons name="chevron-right" size={14} color="#A13AD1"/>
+                                    {
+                                        hideBalance &&
+                                        <Ionicons name="eye-off-outline" size={14} color={"#d9d9d9"}/>
+                                    }
+                                    {
+                                        !hideBalance &&
+                                        <Ionicons name="eye-outline" size={14} color={"#d9d9d9"}/>
+                                    }
 
                                 </TouchableOpacity>
-                            </View>
 
 
-                            <View style={styles.bottomEarn}>
-                                <Text style={styles.profitText}>
-                                  Total Profits
-                                </Text>
-                                {
-                                    !hideBalance &&
+                                <View style={styles.balanceGraph}>
+                                    {
+                                        !hideBalance &&
+                                        <Text style={styles.balance}>
 
-                                <Text style={styles.profitBalance}>
+                                            {currencyFormatter('en-US', 'USD').format(TotalBal ? TotalBal : 0)}
 
-                                    {currencyFormatter('en-US', 'USD').format(revenue?.data?.total_profit ? revenue?.data?.total_profit  : 0 )}
+                                        </Text>
+                                    }
+                                    {
+                                        hideBalance &&
+                                        <Text style={styles.balance}>
 
-                                </Text>
-                                }
-                                {
-                                    hideBalance &&
-                                    <Text style={styles.balance}>
+                                            ****
 
-                                        ****
+                                        </Text>
+                                    }
 
+                                    <TouchableOpacity onPress={overView} style={styles.overviewBtn}>
+                                        <Text style={styles.overviewText}>
+                                            Overview
+                                        </Text>
+                                        <Octicons name="chevron-right" size={14} color="#A13AD1"/>
+
+                                    </TouchableOpacity>
+                                </View>
+
+
+                                <View style={styles.bottomEarn}>
+                                    <Text style={styles.profitText}>
+                                        Total Profits
                                     </Text>
-                                }
+                                    {
+                                        !hideBalance &&
 
-                            </View>
+                                        <Text style={styles.profitBalance}>
 
-                            <View style={{
-                                width: '100%',
-                                height: 100,
+                                            {currencyFormatter('en-US', 'USD').format(revenue?.data?.total_profit ? revenue?.data?.total_profit : 0)}
 
-                                justifyContent: 'center'
-                            }}>
+                                        </Text>
+                                    }
+                                    {
+                                        hideBalance &&
+                                        <Text style={styles.balance}>
 
-                                <GestureHandlerRootView style={{}}>
-                                    <LineChart.Provider data={ChartData}>
-                                        <LineChart style={[
+                                            ****
 
-                                            {bottom: 0}
-                                        ]} height={100} width={widthPixel(350)}>
+                                        </Text>
+                                    }
 
-                                            <LineChart.Path color={Colors.successChart}>
+                                </View>
+
+                                <View style={{
+                                    width: '100%',
+                                    height: 100,
+
+                                    justifyContent: 'center'
+                                }}>
+
+                                    <GestureHandlerRootView style={{}}>
+                                        <LineChart.Provider data={ChartData}>
+                                            <LineChart style={[
+
+                                                {bottom: 0}
+                                            ]} height={100} width={widthPixel(350)}>
+
+                                                <LineChart.Path color={Colors.successChart}>
 
 
-                                                <LineChart.Tooltip
-                                                    textStyle={{
-                                                        fontFamily: Fonts.faktumRegular,
-                                                        backgroundColor: Colors.tintSuccess,
-                                                        borderRadius: 4,
-                                                        color: Colors.success,
-                                                        fontSize: fontPixel(12),
-                                                        padding: 4,
-                                                    }}
-                                                />
+                                                    <LineChart.Tooltip
+                                                        textStyle={{
+                                                            fontFamily: Fonts.faktumRegular,
+                                                            backgroundColor: Colors.tintSuccess,
+                                                            borderRadius: 4,
+                                                            color: Colors.success,
+                                                            fontSize: fontPixel(12),
+                                                            padding: 4,
+                                                        }}
+                                                    />
 
-                                                <LineChart.Gradient/>
-                                            </LineChart.Path>
-                                            <LineChart.CursorCrosshair color={Colors.successChart}/>
-                                        </LineChart>
-                                    </LineChart.Provider>
-                                </GestureHandlerRootView>
+                                                    <LineChart.Gradient/>
+                                                </LineChart.Path>
+                                                <LineChart.CursorCrosshair color={Colors.successChart}/>
+                                            </LineChart>
+                                        </LineChart.Provider>
+                                    </GestureHandlerRootView>
 
+                                </View>
                             </View>
                         </View>
-                    </View>
 
-                </ImageBackground>
-</View>
+                    </ImageBackground>
+                </View>
 
-                <View  style={styles.contentTop}>
+                <View style={styles.contentTop}>
 
 
                     <View style={styles.contentMsg}>
@@ -358,8 +481,6 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
                 </View>
 
 
-
-
                 <View style={styles.portfolioHead}>
                     <Text style={styles.portfolioHeadText}>
                         Portfolio
@@ -368,12 +489,16 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
                         Chart
                     </Text>
                     <Text style={styles.portfolioHeadText}>
-                        Floating profit
+                         Profit/Loss
                     </Text>
                 </View>
 
                 {
                     loadingStrategy && <ActivityIndicator size='small' color={Colors.primary}/>
+                }
+                {
+                    !loadingStrategy && strategy &&   strategy?.data['Operation Strategy'] == null &&
+                    <NoItem message={"No active trades"}/>
                 }
 
                 {
@@ -387,55 +512,16 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
                         Avg_Price: number | bigint;
                         Quantity: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined;
                     }, index: any) => (
-                        <Animated.View key={item.id} layout={Layout.easing(Easing.bounce).delay(100)}
-                                       entering={FadeInDown.springify()}
-                                       exiting={FadeOutDown}>
-                            <Pressable onPress={() => seeLogs(item.exchange, item.Market, item.id)} style={styles.AssetCard}>
-
-                                <View style={styles.assetIcon}>
-                                    <View style={styles.assetCardIcon}>
-                                        <Image
-                                            source={{uri: `https://backend.deltacyborg.pro/Upload/coin/${item['coin image']}`}}
-                                            style={styles.logo}/>
-                                    </View>
-                                </View>
-
-                                <View style={styles.coinName}>
-                                    <Text style={styles.coinSymbol}>
-                                        {item.Market}
-                                    </Text>
-                                    <Text style={styles.coinNameText}>
-
-                                        {Exchanges.find(exchange => exchange.exchange == item.exchange)?.exchangeName}
-
-                                    </Text>
-                                </View>
-
-                                <View style={styles.assetChart}>
-                                    <LineChart.Provider data={ChartData}>
-                                        <LineChart height={heightPixel(70)} width={widthPixel(90)}>
-                                            <LineChart.Path color={Colors.errorRed}/>
-                                        </LineChart>
-                                    </LineChart.Provider>
-                                </View>
 
 
-                                <View style={styles.priceSection}>
-                                    <Text style={styles.coinSymbol}>
-                                        {currencyFormatter('en-US', 'USD').format(item.Avg_Price)}
-                                    </Text>
-                                    <Text style={styles.coinNameText}>
-                                        {item.Quantity}
-                                    </Text>
-                                </View>
-
-                            </Pressable>
+                        <HomeTradeCard tickers={tickers} Exchanges={Exchanges} key={item.id} item={item}
+                                       seeLogs={seeLogs}/>
 
 
-                        </Animated.View>
                     ))
-                }
 
+
+                }
 
             </ScrollView>
 
@@ -452,7 +538,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingBottom: Platform.OS === 'ios' ? -40 : 0
     },
-    dashboardBackground:{
+    dashboardBackground: {
         width: '100%',
         alignItems: 'center',
         flex: 1,
@@ -475,13 +561,13 @@ const styles = StyleSheet.create({
         height: heightPixel(440),
         alignItems: 'center',
         borderRadius: 30,
-overflow:'hidden',
+        overflow: 'hidden',
     },
-    dashboardImage:{
-       // paddingHorizontal: pixelSizeHorizontal(20),
-        resizeMode:'cover',
-        width:'100%',
-        height:'100%',
+    dashboardImage: {
+        // paddingHorizontal: pixelSizeHorizontal(20),
+        resizeMode: 'cover',
+        width: '100%',
+        height: '100%',
         borderRadius: 30,
         alignItems: 'center',
     },
@@ -670,15 +756,13 @@ overflow:'hidden',
         fontFamily: Fonts.faktumMedium
     },
     contentTop: {
-        marginTop:35,
+        marginTop: 35,
         flexDirection: 'row',
         width: '90%',
         alignItems: 'center',
         justifyContent: 'space-between',
         height: heightPixel(50),
         borderBottomColor: Colors.borderColor,
-
-
 
 
     },

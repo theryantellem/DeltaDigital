@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {SetStateAction, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
 import {
     Text,
@@ -8,7 +8,7 @@ import {
     Image,
     ActivityIndicator,
     RefreshControl,
-    Pressable, Keyboard
+    Pressable, Keyboard, Platform
 } from 'react-native';
 import {RootStackScreenProps} from "../../../../types";
 import HeaderWithTitle from "../../../../components/header/HeaderWithTitle";
@@ -39,6 +39,9 @@ import * as SecureStore from "expo-secure-store";
 import * as Haptics from "expo-haptics";
 import {addNotificationItem} from "../../../../app/slices/dataSlice";
 import ToastAnimated from "../../../../components/toast";
+import GradientSegmentControl from "../../../../components/segment-control/GradientSegmentControl";
+import SegmentedControl from "../../../../components/segment-control/SegmentContol";
+import {IF} from "../../../../helpers/ConditionJsx";
 
 
 interface props {
@@ -47,6 +50,7 @@ interface props {
         Market: string,
         icon: string,
         id: string,
+        trade_type: string,
     }
 }
 
@@ -58,13 +62,12 @@ const formSchema = yup.object().shape({
         .required('Amount is required'),
 
 
-
 });
 
 const ItemData = ({view, item}: props) => {
     return (
-        <TouchableOpacity style={styles.walletCard} activeOpacity={0.9}>
-           <View style={styles.logoCircle}>
+        <TouchableOpacity onPress={() => view(item.id, item.Market)} style={styles.walletCard} activeOpacity={0.9}>
+            <View style={styles.logoCircle}>
 
                 <Image style={styles.logo}
                        source={{uri: `https://backend.deltacyborg.pro/Upload/coin/${item.icon}`}}/>
@@ -77,11 +80,19 @@ const ItemData = ({view, item}: props) => {
                 <Text style={styles.cardTitle}>
                     {item.Market}
                 </Text>
-                {/* <Text style={[styles.cardText, {
-                    color: Colors.successChart
+
+
+                <View style={[styles.tagWrap, {
+                    marginTop: 8,
                 }]}>
-                    1400 Followers
-                </Text>*/}
+                    <Text style={[styles.tagText, {
+                        color: Colors.pendingYellow
+                    }]}>
+
+                        {item?.trade_type == '1' && 'Futures'}
+                        {item.trade_type == '0' && 'Spot'}
+                    </Text>
+                </View>
             </View>
             <View style={styles.walletCardAmount}>
                 {/* <Text style={[styles.cardTitle, {
@@ -107,11 +118,17 @@ const AllStrategy = ({navigation}: RootStackScreenProps<'AllStrategy'>) => {
     const queryClient = useQueryClient()
     const dispatch = useAppDispatch()
 
+    const [tabIndex, setTabIndex] = useState(0);
+    const handleTabsChange = (index: SetStateAction<number>) => {
+        setTabIndex(index);
+        //  setScreen(index === 0 ? 'Banks' : 'Wallets')
+    };
+
     // ref
     const bottomSheetRef = useRef<BottomSheet>(null);
 
     // variables
-    const snapPoints = useMemo(() => ['1%', '50%'], []);
+    const snapPoints = useMemo(() => ['1%', '55%'], []);
 
     // callbacks
     const handlePresentModalPress = useCallback(() => {
@@ -154,7 +171,7 @@ const AllStrategy = ({navigation}: RootStackScreenProps<'AllStrategy'>) => {
         isFetching,
         refetch,
     } = useQuery(['get-strategies', User_Details.id], () => getStrategies(User_Details.id))
-    // console.log(data.data['copy system'])
+    //  console.log(data?.data['copy system'])
 
     const viewItem = (id: string, Market: string) => {
         bottomSheetRef.current?.snapToIndex(1);
@@ -173,7 +190,25 @@ const AllStrategy = ({navigation}: RootStackScreenProps<'AllStrategy'>) => {
     ), []);
 
 
-    const {mutate, isLoading:copying,isSuccess, error} = useMutation(['copy-Trade'], copyTrade,
+    const selectExchange = (exchangeId: string, status: '0' | '1', apiKey: string, apiSecrete: string, exchangeName: string) => {
+        if (status == '1') {
+
+            setSelectedExchange(exchangeId)
+        } else {
+            handleClose()
+            navigation.navigate('ViewAPIBinding', {
+                exchangeName,
+                exchange: exchangeId,
+                apiKey,
+                apiSecrete,
+                isBound: status
+            })
+
+        }
+
+
+    }
+    const {mutate, isLoading: copying, isSuccess, error} = useMutation(['copy-Trade'], copyTrade,
 
         {
 
@@ -182,14 +217,11 @@ const AllStrategy = ({navigation}: RootStackScreenProps<'AllStrategy'>) => {
 
                 if (data.status == 1) {
 
-                           navigation.navigate('SuccessScreen',{
-                               title:'Successful',
-                               message:'Trade copied',
-                               type:'success'
-                           })
-
-
-
+                    navigation.navigate('SuccessScreen', {
+                        title: 'Successful',
+                        message: 'Trade copied',
+                        type: 'success'
+                    })
 
 
                 } else {
@@ -212,7 +244,6 @@ const AllStrategy = ({navigation}: RootStackScreenProps<'AllStrategy'>) => {
             }
 
         })
-
 
 
     const {
@@ -241,7 +272,7 @@ const AllStrategy = ({navigation}: RootStackScreenProps<'AllStrategy'>) => {
             formData.append('id', marketId)
             formData.append('market', market)
 
-            mutate({body:formData,userId:User_Details.id})
+            mutate({body: formData, userId: User_Details.id})
 
         }
     });
@@ -297,7 +328,7 @@ const AllStrategy = ({navigation}: RootStackScreenProps<'AllStrategy'>) => {
             )
             setFilterStrategies(filtered)
         }
-    }, [data,searchValue]);
+    }, [data, searchValue]);
 
     const refresh = () => {
         setRefreshing(true)
@@ -311,9 +342,9 @@ const AllStrategy = ({navigation}: RootStackScreenProps<'AllStrategy'>) => {
         <>
             {
                 copying &&
-            <View style={styles.loading}>
-                <ActivityIndicator size='large' color={Colors.primary}/>
-            </View>
+                <View style={styles.loading}>
+                    <ActivityIndicator size='large' color={Colors.primary}/>
+                </View>
             }
             <SafeAreaView style={styles.safeArea}>
                 <LinearGradient style={styles.background}
@@ -327,11 +358,33 @@ const AllStrategy = ({navigation}: RootStackScreenProps<'AllStrategy'>) => {
 
 
                     <HeaderWithTitle title='Copy Strategy'/>
+                    {
+                        Platform.OS === 'ios' ?
+
+                            <GradientSegmentControl tabs={["Spots", "Futures"]}
+                                                    currentIndex={tabIndex}
+                                                    onChange={handleTabsChange}
+                                                    segmentedControlBackgroundColor={'#7676801F'}
+                                                    activeSegmentBackgroundColor={"#fff"}
+
+                                                    textColor={"#fff"}
+                                                    paddingVertical={pixelSizeVertical(12)}/>
+                            :
+
+                            <SegmentedControl tabs={["Spots", "Futures"]}
+                                              currentIndex={tabIndex}
+                                              onChange={handleTabsChange}
+                                              segmentedControlBackgroundColor={Colors.tintPrimary}
+                                              activeSegmentBackgroundColor={Colors.primary}
+                                              activeTextColor={Colors.text}
+                                              textColor={"#CDD4D7"}
+                                              paddingVertical={pixelSizeVertical(16)}/>
+                    }
 
 
                     <View style={styles.scrollView}>
                         <SearchInput
-keyboardAppearance={'dark'}
+                            keyboardAppearance={'dark'}
                             placeholder="Search Market"
                             keyboardType={"default"}
 
@@ -347,30 +400,60 @@ keyboardAppearance={'dark'}
                             isLoading && <ActivityIndicator size='small' color={Colors.primary}/>
                         }
 
-                        {
-                            !isLoading && data &&
-                            <FlashList
-                                estimatedItemSize={200}
-                                refreshing={isLoading}
+                        <IF condition={tabIndex == 0}>
+                            {
+                                !isLoading && data &&
+                                <FlashList
+                                    estimatedItemSize={200}
+                                    refreshing={isLoading}
 
 
-                                scrollEnabled
-                                showsVerticalScrollIndicator={false}
-                                data={filterStrategies}
-                                renderItem={renderItem}
-                                keyExtractor={keyExtractor}
-                                onEndReachedThreshold={0.3}
-                                refreshControl={
-                                    <RefreshControl
-                                        tintColor={Colors.text}
-                                        refreshing={refreshing}
-                                        onRefresh={refresh}
-                                    />
-                                }
+                                    scrollEnabled
+                                    showsVerticalScrollIndicator={false}
+                                    data={filterStrategies.filter((market:{trade_type:string}) => market.trade_type == '0')}
+                                    renderItem={renderItem}
+                                    keyExtractor={keyExtractor}
+                                    onEndReachedThreshold={0.3}
+                                    refreshControl={
+                                        <RefreshControl
+                                            tintColor={Colors.text}
+                                            refreshing={refreshing}
+                                            onRefresh={refresh}
+                                        />
+                                    }
 
 
-                            />
-                        }
+                                />
+                            }
+                        </IF>
+
+                        <IF condition={tabIndex == 1}>
+                            {
+                                !isLoading && data &&
+                                <FlashList
+                                    estimatedItemSize={200}
+                                    refreshing={isLoading}
+
+
+                                    scrollEnabled
+                                    showsVerticalScrollIndicator={false}
+                                    data={filterStrategies.filter((market:{trade_type:string}) => market.trade_type == '1')}
+                                    renderItem={renderItem}
+                                    keyExtractor={keyExtractor}
+                                    onEndReachedThreshold={0.3}
+                                    refreshControl={
+                                        <RefreshControl
+                                            tintColor={Colors.text}
+                                            refreshing={refreshing}
+                                            onRefresh={refresh}
+                                        />
+                                    }
+
+
+                                />
+                            }
+                        </IF>
+
 
 
                     </View>
@@ -397,7 +480,13 @@ keyboardAppearance={'dark'}
                     width: '100%',
                     alignItems: 'center',
                 }}>
-
+                    <Text style={[styles.sheetTitle, {
+                        fontFamily: Fonts.faktumBold,
+                        fontSize: fontPixel(14),
+                        color: Colors.pendingYellow
+                    }]}>
+                        {market}
+                    </Text>
                     <View style={[styles.sheetHead, {
                         height: 40,
                     }]}>
@@ -424,7 +513,7 @@ keyboardAppearance={'dark'}
                         keyboardType={"number-pad"}
                         touched={touched.capital}
                         error={touched.capital && errors.capital}
-keyboardAppearance={'dark'}
+                        keyboardAppearance={'dark'}
                         onChangeText={(e) => {
                             handleChange('capital')(e);
 
@@ -442,8 +531,10 @@ keyboardAppearance={'dark'}
 
                     <View style={styles.exchangeList}>
                         {
-                            Exchanges.map((({exchange,logo,exchangeName,id,status})=>(
-                                <Pressable disabled={status !== '1'} onPress={()=>setSelectedExchange(exchange)} key={id} style={[styles.exchangeCard,{
+                            Exchanges.map((({exchange, logo, exchangeName, id, status, apiKey, apiSecrete}) => (
+                                <Pressable
+                                    onPress={() => selectExchange(exchange, status, apiKey, apiSecrete, exchangeName)}
+                                    key={id} style={[styles.exchangeCard, {
                                     borderColor: selectedExchange == exchange ? Colors.purplePrimary : Colors.borderColor
                                 }]}>
                                     <View style={styles.logoWrap}>
@@ -456,10 +547,10 @@ keyboardAppearance={'dark'}
                                     </Text>
 
                                     {selectedExchange == exchange &&
-                                        <Octicons name="dot-fill" size={14} color={Colors.successChart} />
+                                        <Octicons name="dot-fill" size={14} color={Colors.successChart}/>
                                     }
                                     {selectedExchange !== exchange &&
-                                        <Octicons name="dot-fill" size={14} color={Colors.borderColor} />
+                                        <Octicons name="dot-fill" size={14} color={Colors.borderColor}/>
                                     }
 
                                 </Pressable>
@@ -469,9 +560,7 @@ keyboardAppearance={'dark'}
                     </View>
 
 
-
-
-                    <MyButton onPress={()=>handleSubmit()} style={[styles.startBottom,{
+                    <MyButton onPress={() => handleSubmit()} style={[styles.startBottom, {
                         backgroundColor: !isValid ? Colors.border : Colors.purplePrimary
                     }]}>
                         <Text style={styles.buttonTxt}>
@@ -554,6 +643,20 @@ const styles = StyleSheet.create({
         fontSize: fontPixel(14),
         color: "#fff",
     },
+    tagWrap: {
+        backgroundColor: Colors.textDark,
+        paddingHorizontal: 10,
+        height: 25,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 5,
+    },
+    tagText: {
+        color: Colors.pendingYellow,
+        fontFamily: Fonts.faktumSemiBold,
+        fontSize: fontPixel(12),
+    },
+
     walletCardAmount: {
         width: '25%',
 
@@ -571,7 +674,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         alignItems: 'center',
         justifyContent: 'space-evenly',
-        backgroundColor: Colors.primary
+        backgroundColor: Colors.purplePrimary
     },
     copyRangeText: {
         fontFamily: Fonts.faktumSemiBold,
@@ -618,51 +721,51 @@ const styles = StyleSheet.create({
         fontSize: fontPixel(14),
         color: "#fff"
     },
-    exchangeList:{
+    exchangeList: {
 
-        minHeight:70,
-        width:'100%',
-        flexDirection:'row',
-        flexWrap:'wrap',
-        alignItems:'center',
-        justifyContent:"space-evenly"
+        minHeight: 70,
+        width: '100%',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        justifyContent: "space-evenly"
     },
-    exchangeCard:{
-        margin:10,
-        height:45,
-        width:130,
-        borderRadius:5,
-        borderWidth:1,
-        alignItems:'center',
-        paddingHorizontal:10,
-        justifyContent:"space-between",
-        flexDirection:'row'
+    exchangeCard: {
+        margin: 10,
+        height: 45,
+        width: 130,
+        borderRadius: 5,
+        borderWidth: 1,
+        alignItems: 'center',
+        paddingHorizontal: 10,
+        justifyContent: "space-between",
+        flexDirection: 'row'
     },
     logoWrap: {
         width: 20,
         height: 20,
-        borderRadius:20,
+        borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center'
     },
 
-    exchangeCardText:{
+    exchangeCardText: {
         fontFamily: Fonts.faktumBold,
         fontSize: fontPixel(14),
         color: "#fff"
     },
     loading: {
-        flex:1,
-        width:'100%',
+        flex: 1,
+        width: '100%',
         position: 'absolute',
         left: 0,
         right: 0,
-        zIndex:1,
+        zIndex: 1,
         top: 0,
         bottom: 0,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor:'rgba(0,0,0,0.3)'
+        backgroundColor: 'rgba(0,0,0,0.3)'
     }
 
 })

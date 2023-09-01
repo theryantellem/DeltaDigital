@@ -28,7 +28,7 @@ const formSchema = yup.object().shape({
 
     apiKey: yup.string().required('API Key is required'),
     APISecrete: yup.string().required('API Secrete is required'),
-  //  passphrase: yup.string().required('Pass Phrase is required'),
+  passphrase: yup.string().required('Pass Phrase is required'),
 
 });
 
@@ -51,7 +51,7 @@ const ViewAPIBinding = ({route, navigation}: RootStackScreenProps<'ViewAPIBindin
     const [APISecrete, setAPISecrete] = useState(apiSecrete);
     const [focusSecrete, setFocusSecrete] = useState(false)
 
-    const [passphrase, setPassphrase] = useState('');
+    const [passphrase, setPassphrase] = useState('0');
     const [focusPassphrase, setFocusPassphrase] = useState(false)
 
     const user = useAppSelector(state => state.user)
@@ -75,13 +75,13 @@ const ViewAPIBinding = ({route, navigation}: RootStackScreenProps<'ViewAPIBindin
 
     const {isLoading, mutate} = useMutation(['bindAPI'], bindAPI, {
         onSuccess: async (data) => {
-
+console.log(data)
             if (data.status == 1) {
 
                 navigation.navigate('SuccessScreen', {
                     type: 'success',
-                    title: `${exchangeName} API Updated successfully`,
-                    message: data.message
+                    title: `${data.data}`,
+                    message: `${exchangeName} API Updated successfully`
                 })
 
             } else {
@@ -113,7 +113,7 @@ const ViewAPIBinding = ({route, navigation}: RootStackScreenProps<'ViewAPIBindin
         validationSchema: formSchema,
         initialValues: {
             apiKey: apiKey,
-            passphrase: '',
+            passphrase: '0',
             APISecrete: apiSecrete
 
         },

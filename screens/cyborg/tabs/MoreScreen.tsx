@@ -69,7 +69,7 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
         []
     );
 
-    const navigate = (screen: 'LeaderBoard' | 'NewsScreen' | 'Quantitative' |'RevenueScreen') => {
+    const navigate = (screen: 'LeaderBoard' | 'NewsScreen' | 'ActiveTrades' |'RevenueScreen' | 'AllStrategy' | 'ApiBinding') => {
         navigation.navigate(screen)
     }
 
@@ -130,7 +130,7 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
                                 </TouchableOpacity>
 
 
-                                <TouchableOpacity onPress={() => navigate('Quantitative')} activeOpacity={0.6}
+                                <TouchableOpacity onPress={() => navigate('ActiveTrades')} activeOpacity={0.6}
                                                   style={styles.dashButton}>
                                     <View style={styles.dashIcon}>
                                         <AntDesign name="profile" size={18} color="#fff"/>

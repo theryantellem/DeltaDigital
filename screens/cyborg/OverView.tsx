@@ -1,9 +1,19 @@
 import React, {SetStateAction, useState} from 'react';
 
-import {Text, View, StyleSheet, Image, TouchableOpacity, ScrollView, Platform} from 'react-native';
+import {
+    Text,
+    View,
+    StyleSheet,
+    Image,
+    TouchableOpacity,
+    ScrollView,
+    Platform,
+    ActivityIndicator,
+    RefreshControl
+} from 'react-native';
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-reanimated";
 import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical} from "../../helpers/normalize";
-import {currencyFormatter} from "../../helpers";
+import {currencyFormatter, useRefreshOnFocus, wait} from "../../helpers";
 import HeaderWithTitle from "../../components/header/HeaderWithTitle";
 import {LinearGradient} from "expo-linear-gradient";
 import {SafeAreaView} from "react-native-safe-area-context";
@@ -14,13 +24,14 @@ import HorizontalLine from "../../components/HorizontalLine";
 import {FontAwesome5, Ionicons, MaterialIcons} from "@expo/vector-icons";
 import {useAppSelector} from "../../app/hooks";
 import {useQuery} from "@tanstack/react-query";
-import {getAsset, getExchangeBal, getRevenueDetails} from "../../api";
+import {getAsset, getRevenueDetails, quantitativeStrategies} from "../../api";
 import IOSSegmentContol from "../../components/segment-control/IOSSegmentContol";
 import SegmentedControl from "../../components/segment-control/SegmentContol";
 import {IF} from "../../helpers/ConditionJsx";
 
 const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
 
+    const [refreshing, setRefreshing] = useState(false);
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
 
@@ -33,11 +44,13 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
     } = useQuery(['get-RevenueDetails',User_Details.id], () => getRevenueDetails(User_Details.id))
 
 
-    const {
-        data:ExchangeBal,
-        refetch:fetchExchangeBal,
 
-    } = useQuery(['get-Exchange-Bal',User_Details.id], () => getExchangeBal({userId:User_Details.id}))
+    const {
+        data:strategies,
+        isLoading:loadingStrategies,
+        refetch:fetchStrategies
+    } = useQuery(['quantitativeStrategies', User_Details.id], () => quantitativeStrategies(User_Details.id))
+
 
     const [tabIndex, setTabIndex] = useState(0);
     const handleTabsChange = (index: SetStateAction<number>) => {
@@ -45,6 +58,15 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
         //  setScreen(index === 0 ? 'Banks' : 'Wallets')
     };
 
+    const refresh = () => {
+        setRefreshing(true)
+        fetchStrategies()
+        fetchRevenue()
+        wait(2000).then(() => setRefreshing(false));
+    }
+
+    useRefreshOnFocus(fetchStrategies)
+    useRefreshOnFocus(fetchRevenue)
     return (
         <SafeAreaView style={styles.safeArea}>
             <LinearGradient style={styles.background}
@@ -61,7 +83,9 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
                 <ScrollView style={{
                     width: '100%'
                 }} contentContainerStyle={styles.scrollView} scrollEnabled
-                            showsVerticalScrollIndicator={false}>
+                            showsVerticalScrollIndicator={false}
+                            refreshControl={<RefreshControl tintColor={Colors.primary} refreshing={refreshing}
+                                                            onRefresh={refresh}/>}>
 
 
                     <View style={styles.planInfo}>
@@ -171,8 +195,13 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
                     </Animated.View>
                     </IF>
 
-                    <IF condition={tabIndex == 1}>
 
+                    <IF condition={tabIndex == 1}>
+                        {
+                            loadingStrategies && <ActivityIndicator size='small' color={Colors.text}/>
+                        }
+                        {
+                            !loadingStrategies &&
 
                     <Animated.View entering={FadeInDown} layout={Layout.easing(Easing.bounce).delay(100)} exiting={FadeOutDown} style={styles.wallets}>
 
@@ -203,7 +232,7 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
                                     {
 
 
-                                        currencyFormatter('en-US', 'USD').format(ExchangeBal?.data?.binance_balance ? ExchangeBal?.data?.binance_balance : 0)
+                                        currencyFormatter('en-US', 'USD').format(strategies?.data?.binance_balance ? strategies?.data?.binance_balance : 0)
                                     }
                                 </Text>
                             </View>
@@ -233,7 +262,7 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
 
 
 
-                                        {currencyFormatter('en-US', 'USD').format(ExchangeBal?.data?.coinbasepro_balance ? ExchangeBal?.data?.coinbasepro_balance : 0)}
+                                        {currencyFormatter('en-US', 'USD').format(strategies?.data?.coinbasepro_balance ? strategies?.data?.coinbasepro_balance : 0)}
 
                                 </Text>
                             </View>
@@ -265,7 +294,7 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
 
 
 
-                                    {currencyFormatter('en-US', 'USD').format(ExchangeBal?.data?.kucoin_balance ? ExchangeBal?.data?.kucoin_balance : 0)}
+                                    {currencyFormatter('en-US', 'USD').format(strategies?.data?.kucoin_balance ? strategies?.data?.kucoin_balance : 0)}
 
                                 </Text>
                             </View>
@@ -297,7 +326,7 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
 
 
 
-                                    {currencyFormatter('en-US', 'USD').format(ExchangeBal?.data?.kraken_balance ? ExchangeBal?.data?.kraken_balance : 0)}
+                                    {currencyFormatter('en-US', 'USD').format(strategies?.data?.kraken_balance ? strategies?.data?.kraken_balance : 0)}
 
                                 </Text>
                             </View>
@@ -306,11 +335,16 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
 
 
                     </Animated.View>
+                        }
                     </IF>
 
 
                     <IF condition={tabIndex == 2}>
-
+                        {
+                            loadingStrategies && <ActivityIndicator size='small' color={Colors.text}/>
+                        }
+                        {
+                            !loadingStrategies &&
 
                         <Animated.View entering={FadeInDown} layout={Layout.easing(Easing.bounce).delay(100)} exiting={FadeOutDown} style={styles.wallets}>
 
@@ -341,7 +375,7 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
                                         {
 
 
-                                            currencyFormatter('en-US', 'USD').format(ExchangeBal?.data?.futures_binance_balance ? ExchangeBal?.data?.futures_binance_balance : 0)
+                                            currencyFormatter('en-US', 'USD').format(strategies?.data?.futures_binance_balance ? strategies?.data?.futures_binance_balance : 0)
                                         }
                                     </Text>
                                 </View>
@@ -371,7 +405,7 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
 
 
 
-                                        {currencyFormatter('en-US', 'USD').format(ExchangeBal?.data?.futures_coinbasepro_balance ? ExchangeBal?.data?.futures_coinbasepro_balance : 0)}
+                                        {currencyFormatter('en-US', 'USD').format(strategies?.data?.futures_coinbasepro_balance ? strategies?.data?.futures_coinbasepro_balance : 0)}
 
                                     </Text>
                                 </View>
@@ -403,7 +437,7 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
 
 
 
-                                        {currencyFormatter('en-US', 'USD').format(ExchangeBal?.data?.futures_kucoin_balance ? ExchangeBal?.data?.futures_kucoin_balance : 0)}
+                                        {currencyFormatter('en-US', 'USD').format(strategies?.data?.futures_kucoin_balance ? strategies?.data?.futures_kucoin_balance : 0)}
 
                                     </Text>
                                 </View>
@@ -435,7 +469,7 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
 
 
 
-                                        {currencyFormatter('en-US', 'USD').format(ExchangeBal?.data?.futures_kraken_balance ? ExchangeBal?.data?.futures_kraken_balance : 0)}
+                                        {currencyFormatter('en-US', 'USD').format(strategies?.data?.futures_kraken_balance ? strategies?.data?.futures_kraken_balance : 0)}
 
                                     </Text>
                                 </View>
@@ -444,6 +478,7 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
 
 
                         </Animated.View>
+                        }
                     </IF>
 
                     <HorizontalLine margin={20}/>

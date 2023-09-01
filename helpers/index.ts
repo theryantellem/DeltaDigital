@@ -238,3 +238,7 @@ export const removeHTMLTags = (htmlString, removeWhiteSpace = false) => {
 
     return result;
 };
+
+export function invertNumber(number: number) {
+    return -number.toFixed(2);
+}

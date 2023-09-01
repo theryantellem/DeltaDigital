@@ -49,7 +49,7 @@ import SyncStrategy from "../screens/cyborg/profile/SyncStrategy";
 import LogScreen from "../screens/cyborg/strategy/LogScreen";
 import ContactUs from "../screens/cyborg/profile/ContactUs";
 import FeedbackRecord from "../screens/cyborg/profile/FeedbackRecord";
-import Quantitative from "../screens/cyborg/Quantitative";
+import ActiveTrades from "../screens/cyborg/active_trades/ActiveTrades";
 import AllStrategy from "../screens/cyborg/bot/strategy/AllStrategy";
 import ViewStrategy from "../screens/cyborg/bot/strategy/ViewStrategy";
 import FeaturesSelectAsset from "../screens/cyborg/bot/FeaturesBot/SelectAsset";
@@ -70,6 +70,7 @@ import LogsMarginConfiguration from "../screens/cyborg/strategy/LogsMarginConfig
 import RevenueScreen from "../screens/cyborg/profile/RevenueScreen";
 import AllRevenue from "../screens/cyborg/profile/pages/AllRevenue";
 import TwoFactorAuth from "../screens/cyborg/profile/pages/TwoFactorAuth";
+import Quantitative from "../screens/cyborg/profile/quantitative/Quantitative";
 
 
 export default function Navigation({colorScheme}: { colorScheme: ColorSchemeName }) {
@@ -224,6 +225,7 @@ animation:'slide_from_right'
                 <Stack.Screen name={"ContactUs"} component={ContactUs}/>
                 <Stack.Screen name={"CreateTicket"} component={CreateTicket}/>
                 <Stack.Screen name={"FeedbackRecord"} component={FeedbackRecord}/>
+                <Stack.Screen name={"ActiveTrades"} component={ActiveTrades}/>
                 <Stack.Screen name={"Quantitative"} component={Quantitative}/>
                 <Stack.Screen name={"AllStrategy"} component={AllStrategy}/>
                 <Stack.Screen name={"ViewStrategy"} component={ViewStrategy}/>

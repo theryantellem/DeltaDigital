@@ -29,7 +29,7 @@ interface segmentControl {
     segmentedControlBackgroundColor: string,
     activeSegmentBackgroundColor: string,
     textColor: string,
-    activeTextColor: string,
+    activeTextColor?: string,
     paddingVertical: number
 
 }
@@ -50,7 +50,7 @@ const defaultProps:segmentControl = {
 // So that it stretches in landscape mode.
 const width = Layout.window.width - 32;
 
-const IOSSegmentedControl = ({
+const GradientSegmentControl = ({
                               tabs,
                               onChange,
                               currentIndex,
@@ -100,9 +100,9 @@ const IOSSegmentedControl = ({
                     top: 0,
                     marginVertical: pixelSizeVertical(2),
                     marginHorizontal: pixelSizeHorizontal(2),
-                    backgroundColor: activeSegmentBackgroundColor,
+                  //  backgroundColor: activeSegmentBackgroundColor,
                     borderRadius: 8,
-                    ...shadow,
+
                 },
                     {
                         transform: [
@@ -112,6 +112,16 @@ const IOSSegmentedControl = ({
                         ]
                     }]}
             >
+                <LinearGradient style={styles.createBtnGradient}
+                                colors={[ '#e602df',  '#4406b0']}
+
+                                start={{x: 1, y: 0}}
+                                end={{x: 0.1, y: 0.3,}}
+
+                    // locations={[0.1, 0.7,]}
+                />
+
+
             </Animated.View>
 
             {
@@ -127,7 +137,7 @@ const IOSSegmentedControl = ({
 
                             <Text numberOfLines={1}
                                   style={[styles.textStyles,
-                                      {color: isCurrentIndex ?  activeTextColor : textColor,
+                                      {color: isCurrentIndex ?  textColor : textColor,
                                           fontFamily: isCurrentIndex ?  Fonts.faktumBold : Fonts.faktumMedium
                                       }
 
@@ -139,6 +149,7 @@ const IOSSegmentedControl = ({
                     )
                 })
             }
+
         </Animated.View>
     )
 }
@@ -174,7 +185,7 @@ const styles = StyleSheet.create({
 })
 
 
-IOSSegmentedControl.defaultProps = defaultProps
+GradientSegmentControl.defaultProps = defaultProps
 
 
-export default IOSSegmentedControl;
+export default GradientSegmentControl;

@@ -111,6 +111,7 @@ export type RootStackParamList = {
     SyncStrategy: undefined;
     LogScreen: {
         id: string,
+        trade_type: string,
         market: string,
         exchange: string
     };
@@ -146,6 +147,7 @@ export type RootStackParamList = {
     TwoFactorAuth: undefined
     FeedbackRecord: undefined
     Quantitative: undefined
+    ActiveTrades: undefined
 
     //END CYBORG
 

@@ -1,6 +1,15 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
-import {Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Switch} from 'react-native';
+import {
+    Text,
+    View,
+    StyleSheet,
+    ScrollView,
+    TouchableOpacity,
+    ActivityIndicator,
+    Switch,
+    RefreshControl
+} from 'react-native';
 import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -13,7 +22,7 @@ import {
     SimpleLineIcons
 } from "@expo/vector-icons";
 import Colors from "../../../constants/Colors";
-import {currencyFormatter, useRefreshOnFocus} from "../../../helpers";
+import {currencyFormatter, invertNumber, useRefreshOnFocus, wait} from "../../../helpers";
 import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../../helpers/normalize";
 import {Fonts} from "../../../constants/Fonts";
 import {RootStackScreenProps} from "../../../types";
@@ -46,7 +55,8 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
     const queryClient = useQueryClient()
     const dispatch = useAppDispatch()
 
-    const {exchange, market, id} = route.params
+    const [refreshing, setRefreshing] = useState(false);
+    const {exchange, market, id,trade_type} = route.params
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
 
@@ -93,7 +103,10 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
 
     const formdata = new FormData()
     formdata.append('market', market)
+    formdata.append('id', id)
     formdata.append('exchange', exchange)
+
+
     const {
         data: newStrategy,
         refetch: fetchNewStrategy,
@@ -105,9 +118,17 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
 
 
 
-    let old_price = newStrategy?.data['Operation Strategy'][0].Quantity * newStrategy?.data['Operation Strategy'][0].Avg_Price;
-    let new_value = newStrategy?.data['Operation Strategy'][0].Quantity * tickerRes?.lastPrice;
-    let finalvalue = new_value - old_price;
+
+
+  /*  let old_price = parseFloat(newStrategy?.data['Operation Strategy'][0].Quantity) * parseFloat(newStrategy?.data['Operation Strategy'][0].Avg_Price)
+    let new_value = parseFloat(newStrategy?.data['Operation Strategy'][0].Quantity) * parseFloat(tickerRes?.lastPrice);
+   // let finalvalue = new_value - old_price;
+*/
+
+
+    let p2 = parseFloat(newStrategy?.data['Operation Strategy'][0]?.Quantity) * parseFloat(tickerRes?.lastPrice);
+    let val = (Number(newStrategy?.data['Operation Strategy'][0]['Positionamount']) - (p2)) / Number(newStrategy?.data['Operation Strategy'][0]['Positionamount']);
+    let finalvalue = val * 100;
 
     /*   if(finalvalue >= 0){
            element.floating_profit = finalvalue;
@@ -245,6 +266,12 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
     }, []);
 
 
+    const refresh = () => {
+        setRefreshing(true)
+        fetchNewStrategy()
+        wait(2000).then(() => setRefreshing(false));
+    }
+
     return (
         <>
 
@@ -269,7 +296,10 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                             <ActivityIndicator size='large' color={Colors.primary}/>
                         </View>
                     }
-                    <ScrollView style={{
+                    <ScrollView
+                        refreshControl={<RefreshControl tintColor={Colors.primary} refreshing={refreshing}
+                                                        onRefresh={refresh} />}
+                        style={{
                         width: '100%'
                     }} contentContainerStyle={styles.scrollView} scrollEnabled
                                 showsVerticalScrollIndicator={false}>
@@ -299,8 +329,8 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                                                 color: Colors.primary
                                             }]}>
 
-                                                {newStrategy?.data['Operation Strategy'][0].trade_type == '0' && 'Spot'}
-                                                {newStrategy?.data['Operation Strategy'][0].trade_type == '1' && 'Futures'}
+                                                {trade_type == '0' && 'Spot'}
+                                                {trade_type == '1' && 'Futures'}
 
                                             </Text>
 
@@ -485,7 +515,8 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                                         <TouchableOpacity activeOpacity={0.7}
                                                           style={[styles.balanceTitle, {justifyContent: 'flex-end',}]}>
                                             <Text style={styles.logTitle}>
-                                                Floating loss
+
+                                                {finalvalue ? invertNumber(parseFloat(finalvalue)) < 0 ? 'Floating loss' : 'Floating profit' : 'Floating profit' }
                                             </Text>
 
 
@@ -497,10 +528,10 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
 
 
                                             <Text style={[styles.logBalance, {
-                                                color: Colors.errorRed
+                                                color: finalvalue ? invertNumber(parseFloat(finalvalue)) < 0 ? Colors.errorRed : Colors.successChart : Colors.errorRed
                                             }]}>
 
-                                                {finalvalue.toFixed(2)}
+                                                {finalvalue ? invertNumber(parseFloat(finalvalue)) : '0.00'}%
                                             </Text>
 
 
@@ -673,6 +704,11 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
 
                         }
 
+                        {
+                            User_Details.id == '17409' &&
+
+                        <>
+
                         <HorizontalLine margin={20}/>
                         {!isLoading && newStrategy?.data['Operation Strategy'][0]?.active_copy !== undefined &&
 
@@ -697,6 +733,8 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                         </View>
                         }
                         <HorizontalLine margin={20}/>
+                        </>
+                        }
                     </ScrollView>
 
                     <View style={styles.buttonRow}>

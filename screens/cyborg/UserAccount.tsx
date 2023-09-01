@@ -28,6 +28,7 @@ import {useRefreshOnFocus} from "../../helpers";
 import {useDispatch} from "react-redux";
 import * as SecureStore from "expo-secure-store";
 import {logoutUser} from "../../app/slices/userSlice";
+import Quantitative from "./profile/quantitative/Quantitative";
 
 
 
@@ -39,7 +40,7 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
     const navigate = (screen: 'Assets' | 'RewardDetails' | 'SettingsScreen' | 'ApiBinding' | 'RevenueScreen' |
-        'Earnings' | 'EditProfile' | 'CouncellerScreen' | 'SyncStrategy' | 'ContactUs') => {
+        'Earnings' | 'EditProfile' | 'CouncellerScreen' | 'SyncStrategy' | 'ContactUs' | 'Quantitative') => {
         navigation.navigate(screen)
     }
 
@@ -57,7 +58,7 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
         //await queryClient.removeQueries()
 
     }
-
+//console.log(data.data['User Details'][0].image)
 
     useRefreshOnFocus(refetch)
 
@@ -157,8 +158,8 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
 
 
                         </TouchableOpacity>
-{/*
-                        <TouchableOpacity onPress={()=>navigate('SyncStrategy')} activeOpacity={0.6} style={styles.profileButton}>
+
+                        <TouchableOpacity onPress={()=>navigate('Quantitative')} activeOpacity={0.6} style={styles.profileButton}>
 
                             <View style={styles.leftContent}>
 
@@ -167,14 +168,14 @@ const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
 
                                 </View>
                                 <Text style={styles.profileTxt}>
-                                    Synchronize strategy
+                                    Quantitative
                                 </Text>
                             </View>
 
                             <Octicons name="chevron-right" size={20} color="#979797"/>
 
 
-                        </TouchableOpacity>*/}
+                        </TouchableOpacity>
 
 
                         <TouchableOpacity onPress={() => navigate('Earnings')} activeOpacity={0.6}

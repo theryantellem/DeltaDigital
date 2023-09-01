@@ -102,7 +102,7 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
 
             onSuccess: async (data) => {
                 // alert(message)
-console.log(data.data.ID)
+
                 if (data.status == 1) {
 
                     /*         dispatch(addNotificationItem({
