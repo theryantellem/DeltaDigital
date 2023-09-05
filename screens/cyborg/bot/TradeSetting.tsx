@@ -53,18 +53,18 @@ const formSchema = yup.object().shape({
         "Invalid number type"
     ),
 
-    whole_position_take_profit_callback: yup.string().required('Whole position take profit callback is required').matches(
+ /*   whole_position_take_profit_callback: yup.string().required('Whole position take profit callback is required').matches(
         /^[1-9][0-9]*$/,
         "Invalid number type"
-    ),
+    ),*/
     whole_position_stop_loss: yup.string().required('Whole position stop loss is required').matches(
         /^[1-9][0-9]*$/,
         "Invalid number type"
     ),
-    whole_ratio: yup.string().required('Whole ratio is required').matches(
+  /*  whole_ratio: yup.string().required('Whole ratio is required').matches(
         /^[1-9][0-9]*$/,
         "Invalid number type"
-    ),
+    ),*/
 
 });
 
@@ -232,7 +232,7 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
             amount: amountContent,
             marginLimit: marginLimitCall,
             takeProfit: takeProfit,
-            direction: '',
+            direction: direction,
             whole_ratio: whole_ratio,
             highest_price: '',
             first_position_drop: '',
@@ -281,15 +281,14 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                     double_position: switchToggle ? '1' : '0',
                     margin_limit: marginLimit,
                     profit_ratio: takeProfit,
-                    whole_ratio: whole_ratio,
+                    whole_ratio: '0',
                     whole_stop: whole_position_stop_loss,
                     // first_ratio: first_position_drop,
                     cycle: strategyPeriodCycle,
-                    profit_callback: whole_position_take_profit_callback,
+                    profit_callback: '0',
                     direction,
                     one_shot: strategyPeriodShot,
 
-                    stop_loss,
                     price_above,
 
                     price_below,
@@ -460,7 +459,7 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                             }
                             <TextInput
 
-                                placeholder="Take profit ratio"
+                                placeholder="Take profit"
                                 keyboardType={"number-pad"}
                                 touched={touched.takeProfit}
                                 error={touched.takeProfit && errors.takeProfit}
@@ -479,7 +478,7 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                                 focus={focusTakeProfit}
                                 defaultValue={takeProfit}
                                 value={values.takeProfit}
-                                label="Whole position take profit ratio"/>
+                                label="Take profit (%)"/>
 
 
                             <TextInput
@@ -503,10 +502,12 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                                 defaultValue={whole_stop}
                                 focus={focusWhole_stop}
                                 value={values.whole_position_stop_loss}
-                                label="Whole position stop loss"/>
+                                label="Stop loss"/>
 
-
-                            <TextInput
+{/*
+The below inputs are not needed!
+*/}
+                         {/*   <TextInput
 
                                 placeholder="0"
                                 keyboardType={"number-pad"}
@@ -525,9 +526,9 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                                 defaultValue={whole_position_take_profit_callback}
                                 focus={focusWhole_position_take_profit_callback}
                                 value={values.whole_position_take_profit_callback}
-                                label="Whole position take profit callback"/>
+                                label="Whole position take profit callback"/>*/}
 
-                            <TextInput
+                           {/* <TextInput
 
                                 placeholder="0"
                                 keyboardType={"number-pad"}
@@ -546,25 +547,8 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                                 focus={focusWhole_ratio}
                                 defaultValue={whole_ratio}
                                 value={values.whole_ratio}
-                                label="Buy in callback"/>
+                                label="Buy in callback"/>*/}
 
-                            <SelectInput
-                                editable={false}
-                                action={() => handleSnapPress(1)}
-                                label='Strategy period'
-                                autoCapitalize='none'
-                                keyboardType='default'
-                                returnKeyType='next'
-                                returnKeyLabel='next'
-
-                                onChangeText={(e) => {
-                                    setStrategyPeriod(e)
-                                }}
-                                defaultValue={strategyPeriod}
-                                icon='chevron-down'
-                                value={values.strategyPeriod}
-                                Btn={true}
-                            />
 
                             {
                                 tradeSetting.trade_type == '1'
@@ -588,7 +572,9 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                                     Btn={true}
                                 />
                             }
-                            {
+
+
+                           {/* {
                                 tradeSetting.trade_type == '1'
                                 &&
                                 <TextInput
@@ -606,7 +592,18 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
                                     label="Stop loss"/>
 
 
-                            }
+                            }*/}
+
+                            <View style={styles.inputTitleWrap}>
+                                <Text style={styles.inputTitle}>
+                                    Trade re-entry settings
+                                </Text>
+                            </View>
+
+
+
+
+                            {/*Add title "Trade re-entry settings"*/}
                             {
                                 tradeSetting.trade_type == '1'
                                 &&
@@ -645,6 +642,8 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
 
 
                             }
+
+
                             {
                                 tradeSetting.trade_type == '1'
                                 &&
@@ -703,6 +702,23 @@ const TradeSetting = ({navigation}: RootStackScreenProps<'TradeSetting'>) => {
 
 
                             }
+                            <SelectInput
+                                editable={false}
+                                action={() => handleSnapPress(1)}
+                                label='Strategy period'
+                                autoCapitalize='none'
+                                keyboardType='default'
+                                returnKeyType='next'
+                                returnKeyLabel='next'
+
+                                onChangeText={(e) => {
+                                    setStrategyPeriod(e)
+                                }}
+                                defaultValue={strategyPeriod}
+                                icon='chevron-down'
+                                value={values.strategyPeriod}
+                                Btn={true}
+                            />
 
                             {
                                 strategyPeriod == 'Cycle' &&
@@ -1038,6 +1054,18 @@ const styles = StyleSheet.create({
     },
     margingConfigText: {
 
+        fontSize: fontPixel(14),
+        fontFamily: Fonts.faktumBold,
+        color: Colors.text
+    },
+    inputTitleWrap:{
+        width:'100%',
+        alignItems:'flex-start',
+        justifyContent:'center',
+        height:30,
+        marginBottom:10,
+    },
+    inputTitle:{
         fontSize: fontPixel(14),
         fontFamily: Fonts.faktumBold,
         color: Colors.text

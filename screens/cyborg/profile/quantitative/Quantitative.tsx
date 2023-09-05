@@ -17,7 +17,13 @@ import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {Ionicons, MaterialIcons, Octicons} from "@expo/vector-icons";
 import {currencyFormatter, wait} from "../../../../helpers";
-import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPixel} from "../../../../helpers/normalize";
+import {
+    fontPixel,
+    heightPixel,
+    pixelSizeHorizontal,
+    pixelSizeVertical,
+    widthPixel
+} from "../../../../helpers/normalize";
 import {Fonts} from "../../../../constants/Fonts";
 import dayjs from "dayjs";
 
@@ -29,21 +35,14 @@ import {IF} from "../../../../helpers/ConditionJsx";
 
 import SpotScreenQuantitative from "./SpotScreen";
 import FuturesScreenQuantitative from "./FuturesScreen";
+import IOSSegmentedControl from "../../../../components/segment-control/IOSSegmentContol";
 
 
 var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime)
 
 
-
-
-
-
-
-
-
 const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
-
 
 
     const [tabIndex, setTabIndex] = useState(0);
@@ -51,17 +50,6 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
         setTabIndex(index);
         //  setScreen(index === 0 ? 'Banks' : 'Wallets')
     };
-
-
-
-
-
-
-
-
-
-
-
 
 
     return (
@@ -84,14 +72,15 @@ const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
                     {
                         Platform.OS === 'ios' ?
 
-                            <GradientSegmentControl tabs={["Spots", "Futures"]}
-                                                    currentIndex={tabIndex}
-                                                    onChange={handleTabsChange}
-                                                    segmentedControlBackgroundColor={'#7676801F'}
-                                                    activeSegmentBackgroundColor={"#fff"}
+                            <IOSSegmentedControl tabs={["Spots", "Futures"]}
+                                                 currentIndex={tabIndex}
+                                                 onChange={handleTabsChange}
+                                                 segmentedControlBackgroundColor={'#7676801F'}
+                                                 activeSegmentBackgroundColor={"#fff"}
 
-                                                    textColor={"#fff"}
-                                                    paddingVertical={pixelSizeVertical(12)}/>
+                                                 textColor={"#fff"}
+                                                 paddingVertical={pixelSizeVertical(12)}
+                                                 activeTextColor={"#131313"}/>
                             :
 
                             <SegmentedControl tabs={["Spots", "Futures"]}

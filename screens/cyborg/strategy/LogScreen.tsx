@@ -56,7 +56,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
     const dispatch = useAppDispatch()
 
     const [refreshing, setRefreshing] = useState(false);
-    const {exchange, market, id,trade_type} = route.params
+    const {exchange, market, id,trade_type,screenFrom} = route.params
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
 
@@ -182,6 +182,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
         })
 
 
+
     const {
         mutate: toggleCopyStatus,
         isLoading: loadingCopy
@@ -272,6 +273,17 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
         wait(2000).then(() => setRefreshing(false));
     }
 
+    const goBack = () => {
+        if(screenFrom == 'Auto'){
+            navigation.goBack()
+        }else{
+            navigation.navigate('CyborgBottomTab',{
+                screen:'CyborgHome'
+            })
+        }
+
+    }
+
     return (
         <>
 
@@ -286,7 +298,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                 >
 
 
-                    <HeaderWithTitle isButton logAction={handlePresentModalPress} title='Logs'
+                    <HeaderWithTitle logScreen goBackLog={goBack} isButton logAction={handlePresentModalPress} title='Logs'
                                      headerAction={openTransactionRecs}
                                      headerButton={<Ionicons name="ios-document-text-outline" size={24}
                                                              color="#fff"/>}/>
@@ -509,6 +521,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                                     </View>
 
 
+
                                     <View style={[styles.interestGained, {alignItems: 'flex-end'}]}>
 
 
@@ -528,10 +541,10 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
 
 
                                             <Text style={[styles.logBalance, {
-                                                color: finalvalue ? invertNumber(parseFloat(finalvalue)) < 0 ? Colors.errorRed : Colors.successChart : Colors.errorRed
+                                                color: finalvalue ? invertNumber(parseFloat(finalvalue)) < 0 ? Colors.errorRed : Colors.successChart : Colors.successChart
                                             }]}>
 
-                                                {finalvalue ? invertNumber(parseFloat(finalvalue)) : '0.00'}%
+                                                {finalvalue ? `${invertNumber(parseFloat(finalvalue))}` : '0.00'}%
                                             </Text>
 
 
@@ -543,7 +556,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                                 </View>
 
 
-                                {/*           <View style={styles.moreButtonContainer}>
+                                {/*        <View style={styles.moreButtonContainer}>
 
 
                                 <TouchableOpacity activeOpacity={0.6}

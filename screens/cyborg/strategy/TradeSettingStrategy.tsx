@@ -73,15 +73,8 @@ const formSchema = yup.object().shape({
         "Invalid number type"
     ),
 
-    whole_position_take_profit_callback: yup.string().required('Whole position take profit callback is required').matches(
-        /^[1-9][0-9]*$/,
-        "Invalid number type"
-    ),
+
     whole_position_stop_loss: yup.string().required('Whole position stop loss is required').matches(
-        /^[1-9][0-9]*$/,
-        "Invalid number type"
-    ),
-    whole_ratio: yup.string().required('Whole ratio is required').matches(
         /^[1-9][0-9]*$/,
         "Invalid number type"
     ),
@@ -363,13 +356,13 @@ const TradeSettingStrategy = ({navigation, route}: RootStackScreenProps<'TradeSe
                 formData.append('double_position', switchToggle ? '1' : '0',)
                 formData.append('margin_limit', marginLimit)
                 formData.append('profit_ratio', takeProfit)
-                formData.append('whole_ratio', whole_ratio)
+                formData.append('whole_ratio', '0')
                 formData.append('whole_stop', whole_position_stop_loss)
 
                 formData.append('first_call', logTradeSetting.price_drop)
                 formData.append('first_ratio', logTradeSetting.m_ratio)
                 formData.append('cycle', strategyPeriodCycle)
-                formData.append('profit_callback', whole_position_take_profit_callback)
+                formData.append('profit_callback', '0')
                 formData.append('one_short', strategyPeriodShot)
 
 
@@ -384,7 +377,7 @@ const TradeSettingStrategy = ({navigation, route}: RootStackScreenProps<'TradeSe
                 formData.append('market', dataLogs.Market)
                 formData.append('id', id)
 
-                mutate({body: formData, userId: User_Details.id})
+          mutate({body: formData, userId: User_Details.id})
 
             } else {
                 dispatch(addNotificationItem({
@@ -561,7 +554,7 @@ const TradeSettingStrategy = ({navigation, route}: RootStackScreenProps<'TradeSe
                             }
                             <TextInput
 
-                                placeholder="Take profit ratio"
+                                placeholder="Take profit"
                                 keyboardType={"number-pad"}
                                 touched={touched.takeProfit}
                                 error={touched.takeProfit && errors.takeProfit}
@@ -580,7 +573,7 @@ const TradeSettingStrategy = ({navigation, route}: RootStackScreenProps<'TradeSe
                                 focus={focusTakeProfit}
                                 defaultValue={takeProfit}
                                 value={values.takeProfit}
-                                label="Whole position take profit ratio"/>
+                                label="Take profit (%)"/>
 
 
                             <TextInput
@@ -607,66 +600,6 @@ const TradeSettingStrategy = ({navigation, route}: RootStackScreenProps<'TradeSe
                                 label="Whole position stop loss"/>
 
 
-                            <TextInput
-
-                                placeholder="0"
-                                keyboardType={"number-pad"}
-                                touched={touched.whole_position_take_profit_callback}
-                                error={touched.whole_position_take_profit_callback && errors.whole_position_take_profit_callback}
-                                onFocus={() => setFocusWhole_position_take_profit_callback(true)}
-                                onChangeText={(e) => {
-                                    handleChange('whole_position_take_profit_callback')(e);
-                                    setWhole_position_take_profit_callback(e);
-                                }}
-
-                                onBlur={(e) => {
-                                    handleBlur('whole_position_take_profit_callback')(e);
-                                    setFocusWhole_position_take_profit_callback(false);
-                                }}
-                                defaultValue={whole_position_take_profit_callback}
-                                focus={focusWhole_position_take_profit_callback}
-                                value={values.whole_position_take_profit_callback}
-                                label="Whole position take profit callback"/>
-
-                            <TextInput
-
-                                placeholder="0"
-                                keyboardType={"number-pad"}
-                                touched={touched.whole_ratio}
-                                error={touched.whole_ratio && errors.whole_ratio}
-                                onFocus={() => setFocusWhole_ratio(true)}
-                                onChangeText={(e) => {
-                                    handleChange('whole_ratio')(e);
-                                    setWhole_ratio(e);
-                                }}
-
-                                onBlur={(e) => {
-                                    handleBlur('whole_ratio')(e);
-                                    setFocusWhole_ratio(false);
-                                }}
-                                focus={focusWhole_ratio}
-                                defaultValue={whole_ratio}
-                                value={values.whole_ratio}
-                                label="Buy in callback"/>
-
-                            <SelectInput
-                                editable={false}
-                                action={() => handleSnapPress(1)}
-                                label='Strategy period'
-                                autoCapitalize='none'
-                                keyboardType='default'
-                                returnKeyType='next'
-                                returnKeyLabel='next'
-
-                                onChangeText={(e) => {
-                                    setStrategyPeriod(e)
-                                }}
-                                defaultValue={strategyPeriod}
-                                icon='chevron-down'
-                                value={values.strategyPeriod}
-                                Btn={true}
-                            />
-
                             {
                                 dataLogs.trade_type == '1'
                                 &&
@@ -688,6 +621,15 @@ const TradeSettingStrategy = ({navigation, route}: RootStackScreenProps<'TradeSe
 
 
                             }
+
+
+                            <View style={styles.inputTitleWrap}>
+                                <Text style={styles.inputTitle}>
+                                    Trade re-entry settings
+                                </Text>
+                            </View>
+
+
                             {
                                 dataLogs.trade_type == '1'
                                 &&
@@ -740,7 +682,7 @@ const TradeSettingStrategy = ({navigation, route}: RootStackScreenProps<'TradeSe
 
                                     onChangeText={(e) => {
                                         handleChange('re_capital')(e);
-setRe_capital(e)
+                                        setRe_capital(e)
                                     }}
                                     defaultValue={re_capital}
                                     value={values.re_capital}
@@ -761,7 +703,7 @@ setRe_capital(e)
 
                                     onChangeText={(e) => {
                                         handleChange('closing_price')(e);
-setClosing_price(e)
+                                        setClosing_price(e)
                                     }}
                                     defaultValue={closing_price}
                                     value={values.closing_price}
@@ -781,7 +723,7 @@ setClosing_price(e)
 
                                     onChangeText={(e) => {
                                         handleChange('entry_call')(e);
-setEntry_call(e)
+                                        setEntry_call(e)
                                     }}
                                     defaultValue={entry_call}
                                     value={values.entry_call}
@@ -789,6 +731,24 @@ setEntry_call(e)
 
 
                             }
+
+                            <SelectInput
+                                editable={false}
+                                action={() => handleSnapPress(1)}
+                                label='Strategy period'
+                                autoCapitalize='none'
+                                keyboardType='default'
+                                returnKeyType='next'
+                                returnKeyLabel='next'
+
+                                onChangeText={(e) => {
+                                    setStrategyPeriod(e)
+                                }}
+                                defaultValue={strategyPeriod}
+                                icon='chevron-down'
+                                value={values.strategyPeriod}
+                                Btn={true}
+                            />
 
 
                             {
@@ -1133,6 +1093,18 @@ const styles = StyleSheet.create({
     },
     margingConfigText: {
 
+        fontSize: fontPixel(14),
+        fontFamily: Fonts.faktumBold,
+        color: Colors.text
+    },
+    inputTitleWrap: {
+        width: '100%',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        height: 30,
+        marginBottom: 10,
+    },
+    inputTitle: {
         fontSize: fontPixel(14),
         fontFamily: Fonts.faktumBold,
         color: Colors.text

@@ -79,7 +79,7 @@ const SelectExchange = ({navigation, route}: RootStackScreenProps<'SelectExchang
         {})
 
 
-    const Exchanges = [
+    const Exchanges =  type === 'spot' ? [
         {
             id: '1',
             logo: 'https://play-lh.googleusercontent.com/PjoJoG27miSglVBXoXrxBSLveV6e3EeBPpNY55aiUUBM9Q1RCETKCOqdOkX2ZydqVf0',
@@ -89,7 +89,8 @@ const SelectExchange = ({navigation, route}: RootStackScreenProps<'SelectExchang
             rank: "3",
             exchange: '3',
             exchangeName: 'Coinbase'
-        }, {
+        },
+        {
             id: '2',
             logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Binance_Logo.svg/1200px-Binance_Logo.svg.png',
             status: User_Details.binancebind,
@@ -117,7 +118,29 @@ const SelectExchange = ({navigation, route}: RootStackScreenProps<'SelectExchang
             exchange: '2',
             exchangeName: 'Kucoin'
         }
+    ] :  [
+
+        {
+            id: '2',
+            logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Binance_Logo.svg/1200px-Binance_Logo.svg.png',
+            status: User_Details.binancebind,
+            apiSecrete: User_Details.binancescret,
+            apiKey: User_Details.binanceapi,
+            rank: "1",
+            exchange: '1',
+            exchangeName: 'Binance'
+        },  {
+            id: '4',
+            logo: 'https://assets.staticimg.com/cms/media/3gfl2DgVUqjJ8FnkC7QxhvPmXmPgpt42FrAqklVMr.png',
+            status: User_Details.kucoinbind,
+            apiSecrete: User_Details.kucoinsecret,
+            apiKey: User_Details.kucoinapi,
+            rank: "1",
+            exchange: '2',
+            exchangeName: 'Kucoin'
+        }
     ]
+
 
     const continueAsset = (exchangeId: string, status: '0' | '1', apiKey: string, apiSecrete: string) => {
         const exchangeName = Exchanges.find(exchange => exchange.exchange == exchangeId)?.exchangeName

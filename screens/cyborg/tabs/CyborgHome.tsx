@@ -152,10 +152,10 @@ const HomeTradeCard = ({item, seeLogs, Exchanges, tickers}: props) => {
 
                         {/* {currencyFormatter('en-US', 'USD').format(item.Avg_Price)}*/}
 
-                        {finalvalue ? invertNumber(parseFloat(finalvalue)) : '0'}
+                        {finalvalue ? invertNumber(parseFloat(finalvalue)) : '0.00'}%
                     </Text>
                     <Text style={styles.coinNameText}>
-                        {item.Positionamount}
+                        {parseFloat(item.Positionamount).toFixed(2)}
                     </Text>
                 </View>
 
@@ -217,7 +217,8 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
             id,
             trade_type,
             exchange,
-            market
+            market,
+            screenFrom:'CyborgHome'
         })
     }
 

@@ -133,6 +133,8 @@ const SelectAsset = ({navigation,route}: RootStackScreenProps<'SelectAsset'>) =>
     const {exchange} = route.params
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
+    const dataSlice = useAppSelector(state => state.data)
+    const {tradeSetting} = dataSlice
     const [refreshing, setRefreshing] = useState(false);
     const [searchValue, setSearchValue] = useState('');
     const continueAsset = (market:string,id:string) => {
@@ -161,7 +163,8 @@ const SelectAsset = ({navigation,route}: RootStackScreenProps<'SelectAsset'>) =>
     }) => item.id, [],);
 
     const {data, refetch,isLoading} = useQuery([`quantitativeStrategies`,User_Details.id], () => quantitativeStrategies(User_Details.id))
-  //  console.log("********************quantitativeStrategies********************")
+  // console.log("********************quantitativeStrategies********************")
+
 
 
     // console.log(data.data['Operation Strategy'])
@@ -220,7 +223,7 @@ const SelectAsset = ({navigation,route}: RootStackScreenProps<'SelectAsset'>) =>
                         estimatedItemSize={200}
                         onEndReachedThreshold={0.3}
                         showsVerticalScrollIndicator={false}
-                        data={filterAssets}
+                        data={filterAssets.filter((market:{trade_type:string}) => market.trade_type == tradeSetting.trade_type)}
                         renderItem={renderItem} keyExtractor={keyExtractor}
 
                         refreshControl={

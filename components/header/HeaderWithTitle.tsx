@@ -17,17 +17,27 @@ interface props {
     clearData?: () => void,
     totalStep?: string,
     logAction?: () => void,
+
     isButton?: boolean
+    logScreen?: boolean
+    goBackLog?: () => void,
 }
 
-const HeaderWithTitle = ({title, clearData, logAction, isButton, subTitle, headerButton, headerAction, step, currentStep, totalStep}: props) => {
+const HeaderWithTitle = ({title, clearData,logScreen, goBackLog,logAction, isButton, subTitle, headerButton, headerAction, step, currentStep, totalStep}: props) => {
 
     const {goBack} = useNavigation()
     const goBackNav = () => {
-        if (clearData) {
+     /*   if (clearData) {
             clearData()
-        }
-        goBack()
+        }*/
+        if(logScreen){
+            if (goBackLog) {
+                goBackLog()
+            }
+        }else(
+            goBack()
+        )
+
 
     }
 

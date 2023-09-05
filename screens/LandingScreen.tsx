@@ -76,7 +76,7 @@ const Item = ({item,tickers}:itemProps) =>{
                 marginLeft: 5,
                 fontFamily: Fonts.faktumMedium
             }}>
-                {finalvalue ? invertNumber(parseFloat(finalvalue)) : '0.00'}
+                {finalvalue ? invertNumber(parseFloat(finalvalue)) : '0.00'}%
             </Text>
         </View>
     )

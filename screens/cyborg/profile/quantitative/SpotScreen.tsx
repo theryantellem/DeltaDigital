@@ -265,6 +265,7 @@ const SpotScreenQuantitative = ({}) => {
             trade_type,
             market,
             exchange,
+            screenFrom:'Auto'
         })
     }
 

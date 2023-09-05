@@ -69,7 +69,7 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
         []
     );
 
-    const navigate = (screen: 'LeaderBoard' | 'NewsScreen' | 'ActiveTrades' |'RevenueScreen' | 'AllStrategy' | 'ApiBinding') => {
+    const navigate = (screen: 'LeaderBoard' | 'NewsScreen' | 'ActiveTrades' |'RevenueScreen' | 'AllStrategy' | 'ApiBinding' | 'Quantitative') => {
         navigation.navigate(screen)
     }
 
@@ -137,6 +137,16 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
                                     </View>
                                     <Text style={styles.dashText}>
                                         Active trades
+                                    </Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity onPress={() => navigate('Quantitative')} activeOpacity={0.6}
+                                                  style={styles.dashButton}>
+                                    <View style={styles.dashIcon}>
+                                        <Ionicons name="sync-sharp" size={18} color={Colors.lightColor}/>
+                                    </View>
+                                    <Text style={styles.dashText}>
+                                        Quantitative
                                     </Text>
                                 </TouchableOpacity>
 

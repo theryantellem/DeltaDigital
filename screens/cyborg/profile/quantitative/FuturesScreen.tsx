@@ -281,6 +281,7 @@ const FuturesScreenQuantitative = ({}) => {
             trade_type,
             market,
             exchange,
+            screenFrom:'Auto'
         })
     }
 

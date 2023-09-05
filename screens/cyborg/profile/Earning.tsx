@@ -24,7 +24,7 @@ const Earnings = ({}: RootStackScreenProps<'Earnings'>) => {
     const {data:revenues,refetch,isLoading} = useQuery(['user-Revenues'],()=> getRevenues(User_Details.id))
 
 
-
+console.log(revenues)
     const refresh = () => {
         setRefreshing(true)
         refetch()

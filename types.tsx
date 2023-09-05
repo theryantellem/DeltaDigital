@@ -84,7 +84,11 @@ export type RootStackParamList = {
     OverView: undefined;
     BotSuccess: {
         amount: string,
-        market: string
+        market: string,
+        id: string,
+        trade_type: string,
+        exchange: string,
+        origin:'Bot'|'Other'
     };
     UserAccount: undefined;
     DepositScreen: undefined;
@@ -113,7 +117,8 @@ export type RootStackParamList = {
         id: string,
         trade_type: string,
         market: string,
-        exchange: string
+        exchange: string,
+        screenFrom:string
     };
     SuccessScreen: {
         title: string,

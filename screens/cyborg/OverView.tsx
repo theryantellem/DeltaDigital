@@ -49,7 +49,10 @@ const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
         data:strategies,
         isLoading:loadingStrategies,
         refetch:fetchStrategies
-    } = useQuery(['quantitativeStrategies', User_Details.id], () => quantitativeStrategies(User_Details.id))
+    } = useQuery(['quantitativeStrategies', User_Details.id], () => quantitativeStrategies(User_Details.id),{
+        refetchInterval:1000
+    })
+
 
 
     const [tabIndex, setTabIndex] = useState(0);

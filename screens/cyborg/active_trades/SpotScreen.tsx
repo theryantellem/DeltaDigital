@@ -287,6 +287,7 @@ const SpotScreen = ({}) => {
             trade_type,
             market,
             exchange,
+            screenFrom:'Auto'
         })
     }
 

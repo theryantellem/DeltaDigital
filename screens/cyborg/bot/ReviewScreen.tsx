@@ -44,6 +44,10 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
                     navigation.navigate('BotSuccess', {
                         amount: tradeSetting.firstbuy_amount,
                         market: tradeSetting.market,
+                        id:data.data.id,
+                        exchange:data.data.exchange,
+                        trade_type:tradeSetting.trade_type,
+origin:'Bot',
                     })
                     dispatch(clearTradeSetting())
                     /* navigation.navigate('SuccessScreen', {
@@ -84,7 +88,7 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
 
             onSuccess: async (data) => {
                 // alert(message)
-
+console.log(data)
                 if (data.status == 1) {
                     navigation.navigate('BotSuccess', {
                         amount: tradeSetting.firstbuy_amount,
@@ -176,13 +180,19 @@ console.log(err)
             formData.append('id', tradeSetting.id)
             formData.append('market', tradeSetting.market)
 
-            formData.append('stop_loss', tradeSetting.stop_loss)
             formData.append('price_above', tradeSetting.price_above)
-            formData.append('re_capital', tradeSetting.re_capital)
+            formData.append('capital', tradeSetting.re_capital)
             formData.append('closing_price', tradeSetting.closing_price)
             formData.append('price_below', tradeSetting.price_below)
             formData.append('entry_call', tradeSetting.entry_call)
             createFutureBot({body: formData, userId: User_Details.id})
+
+
+
+
+         //   formData.append('capital', re_capital)
+
+console.log(formData)
 
         }
         if (tradeSetting.trade_type == '0') {
@@ -305,7 +315,7 @@ console.log(err)
                             <View style={styles.Details}>
                                 <View style={styles.DetailsLeft}>
                                     <Text style={styles.DetailTitleText}>
-                                        Profit callback
+                                   Capital
                                     </Text>
                                     <Text onPress={editSetting} style={[styles.DetailTitleText, {
                                         color: Colors.primaryLight,
@@ -318,7 +328,7 @@ console.log(err)
                                     fontFamily: Fonts.faktumMedium,
 
                                 }]}>
-                                    {tradeSetting.profit_callback}
+                                    {tradeSetting.re_capital}
                                 </Text>
 
                             </View>

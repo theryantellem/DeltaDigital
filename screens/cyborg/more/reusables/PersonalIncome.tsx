@@ -20,6 +20,7 @@ import {FlashList} from "@shopify/flash-list";
 
 
 interface props {
+    index:number,
     item: {
         idcard: string,
         reward_total: string,
@@ -29,7 +30,7 @@ interface props {
 }
 
 
-const LeaderboardItem = ({item}: props) => {
+const LeaderboardItem = ({item,index}: props) => {
     return (
         <View style={styles.transactionCard}>
 
@@ -48,7 +49,7 @@ const LeaderboardItem = ({item}: props) => {
                     {item.username}
                 </Text>
                 <Text style={styles.transactionDate}>
-                    #{item.level}
+                    #{index + 1}
                 </Text>
             </View>
 
@@ -212,8 +213,8 @@ const PersonalIncome = () => {
 
 
 
-    const renderItem = useCallback(({item}) => (
-        <LeaderboardItem item={item}/>
+    const renderItem = useCallback(({item,index}) => (
+        <LeaderboardItem item={item} index={index}/>
     ), [])
 
 

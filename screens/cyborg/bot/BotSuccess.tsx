@@ -14,10 +14,16 @@ import {RootStackScreenProps} from "../../../types";
 import HorizontalLine from "../../../components/HorizontalLine";
 
 const BotSuccess = ({navigation,route}: RootStackScreenProps<'BotSuccess'>) => {
-    const {market,amount} = route.params
+    const {market,amount,trade_type,id,exchange} = route.params
+
     const goNextScreen = () => {
-        navigation.navigate('CyborgBottomTab', {
-            screen: 'CyborgHome'
+
+        navigation.navigate('LogScreen', {
+            screenFrom:'CyborgHome',
+     trade_type,
+            market,
+            id,
+            exchange,
         })
     }
     return (
