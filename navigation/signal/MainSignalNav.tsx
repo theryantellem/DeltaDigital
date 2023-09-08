@@ -4,10 +4,11 @@ import * as React from "react";
 
 
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
-import {RootStackParamList} from "../../types";
+import {RootStackParamList, SignalStackParamList} from "../../types";
+import {SignalBottomTab} from "./index";
 
 
-const StackNav = createNativeStackNavigator<RootStackParamList>();
+const StackNav = createNativeStackNavigator<SignalStackParamList>();
 
 export function MainSignalNav() {
     return(
@@ -18,9 +19,9 @@ export function MainSignalNav() {
 
         }}>
 
-          {/*  <StackNav.Screen name={"SignalBottomTab"} options={{headerShown: false}} component={CyborgBottomTab}/>
+     <StackNav.Screen name={"SignalBottomTab"} options={{headerShown: false}} component={SignalBottomTab}/>
 
-*/}
+
         </StackNav.Navigator>
     )
 

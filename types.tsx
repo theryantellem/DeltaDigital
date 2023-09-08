@@ -23,7 +23,7 @@ export type RootStackParamList = {
     //START CYBORG
 
     CyborgBottomTab: NavigatorScreenParams<CyborgStackParamList> | undefined;
-    SignalBottomTab: NavigatorScreenParams<SignalTabParamList> | undefined;
+     MainSignalNav: NavigatorScreenParams<SignalStackParamList> | undefined;
 
     OnBoardingScreen: undefined;
     LandingScreen: undefined;
@@ -182,6 +182,17 @@ export type CyborgStackParamList = {
     FeedbackRecord: undefined
     Quantitative: undefined
     ActiveTrades: undefined
+
+    //END CYBORG
+
+
+
+
+
+
+};
+export type SignalStackParamList = {
+    SignalBottomTab: undefined;
 
     //END CYBORG
 

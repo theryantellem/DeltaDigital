@@ -21,6 +21,7 @@ import {useAppDispatch, useAppSelector} from "../app/hooks";
 import {store} from "../app/store";
 import {timeDifference} from "../helpers";
 import {CyborgMainNavigator} from "./cyborg/MainCyborgNav";
+import {MainSignalNav} from "./signal/MainSignalNav";
 
 
 export default function Navigation({colorScheme}: { colorScheme: ColorSchemeName }) {
@@ -133,6 +134,7 @@ animation:'slide_from_right'
             <Stack.Group screenOptions={{headerShown: false, animation: 'slide_from_left'}}>
                 <Stack.Screen name={"LandingScreen"} component={LandingScreen}/>
                 <Stack.Screen name={"CyborgBottomTab"} component={CyborgMainNavigator}/>
+                <Stack.Screen name={"MainSignalNav"} component={MainSignalNav}/>
 
 
 

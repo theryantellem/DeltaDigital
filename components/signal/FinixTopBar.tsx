@@ -3,11 +3,11 @@ import React, {useCallback, useState} from 'react';
 import {Text, View, StyleSheet, TouchableOpacity, Image, Platform} from 'react-native';
 import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import {FontAwesome5, Ionicons, Octicons} from "@expo/vector-icons";
-import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../../helpers/normalize";
-import {Fonts} from "../../../constants/Fonts";
+import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../helpers/normalize";
+
 import FastImage from "react-native-fast-image";
-import {useAppSelector} from "../../../app/hooks";
-import Colors from "../../../constants/Colors";
+import {useAppSelector} from "../../app/hooks";
+import {Fonts} from "../../constants/Fonts";
 
 
 interface props {
@@ -16,62 +16,21 @@ interface props {
     homeDash?: boolean,
 }
 
-const TopBar = ({ profilePhoto, userName,homeDash}: props) => {
+const FinixTopBar = ({profilePhoto, userName, homeDash}: props) => {
 
     const navigation = useNavigation()
 
 
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
-    const openNotifications = () => {
-       navigation.navigate('CyborgBottomTab',{
-           screen:'NewsScreen'
-       })
-    }
-    const openProfile = () => {
-
-        navigation.navigate('CyborgBottomTab',{
-            screen:'UserAccount'
-        })
-    }
-    const openAssets = () => {
-
-        navigation.navigate('CyborgBottomTab',{
-            screen:'Assets'
-        })
-    }
-
-    const [greeting, setGreeting] = useState('');
-    useFocusEffect(
-        useCallback(() => {
-            // Do something when the screen is focused
-            const hour = new Date().getHours();
-            const welcomeTypes = ["Morning",
-                "Good Day",
-                "Hi",];
-            let welcomeText = "";
-
-            if (hour <= 12) welcomeText = welcomeTypes[0];
-            else if (hour < 10) welcomeText = welcomeTypes[3];
-            else if (hour < 18) welcomeText = welcomeTypes[1];
-            else welcomeText = welcomeTypes[2]
-
-            setGreeting(welcomeText)
-            return () => {
-                // Do something when the screen is unfocused
-                // Useful for cleanup functions
-            };
-        }, [])
-    );
 
 
     return (
-        <View style={[styles.topBar,{
-            width:homeDash ? '90%' : '100%',
+        <View style={[styles.topBar, {
+            width: homeDash ? '90%' : '100%',
         }]}>
-            <TouchableOpacity onPress={openProfile} activeOpacity={0.8} style={styles.leftButton}>
+            <TouchableOpacity activeOpacity={0.8} style={styles.leftButton}>
                 <View style={styles.userImageWrap}>
-
 
 
                     <FastImage
@@ -86,32 +45,29 @@ const TopBar = ({ profilePhoto, userName,homeDash}: props) => {
                 </View>
                 <View style={styles.userDetails}>
                     <Text style={styles.greeting}>
-                       {userName}
+                        {userName}
                     </Text>
                     {
                         Platform.OS == 'android' &&
 
-                    <Text style={styles.tag}>
-                        {User_Details.plan}
-                    </Text>
+                        <Text style={styles.tag}>
+                            {User_Details.plan}
+                        </Text>
                     }
                 </View>
             </TouchableOpacity>
 
             <View style={styles.rightButton}>
 
-                <TouchableOpacity onPress={openNotifications} activeOpacity={0.6} style={styles.topButton}>
-                    <Octicons name="bell" size={18} color="#fff"/>
 
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={openAssets} activeOpacity={0.6} style={styles.topButton}>
-
-                    <Ionicons name="md-wallet-outline" size={20} color={Colors.text} />
-
-                </TouchableOpacity>
-
-
+                <Text style={styles.greeting}>
+                    Finix
+                </Text>
+                <Image source={require('../../assets/images/logos/finixLogo.png')} style={{
+                    width: 30,
+                    height: '40%',
+                    resizeMode: 'cover'
+                }}/>
             </View>
         </View>
     );
@@ -149,10 +105,11 @@ const styles = StyleSheet.create({
         marginHorizontal: pixelSizeHorizontal(10)
     },
     greeting: {
+        marginRight: 8,
         fontFamily: Fonts.faktumBold,
         fontSize: fontPixel(14),
         color: "#fff",
-        textTransform:'capitalize'
+        textTransform: 'capitalize'
     },
     tag: {
         fontFamily: Fonts.faktumRegular,
@@ -185,17 +142,17 @@ const styles = StyleSheet.create({
         height: '90%',
 
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-end',
         alignItems: 'center',
     },
-    topButton:{
-        width:35,
-        height:35,
-       // backgroundColor:Colors.text,
-        borderRadius:30,
-        alignItems:'center',
-        justifyContent:'center'
+    topButton: {
+        width: 35,
+        height: 35,
+        // backgroundColor:Colors.text,
+        borderRadius: 30,
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 })
 
-export default TopBar;
+export default FinixTopBar;

@@ -131,7 +131,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
 
     }
     const FinixHome = () => {
-
+navigation.navigate('MainSignalNav')
     }
 
 

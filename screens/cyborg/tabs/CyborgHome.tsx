@@ -209,16 +209,21 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
 
 
     const overView = () => {
-        navigation.navigate('OverView')
+        navigation.navigate('CyborgBottomTab',{
+            screen:'OverView'
+        })
     }
 
     const seeLogs = (exchange: string, market: string, id: string, trade_type:string) => {
-        navigation.navigate('LogScreen', {
-            id,
-            trade_type,
-            exchange,
-            market,
-            screenFrom:'CyborgHome'
+
+        navigation.navigate('CyborgBottomTab',{
+            screen:'LogScreen', params:{
+                id,
+                trade_type,
+                exchange,
+                market,
+                screenFrom:'CyborgHome'
+            }
         })
     }
 
