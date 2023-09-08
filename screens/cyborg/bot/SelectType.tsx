@@ -430,6 +430,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-evenly"
     },
     sheetText: {
+        textAlign: 'center',
         fontSize: fontPixel(16),
         fontFamily: Fonts.faktumMedium,
         color: Colors.text

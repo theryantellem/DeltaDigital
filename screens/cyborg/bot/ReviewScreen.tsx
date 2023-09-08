@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {Text, View, StyleSheet, ActivityIndicator} from 'react-native';
 import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
@@ -25,6 +25,12 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
     const dataSlice = useAppSelector(state => state.data)
     const {tradeSetting} = dataSlice
 
+    const [tradeType, setTradeType] = useState(tradeSetting.trade_type);
+/*
+    useEffect(() => {
+       setTradeType(tradeSetting.trade_type)
+    }, []);*/
+
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
 
@@ -40,14 +46,15 @@ const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
             onSuccess: async (data) => {
                 // alert(message)
                 console.log(data)
+
                 if (data.status == 1) {
                     navigation.navigate('BotSuccess', {
                         amount: tradeSetting.firstbuy_amount,
-                        market: tradeSetting.market,
-                        id:data.data.id,
-                        exchange:data.data.exchange,
-                        trade_type:tradeSetting.trade_type,
-origin:'Bot',
+                        market: data.data.market,
+                        id: data.data.id,
+                        exchange: data.data.exchange,
+                        trade_type: tradeType,
+                        origin: 'Bot',
                     })
                     dispatch(clearTradeSetting())
                     /* navigation.navigate('SuccessScreen', {
@@ -88,11 +95,15 @@ origin:'Bot',
 
             onSuccess: async (data) => {
                 // alert(message)
-console.log(data)
+                console.log(data)
                 if (data.status == 1) {
                     navigation.navigate('BotSuccess', {
                         amount: tradeSetting.firstbuy_amount,
-                        market: tradeSetting.market,
+                        market: data.data.market,
+                        id: data.data.id,
+                        exchange: data.data.exchange,
+                        trade_type: tradeSetting.trade_type,
+                        origin: 'Bot',
                     })
                     dispatch(clearTradeSetting())
                     /*navigation.navigate('SuccessScreen', {
@@ -115,7 +126,7 @@ console.log(data)
 
             onError: (err) => {
 
-console.log(err)
+                console.log(err)
             },
             onSettled: () => {
                 queryClient.invalidateQueries(['start-Trading-Bot-Future']);
@@ -174,7 +185,7 @@ console.log(err)
             formData.append('cycle', tradeSetting.cycle)
             formData.append('profit_callback', tradeSetting.profit_callback)
             formData.append('one_short', tradeSetting.one_shot)
-          //  formData.append('exchange', tradeSetting.exchange)
+            //  formData.append('exchange', tradeSetting.exchange)
             formData.append('trade_type', tradeSetting.trade_type)
             formData.append('direction', tradeSetting.direction)
             formData.append('id', tradeSetting.id)
@@ -188,11 +199,9 @@ console.log(err)
             createFutureBot({body: formData, userId: User_Details.id})
 
 
+            //   formData.append('capital', re_capital)
 
-
-         //   formData.append('capital', re_capital)
-
-console.log(formData)
+            console.log(formData)
 
         }
         if (tradeSetting.trade_type == '0') {
@@ -209,7 +218,7 @@ console.log(formData)
             formData.append('cycle', tradeSetting.cycle)
             formData.append('profit_callback', tradeSetting.profit_callback)
             formData.append('one_short', tradeSetting.one_shot)
-          //  formData.append('exchange', tradeSetting.exchange)
+            //  formData.append('exchange', tradeSetting.exchange)
             formData.append('trade_type', '0')
             formData.append('market', tradeSetting.market)
             formData.append('id', tradeSetting.id)
@@ -315,7 +324,7 @@ console.log(formData)
                             <View style={styles.Details}>
                                 <View style={styles.DetailsLeft}>
                                     <Text style={styles.DetailTitleText}>
-                                   Capital
+                                        Capital
                                     </Text>
                                     <Text onPress={editSetting} style={[styles.DetailTitleText, {
                                         color: Colors.primaryLight,
@@ -415,56 +424,56 @@ console.log(formData)
 
                 {
                     tradeSetting.trade_type == '0' &&
-                <MyButton onPress={startBot} style={[styles.button, {
-                    // backgroundColor: !isValid ? Colors.border : Colors.primary
-                }]}>
-                    <LinearGradient style={styles.createBtnGradient}
-                                    colors={['#e602df', '#4406b0']}
+                    <MyButton onPress={startBot} style={[styles.button, {
+                        // backgroundColor: !isValid ? Colors.border : Colors.primary
+                    }]}>
+                        <LinearGradient style={styles.createBtnGradient}
+                                        colors={['#e602df', '#4406b0']}
 
-                                    start={{x: 1, y: 0}}
-                                    end={{x: 0.1, y: 0.3,}}
+                                        start={{x: 1, y: 0}}
+                                        end={{x: 0.1, y: 0.3,}}
 
-                        // locations={[0.1, 0.7,]}
-                    >
-                        {
-                            isLoading && <ActivityIndicator size='small' color={"#fff"}/>
-                        }
-                        {
-                            !isLoading &&
-                            <Text style={styles.buttonTxt}>
-                                Create bot
-                            </Text>
-                        }
+                            // locations={[0.1, 0.7,]}
+                        >
+                            {
+                                isLoading && <ActivityIndicator size='small' color={"#fff"}/>
+                            }
+                            {
+                                !isLoading &&
+                                <Text style={styles.buttonTxt}>
+                                    Create bot
+                                </Text>
+                            }
 
-                    </LinearGradient>
-                </MyButton>
+                        </LinearGradient>
+                    </MyButton>
                 }
 
                 {
                     tradeSetting.trade_type == '1' &&
-                <MyButton onPress={startBot} style={[styles.button, {
-                    // backgroundColor: !isValid ? Colors.border : Colors.primary
-                }]}>
-                    <LinearGradient style={styles.createBtnGradient}
-                                    colors={['#e602df', '#4406b0']}
+                    <MyButton onPress={startBot} style={[styles.button, {
+                        // backgroundColor: !isValid ? Colors.border : Colors.primary
+                    }]}>
+                        <LinearGradient style={styles.createBtnGradient}
+                                        colors={['#e602df', '#4406b0']}
 
-                                    start={{x: 1, y: 0}}
-                                    end={{x: 0.1, y: 0.3,}}
+                                        start={{x: 1, y: 0}}
+                                        end={{x: 0.1, y: 0.3,}}
 
-                        // locations={[0.1, 0.7,]}
-                    >
-                        {
-                            loading && <ActivityIndicator size='small' color={"#fff"}/>
-                        }
-                        {
-                            !loading &&
-                            <Text style={styles.buttonTxt}>
-                                Create bot
-                            </Text>
-                        }
+                            // locations={[0.1, 0.7,]}
+                        >
+                            {
+                                loading && <ActivityIndicator size='small' color={"#fff"}/>
+                            }
+                            {
+                                !loading &&
+                                <Text style={styles.buttonTxt}>
+                                    Create bot
+                                </Text>
+                            }
 
-                    </LinearGradient>
-                </MyButton>
+                        </LinearGradient>
+                    </MyButton>
                 }
 
 
@@ -564,7 +573,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
-        flexDirection:'row'
+        flexDirection: 'row'
     },
 })
 

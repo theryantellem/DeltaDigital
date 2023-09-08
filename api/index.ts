@@ -1,5 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
-import {BASE_ULR_AUTH, LIVE_PROD_URL} from "@env";
+import {BASE_ULR_NEW, LIVE_PROD_URL} from "@env";
 
 
 export const loginUser = async (userdata: any) => {
@@ -16,6 +16,32 @@ export const loginUser = async (userdata: any) => {
 
     return Promise.race([
         fetch(`${LIVE_PROD_URL}/login`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])
+
+}
+export const signInUser = async (userdata: any) => {
+    const myHeaders = {
+        "Content-Type": 'application/json'
+    }
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: userdata,
+    };
+
+    return Promise.race([
+        fetch(`${BASE_ULR_NEW}/login`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -74,7 +100,7 @@ export const getRewardDetails = async (userId: string) => {
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/Rewarddetails`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/Rewarddetails?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -103,7 +129,7 @@ export const getRevenueDetails = async (userId: string) => {
 
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/revenue`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/revenue?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -134,7 +160,7 @@ export const twoFactorAuth = async ({userId, body}: { userId: string, body: any 
 
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/GetSet2FA`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/GetSet2FA?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -190,7 +216,7 @@ export const getRevenues = async (userId: string) => {
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/team`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/team?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -219,7 +245,7 @@ export const getDepositAddress = async (userId: string,) => {
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/depositaddress`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/depositaddress?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -243,7 +269,7 @@ export const getCircleleaderboard = async (userId: string) => {
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/circleleaderboard`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/circleleaderboard?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -272,7 +298,7 @@ export const getLeaderboard = async (userId: string) => {
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/leaderboard`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/leaderboard?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -304,7 +330,7 @@ export const transferAsset = async ({body, userId}: { body: any, userId: string 
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/transfer`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/transfer?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -335,7 +361,7 @@ export const getAsset = async (userId: string) => {
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/asset`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/asset?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -366,7 +392,7 @@ export const doWithdraw = async ({userId, body}: { userId: string, body: any }) 
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/doWithdraw`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/doWithdraw?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -397,7 +423,7 @@ export const checkUserPlan = async (userId: string) => {
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/CheckUserPlan`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/CheckUserPlan?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -426,7 +452,7 @@ export const userCounselor = async (userId: string) => {
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/Mycounselor`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/Mycounselor?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -469,7 +495,7 @@ export const bindAPI = async ({userId, body}: { userId: string, body: any }) => 
 
       ])
   */
-    return fetch("https://backend.deltacyborg.pro/Api/Mobile/Apibind", requestOptions)
+    return fetch(`https://backend.deltacyborg.pro/Api/Mobile/Apibind?userId=${userId}`, requestOptions)
         .then(response => response.json())
 
 }
@@ -494,7 +520,7 @@ export const activeStrategy = async (userId: string) => {
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/strategy`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/strategy?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -523,7 +549,7 @@ export const getNewstrategy = async ({body, userId}: { userId: string, body: any
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/newstrategyget`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/newstrategyget?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -554,7 +580,7 @@ export const quantitativeStrategies = async (userId: string) => {
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/ostrategy`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/ostrategy?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -585,7 +611,7 @@ export const getBanner = async (userId: string) => {
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/Banner`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/Banner?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -616,7 +642,7 @@ export const getFeedback = async (userId: string) => {
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/Feedback`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/Feedback?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -645,7 +671,7 @@ export const getStrategies = async (userId: string) => {
     };
 
     return Promise.race([
-        fetch('https://backend.deltacyborg.pro/Api/Mobile/getCopyList', requestOptions)
+        fetch(`https://backend.deltacyborg.pro/Api/Mobile/getCopyList?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -676,7 +702,7 @@ export const copyTrade = async ({body, userId}: { userId: string, body: any }) =
     };
 
     return Promise.race([
-        fetch(`https://backend.deltacyborg.pro/Api/Mobile/Copytrade`, requestOptions)
+        fetch(`https://backend.deltacyborg.pro/Api/Mobile/Copytrade?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -722,7 +748,7 @@ export const botTradeSetting = async ({userId, body}: { userId: string, body: an
        ])*/
 
 
-    return fetch("https://backend.deltacyborg.pro/Api/Mobile/tradesetting", requestOptions)
+    return fetch(`https://backend.deltacyborg.pro/Api/Mobile/tradesetting?userId=${userId}`, requestOptions)
         .then(response => response.json())
     // .then(result => console.log(result))
 
@@ -757,7 +783,7 @@ export const startTradingBotFuture = async ({body, userId}: { userId: string, bo
      ])*/
 
 
-    return fetch("https://backend.deltacyborg.pro/Api/Mobile/tradesetting", requestOptions)
+    return fetch(`https://backend.deltacyborg.pro/Api/Mobile/tradesetting?userId=${userId}`, requestOptions)
         .then(response => response.json())
     //  .catch(error => console.log('error', error));
 
@@ -782,7 +808,7 @@ export const startStopBot = async ({body, userId}: { userId: string, body: any }
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/start`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/start?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -848,7 +874,7 @@ export const sendTicketFeedback = async ({body, userId}: { userId: string, body:
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/SendFeedback`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/SendFeedback?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -936,7 +962,7 @@ export const getExchangeBal = async ({userId}: { userId: string }) => {
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/ExchangeBalance`, requestOptions)
+        fetch(`${LIVE_PROD_URL}/ExchangeBalance?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 20000)

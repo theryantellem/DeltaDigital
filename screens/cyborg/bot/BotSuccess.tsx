@@ -26,6 +26,7 @@ const BotSuccess = ({navigation,route}: RootStackScreenProps<'BotSuccess'>) => {
             exchange,
         })
     }
+    console.log(market)
     return (
         <SafeAreaView style={styles.safeArea}>
             <LinearGradient style={styles.background}

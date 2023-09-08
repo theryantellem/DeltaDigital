@@ -23,8 +23,8 @@ import {LinearGradient} from "expo-linear-gradient";
 import ToastAnimated from "../../components/toast";
 import {useAppDispatch} from "../../app/hooks";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {getUser, loginUser} from "../../api";
-import {addNotificationItem} from "../../app/slices/dataSlice";
+import {getUser, loginUser, signInUser} from "../../api";
+import {addNotificationItem, clearNotification} from "../../app/slices/dataSlice";
 import {
     letUserIn,
     setAuthenticated,
@@ -75,14 +75,14 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
 
     const {data: userInfo, mutate: getUserInfo, isLoading: gettingUser} = useMutation(['user-data'], getUser, {
         onSuccess: async (data) => {
-            console.log(data)
+
             if (data.status == 1) {
 
                 //console.log(data.data["User Details"][0])
-                 dispatch((updateUserDetails({...data.data["User Details"][0]})))
-                   dispatch(setAuthenticated({
-                        isAuthenticated: true
-                    }))
+                dispatch((updateUserDetails({...data.data["User Details"][0]})))
+                dispatch(setAuthenticated({
+                    isAuthenticated: true
+                }))
 
 
             } else {
@@ -96,14 +96,14 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
         }
     })
 
-    const {mutate, data, isLoading, isSuccess, error} = useMutation(['login-user'], loginUser,
+    const {mutate, data, isLoading, isSuccess, error} = useMutation(['login-user'], signInUser,
 
         {
 
             onSuccess: async (data) => {
                 // alert(message)
 
-                if (data.status == 1) {
+                if (data.success) {
 
                     /*         dispatch(addNotificationItem({
                                  id: Math.random(),
@@ -111,36 +111,37 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
                                  body: data.message,
                              }))
                              */
-                    await AsyncStorage.setItem('username', username)
-                    dispatch(setUserLastSession({
-                        cleanLastActive: ''
-                    }))
-                    dispatch(setLockUser({
-                        lockUser: false
-                    }))
-                    dispatch(letUserIn({
-                        userIsIn: true,
-                    }))
 
 
-                    SecureStore.setItemAsync('delta-signal-ID', data.data.ID)
+                      await AsyncStorage.setItem('username', username)
+                      dispatch(setUserLastSession({
+                          cleanLastActive: ''
+                      }))
+                      dispatch(setLockUser({
+                          lockUser: false
+                      }))
+                      dispatch(letUserIn({
+                          userIsIn: true,
+                      }))
 
-                    SecureStore.setItemAsync('delta-signal-token', data.data.TOKEN).then(() => {
-                        getUserInfo(data.data.ID)
-                        //   dispatch((updateUserInfo({...data.data.user})))
-                        /*  dispatch(setAuthenticated({
-                              isAuthenticated: true
-                          }))*/
-                    })
 
+                    //  SecureStore.setItemAsync('delta-signal-ID', data.data.ID)
+
+                       SecureStore.setItemAsync('delta-signal-token', data.data.auth_token).then(() => {
+                          getUserInfo(data.data.user.user_id)
+                             dispatch((updateUserInfo({...data.data.user})))
+                           /* dispatch(setAuthenticated({
+                                 isAuthenticated: true
+                             }))*/
+                       })
 
                 } else {
-                    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
-                    dispatch(addNotificationItem({
-                        id: Math.random(),
-                        type: 'error',
-                        body: data.data,
-                    }))
+                     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+                     dispatch(addNotificationItem({
+                         id: Math.random(),
+                         type: 'error',
+                         body: data.message,
+                     }))
 
                 }
             },
@@ -175,18 +176,9 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
         },
         onSubmit: (values) => {
             const {username, password} = values;
-            const data = JSON.stringify({
-                password,
-                username,
-
-                /* "phoneNumber": "+2348068989092",
-                 "password": "password",
-                 "countryCode": "NG"*/
+            const formData = JSON.stringify({
+                username, password
             })
-
-            const formData = new FormData()
-            formData.append('username', username)
-            formData.append('password', password)
 
             mutate(formData)
 
@@ -211,14 +203,15 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
         })
     }, []);
 
+
     return (
 
         <>
             {
                 gettingUser &&
-            <View style={styles.loading}>
-                <ActivityIndicator size='large' color={Colors.primary}/>
-            </View>
+                <View style={styles.loading}>
+                    <ActivityIndicator size='large' color={Colors.primary}/>
+                </View>
             }
             <SafeAreaView style={styles.safeArea}>
 
@@ -311,7 +304,7 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
                             handleSubmit()
                         }} activeOpacity={0.7}
                                   style={[styles.button, {
-                                     // backgroundColor: !isValid ? Colors.disabled : Colors.primary
+                                      // backgroundColor: !isValid ? Colors.disabled : Colors.primary
                                   }]} disabled={!isValid}>
                             <LinearGradient style={styles.createBtnGradient}
                                             colors={[isValid ? '#e602df' : '#ccc', isValid ? '#4406b0' : Colors.secondary]}
@@ -322,13 +315,13 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
                                 // locations={[0.1, 0.7,]}
                             >
 
-                            {
-                                isLoading ? <ActivityIndicator color={"#fff"} size='small'/>
-                                    :
-                                    <Text style={styles.btnText}>
-                                        Sign In
-                                    </Text>
-                            }
+                                {
+                                    isLoading ? <ActivityIndicator color={"#fff"} size='small'/>
+                                        :
+                                        <Text style={styles.btnText}>
+                                            Sign In
+                                        </Text>
+                                }
 
                             </LinearGradient>
                         </MyButton>
@@ -453,7 +446,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontSize: fontPixel(16),
-        fontFamily:Fonts.faktumBold
+        fontFamily: Fonts.faktumBold
     },
     btnText: {
         color: 'white',
@@ -506,17 +499,17 @@ const styles = StyleSheet.create({
         lineHeight: heightPixel(20)
     },
     loading: {
-        flex:1,
-        width:'100%',
+        flex: 1,
+        width: '100%',
         position: 'absolute',
         left: 0,
         right: 0,
-        zIndex:1,
+        zIndex: 1,
         top: 0,
         bottom: 0,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor:'rgba(0,0,0,0.3)'
+        backgroundColor: 'rgba(0,0,0,0.3)'
     },
     createBtnGradient: {
         width: '100%',
