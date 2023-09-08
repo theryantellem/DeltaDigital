@@ -1,9 +1,9 @@
 import React, {useCallback, useMemo, useRef, useState} from 'react';
 
 import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
-import {RootStackScreenProps} from "../../../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../../../types";
 import * as yup from "yup";
-import HeaderWithTitle from "../../../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
@@ -107,7 +107,7 @@ const SelectValue = ({selected, item, action}: itemProps) => (
 )
 
 
-const AdditionalSettings = ({navigation}: RootStackScreenProps<'AdditionalSettings'>) => {
+const AdditionalSettings = ({navigation}: CyborgStackScreenProps<'AdditionalSettings'>) => {
 
     const dispatch = useAppDispatch()
     const [riskPreference, setRiskPreference] = useState('Conservative')

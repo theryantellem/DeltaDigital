@@ -1,7 +1,7 @@
 import React, {useCallback, useId, useState} from 'react';
 
 import {Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl} from 'react-native';
-import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {Feather, Ionicons, Octicons} from "@expo/vector-icons";

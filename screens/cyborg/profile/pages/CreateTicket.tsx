@@ -1,7 +1,7 @@
 import React, {useCallback, useState} from 'react';
 
 import {Text, View, StyleSheet, ActivityIndicator, Pressable, ImageBackground, Platform, Alert} from 'react-native';
-import HeaderWithTitle from "../../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../../components/cyborg/header/HeaderWithTitle";
 import {Ionicons, MaterialIcons} from "@expo/vector-icons";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -18,7 +18,7 @@ import TextInput from "../../../../components/inputs/TextInput";
 import {sendTicketFeedback, startStopBot} from "../../../../api";
 import * as Haptics from "expo-haptics";
 import {addNotificationItem} from "../../../../app/slices/dataSlice";
-import {RootStackScreenProps} from "../../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../../types";
 import {MyButton} from "../../../../components/MyButton";
 import {IF} from "../../../../helpers/ConditionJsx";
 import * as ImagePicker from "expo-image-picker";
@@ -50,7 +50,7 @@ const formSchema = yup.object().shape({
     // priority: yup.string().required('Ticket priority is required'),
     category: yup.string().required('category is required')
 })
-const CreateTicket = ({navigation}:RootStackScreenProps<'CreateTicket'>) => {
+const CreateTicket = ({navigation}:CyborgStackScreenProps<'CreateTicket'>) => {
 
     const dispatch = useAppDispatch()
     const queryClient = useQueryClient()

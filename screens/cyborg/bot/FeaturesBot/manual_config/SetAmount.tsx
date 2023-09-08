@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
 
 import {Text, View, StyleSheet, TouchableOpacity, Image} from 'react-native';
-import HeaderWithTitle from "../../../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../../../../helpers/normalize";
-import {RootStackScreenProps} from "../../../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../../../types";
 import * as yup from "yup";
 import {useFormik} from "formik";
 import TextInput from "../../../../../components/inputs/TextInput";
@@ -29,7 +29,7 @@ const formSchema = yup.object().shape({
 
 })
 
-const SetAmount = ({navigation}: RootStackScreenProps<'SetAmount'>) => {
+const SetAmount = ({navigation}: CyborgStackScreenProps<'SetAmount'>) => {
 
 
     const dispatch = useAppDispatch()

@@ -1,7 +1,7 @@
 import React, {useCallback, useState} from 'react';
 
 import {Text, View, StyleSheet, Pressable, Image, ActivityIndicator} from 'react-native';
-import HeaderWithTitle from "../../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../../components/cyborg/header/HeaderWithTitle";
 import SearchInput from "../../../../components/inputs/SearchInput";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -14,7 +14,7 @@ import {currencyFormatter} from "../../../../helpers";
 import {fontPixel, heightPixel, pixelSizeVertical} from "../../../../helpers/normalize";
 import Colors from "../../../../constants/Colors";
 import {Fonts} from "../../../../constants/Fonts";
-import {RootStackScreenProps} from "../../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../../types";
 import {updateFeatureBotData} from "../../../../app/slices/dataSlice";
 
 
@@ -85,7 +85,7 @@ const AssetCard = ({item, continueAsset}: props) => {
 }
 
 
-const FeaturesSelectAsset = ({navigation}: RootStackScreenProps<'FeaturesSelectAsset'>) => {
+const FeaturesSelectAsset = ({navigation}: CyborgStackScreenProps<'FeaturesSelectAsset'>) => {
 
     const dispatch = useAppDispatch()
     const user = useAppSelector(state => state.user)

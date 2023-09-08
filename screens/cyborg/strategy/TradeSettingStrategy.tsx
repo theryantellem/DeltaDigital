@@ -1,11 +1,11 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
 import {Text, View, StyleSheet, Switch, TouchableOpacity, ActivityIndicator} from 'react-native';
-import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {KeyboardAwareFlatList, KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
-import {RootStackScreenProps} from "../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../types";
 import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical} from "../../../helpers/normalize";
 import {Fonts} from "../../../constants/Fonts";
 import Colors from "../../../constants/Colors";
@@ -157,7 +157,7 @@ const SelectValueDir = ({selected, item, action}: itemProps) => (
     </TouchableOpacity>
 )
 
-const TradeSettingStrategy = ({navigation, route}: RootStackScreenProps<'TradeSettingStrategy'>) => {
+const TradeSettingStrategy = ({navigation, route}: CyborgStackScreenProps<'TradeSettingStrategy'>) => {
 
     const {id, dataLogs} = route.params
     const dispatch = useAppDispatch()

@@ -1,13 +1,13 @@
 import React, {useCallback} from 'react';
 import {ActivityIndicator, Image, Pressable, RefreshControl, StyleSheet, Text, View} from 'react-native';
-import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 import {Ionicons} from "@expo/vector-icons";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {Fonts} from "../../../constants/Fonts";
 import {currencyFormatter} from "../../../helpers";
 import Colors from "../../../constants/Colors";
-import {RootStackScreenProps} from "../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../types";
 import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical} from "../../../helpers/normalize";
 import {FlashList} from "@shopify/flash-list";
 import  dayjs from "dayjs";
@@ -87,7 +87,7 @@ const RecordItem = ({item}:props) => {
 
 
 
-const TransactionRecords = ({route}:RootStackScreenProps<'TransactionRecords'>) => {
+const TransactionRecords = ({route}:CyborgStackScreenProps<'TransactionRecords'>) => {
 
     const {records} = route.params
 

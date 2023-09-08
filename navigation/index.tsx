@@ -15,62 +15,12 @@ import LinkingConfiguration from './LinkingConfiguration';
 import {AuthNavigator} from "./AuthNavigation";
 
 import LandingScreen from "../screens/LandingScreen";
-import {CyborgBottomTab} from "./cyborg";
-import NewsScreen from "../screens/cyborg/NewsScreen";
-import SelectType from "../screens/cyborg/bot/SelectType";
-import SelectExchange from "../screens/cyborg/bot/SelectExchange";
-import SelectAsset from "../screens/cyborg/bot/SelectAsset";
-import TradeSetting from "../screens/cyborg/bot/TradeSetting";
-import ReviewScreen from "../screens/cyborg/bot/ReviewScreen";
-import OverView from "../screens/cyborg/OverView";
-import BotSuccess from "../screens/cyborg/bot/BotSuccess";
-import UserAccount from "../screens/cyborg/UserAccount";
-import Assets from "../screens/cyborg/profile/Assets";
-import DepositScreen from "../screens/cyborg/profile/DepositScreen";
-import WithdrawalAmount from "../screens/cyborg/profile/WIthdrawalAmount";
-import Withdrawal from "../screens/cyborg/profile/Withdrawal";
-import TransferScreen from "../screens/cyborg/profile/TransferScreen";
-import RewardDetails from "../screens/cyborg/profile/RewardDetails";
-import SettingsScreen from "../screens/cyborg/profile/SettingsScreen";
-import ApiBinding from "../screens/cyborg/profile/ApiBinding";
-import Earnings from "../screens/cyborg/profile/Earning";
-import ToastAnimated from "../components/toast";
 import {useEffect, useRef, useState} from "react";
 import {logoutUser, setLockUser, setUserLastSession} from "../app/slices/userSlice";
 import {useAppDispatch, useAppSelector} from "../app/hooks";
 import {store} from "../app/store";
 import {timeDifference} from "../helpers";
-import LeaderBoard from "../screens/cyborg/more/LeaderBoard";
-import SuccessScreen from "../screens/cyborg/SuccessScreen";
-import EditProfile from "../screens/cyborg/profile/EditProfile";
-import CouncellerScreen from "../screens/cyborg/profile/CouncellerScreen";
-import ViewAPIBinding from "../screens/cyborg/profile/ViewAPIBinding";
-import SyncStrategy from "../screens/cyborg/profile/SyncStrategy";
-import LogScreen from "../screens/cyborg/strategy/LogScreen";
-import ContactUs from "../screens/cyborg/profile/ContactUs";
-import FeedbackRecord from "../screens/cyborg/profile/FeedbackRecord";
-import ActiveTrades from "../screens/cyborg/active_trades/ActiveTrades";
-import AllStrategy from "../screens/cyborg/bot/strategy/AllStrategy";
-import ViewStrategy from "../screens/cyborg/bot/strategy/ViewStrategy";
-import FeaturesSelectAsset from "../screens/cyborg/bot/FeaturesBot/SelectAsset";
-import BotDirection from "../screens/cyborg/bot/FeaturesBot/BotDirection";
-import SelectConfig from "../screens/cyborg/bot/FeaturesBot/SelectConfig";
-import FeaturesSelectExchange from "../screens/cyborg/bot/FeaturesBot/FeaturesSelectExchange";
-import AutoConfig from "../screens/cyborg/bot/FeaturesBot/AutoConfig";
-import SetAmount from "../screens/cyborg/bot/FeaturesBot/manual_config/SetAmount";
-import EntriesScreen from "../screens/cyborg/bot/FeaturesBot/manual_config/EntriesScreen";
-import CustomizeEntries from "../screens/cyborg/bot/FeaturesBot/manual_config/CustomizeEntries";
-import AdditionalSettings from "../screens/cyborg/bot/FeaturesBot/manual_config/AdditionalSettings";
-import FinalPreview from "../screens/cyborg/bot/FeaturesBot/FinalPreview";
-import CreateTicket from "../screens/cyborg/profile/pages/CreateTicket";
-import TransactionRecords from "../screens/cyborg/strategy/TransactionRecords";
-import MarginConfiguration from "../screens/cyborg/bot/MarginConfiguration";
-import TradeSettingStrategy from "../screens/cyborg/strategy/TradeSettingStrategy";
-import LogsMarginConfiguration from "../screens/cyborg/strategy/LogsMarginConfiguration";
-import RevenueScreen from "../screens/cyborg/profile/RevenueScreen";
-import AllRevenue from "../screens/cyborg/profile/pages/AllRevenue";
-import TwoFactorAuth from "../screens/cyborg/profile/pages/TwoFactorAuth";
-import Quantitative from "../screens/cyborg/profile/quantitative/Quantitative";
+import {CyborgMainNavigator} from "./cyborg/MainCyborgNav";
 
 
 export default function Navigation({colorScheme}: { colorScheme: ColorSchemeName }) {
@@ -182,66 +132,8 @@ animation:'slide_from_right'
                 isAuthenticated &&
             <Stack.Group screenOptions={{headerShown: false, animation: 'slide_from_left'}}>
                 <Stack.Screen name={"LandingScreen"} component={LandingScreen}/>
-                <Stack.Screen name={"CyborgBottomTab"} options={{
-                    headerShown: false
-                }} component={CyborgBottomTab}/>
+                <Stack.Screen name={"CyborgBottomTab"} component={CyborgMainNavigator}/>
 
-                <Stack.Screen name={"NewsScreen"} options={{
-                    animation: 'slide_from_bottom'
-                }} component={NewsScreen}/>
-
-                <Stack.Screen name={"SelectExchange"} component={SelectExchange}/>
-                <Stack.Screen name={"SelectAsset"} component={SelectAsset}/>
-                <Stack.Screen name={"TradeSetting"} component={TradeSetting}/>
-                <Stack.Screen name={"TradeSettingStrategy"} component={TradeSettingStrategy}/>
-                <Stack.Screen name={"LogsMarginConfiguration"} component={LogsMarginConfiguration}/>
-                <Stack.Screen name={"RevenueScreen"} component={RevenueScreen}/>
-                <Stack.Screen name={"AllRevenue"} component={AllRevenue}/>
-                <Stack.Screen name={"MarginConfiguration"} component={MarginConfiguration}/>
-                <Stack.Screen name={"ReviewScreen"} component={ReviewScreen}/>
-                <Stack.Screen name={"OverView"} component={OverView}/>
-                <Stack.Screen name={"UserAccount"} component={UserAccount}/>
-                <Stack.Screen name={"Assets"} component={Assets}/>
-                <Stack.Screen name={"DepositScreen"} component={DepositScreen}/>
-                <Stack.Screen name={"Withdrawal"} component={Withdrawal}/>
-                <Stack.Screen name={"TransferScreen"} component={TransferScreen}/>
-                <Stack.Screen name={"RewardDetails"} component={RewardDetails}/>
-                <Stack.Screen name={"ApiBinding"} component={ApiBinding}/>
-                <Stack.Screen name={"Earnings"} component={Earnings}/>
-                <Stack.Screen name={"SettingsScreen"} component={SettingsScreen}/>
-                <Stack.Screen name={"WithdrawalAmount"} component={WithdrawalAmount}/>
-                <Stack.Screen name={"TwoFactorAuth"} component={TwoFactorAuth}/>
-
-                <Stack.Screen name={"BotSuccess"} options={{animation: 'slide_from_bottom'}} component={BotSuccess}/>
-                <Stack.Screen name={"SuccessScreen"} options={{animation: 'slide_from_bottom'}} component={SuccessScreen}/>
-
-                <Stack.Screen name={"SelectType"} component={SelectType}/>
-                <Stack.Screen name={"EditProfile"} component={EditProfile}/>
-                <Stack.Screen name={"CouncellerScreen"} component={CouncellerScreen}/>
-                <Stack.Screen name={"ViewAPIBinding"} component={ViewAPIBinding}/>
-                <Stack.Screen name={"SyncStrategy"} component={SyncStrategy}/>
-                <Stack.Screen name={"LogScreen"} component={LogScreen}/>
-                <Stack.Screen name={"TransactionRecords"} component={TransactionRecords}/>
-                <Stack.Screen name={"ContactUs"} component={ContactUs}/>
-                <Stack.Screen name={"CreateTicket"} component={CreateTicket}/>
-                <Stack.Screen name={"FeedbackRecord"} component={FeedbackRecord}/>
-                <Stack.Screen name={"ActiveTrades"} component={ActiveTrades}/>
-                <Stack.Screen name={"Quantitative"} component={Quantitative}/>
-                <Stack.Screen name={"AllStrategy"} component={AllStrategy}/>
-                <Stack.Screen name={"ViewStrategy"} component={ViewStrategy}/>
-                <Stack.Screen name={"FeaturesSelectAsset"} component={FeaturesSelectAsset}/>
-
-
-                <Stack.Screen name={"BotDirection"} component={BotDirection}/>
-                <Stack.Screen name={"SelectConfig"} component={SelectConfig}/>
-                <Stack.Screen name={"FeaturesSelectExchange"} component={FeaturesSelectExchange}/>
-                <Stack.Screen name={"AutoConfig"} component={AutoConfig}/>
-                <Stack.Screen name={"SetAmount"} component={SetAmount}/>
-                <Stack.Screen name={"EntriesScreen"} component={EntriesScreen}/>
-                <Stack.Screen name={"CustomizeEntries"} component={CustomizeEntries}/>
-                <Stack.Screen name={"AdditionalSettings"} component={AdditionalSettings}/>
-                <Stack.Screen name={"FinalPreview"} component={FinalPreview}/>
-                <Stack.Screen name={"LeaderBoard"} component={LeaderBoard}/>
 
 
 

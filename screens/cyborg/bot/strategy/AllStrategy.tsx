@@ -10,8 +10,8 @@ import {
     RefreshControl,
     Pressable, Keyboard, Platform
 } from 'react-native';
-import {RootStackScreenProps} from "../../../../types";
-import HeaderWithTitle from "../../../../components/header/HeaderWithTitle";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../../types";
+import HeaderWithTitle from "../../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical} from "../../../../helpers/normalize";
@@ -113,7 +113,7 @@ const ItemData = ({view, item}: props) => {
         </TouchableOpacity>
     )
 }
-const AllStrategy = ({navigation}: RootStackScreenProps<'AllStrategy'>) => {
+const AllStrategy = ({navigation}: CyborgStackScreenProps<'AllStrategy'>) => {
 
     const queryClient = useQueryClient()
     const dispatch = useAppDispatch()

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {Text, View, StyleSheet, ScrollView, TouchableOpacity, Platform} from 'react-native';
-import HeaderWithTitle from "../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import FastImage from "react-native-fast-image";
@@ -19,7 +19,7 @@ import {fontPixel, heightPixel, pixelSizeVertical, widthPixel} from "../../helpe
 import Colors from "../../constants/Colors";
 import {Fonts} from "../../constants/Fonts";
 import HorizontalLine from "../../components/HorizontalLine";
-import {RootStackScreenProps} from "../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../types";
 import {useAppSelector} from "../../app/hooks";
 import dayjs from "dayjs";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
@@ -32,7 +32,7 @@ import Quantitative from "./profile/quantitative/Quantitative";
 
 
 
-const UserAccount = ({navigation}: RootStackScreenProps<'UserAccount'>) => {
+const UserAccount = ({navigation}: CyborgStackScreenProps<'UserAccount'>) => {
 
     const queryClient = useQueryClient()
     const dispatch = useDispatch()

@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
 
 import {Text, View, StyleSheet, ActivityIndicator} from 'react-native';
-import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
-import {RootStackScreenProps} from "../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../types";
 import Colors from "../../../constants/Colors";
 import {fontPixel, heightPixel, pixelSizeHorizontal} from "../../../helpers/normalize";
 import {Fonts} from "../../../constants/Fonts";
@@ -18,7 +18,7 @@ import {addNotificationItem, clearTradeSetting} from "../../../app/slices/dataSl
 import ToastAnimated from "../../../components/toast";
 import HorizontalLine from "../../../components/HorizontalLine";
 
-const ReviewScreen = ({navigation}: RootStackScreenProps<'ReviewScreen'>) => {
+const ReviewScreen = ({navigation}: CyborgStackScreenProps<'ReviewScreen'>) => {
 
     const queryClient = useQueryClient()
     const dispatch = useAppDispatch()

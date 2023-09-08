@@ -5,7 +5,7 @@ import * as yup from "yup";
 
 import {useFormik} from "formik";
 import {SafeAreaView} from "react-native-safe-area-context";
-import AuthNavBar from "../../components/header/AuthNavBar";
+import AuthNavBar from "../../components/cyborg/header/AuthNavBar";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import TextInput from "../../components/inputs/TextInput";
 import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../helpers/normalize";

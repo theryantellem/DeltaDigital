@@ -4,7 +4,7 @@ import {Text, View, StyleSheet, Platform, ScrollView, TouchableOpacity} from 're
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical} from "../../../helpers/normalize";
-import TopBar from "../../../components/header/TopBar";
+import TopBar from "../../../components/cyborg/header/TopBar";
 import {Fonts} from "../../../constants/Fonts";
 import Colors from "../../../constants/Colors";
 import {AntDesign, FontAwesome, Fontisto, Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";

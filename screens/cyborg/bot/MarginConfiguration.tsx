@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 
 import {Text, View, StyleSheet} from 'react-native';
-import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
@@ -9,14 +9,14 @@ import TextInput from "../../../components/inputs/TextInput";
 import {Fonts} from "../../../constants/Fonts";
 import {fontPixel, heightPixel} from "../../../helpers/normalize";
 import Colors from "../../../constants/Colors";
-import {RootStackScreenProps} from "../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../types";
 import {MyButton} from "../../../components/MyButton";
 import {Octicons} from "@expo/vector-icons";
 import {addNotificationItem, updateBot} from "../../../app/slices/dataSlice";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 
 
-const MarginConfiguration = ({route, navigation}: RootStackScreenProps<'MarginConfiguration'>) => {
+const MarginConfiguration = ({route, navigation}: CyborgStackScreenProps<'MarginConfiguration'>) => {
     const {numrows} = route.params
 
 

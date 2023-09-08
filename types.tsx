@@ -22,7 +22,36 @@ export type RootStackParamList = {
 
     //START CYBORG
 
-    CyborgBottomTab: NavigatorScreenParams<RootTabParamList> | undefined;
+    CyborgBottomTab: NavigatorScreenParams<CyborgStackParamList> | undefined;
+    SignalBottomTab: NavigatorScreenParams<SignalTabParamList> | undefined;
+
+    OnBoardingScreen: undefined;
+    LandingScreen: undefined;
+    NotFound: undefined;
+};
+
+
+export type AuthStackParamList = {
+
+    SignInScreen: undefined;
+
+    ForgotPasswordScreen: undefined;
+    ResetPasswordAuth: {
+        email: string
+    };
+
+    ConfirmAccountEmail: {
+        email: string
+    };
+    ConfirmAccountTwoFA: undefined
+
+    CreateAccountScreen: undefined;
+
+
+};
+
+export type CyborgStackParamList = {
+    BottomTab: undefined;
     NewsScreen: undefined;
     SelectType: undefined;
     SelectExchange: {
@@ -157,28 +186,8 @@ export type RootStackParamList = {
     //END CYBORG
 
 
-    OnBoardingScreen: undefined;
-    LandingScreen: undefined;
-
-    NotFound: undefined;
-};
 
 
-export type AuthStackParamList = {
-
-    SignInScreen: undefined;
-
-    ForgotPasswordScreen: undefined;
-    ResetPasswordAuth: {
-        email: string
-    };
-
-    ConfirmAccountEmail: {
-        email: string
-    };
-    ConfirmAccountTwoFA: undefined
-
-    CreateAccountScreen: undefined;
 
 
 };
@@ -192,6 +201,9 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> = Nati
 export type AuthStackScreenProps<Screen extends keyof AuthStackParamList> = NativeStackScreenProps<
     AuthStackParamList, Screen
 >;
+export type CyborgStackScreenProps<Screen extends keyof CyborgStackParamList> = NativeStackScreenProps<
+    CyborgStackParamList, Screen
+>;
 
 export type RootTabParamList = {
     CyborgHome: undefined;
@@ -200,7 +212,19 @@ export type RootTabParamList = {
 
 };
 
+export type SignalTabParamList = {
+    SignalHome: undefined;
+    SignalChat: undefined;
+    Signals: undefined
+    SignalSettings: undefined
+
+};
+
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<
     BottomTabScreenProps<RootTabParamList, Screen>,
     NativeStackScreenProps<RootStackParamList>
 >;
+
+
+export type SignalRootTabScreenProps<Screen extends keyof SignalTabParamList> = CompositeScreenProps<BottomTabScreenProps<SignalTabParamList, Screen>,
+    NativeStackScreenProps<RootStackParamList>>;

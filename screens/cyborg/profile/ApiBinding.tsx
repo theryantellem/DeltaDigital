@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {Text, View, StyleSheet, ScrollView, TouchableOpacity, Image, ActivityIndicator} from 'react-native';
-import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import Colors from "../../../constants/Colors";
@@ -10,11 +10,11 @@ import {Fonts} from "../../../constants/Fonts";
 import {useQuery} from "@tanstack/react-query";
 import {getUser} from "../../../api";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
-import {RootStackScreenProps} from "../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../types";
 import {useRefreshOnFocus} from "../../../helpers";
 import {Octicons} from "@expo/vector-icons";
 
-const ApiBinding = ({navigation}: RootStackScreenProps<'ApiBinding'>) => {
+const ApiBinding = ({navigation}: CyborgStackScreenProps<'ApiBinding'>) => {
 
 
     const dispatch = useAppDispatch()

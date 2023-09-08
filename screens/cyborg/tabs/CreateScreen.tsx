@@ -4,7 +4,7 @@ import {Text, View, StyleSheet, ScrollView, TouchableOpacity, Image, Platform} f
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../../helpers/normalize";
-import TopBar from "../../../components/header/TopBar";
+import TopBar from "../../../components/cyborg/header/TopBar";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-reanimated";
 import {Entypo, FontAwesome, Ionicons, MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import {Fonts} from "../../../constants/Fonts";

@@ -7,11 +7,11 @@ import {MyButton} from "../../../components/MyButton";
 import Colors from "../../../constants/Colors";
 import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../../helpers/normalize";
 import {Fonts} from "../../../constants/Fonts";
-import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 import {LinearGradient} from "expo-linear-gradient";
 import HorizontalLine from "../../../components/HorizontalLine";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from 'react-native-reanimated';
-import {RootStackScreenProps} from "../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../types";
 import AllStrategy from "./strategy/AllStrategy";
 import {
     BottomSheetBackdrop,
@@ -25,7 +25,7 @@ import {
 import {useAppDispatch} from "../../../app/hooks";
 import {updateBot} from "../../../app/slices/dataSlice";
 
-const SelectType = ({navigation}: RootStackScreenProps<'SelectType'>) => {
+const SelectType = ({navigation}: CyborgStackScreenProps<'SelectType'>) => {
     const dispatch = useAppDispatch()
     const selectContinue = () => {
         navigation.navigate('SelectExchange', {

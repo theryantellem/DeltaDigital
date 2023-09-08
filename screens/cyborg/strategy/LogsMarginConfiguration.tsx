@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 
 import {Text, View, StyleSheet} from 'react-native';
-import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
@@ -9,14 +9,14 @@ import TextInput from "../../../components/inputs/TextInput";
 import {Fonts} from "../../../constants/Fonts";
 import {fontPixel, heightPixel} from "../../../helpers/normalize";
 import Colors from "../../../constants/Colors";
-import {RootStackScreenProps} from "../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../types";
 import {MyButton} from "../../../components/MyButton";
 import {Octicons} from "@expo/vector-icons";
 import {addNotificationItem, updateBot, updateBotSetting} from "../../../app/slices/dataSlice";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 
 
-const LogsMarginConfiguration = ({route, navigation}: RootStackScreenProps<'LogsMarginConfiguration'>) => {
+const LogsMarginConfiguration = ({route, navigation}: CyborgStackScreenProps<'LogsMarginConfiguration'>) => {
     const {numrows,m_ratio,price_drop} = route.params
 
 

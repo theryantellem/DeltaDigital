@@ -1,10 +1,10 @@
 import React, {SetStateAction, useState} from 'react';
 
 import {Text, View, StyleSheet, ScrollView, TouchableOpacity, Platform, ActivityIndicator} from 'react-native';
-import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 import {LinearGradient} from "expo-linear-gradient";
 import {SafeAreaView} from "react-native-safe-area-context";
-import {RootStackScreenProps} from "../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../types";
 import {currencyFormatter, truncateString, useRefreshOnFocus} from "../../../helpers";
 import {Feather, FontAwesome5, Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
 import Colors from "../../../constants/Colors";
@@ -78,7 +78,7 @@ const DepositRecordItem = ({item}: props) => {
 }
 
 
-const Assets = ({navigation}: RootStackScreenProps<'Assets'>) => {
+const Assets = ({navigation}: CyborgStackScreenProps<'Assets'>) => {
 
 
     const dispatch = useAppDispatch()

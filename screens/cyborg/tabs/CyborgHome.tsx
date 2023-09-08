@@ -13,7 +13,7 @@ import {
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPixel} from "../../../helpers/normalize";
-import TopBar from "../../../components/header/TopBar";
+import TopBar from "../../../components/cyborg/header/TopBar";
 import {RootTabScreenProps} from "../../../types";
 import {Fonts} from "../../../constants/Fonts";
 import {Ionicons, MaterialCommunityIcons, Octicons} from "@expo/vector-icons";

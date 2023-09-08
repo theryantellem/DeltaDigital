@@ -271,12 +271,15 @@ const FuturesScreen = ({}) => {
     ), [tabExchange]);
 
     const seeLogs = (exchange: string, id: string, market: string,trade_type:string) => {
-        navigate.navigate('LogScreen', {
-            id,
-            trade_type,
-            market,
-            exchange,
-            screenFrom:'Auto'
+
+        navigate.navigate('CyborgBottomTab',{
+            screen:'LogScreen', params:{
+                id,
+                trade_type,
+                market,
+                exchange,
+                screenFrom:'Auto'
+            }
         })
     }
 

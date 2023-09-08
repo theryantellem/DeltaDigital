@@ -1,10 +1,10 @@
 import React, {useCallback} from 'react';
 
 import {Text, View, StyleSheet, ScrollView, FlatList, Pressable, Image} from 'react-native';
-import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
-import {RootStackScreenProps} from "../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../types";
 import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPixel} from "../../../helpers/normalize";
 import {Fonts} from "../../../constants/Fonts";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-reanimated";
@@ -67,7 +67,7 @@ const ExchangeCard = ({item, continueAsset}: prop) => {
     )
 }
 
-const SelectExchange = ({navigation, route}: RootStackScreenProps<'SelectExchange'>) => {
+const SelectExchange = ({navigation, route}: CyborgStackScreenProps<'SelectExchange'>) => {
     const dispatch = useAppDispatch()
     const {type} = route.params
     const user = useAppSelector(state => state.user)

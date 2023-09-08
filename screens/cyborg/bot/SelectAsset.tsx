@@ -1,10 +1,10 @@
 import React, {useCallback, useState} from 'react';
 
 import {Text, View, StyleSheet, Image, FlatList, Pressable, RefreshControl, ActivityIndicator} from 'react-native';
-import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
-import {RootStackScreenProps} from "../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../types";
 import {fontPixel, heightPixel, pixelSizeVertical, widthPixel} from "../../../helpers/normalize";
 import Colors from "../../../constants/Colors";
 import {Fonts} from "../../../constants/Fonts";
@@ -128,7 +128,7 @@ const AssetCard = ({item, continueAsset,tickers}: props) => {
     )
 }
 
-const SelectAsset = ({navigation,route}: RootStackScreenProps<'SelectAsset'>) => {
+const SelectAsset = ({navigation,route}: CyborgStackScreenProps<'SelectAsset'>) => {
     const dispatch = useAppDispatch()
     const {exchange} = route.params
     const user = useAppSelector(state => state.user)

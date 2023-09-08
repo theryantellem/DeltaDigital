@@ -102,7 +102,6 @@ export default function App() {
 
                 let Token = await SecureStore.getItemAsync('delta-signal-token');
                 let ID = await SecureStore.getItemAsync('delta-signal-ID');
-                console.log(ID)
                 const myHeaders = {
                     'Content-Type': 'application/json',
                     "TOKEN": Token,
@@ -118,7 +117,7 @@ export default function App() {
                 };
 
                 const promise = Promise.race([
-                    fetch(`${LIVE_PROD_URL}/profile`, requestOptions)
+                    fetch(`${LIVE_PROD_URL}/profile?userId=${ID}`, requestOptions)
                         .then(response => response.json()),
                     new Promise((resolve, reject) => {
                         timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)

@@ -10,7 +10,7 @@ import {
     Switch,
     RefreshControl
 } from 'react-native';
-import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {
@@ -25,7 +25,7 @@ import Colors from "../../../constants/Colors";
 import {currencyFormatter, invertNumber, useRefreshOnFocus, wait} from "../../../helpers";
 import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../../helpers/normalize";
 import {Fonts} from "../../../constants/Fonts";
-import {RootStackScreenProps} from "../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../types";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {activateCopyStrategy, binanceTicker, getNewstrategy, startStopBot, startTradingBotFuture} from "../../../api";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
@@ -50,7 +50,7 @@ const SWITCH_TRACK_COLOR = {
     true: Colors.primary,
     false: Colors.success,
 };
-const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
+const LogScreen = ({navigation, route}: CyborgStackScreenProps<'LogScreen'>) => {
 
     const queryClient = useQueryClient()
     const dispatch = useAppDispatch()
@@ -114,9 +114,9 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
     } = useQuery([`get-new-strategy-${id}`, User_Details.id],
         () => getNewstrategy({body: formdata, userId: User_Details.id}))
 
-    const [switchToggle, setSwitchToggle] = useState(newStrategy?.data['Operation Strategy'][0]?.active_copy != '0');
+    const [switchToggle, setSwitchToggle] = useState(1);
 
-
+//console.log(newStrategy)
 
 
 
@@ -126,8 +126,12 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
 */
 
 
-    let p2 = parseFloat(newStrategy?.data['Operation Strategy'][0]?.Quantity) * parseFloat(tickerRes?.lastPrice);
+   /* let p2 = parseFloat(newStrategy?.data['Operation Strategy'][0]?.Quantity) * parseFloat(tickerRes?.lastPrice);
     let val = (Number(newStrategy?.data['Operation Strategy'][0]['Positionamount']) - (p2)) / Number(newStrategy?.data['Operation Strategy'][0]['Positionamount']);
+   */
+    let p2 = 1;
+    let val = 3;
+
     let finalvalue = val * 100;
 
     /*   if(finalvalue >= 0){
@@ -138,7 +142,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
        }*/
 
     useEffect(() => {
-        setSwitchToggle(newStrategy?.data['Operation Strategy'][0]?.active_copy != '0')
+      //  setSwitchToggle(newStrategy?.data['Operation Strategy'][0]?.active_copy != '0')
     }, [newStrategy]);
 
     const {
@@ -260,8 +264,8 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
 
     useEffect(() => {
         dispatch(updateBotSetting({
-            price_drop: newStrategy?.data['Operation Strategy'][0]["Price drop"].join('|'),
-            m_ratio: newStrategy?.data['Operation Strategy'][0]["Martingale ratio"].join('|'),
+          //  price_drop: newStrategy?.data['Operation Strategy'][0]["Price drop"].join('|'),
+          //  m_ratio: newStrategy?.data['Operation Strategy'][0]["Martingale ratio"].join('|'),
 
         }))
     }, []);
@@ -277,8 +281,9 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
         if(screenFrom == 'Auto'){
             navigation.goBack()
         }else{
+
             navigation.navigate('CyborgBottomTab',{
-                screen:'CyborgHome'
+                screen:'BottomTab'
             })
         }
 
@@ -308,13 +313,8 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                             <ActivityIndicator size='large' color={Colors.primary}/>
                         </View>
                     }
-                    <ScrollView
-                        refreshControl={<RefreshControl tintColor={Colors.primary} refreshing={refreshing}
-                                                        onRefresh={refresh} />}
-                        style={{
-                        width: '100%'
-                    }} contentContainerStyle={styles.scrollView} scrollEnabled
-                                showsVerticalScrollIndicator={false}>
+
+                 {/*   <ScrollView refreshControl={<RefreshControl tintColor={Colors.primary} refreshing={refreshing} onRefresh={refresh} />} style={{width: '100%'}} contentContainerStyle={styles.scrollView} scrollEnabled showsVerticalScrollIndicator={false}>
 
 
                         {
@@ -556,7 +556,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                                 </View>
 
 
-                                {/*        <View style={styles.moreButtonContainer}>
+                                        <View style={styles.moreButtonContainer}>
 
 
                                 <TouchableOpacity activeOpacity={0.6}
@@ -595,10 +595,10 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                                 </TouchableOpacity>
 
 
-                            </View>*/}
+                            </View>
 
 
-                                {/*<View style={[styles.moreButtonContainer, {}]}>
+                                <View style={[styles.moreButtonContainer, {}]}>
 
 
                                 <TouchableOpacity activeOpacity={0.6} style={styles.dashButton}>
@@ -632,7 +632,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                                 </TouchableOpacity>
 
 
-                            </View>*/}
+                            </View>
 
 
                                 <View style={[styles.spotlightContainer, {marginTop: 15,}]}>
@@ -806,7 +806,9 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
                         }
 
 
-                    </View>
+                    </View>*/}
+
+
                 </LinearGradient>
                 <ToastAnimated/>
             </SafeAreaView>
@@ -869,7 +871,7 @@ const LogScreen = ({navigation, route}: RootStackScreenProps<'LogScreen'>) => {
 
                                 <Text style={styles.logText}>
 
-                                    {newStrategy?.data['Operation Strategy'][0].Log}
+                          {/*          {newStrategy?.data['Operation Strategy'][0].Log}*/}
                                 </Text>
                             </View>
                         </View>

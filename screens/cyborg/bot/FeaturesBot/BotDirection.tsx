@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {Text, View, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
-import HeaderWithTitle from "../../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../../components/cyborg/header/HeaderWithTitle";
 import HorizontalLine from "../../../../components/HorizontalLine";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -10,11 +10,11 @@ import {Fonts} from "../../../../constants/Fonts";
 import Colors from "../../../../constants/Colors";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-reanimated";
 import {Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
-import {RootStackScreenProps} from "../../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../../types";
 import {useAppDispatch, useAppSelector} from "../../../../app/hooks";
 import {updateFeatureBotData} from "../../../../app/slices/dataSlice";
 
-const BotDirection = ({navigation}:RootStackScreenProps<'BotDirection'>) => {
+const BotDirection = ({navigation}:CyborgStackScreenProps<'BotDirection'>) => {
 
     const data = useAppSelector(state => state.data)
     const {featuresBotData} = data

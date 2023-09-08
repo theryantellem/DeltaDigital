@@ -1,7 +1,7 @@
 import React, {useCallback, useState} from 'react';
 
 import {Text, View, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
-import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
@@ -10,10 +10,10 @@ import Keyboard from "../../../components/KeyBoard";
 import Colors from "../../../constants/Colors";
 import {Fonts} from "../../../constants/Fonts";
 import {MyButton} from "../../../components/MyButton";
-import {RootStackScreenProps} from "../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../types";
 
 
-const WithdrawalAmount = ({navigation}: RootStackScreenProps<'WithdrawalAmount'>) => {
+const WithdrawalAmount = ({navigation}: CyborgStackScreenProps<'WithdrawalAmount'>) => {
 
 
     const [sendAmount, setSendAmount] = useState([]);

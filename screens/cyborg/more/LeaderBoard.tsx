@@ -3,7 +3,7 @@ import React, {SetStateAction, useState} from 'react';
 import {Text, View, StyleSheet, Image, Platform} from 'react-native';
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
-import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 import IOSSegmentContol from "../../../components/segment-control/IOSSegmentContol";
 import Colors from "../../../constants/Colors";
 import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPixel} from "../../../helpers/normalize";
@@ -18,6 +18,7 @@ import {useRefreshOnFocus} from "../../../helpers";
 import PersonalIncome from "./reusables/PersonalIncome";
 import {IF} from "../../../helpers/ConditionJsx";
 import CircleOwner from "./reusables/CircleOwner";
+import {CyborgStackScreenProps} from "../../../types";
 
 
 interface props {
@@ -58,7 +59,7 @@ const Item = ({item}: props) => {
     )
 }
 
-const LeaderBoard = () => {
+const LeaderBoard = ({}:CyborgStackScreenProps<'LeaderBoard'>) => {
     const user = useAppSelector(state => state.user)
     const {userData, User_Details} = user
     const [tabIndex, setTabIndex] = useState(0);

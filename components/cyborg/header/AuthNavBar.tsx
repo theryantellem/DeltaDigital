@@ -1,11 +1,11 @@
 import React from 'react';
 
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../helpers/normalize";
+import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../../helpers/normalize";
 import {Ionicons} from "@expo/vector-icons";
-import Colors from "../../constants/Colors";
+import Colors from "../../../constants/Colors";
 import {useNavigation} from "@react-navigation/native";
-import {Fonts} from "../../constants/Fonts";
+import {Fonts} from "../../../constants/Fonts";
 
 
 interface authProps {

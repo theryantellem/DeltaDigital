@@ -14,12 +14,12 @@ import {
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-reanimated";
 import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical} from "../../helpers/normalize";
 import {currencyFormatter, useRefreshOnFocus, wait} from "../../helpers";
-import HeaderWithTitle from "../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../components/cyborg/header/HeaderWithTitle";
 import {LinearGradient} from "expo-linear-gradient";
 import {SafeAreaView} from "react-native-safe-area-context";
 import Colors from "../../constants/Colors";
 import {Fonts} from "../../constants/Fonts";
-import {RootStackScreenProps} from "../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../types";
 import HorizontalLine from "../../components/HorizontalLine";
 import {FontAwesome5, Ionicons, MaterialIcons} from "@expo/vector-icons";
 import {useAppSelector} from "../../app/hooks";
@@ -29,7 +29,7 @@ import IOSSegmentContol from "../../components/segment-control/IOSSegmentContol"
 import SegmentedControl from "../../components/segment-control/SegmentContol";
 import {IF} from "../../helpers/ConditionJsx";
 
-const OverView = ({navigation}: RootStackScreenProps<'OverView'>) => {
+const OverView = ({navigation}: CyborgStackScreenProps<'OverView'>) => {
 
     const [refreshing, setRefreshing] = useState(false);
     const user = useAppSelector(state => state.user)

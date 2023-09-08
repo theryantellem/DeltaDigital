@@ -5,15 +5,15 @@ import {fontPixel, heightPixel, pixelSizeVertical, widthPixel} from "../../helpe
 import {Ionicons, Octicons} from "@expo/vector-icons";
 import Colors from "../../constants/Colors";
 import {Fonts} from "../../constants/Fonts";
-import HeaderWithTitle from "../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-reanimated";
-import {RootStackScreenProps} from "../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../types";
 import HorizontalLine from "../../components/HorizontalLine";
 
-const SuccessScreen = ({navigation, route}: RootStackScreenProps<'SuccessScreen'>) => {
+const SuccessScreen = ({navigation, route}: CyborgStackScreenProps<'SuccessScreen'>) => {
 
     const {type, message, title} = route.params
     const goNextScreen = () => {

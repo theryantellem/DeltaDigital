@@ -10,9 +10,9 @@ import {
 } from 'react-native';
 
 import {useAppSelector} from "../../../../app/hooks";
-import {RootStackScreenProps} from "../../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../../types";
 import Colors from "../../../../constants/Colors";
-import HeaderWithTitle from "../../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {Ionicons, MaterialIcons, Octicons} from "@expo/vector-icons";
@@ -42,7 +42,7 @@ var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime)
 
 
-const Quantitative = ({navigation}: RootStackScreenProps<'Quantitative'>) => {
+const Quantitative = ({navigation}: CyborgStackScreenProps<'Quantitative'>) => {
 
 
     const [tabIndex, setTabIndex] = useState(0);

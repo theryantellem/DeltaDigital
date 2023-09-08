@@ -10,7 +10,7 @@ import {
     RefreshControl,
     Pressable, Platform
 } from 'react-native';
-import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {Feather, Ionicons, Octicons} from "@expo/vector-icons";
@@ -23,7 +23,7 @@ import {getRevenueDetails, getRevenues, getRewardDetails} from "../../../api";
 import {useAppSelector} from "../../../app/hooks";
 import {FlashList} from "@shopify/flash-list";
 import dayjs from "dayjs";
-import {RootStackScreenProps} from "../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../types";
 import IOSSegmentContol from "../../../components/segment-control/IOSSegmentContol";
 import SegmentedControl from "../../../components/segment-control/SegmentContol";
 import {IF} from "../../../helpers/ConditionJsx";
@@ -42,7 +42,7 @@ interface RewardItem {
 
 
 
-const RevenueScreen = ({navigation}:RootStackScreenProps<'RevenueScreen'>) => {
+const RevenueScreen = ({navigation}:CyborgStackScreenProps<'RevenueScreen'>) => {
 
     const [refreshing, setRefreshing] = useState(false);
 

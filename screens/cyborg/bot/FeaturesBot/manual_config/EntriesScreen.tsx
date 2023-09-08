@@ -1,14 +1,14 @@
 import React, {useState} from 'react';
 
 import {Text, View, StyleSheet} from 'react-native';
-import HeaderWithTitle from "../../../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import {fontPixel, heightPixel, pixelSizeHorizontal} from "../../../../../helpers/normalize";
 import {Fonts} from "../../../../../constants/Fonts";
 import Colors from "../../../../../constants/Colors";
-import {RootStackScreenProps} from "../../../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../../../types";
 import HorizontalLine from "../../../../../components/HorizontalLine";
 import * as yup from "yup";
 import {useFormik} from "formik";
@@ -32,7 +32,7 @@ const formSchema = yup.object().shape({
 })
 
 
-const EntriesScreen = ({navigation}:RootStackScreenProps<'EntriesScreen'>) => {
+const EntriesScreen = ({navigation}:CyborgStackScreenProps<'EntriesScreen'>) => {
     const dispatch = useAppDispatch()
 
     const [focusInitialEntry, setFocusInitialEntry] = useState(false)

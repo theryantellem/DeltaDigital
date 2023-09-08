@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {Text, View, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
-import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
@@ -9,9 +9,9 @@ import {Feather, Ionicons} from "@expo/vector-icons";
 import Colors from "../../../constants/Colors";
 import {fontPixel, heightPixel, pixelSizeHorizontal} from "../../../helpers/normalize";
 import {Fonts} from "../../../constants/Fonts";
-import {RootStackScreenProps} from "../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../types";
 
-const ContactUs = ({navigation}: RootStackScreenProps<'ContactUs'>) => {
+const ContactUs = ({navigation}: CyborgStackScreenProps<'ContactUs'>) => {
 
     const feedbacks = () => {
         navigation.navigate('FeedbackRecord')

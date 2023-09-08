@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {Text, View, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
-import HeaderWithTitle from "../../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../../components/cyborg/header/HeaderWithTitle";
 import HorizontalLine from "../../../../components/HorizontalLine";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -10,12 +10,12 @@ import {Fonts} from "../../../../constants/Fonts";
 import Colors from "../../../../constants/Colors";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-reanimated";
 import {Ionicons, MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
-import {RootStackScreenProps} from "../../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../../types";
 import {updateFeatureBotData} from "../../../../app/slices/dataSlice";
 import {useAppDispatch, useAppSelector} from "../../../../app/hooks";
 import SetAmount from "./manual_config/SetAmount";
 
-const SelectConfig = ({navigation}: RootStackScreenProps<'SelectConfig'>) => {
+const SelectConfig = ({navigation}: CyborgStackScreenProps<'SelectConfig'>) => {
     const dispatch = useAppDispatch()
     const selectContinue = (configType: 'Auto'|'Manual') => {
         const updatedData = {

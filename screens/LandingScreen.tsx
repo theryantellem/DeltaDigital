@@ -150,7 +150,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
             icon: <Image source={require('../assets/images/logos/cyborlogo.png')} style={styles.imageLogo}/>,
 
         },
-       /* {
+        {
             name: 'Finix',
             balance: 0,
             bg: "#090A1C",
@@ -165,7 +165,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                 resizeMode: 'cover'
             }}/>,
 
-        },*/
+        },
        /* {
             name: 'Starfox',
             balance: 0,

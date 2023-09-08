@@ -4,7 +4,7 @@ import {Text, View, StyleSheet, ScrollView} from 'react-native';
 import {useQuery} from "@tanstack/react-query";
 import {activeStrategy, getNewstrategy} from "../../../api";
 import {useAppSelector} from "../../../app/hooks";
-import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 

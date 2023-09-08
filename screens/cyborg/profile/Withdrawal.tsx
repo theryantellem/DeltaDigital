@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
 
 import {Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator} from 'react-native';
-import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
-import {RootStackScreenProps} from "../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../types";
 import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPixel} from "../../../helpers/normalize";
 import {Fonts} from "../../../constants/Fonts";
 import Colors from "../../../constants/Colors";
@@ -30,7 +30,7 @@ const formSchema = yup.object().shape({
 })
 
 
-const Withdrawal = ({navigation, route}: RootStackScreenProps<'Withdrawal'>) => {
+const Withdrawal = ({navigation, route}: CyborgStackScreenProps<'Withdrawal'>) => {
 
     const {amount} = route.params
 

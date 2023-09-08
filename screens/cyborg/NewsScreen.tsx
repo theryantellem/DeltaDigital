@@ -4,8 +4,8 @@ import {Text, View, StyleSheet, Platform, RefreshControl, ActivityIndicator, Ima
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {fontPixel, heightPixel, pixelSizeHorizontal} from "../../helpers/normalize";
-import {RootStackScreenProps} from "../../types";
-import HeaderWithTitle from "../../components/header/HeaderWithTitle";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../types";
+import HeaderWithTitle from "../../components/cyborg/header/HeaderWithTitle";
 import Colors from "../../constants/Colors";
 import {Fonts} from "../../constants/Fonts";
 import {Ionicons} from "@expo/vector-icons";
@@ -57,7 +57,7 @@ const NewsCard = ({item}: props) => {
 
 const width = Dimensions.get('window').width;
 
-const NewsScreen = ({navigation}: RootStackScreenProps<'NewsScreen'>) => {
+const NewsScreen = ({navigation}: CyborgStackScreenProps<'NewsScreen'>) => {
 
 
     const user = useAppSelector(state => state.user)

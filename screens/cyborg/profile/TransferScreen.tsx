@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {Text, View, StyleSheet, ScrollView, ActivityIndicator} from 'react-native';
-import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 import {LinearGradient} from "expo-linear-gradient";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPixel} from "../../../helpers/normalize";
@@ -18,7 +18,7 @@ import {getAsset, getUser, transferAsset} from "../../../api";
 import {setAuthenticated, updateUserDetails} from "../../../app/slices/userSlice";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {addNotificationItem} from "../../../app/slices/dataSlice";
-import {RootStackScreenProps} from "../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../types";
 import ToastAnimated from "../../../components/toast";
 import {currencyFormatter, useRefreshOnFocus} from "../../../helpers";
 
@@ -31,7 +31,7 @@ const formSchema = yup.object().shape({
 
 })
 
-const TransferScreen = ({navigation}: RootStackScreenProps<'TransferScreen'>) => {
+const TransferScreen = ({navigation}: CyborgStackScreenProps<'TransferScreen'>) => {
 
     const dispatch = useAppDispatch()
     const queryClient = useQueryClient()

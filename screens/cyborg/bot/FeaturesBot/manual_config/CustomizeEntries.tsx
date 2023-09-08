@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 
 import {Text, View, StyleSheet, Platform, TouchableOpacity} from 'react-native';
-import HeaderWithTitle from "../../../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../../../components/cyborg/header/HeaderWithTitle";
 import HorizontalLine from "../../../../../components/HorizontalLine";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -9,14 +9,14 @@ import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import {fontPixel, heightPixel, pixelSizeHorizontal} from "../../../../../helpers/normalize";
 import {Fonts} from "../../../../../constants/Fonts";
 import Colors from "../../../../../constants/Colors";
-import {RootStackScreenProps} from "../../../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../../../types";
 import TextInput from "../../../../../components/inputs/TextInput";
 import {Ionicons} from "@expo/vector-icons";
 import {currencyFormatter} from "../../../../../helpers";
 import {MyButton} from "../../../../../components/MyButton";
 import {useAppSelector} from "../../../../../app/hooks";
 
-const CustomizeEntries = ({navigation}: RootStackScreenProps<'CustomizeEntries'>) => {
+const CustomizeEntries = ({navigation}: CyborgStackScreenProps<'CustomizeEntries'>) => {
 
 
     const dataSlice = useAppSelector(state => state.data)

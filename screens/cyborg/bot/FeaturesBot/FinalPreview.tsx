@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {Text, View, StyleSheet, ScrollView,Image} from 'react-native';
-import HeaderWithTitle from "../../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../../components/cyborg/header/HeaderWithTitle";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -11,9 +11,9 @@ import {fontPixel, heightPixel, pixelSizeVertical, widthPixel} from "../../../..
 import Colors from "../../../../constants/Colors";
 import {useAppSelector} from "../../../../app/hooks";
 import {MyButton} from "../../../../components/MyButton";
-import {RootStackScreenProps} from "../../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../../types";
 
-const FinalPreview = ({navigation}:RootStackScreenProps<'FinalPreview'>) => {
+const FinalPreview = ({navigation}:CyborgStackScreenProps<'FinalPreview'>) => {
 
     const dataSlice = useAppSelector(state => state.data)
     const {featureBotManualConfig, featuresBotData} = dataSlice

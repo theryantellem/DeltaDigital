@@ -1,8 +1,8 @@
 import React, {SetStateAction, useState} from 'react';
 
 import {Text, View, StyleSheet, ScrollView, Platform} from 'react-native';
-import {RootStackScreenProps} from "../../../../types";
-import HeaderWithTitle from "../../../../components/header/HeaderWithTitle";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../../types";
+import HeaderWithTitle from "../../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
@@ -51,7 +51,7 @@ const formSchema = yup.object().shape({
 
 });
 
-const AutoConfig = ({navigation}: RootStackScreenProps<'AutoConfig'>) => {
+const AutoConfig = ({navigation}: CyborgStackScreenProps<'AutoConfig'>) => {
 
 
     const [focusBotName, setFocusBotName] = useState(false);

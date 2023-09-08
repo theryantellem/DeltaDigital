@@ -10,9 +10,9 @@ import {
 } from 'react-native';
 
 import {useAppSelector} from "../../../app/hooks";
-import {RootStackScreenProps} from "../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../types";
 import Colors from "../../../constants/Colors";
-import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {Ionicons, MaterialIcons, Octicons} from "@expo/vector-icons";
@@ -36,7 +36,7 @@ dayjs.extend(relativeTime)
 
 
 
-const ActiveTrades = ({navigation}: RootStackScreenProps<'ActiveTrades'>) => {
+const ActiveTrades = ({navigation}: CyborgStackScreenProps<'ActiveTrades'>) => {
 
 
 

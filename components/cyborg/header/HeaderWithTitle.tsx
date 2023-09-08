@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import {Text, TouchableOpacity, View, StyleSheet, Pressable} from 'react-native';
-import Colors from "../../constants/Colors";
+import Colors from "../../../constants/Colors";
 import {Ionicons} from "@expo/vector-icons";
-import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../helpers/normalize";
-import {Fonts} from "../../constants/Fonts";
+import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../../helpers/normalize";
+import {Fonts} from "../../../constants/Fonts";
 import {useNavigation} from "@react-navigation/native";
 
 

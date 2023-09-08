@@ -5,15 +5,15 @@ import {fontPixel, heightPixel, pixelSizeVertical, widthPixel} from "../../../he
 import {Ionicons, Octicons} from "@expo/vector-icons";
 import Colors from "../../../constants/Colors";
 import {Fonts} from "../../../constants/Fonts";
-import HeaderWithTitle from "../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-reanimated";
-import {RootStackScreenProps} from "../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../types";
 import HorizontalLine from "../../../components/HorizontalLine";
 
-const BotSuccess = ({navigation,route}: RootStackScreenProps<'BotSuccess'>) => {
+const BotSuccess = ({navigation,route}: CyborgStackScreenProps<'BotSuccess'>) => {
     const {market,amount,trade_type,id,exchange} = route.params
 
     const goNextScreen = () => {

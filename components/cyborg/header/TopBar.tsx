@@ -3,11 +3,11 @@ import React, {useCallback, useState} from 'react';
 import {Text, View, StyleSheet, TouchableOpacity, Image, Platform} from 'react-native';
 import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import {FontAwesome5, Ionicons, Octicons} from "@expo/vector-icons";
-import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../helpers/normalize";
-import {Fonts} from "../../constants/Fonts";
+import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../../helpers/normalize";
+import {Fonts} from "../../../constants/Fonts";
 import FastImage from "react-native-fast-image";
-import {useAppSelector} from "../../app/hooks";
-import Colors from "../../constants/Colors";
+import {useAppSelector} from "../../../app/hooks";
+import Colors from "../../../constants/Colors";
 
 
 interface props {

@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 
 import {Text, View, StyleSheet, ScrollView, ActivityIndicator} from 'react-native';
-import HeaderWithTitle from "../../../../components/header/HeaderWithTitle";
+import HeaderWithTitle from "../../../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
@@ -24,10 +24,10 @@ import TextInput from "../../../../components/inputs/TextInput";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import {addNotificationItem, clearTradeSetting} from "../../../../app/slices/dataSlice";
 import * as Haptics from "expo-haptics";
-import {RootStackScreenProps} from "../../../../types";
+import {CyborgStackScreenProps, RootStackScreenProps} from "../../../../types";
 import {useRefreshOnFocus} from "../../../../helpers";
 
-const TwoFactorAuth = ({navigation}: RootStackScreenProps<'TwoFactorAuth'>) => {
+const TwoFactorAuth = ({navigation}: CyborgStackScreenProps<'TwoFactorAuth'>) => {
 
 
     const queryClient = useQueryClient()
