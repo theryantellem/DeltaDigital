@@ -125,7 +125,7 @@ export const getEducatorsFollowing = async () => {
     ])
 
 }
-export const getFollowEducator = async (body: {}) => {
+export const followEducator = async (body: {}) => {
 
 
     let Token = await SecureStore.getItemAsync('delta-signal-token');
@@ -155,7 +155,7 @@ export const getFollowEducator = async (body: {}) => {
     ])
 
 }
-export const getUnFollowEducator = async (body: {}) => {
+export const unFollowEducator = async (body: {}) => {
 
 
     let Token = await SecureStore.getItemAsync('delta-signal-token');

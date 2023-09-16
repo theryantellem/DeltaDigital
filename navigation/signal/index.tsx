@@ -31,6 +31,7 @@ import ChatScreen from "../../screens/finix/tabs/ChatScreen";
 import SignalScreen from "../../screens/finix/tabs/SignalScreen";
 import SettingsScreen from "../../screens/cyborg/profile/SettingsScreen";
 import SignalSettings from "../../screens/finix/tabs/SignalSettings";
+import SignalSummary from "../../screens/finix/SignalSummary";
 
 
 const Tab = createBottomTabNavigator<SignalTabParamList>();
@@ -85,7 +86,7 @@ export const SignalBottomTab = () => {
                     tabBarStyle: {
                       //  backgroundColor: '#11192E',
                         backgroundColor: '#141621',
-                        height: 80,
+                        height: 50,
                         borderTopColor: '#11192E',
                         borderTopWidth: 1,
                     },
@@ -135,7 +136,7 @@ export const SignalBottomTab = () => {
                 }} />
 
 
-                <Tab.Screen name={"Signals"} component={SignalScreen} options={{
+                <Tab.Screen name={"Signals"} component={SignalSummary} options={{
 
 
                     tabBarIcon: ({focused}) => (
@@ -210,9 +211,7 @@ const styles = StyleSheet.create({
     },
     tabButton:{
         position: 'absolute',
-        top: 20,
-        width: 40,
-        height: 40,
+
 
         borderRadius: 50,
         justifyContent: 'center',

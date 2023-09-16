@@ -17,26 +17,29 @@ import FinixTopBar from "../../../components/signal/FinixTopBar";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {useQuery} from "@tanstack/react-query";
 import {getSignals} from "../../../api/finix-api";
-import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../../helpers/normalize";
+import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPixel} from "../../../helpers/normalize";
 import Colors from "../../../constants/Colors";
 import {Fonts} from "../../../constants/Fonts";
 import Animated, {Easing, FadeInRight, FadeOutLeft, Layout} from 'react-native-reanimated';
-import {Ionicons} from "@expo/vector-icons";
+import {Feather, Ionicons} from "@expo/vector-icons";
+import {useRefreshOnFocus} from "../../../helpers";
+import {SignalRootTabScreenProps} from "../../../types";
+import HorizontalLine from "../../../components/HorizontalLine";
 
 
 const width = Dimensions.get('window').width
 
 interface Props {
 
-    viewSignal: (signal:{}) => void
+    viewSignal: (signal: {}) => void
 
     item: {
-        "id":string,
+        "id": string,
         "educator": {
             "id": string,
-            "first_name":string,
+            "first_name": string,
             "last_name": string,
-            "email":string,
+            "email": string,
             "photo": string,
             "total_followers": number
         },
@@ -54,53 +57,80 @@ interface Props {
 }
 
 
-const ItemSignal = ({item}:Props) =>{
-    return(
-      /*  <Animated.View   layout={Layout.easing(Easing.bounce).delay(50)}
-                         entering={FadeInRight.springify()} exiting={FadeOutLeft}>
-*/
-<TouchableOpacity activeOpacity={0.8}  style={styles.loanAppCard}>
+const ItemSignal = ({item, viewSignal}: Props) => {
+    return (
+        /*  <Animated.View   layout={Layout.easing(Easing.bounce).delay(50)}
+                           entering={FadeInRight.springify()} exiting={FadeOutLeft}>
+  */
+        <TouchableOpacity onPress={() => viewSignal(item)} activeOpacity={0.8} style={styles.loanAppCard}>
 
 
             <View style={styles.topCard}>
                 <View style={styles.listIcon}>
-                    {/*         <Image style={styles.tAvatar}
-                                   source={{uri: item.asset.image}}/>*/}
+                    <Image style={styles.tAvatar}
+                           source={{uri: item.photo}}/>
 
 
                 </View>
 
                 <Text style={styles.assetText}>
-                    EURUSD
+                    {item.asset}
                 </Text>
             </View>
 
             <View style={styles.bottomCard}>
+                <View style={styles.bottomCardInfo}>
 
-                <Text style={styles.bottomCardText}>
-                    1.300
-                </Text>
-                <Text style={styles.bottomCardSubText}>
-                    Active
-                </Text>
+
+                    <Text style={styles.bottomCardText}>
+                        {item.entry_price}
+                    </Text>
+                    <Text style={styles.bottomCardSubText}>
+                        {item.order_type}
+                    </Text>
+                </View>
+                <Feather name="chevron-right" size={16} color={Colors.border}/>
             </View>
 
-</TouchableOpacity>
+        </TouchableOpacity>
     )
 }
 
 
-
-const SignalScreen = () => {
+const SignalScreen = ({navigation}: SignalRootTabScreenProps<'Signals'>) => {
     const dispatch = useAppDispatch()
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
 
 
-    const {data,isLoading,refetch} = useQuery(['getSignals'],getSignals)
+    const {data, isLoading, refetch} = useQuery(['getSignals'], getSignals)
 
-    const viewSignal = () =>{
 
+    const viewSignal = (details: {
+        "id": string,
+        "educator": {
+            "id": string,
+            "first_name": string,
+            last_name: string,
+            "email": string,
+            "photo": string,
+            "total_followers": number
+        },
+        "asset": string,
+        "order_type": string,
+        "entry_price": number,
+        "stop_loss": number,
+        "target_price": number,
+        "comment": string,
+        "photo": string,
+        "chart_photo": string,
+        "market_status": string,
+        "status": string
+    }) => {
+        navigation.navigate('MainSignalNav', {
+            screen: 'SignalDetails', params: {details: details}
+
+        })
     }
 
 
@@ -112,6 +142,7 @@ const SignalScreen = () => {
     );
 
 
+    useRefreshOnFocus(refetch)
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -123,33 +154,30 @@ const SignalScreen = () => {
                 // locations={[0.1, 0.7,]}
 
             >
-               {/* <ScrollView style={{width: '100%',}} contentContainerStyle={styles.scrollView} scrollEnabled
+          <ScrollView style={{width: '100%',}} contentContainerStyle={styles.scrollView} scrollEnabled
                             showsVerticalScrollIndicator={false}
 
-                >*/}
+                >
 
 
-                    <FinixTopBar
-                        profilePhoto={User_Details.image ? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'}
-                        userName={User_Details.username}/>
-
-
+                <FinixTopBar
+                    profilePhoto={User_Details.image ? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'}
+                    userName={User_Details.username}/>
 
 
                 <View style={styles.ActivityCardTop}>
                     <Text style={[styles.listTitle, {
                         color: Colors.text
                     }]}>
-                  Signals
+                        Signals
                     </Text>
-                    <TouchableOpacity  activeOpacity={0.7} style={styles.seeAll}>
+                    <TouchableOpacity activeOpacity={0.7} style={styles.seeAll}>
                         <Text style={[styles.tintText, {
                             color: Colors.tintText
                         }]}>See all</Text>
                         <Ionicons name="md-chevron-forward" color={Colors.tintText} size={heightPixel(12)}/>
                     </TouchableOpacity>
                 </View>
-
 
 
                 <View style={styles.segmentBody}>
@@ -175,7 +203,58 @@ const SignalScreen = () => {
                     }
                 </View>
 
+                <HorizontalLine margin={20}/>
+                <View style={styles.ActivityCardTop}>
+                    <Text style={[styles.listTitle, {
+                        color: Colors.text
+                    }]}>
+                        Market status (Pending)
+                    </Text>
 
+                </View>
+
+              {
+                  data && data?.data.map(((item)=>(
+                      <View key={item.id} style={styles.signalHorizontalCard}>
+
+                          <View style={styles.signalImage}>
+                              <Image style={styles.itemPhoto}
+                                     source={{uri: item.photo}}/>
+                          </View>
+
+                          <View style={styles.signalCardBody}>
+
+                              <View style={styles.signalCardBodyInfo}>
+                                  <Text style={[styles.signalCardBodyInfoText,{
+                                      textTransform: 'uppercase',
+                                  }]}>
+                                      {item.asset}
+                                  </Text>
+                                  <Text style={styles.signalCardBodyInfoTextSmall}>
+                                      {item.comment}
+                                  </Text>
+                              </View>
+
+                              <View style={[styles.signalCardBodyInfo, {
+                                  alignItems: 'flex-end'
+                              }]}>
+                                  <Text style={styles.signalCardBodyInfoText}>
+                                      {item.entry_price}
+                                  </Text>
+                                  <Text style={[styles.signalCardBodyInfoTextSmall,{
+                                      color: Colors.pendingYellow
+                                  }]}>
+                                      {item.market_status}
+                                  </Text>
+                              </View>
+
+
+                          </View>
+                      </View>
+                  )))
+              }
+
+          </ScrollView>
             </LinearGradient>
         </SafeAreaView>
     );
@@ -190,7 +269,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#141621",
     },
     background: {
-        paddingHorizontal:20,
+        paddingHorizontal: 20,
         flex: 1,
         width: '100%',
         alignItems: "center"
@@ -267,30 +346,90 @@ const styles = StyleSheet.create({
         resizeMode: 'cover',
         height: '90%',
         width: '90%',
+        borderRadius: 100,
     },
     assetText: {
         color: Colors.text,
         fontSize: fontPixel(14),
-        fontFamily: Fonts.faktumMedium
+        fontFamily: Fonts.faktumBold
     },
     bottomCard: {
+        height: 50,
+        flexDirection: 'row',
+        alignItems: 'flex-end',
+        justifyContent: 'space-evenly',
+        width: '100%',
+
+    },
+    bottomCardInfo: {
         height: 50,
 
         alignItems: 'flex-start',
         justifyContent: 'space-evenly',
-        width: '100%',
+        width: '90%',
 
     },
     bottomCardText: {
         color: Colors.text,
         fontSize: fontPixel(14),
-        fontFamily: Fonts.faktumSemiBold
+        fontFamily: Fonts.faktumMedium
     },
     bottomCardSubText: {
+        textTransform: 'capitalize',
         color: Colors.success,
         fontSize: fontPixel(12),
         fontFamily: Fonts.faktumRegular
     },
+
+    signalHorizontalCard: {
+        marginVertical:pixelSizeVertical(12),
+        width: '100%',
+        height: 80,
+        flexDirection: 'row',
+        alignItems: 'center',
+
+        justifyContent: 'space-between'
+    },
+    signalImage: {
+        width: 60,
+        borderRadius: 10,
+        backgroundColor: Colors.borderColor,
+        height: '80%',
+    },
+    itemPhoto:{
+        width: '100%',
+        resizeMode:"cover",
+        borderRadius: 10,
+        height:  '100%',
+    },
+    signalCardBody: {
+        width: '80%',
+        height: '90%',
+        flexDirection: 'row',
+        alignItems: 'center',
+
+
+        justifyContent: 'space-between'
+    },
+    signalCardBodyInfo: {
+        width: '40%',
+        height: '60%',
+
+        alignItems: 'flex-start',
+        justifyContent: 'space-between'
+    },
+    signalCardBodyInfoText: {
+        textTransform: 'capitalize',
+        color: Colors.text,
+        fontSize: fontPixel(14),
+        fontFamily: Fonts.faktumBold
+    },
+    signalCardBodyInfoTextSmall: {
+        textTransform: 'capitalize',
+        color: Colors.tintText,
+        fontSize: fontPixel(12),
+        fontFamily: Fonts.faktumRegular
+    }
 
 })
 

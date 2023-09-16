@@ -147,7 +147,7 @@ const MarginConfiguration = ({route, navigation}: CyborgStackScreenProps<'Margin
                                     isWidth={"46%"}
                                     // touched={touched.firstname}
                                     //  error={touched.firstname && errors.firstname}
-                                    keyboardType={"default"}
+                                    keyboardType={"number-pad"}
                                     label={`Margin call drop ${index + 1} *`}
                                     value={field.mtRatio}
                                     defaultValue={field.mtRatio}
@@ -161,7 +161,7 @@ const MarginConfiguration = ({route, navigation}: CyborgStackScreenProps<'Margin
                                     isWidth={"46%"}
                                     // touched={touched.lastname}
                                     //  error={touched.lastname && errors.lastname}
-                                    keyboardType={"default"}
+                                    keyboardType={"number-pad"}
                                     label={`Multiple buy in ratio ${index + 1} *`}
 
                                     value={field.priceDrop}

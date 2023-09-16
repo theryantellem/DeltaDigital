@@ -126,11 +126,10 @@ const LogScreen = ({navigation, route}: CyborgStackScreenProps<'LogScreen'>) => 
 */
 
 
-   /* let p2 = parseFloat(newStrategy?.data['Operation Strategy'][0]?.Quantity) * parseFloat(tickerRes?.lastPrice);
+    let p2 = parseFloat(newStrategy?.data['Operation Strategy'][0]?.Quantity) * parseFloat(tickerRes?.lastPrice);
     let val = (Number(newStrategy?.data['Operation Strategy'][0]['Positionamount']) - (p2)) / Number(newStrategy?.data['Operation Strategy'][0]['Positionamount']);
-   */
-    let p2 = 1;
-    let val = 3;
+
+
 
     let finalvalue = val * 100;
 
@@ -142,7 +141,7 @@ const LogScreen = ({navigation, route}: CyborgStackScreenProps<'LogScreen'>) => 
        }*/
 
     useEffect(() => {
-      //  setSwitchToggle(newStrategy?.data['Operation Strategy'][0]?.active_copy != '0')
+       setSwitchToggle(newStrategy?.data['Operation Strategy'][0]?.active_copy != '0')
     }, [newStrategy]);
 
     const {
@@ -160,7 +159,8 @@ const LogScreen = ({navigation, route}: CyborgStackScreenProps<'LogScreen'>) => 
                     navigation.navigate('SuccessScreen', {
                         title: 'Successful',
                         message: `${market} Trading Bot Status updated`,
-                        type: 'success'
+                        type: 'success',
+
                     })
 
 
@@ -282,9 +282,7 @@ const LogScreen = ({navigation, route}: CyborgStackScreenProps<'LogScreen'>) => 
             navigation.goBack()
         }else{
 
-            navigation.navigate('CyborgBottomTab',{
-                screen:'BottomTab'
-            })
+            navigation.navigate('BottomTab')
         }
 
     }
@@ -314,7 +312,7 @@ const LogScreen = ({navigation, route}: CyborgStackScreenProps<'LogScreen'>) => 
                         </View>
                     }
 
-                 {/*   <ScrollView refreshControl={<RefreshControl tintColor={Colors.primary} refreshing={refreshing} onRefresh={refresh} />} style={{width: '100%'}} contentContainerStyle={styles.scrollView} scrollEnabled showsVerticalScrollIndicator={false}>
+                <ScrollView refreshControl={<RefreshControl tintColor={Colors.primary} refreshing={refreshing} onRefresh={refresh} />} style={{width: '100%'}} contentContainerStyle={styles.scrollView} scrollEnabled showsVerticalScrollIndicator={false}>
 
 
                         {
@@ -345,7 +343,24 @@ const LogScreen = ({navigation, route}: CyborgStackScreenProps<'LogScreen'>) => 
                                                 {trade_type == '1' && 'Futures'}
 
                                             </Text>
+                                            {trade_type == '1' &&
+                                                <Text style={[styles.balText, {
+                                                    color: Colors.text
+                                                }]}>
+    |
+</Text>
+                                            }
+                                            {trade_type == '1' &&
 
+                                            <Text style={[styles.balText, {
+                                                color: Colors.text
+                                            }]}>
+
+
+                                                { newStrategy?.data['Operation Strategy'][0].direction}
+
+                                            </Text>
+                                            }
                                         </View>
 
                                         <View style={styles.balanceGraph}>
@@ -524,8 +539,10 @@ const LogScreen = ({navigation, route}: CyborgStackScreenProps<'LogScreen'>) => 
 
                                     <View style={[styles.interestGained, {alignItems: 'flex-end'}]}>
 
+                                        {
+                                            trade_type == '1' &&
 
-                                        <TouchableOpacity activeOpacity={0.7}
+                                        <View
                                                           style={[styles.balanceTitle, {justifyContent: 'flex-end',}]}>
                                             <Text style={styles.logTitle}>
 
@@ -533,9 +550,28 @@ const LogScreen = ({navigation, route}: CyborgStackScreenProps<'LogScreen'>) => 
                                             </Text>
 
 
-                                        </TouchableOpacity>
+                                        </View>
 
-                                        <View style={[styles.logWrap, {
+                                        }
+                                        {
+                                            trade_type == '0' &&
+
+                                        <View
+                                                          style={[styles.balanceTitle, {justifyContent: 'flex-end',}]}>
+                                            <Text style={styles.logTitle}>
+
+
+                                                {newStrategy?.data['Operation Strategy'][0]?.FloatingLoss ?newStrategy?.data['Operation Strategy'][0].FloatingLoss < 0 ? 'Floating loss' : 'Floating profit' : 'Floating profit' }
+                                            </Text>
+
+
+                                        </View>
+
+                                        }
+
+
+
+                                            <View style={[styles.logWrap, {
                                             alignItems: 'flex-end',
                                         }]}>
 
@@ -550,89 +586,34 @@ const LogScreen = ({navigation, route}: CyborgStackScreenProps<'LogScreen'>) => 
 
                                         </View>
 
+                                        {/*{
+                                            trade_type == '1' &&
+
+                                            <View style={[styles.logWrap, {
+                                            alignItems: 'flex-end',
+                                        }]}>
+
+
+                                            <Text style={[styles.logBalance, {
+                                                color: finalvalue ? invertNumber(parseFloat(finalvalue)) < 0 ? Colors.errorRed : Colors.successChart : Colors.successChart
+                                            }]}>
+
+                                                {newStrategy?.data['Operation Strategy'][0].FloatingLoss ? newStrategy?.data['Operation Strategy'][0].FloatingLoss : '0.00'}%
+                                            </Text>
+
+
+                                        </View>
+                                        }*/}
+
                                     </View>
 
 
                                 </View>
 
 
-                                        <View style={styles.moreButtonContainer}>
 
 
-                                <TouchableOpacity activeOpacity={0.6}
-                                                  style={styles.dashButton}>
-                                    <View style={[styles.dashIcon,
-                                        {backgroundColor: Colors.secondary}]}>
 
-                                        <Ionicons name="sync-circle-outline" size={20} color="#fff"/>
-                                    </View>
-                                    <Text style={styles.dashText}>
-                                        Cycle
-                                    </Text>
-                                </TouchableOpacity>
-
-
-                                <TouchableOpacity activeOpacity={0.6} style={styles.dashButton}>
-                                    <View style={styles.dashIcon}>
-                                        <MaterialCommunityIcons name="arrow-top-right-thin" size={20} color="#fff"/>
-
-                                    </View>
-                                    <Text style={styles.dashText}>
-                                        Sell
-                                    </Text>
-
-                                </TouchableOpacity>
-
-
-                                <TouchableOpacity disabled activeOpacity={0.6} style={styles.dashButton}>
-                                    <View style={[styles.dashIcon,]}>
-                                        <SimpleLineIcons name="tag" size={20} color="#fff"/>
-
-                                    </View>
-                                    <Text style={styles.dashText}>
-                                        Buy
-                                    </Text>
-                                </TouchableOpacity>
-
-
-                            </View>
-
-
-                                <View style={[styles.moreButtonContainer, {}]}>
-
-
-                                <TouchableOpacity activeOpacity={0.6} style={styles.dashButton}>
-                                    <View style={[styles.dashIcon,
-                                        {backgroundColor: Colors.secondary}]}>
-
-                                        <Ionicons name="analytics-outline" size={20} color="#fff"/>
-                                    </View>
-                                    <Text style={styles.dashText}>
-                                        Open margin call
-
-
-                                    </Text>
-                                </TouchableOpacity>
-
-
-                                <TouchableOpacity activeOpacity={0.6} style={styles.dashButton}>
-                                    <View style={styles.dashIcon}>
-                                        <FontAwesome5 name="chess" size={20} color="#fff"/>
-
-                                    </View>
-                                    <Text style={styles.dashText}>
-                                        Strategy mode
-                                    </Text>
-
-                                </TouchableOpacity>
-
-                                <TouchableOpacity activeOpacity={0.6}
-                                                  style={styles.dashButton}>
-
-                                </TouchableOpacity>
-
-
-                            </View>
 
 
                                 <View style={[styles.spotlightContainer, {marginTop: 15,}]}>
@@ -806,7 +787,7 @@ const LogScreen = ({navigation, route}: CyborgStackScreenProps<'LogScreen'>) => 
                         }
 
 
-                    </View>*/}
+                    </View>
 
 
                 </LinearGradient>
@@ -871,7 +852,7 @@ const LogScreen = ({navigation, route}: CyborgStackScreenProps<'LogScreen'>) => 
 
                                 <Text style={styles.logText}>
 
-                          {/*          {newStrategy?.data['Operation Strategy'][0].Log}*/}
+                            {newStrategy?.data['Operation Strategy'][0].Log}
                                 </Text>
                             </View>
                         </View>

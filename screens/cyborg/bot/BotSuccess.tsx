@@ -14,7 +14,7 @@ import {CyborgStackScreenProps, RootStackScreenProps} from "../../../types";
 import HorizontalLine from "../../../components/HorizontalLine";
 
 const BotSuccess = ({navigation,route}: CyborgStackScreenProps<'BotSuccess'>) => {
-    const {market,amount,trade_type,id,exchange} = route.params
+    const {market,amount,trade_type,id,exchange,message} = route.params
 
     const goNextScreen = () => {
 
@@ -26,7 +26,7 @@ const BotSuccess = ({navigation,route}: CyborgStackScreenProps<'BotSuccess'>) =>
             exchange,
         })
     }
-    console.log(market)
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <LinearGradient style={styles.background}
@@ -56,7 +56,7 @@ const BotSuccess = ({navigation,route}: CyborgStackScreenProps<'BotSuccess'>) =>
 
 
                         <Text style={styles.title}>
-                            Trade Bot started
+                            {message}
                         </Text>
 
                         <Text style={styles.message}>

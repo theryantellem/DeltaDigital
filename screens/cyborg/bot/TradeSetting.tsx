@@ -180,7 +180,7 @@ const TradeSetting = ({navigation}: CyborgStackScreenProps<'TradeSetting'>) => {
     const [switchToggle, setSwitchToggle] = useState(false);
 
 
-    const [strategyPeriod, setStrategyPeriod] = useState('Cycle');
+    const [strategyPeriod, setStrategyPeriod] = useState('One-Shot');
 
     const snapPoints = useMemo(() => ["1%", "65%", "70%"], []);
     const bankSheetRef = useRef<BottomSheet>(null);
@@ -242,11 +242,11 @@ const TradeSetting = ({navigation}: CyborgStackScreenProps<'TradeSetting'>) => {
 
 
             stop_loss: '',
-            price_above: '',
-            price_below: '',
+          //  price_above: '',
+           // price_below: '',
             re_capital: '',
-            closing_price: '',
-            entry_call: ''
+            //closing_price: '',
+           // entry_call: ''
 
         },
         onSubmit: (values) => {
@@ -262,12 +262,12 @@ const TradeSetting = ({navigation}: CyborgStackScreenProps<'TradeSetting'>) => {
                 whole_position_take_profit_callback,
 
                 stop_loss,
-                price_above,
+              //  price_above,
 
-                price_below,
+               // price_below,
                 re_capital,
-                closing_price,
-                entry_call
+               // closing_price,
+              //  entry_call
             } = values;
 
             const strategyPeriodShot = strategyPeriod == 'Cycle' ? '0' : '1'
@@ -289,12 +289,12 @@ const TradeSetting = ({navigation}: CyborgStackScreenProps<'TradeSetting'>) => {
                     direction,
                     one_shot: strategyPeriodShot,
 
-                    price_above,
+                   // price_above,
 
-                    price_below,
+                  //  price_below,
                     re_capital,
-                    closing_price,
-                    entry_call
+                  //  closing_price,
+                  //  entry_call
                 }))
 
                 navigation.navigate('ReviewScreen')
@@ -604,7 +604,7 @@ The below inputs are not needed!
 
 
                             {/*Add title "Trade re-entry settings"*/}
-                            {
+                           {/* {
                                 tradeSetting.trade_type == '1'
                                 &&
                                 <TextInput
@@ -622,8 +622,8 @@ The below inputs are not needed!
                                     label="Price above"/>
 
 
-                            }
-                            {
+                            }*/}
+                           {/* {
                                 tradeSetting.trade_type == '1'
                                 &&
                                 <TextInput
@@ -641,9 +641,9 @@ The below inputs are not needed!
                                     label="Price below"/>
 
 
-                            }
+                            }*/}
 
-
+{/*
                             {
                                 tradeSetting.trade_type == '1'
                                 &&
@@ -662,9 +662,9 @@ The below inputs are not needed!
                                     label="Capital"/>
 
 
-                            }
+                            }*/}
 
-                            {
+                           {/* {
                                 tradeSetting.trade_type == '1'
                                 &&
                                 <TextInput
@@ -682,8 +682,8 @@ The below inputs are not needed!
                                     label="Closing price"/>
 
 
-                            }
-                            {
+                            }*/}
+                        {/*    {
                                 tradeSetting.trade_type == '1'
                                 &&
                                 <TextInput
@@ -701,7 +701,7 @@ The below inputs are not needed!
                                     label="Entry call"/>
 
 
-                            }
+                            }*/}
                             <SelectInput
                                 editable={false}
                                 action={() => handleSnapPress(1)}

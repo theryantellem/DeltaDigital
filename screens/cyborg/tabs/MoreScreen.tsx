@@ -118,7 +118,7 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
 
                             <View style={styles.moreButtonContainer}>
 
-                                <TouchableOpacity onPress={() => navigate('LeaderBoard')} activeOpacity={0.6}
+                              {/*  <TouchableOpacity onPress={() => navigate('LeaderBoard')} activeOpacity={0.6}
                                                   style={styles.dashButton}>
                                     <View style={styles.dashIcon}>
                                         <Ionicons name="ios-bar-chart-outline" size={18} color="#fff"/>
@@ -128,7 +128,7 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
                                     </Text>
 
                                 </TouchableOpacity>
-
+*/}
 
                                 <TouchableOpacity onPress={() => navigate('ActiveTrades')} activeOpacity={0.6}
                                                   style={styles.dashButton}>

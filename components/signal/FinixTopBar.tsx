@@ -60,7 +60,10 @@ const FinixTopBar = ({profilePhoto, userName, homeDash}: props) => {
             <View style={styles.rightButton}>
 
 
-                <Text style={styles.greeting}>
+                <Text style={[styles.greeting,{
+                    fontFamily: Fonts.faktumMedium,
+                    fontSize: fontPixel(24),
+                }]}>
                     Finix
                 </Text>
                 <Image source={require('../../assets/images/logos/finixLogo.png')} style={{
@@ -108,13 +111,13 @@ const styles = StyleSheet.create({
         marginRight: 8,
         fontFamily: Fonts.faktumBold,
         fontSize: fontPixel(14),
-        color: "#fff",
+        color: "#131313",
         textTransform: 'capitalize'
     },
     tag: {
         fontFamily: Fonts.faktumRegular,
         fontSize: fontPixel(12),
-        color: "#D9D9D9",
+        color: "#131313",
     },
 
     userImageWrap: {

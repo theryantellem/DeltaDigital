@@ -149,8 +149,7 @@ navigation.navigate('MainSignalNav')
             }]}/>,
             icon: <Image source={require('../assets/images/logos/cyborlogo.png')} style={styles.imageLogo}/>,
 
-        },
-        {
+        }, {
             name: 'Finix',
             balance: 0,
             bg: "#090A1C",
@@ -374,6 +373,10 @@ navigation.navigate('MainSignalNav')
                         </Animated.ScrollView>
                     }
                 </ScrollView>
+
+                    <Text>
+                        #OWNYOURFUTURE
+                    </Text>
                 </ImageBackground>
         </SafeAreaView>
     );

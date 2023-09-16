@@ -51,6 +51,7 @@ interface props {
         icon: string,
         id: string,
         trade_type: string,
+        direction: string,
     }
 }
 
@@ -91,6 +92,14 @@ const ItemData = ({view, item}: props) => {
 
                         {item?.trade_type == '1' && 'Futures'}
                         {item.trade_type == '0' && 'Spot'}
+                    </Text>
+                    <Text style={[styles.tagText, {
+                        color: Colors.pendingYellow,
+
+                    }]}>
+
+                     {item?.direction}
+
                     </Text>
                 </View>
             </View>
@@ -364,6 +373,8 @@ const AllStrategy = ({navigation}: CyborgStackScreenProps<'AllStrategy'>) => {
         wait(2000).then(() => setRefreshing(false));
     }
 
+
+   // console.log(filterStrategies.filter((market:{trade_type:string}) => market.trade_type == '1'))
     useRefreshOnFocus(refetch)
     return (
 

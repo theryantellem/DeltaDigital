@@ -463,7 +463,7 @@ const SpotScreen = ({}) => {
                                 onEndReachedThreshold={0.3}
                                 refreshControl={
                                     <RefreshControl
-                                        tintColor={Colors.text}
+                                        tintColor={Colors.primary}
                                         refreshing={refreshing}
                                         onRefresh={refresh}
                                     />

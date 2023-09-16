@@ -170,7 +170,7 @@ const TradeSettingStrategy = ({navigation, route}: CyborgStackScreenProps<'Trade
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
 
-    const [direction, setDirection] = useState('Long');
+    const [direction, setDirection] = useState(dataLogs.trade_type == '1' ? 'Long' : 'Short');
 
 
     const [selected, setSelected] = useState('');
@@ -205,7 +205,7 @@ const TradeSettingStrategy = ({navigation, route}: CyborgStackScreenProps<'Trade
     const [switchToggle, setSwitchToggle] = useState(false);
 
 
-    const [strategyPeriod, setStrategyPeriod] = useState('Cycle');
+    const [strategyPeriod, setStrategyPeriod] = useState('One shot');
 
     const snapPoints = useMemo(() => ["1%", "65%", "70%"], []);
     const bankSheetRef = useRef<BottomSheet>(null);
@@ -257,7 +257,8 @@ const TradeSettingStrategy = ({navigation, route}: CyborgStackScreenProps<'Trade
                     navigation.navigate('SuccessScreen', {
                         title: 'Successful',
                         message: 'Trading Bot Setting Updated',
-                        type: 'success'
+                        type: 'success',
+
                     })
 
 
@@ -308,11 +309,11 @@ const TradeSettingStrategy = ({navigation, route}: CyborgStackScreenProps<'Trade
             whole_position_take_profit_callback: whole_position_take_profit_callback,
 
             stop_loss: stop_loss,
-            price_above: price_above,
-            price_below: price_below,
+           // price_above: price_above,
+           // price_below: price_below,
             re_capital: re_capital,
-            closing_price: closing_price,
-            entry_call: entry_call,
+          // closing_price: closing_price,
+           // entry_call: entry_call,
 
 
         },
@@ -368,16 +369,16 @@ const TradeSettingStrategy = ({navigation, route}: CyborgStackScreenProps<'Trade
 
                 formData.append('trade_type', dataLogs.trade_type)
                 formData.append('stop_loss', stop_loss)
-                formData.append('price_above', price_above)
+               // formData.append('price_above', price_above)
                 formData.append('capital', re_capital)
-                formData.append('closing_price', closing_price)
-                formData.append('price_below', price_below)
-                formData.append('entry_call', entry_call)
+               // formData.append('closing_price', closing_price)
+               // formData.append('price_below', price_below)
+               // formData.append('entry_call', entry_call)
                 // formData.append('trade_type', tradeSetting.trade_type)
                 formData.append('market', dataLogs.Market)
                 formData.append('id', id)
 
-          mutate({body: formData, userId: User_Details.id})
+                mutate({body: formData, userId: User_Details.id})
 
             } else {
                 dispatch(addNotificationItem({
@@ -576,7 +577,7 @@ const TradeSettingStrategy = ({navigation, route}: CyborgStackScreenProps<'Trade
                                 label="Take profit (%)"/>
 
 
-                            <TextInput
+                            {/*<TextInput
 
                                 placeholder="0"
                                 keyboardType={"number-pad"}
@@ -597,12 +598,34 @@ const TradeSettingStrategy = ({navigation, route}: CyborgStackScreenProps<'Trade
                                 defaultValue={whole_stop}
                                 focus={focusWhole_stop}
                                 value={values.whole_position_stop_loss}
-                                label="Whole position stop loss"/>
-
+                                label="Whole position stop loss"/>*/}
 
                             {
-                                dataLogs.trade_type == '1'
-                                &&
+                                dataLogs.trade_type == '1' &&
+                                <SelectInput
+                                    editable={false}
+                                    action={() => handleSnapPressDirection(1)}
+                                    label='Direction'
+                                    autoCapitalize='none'
+                                    keyboardType='default'
+                                    returnKeyType='next'
+                                    returnKeyLabel='next'
+
+                                    onChangeText={(e) => {
+                                        setStrategyPeriod(e)
+                                    }}
+                                    defaultValue={direction}
+                                    icon='chevron-down'
+                                    value={values.direction}
+                                    Btn={true}
+                                />
+
+
+
+                            }
+
+
+
                                 <TextInput
 
                                     placeholder="0"
@@ -620,7 +643,7 @@ const TradeSettingStrategy = ({navigation, route}: CyborgStackScreenProps<'Trade
                                     label="Stop loss"/>
 
 
-                            }
+
 
 
                             <View style={styles.inputTitleWrap}>
@@ -630,7 +653,7 @@ const TradeSettingStrategy = ({navigation, route}: CyborgStackScreenProps<'Trade
                             </View>
 
 
-                            {
+                           {/* {
                                 dataLogs.trade_type == '1'
                                 &&
                                 <TextInput
@@ -649,8 +672,8 @@ const TradeSettingStrategy = ({navigation, route}: CyborgStackScreenProps<'Trade
                                     label="Price above"/>
 
 
-                            }
-                            {
+                            }*/}
+                            {/*{
                                 dataLogs.trade_type == '1'
                                 &&
                                 <TextInput
@@ -669,7 +692,7 @@ const TradeSettingStrategy = ({navigation, route}: CyborgStackScreenProps<'Trade
                                     label="Price below"/>
 
 
-                            }
+                            }*/}
                             {
                                 dataLogs.trade_type == '1'
                                 &&
@@ -691,7 +714,7 @@ const TradeSettingStrategy = ({navigation, route}: CyborgStackScreenProps<'Trade
 
                             }
 
-                            {
+                           {/* {
                                 dataLogs.trade_type == '1'
                                 &&
                                 <TextInput
@@ -710,8 +733,8 @@ const TradeSettingStrategy = ({navigation, route}: CyborgStackScreenProps<'Trade
                                     label="Closing price"/>
 
 
-                            }
-                            {
+                            }*/}
+                            {/*{
                                 dataLogs.trade_type == '1'
                                 &&
                                 <TextInput
@@ -730,7 +753,7 @@ const TradeSettingStrategy = ({navigation, route}: CyborgStackScreenProps<'Trade
                                     label="Entry call"/>
 
 
-                            }
+                            }*/}
 
                             <SelectInput
                                 editable={false}

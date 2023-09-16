@@ -14,6 +14,7 @@ import {getRevenues, getRewardDetails} from "../../../api";
 import {useAppSelector} from "../../../app/hooks";
 import {FlashList} from "@shopify/flash-list";
 import dayjs from "dayjs";
+import NoItem from "../../../components/NoItem";
 
 
 interface RewardItem {
@@ -50,7 +51,7 @@ const RewardItem = ({item}: RewardItem) => {
 
             <View style={styles.bodyRight}>
                 <Text style={styles.transactionTitle}>
-                    +{item.Reward}
+                    +{parseFloat(item.Reward).toFixed(4)}
                 </Text>
                 <Text style={styles.transactionDate}>
 
@@ -179,7 +180,9 @@ const RewardDetails = () => {
                 <HeaderWithTitle title='Reward details'/>
 
                 <View style={styles.content}>
-
+                    {
+                        data?.data?.All == null && <NoItem message={'You have no reward!'}/>
+                    }
 
                     {
                         isLoading && <ActivityIndicator color={Colors.primary} size='small'/>

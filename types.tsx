@@ -7,6 +7,10 @@ import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
 import {CompositeScreenProps, NavigatorScreenParams} from '@react-navigation/native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import RevenueScreen from "./screens/cyborg/profile/RevenueScreen";
+import SignalDetails from "./screens/finix/SignalDetails";
+import ViewEducator from "./screens/finix/ViewEducator";
+import StreamersList from "./screens/finix/StreamersList";
+import SignalSummary from "./screens/finix/SignalSummary";
 
 
 declare global {
@@ -23,7 +27,7 @@ export type RootStackParamList = {
     //START CYBORG
 
     CyborgBottomTab: NavigatorScreenParams<CyborgStackParamList> | undefined;
-     MainSignalNav: NavigatorScreenParams<SignalStackParamList> | undefined;
+    MainSignalNav: NavigatorScreenParams<SignalStackParamList> | undefined;
 
     OnBoardingScreen: undefined;
     LandingScreen: undefined;
@@ -65,14 +69,14 @@ export type CyborgStackParamList = {
     TradeSettingStrategy: {
         id: string,
         dataLogs: {
-            trade_type:string,
+            trade_type: string,
 
-            price_above:string,
+            price_above: string,
             "price_below": string,
             "re_capital": string,
-            stop_loss:string,
-            closing_price:string
-            entry_call:string,
+            stop_loss: string,
+            closing_price: string
+            entry_call: string,
             "Avg_Price": string,
             "FloatingLoss": string,
             "Log": string,
@@ -88,7 +92,7 @@ export type CyborgStackParamList = {
             "auto compounding": string,
             "bot_on": string,
             "buyin_callback": string,
-            "coin image":string,
+            "coin image": string,
             "current_price": string,
             "cycle": string,
             "exchange": string,
@@ -106,18 +110,19 @@ export type CyborgStackParamList = {
     };
     ReviewScreen: undefined;
     LogsMarginConfiguration: {
-        numrows:number,
-        m_ratio:string
-        price_drop:string
+        numrows: number,
+        m_ratio: string
+        price_drop: string
     };
     OverView: undefined;
     BotSuccess: {
         amount: string,
+        message: string,
         market: string,
         id: string,
         trade_type: string,
         exchange: string,
-        origin:'Bot'|'Other'
+        origin: 'Bot' | 'Other'
     };
     UserAccount: undefined;
     DepositScreen: undefined;
@@ -147,7 +152,7 @@ export type CyborgStackParamList = {
         trade_type: string,
         market: string,
         exchange: string,
-        screenFrom:string
+        screenFrom: string
     };
     SuccessScreen: {
         title: string,
@@ -186,35 +191,55 @@ export type CyborgStackParamList = {
     //END CYBORG
 
 
-
-
-
-
 };
+
+
 export type SignalStackParamList = {
     SignalBottomTab: undefined;
 
+    SignalDetails: {
+        details: {
+            "id": string,
+            "educator": {
+                "id": string,
+                "first_name": string,
+                last_name: string,
+                "email": string,
+                "photo": string,
+                "total_followers": number
+            },
+            "asset": string,
+            "order_type": string,
+            "entry_price": number,
+            "stop_loss": number,
+            "target_price": number,
+            "comment": string,
+            "photo": string,
+            "chart_photo": string,
+            "market_status": string,
+            "status": string
+        }
+    };
+    EducatorsScreen: undefined;
+
+    ViewEducator: {
+        educator:{
+            "email": string,
+            "first_name": string,
+            "id":string,
+            "last_name": string,
+            "photo": string,
+            "total_followers": number,
+
+        }
+    };
+
+    StreamersList: undefined;
+    SignalSummary: undefined;
     //END CYBORG
 
 
-
-
-
-
 };
-
-
-export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
-    RootStackParamList,
-    Screen
->;
-
-export type AuthStackScreenProps<Screen extends keyof AuthStackParamList> = NativeStackScreenProps<
-    AuthStackParamList, Screen
->;
-export type CyborgStackScreenProps<Screen extends keyof CyborgStackParamList> = NativeStackScreenProps<
-    CyborgStackParamList, Screen
->;
 
 export type RootTabParamList = {
     CyborgHome: undefined;
@@ -230,6 +255,23 @@ export type SignalTabParamList = {
     SignalSettings: undefined
 
 };
+
+export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
+    RootStackParamList,
+    Screen
+>;
+export type SignalStackScreenProps<Screen extends keyof SignalStackParamList> = NativeStackScreenProps<
+    SignalStackParamList,
+    Screen
+>;
+
+export type AuthStackScreenProps<Screen extends keyof AuthStackParamList> = NativeStackScreenProps<
+    AuthStackParamList, Screen
+>;
+export type CyborgStackScreenProps<Screen extends keyof CyborgStackParamList> = NativeStackScreenProps<
+    CyborgStackParamList, Screen
+>;
+
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<
     BottomTabScreenProps<RootTabParamList, Screen>,

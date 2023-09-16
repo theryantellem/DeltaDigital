@@ -62,7 +62,7 @@ const RevenueScreen = ({navigation}:CyborgStackScreenProps<'RevenueScreen'>) => 
     useRefreshOnFocus(refetch)
 
 
-
+//console.log(data?.data['History Records'])
 
     const [tabIndex, setTabIndex] = useState(0);
     const handleTabsChange = (index: SetStateAction<number>) => {
@@ -235,7 +235,7 @@ const seeAll = () => {
                     { data?.data['History Records'] !== null &&
                         data?.data['History Records'].slice(0,30).map((item: { profit: string ; price: string ; market: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined; Date: number; })=>(
                             <Animated.View  layout={Layout.easing(Easing.bounce).delay(10)}
-                                   entering={FadeInDown.springify()} exiting={FadeOutDown} key={item.profit +item.price} style={styles.transactionCard}>
+                                   entering={FadeInDown.springify()} exiting={FadeOutDown} key={item.profit +item.Date} style={styles.transactionCard}>
 
 
 
@@ -500,7 +500,7 @@ const styles = StyleSheet.create({
     balText: {
         fontFamily: Fonts.faktumMedium,
         color: Colors.lightText,
-        fontSize: fontPixel(14),
+        fontSize: fontPixel(12),
         marginRight: 5,
     },
     balance: {

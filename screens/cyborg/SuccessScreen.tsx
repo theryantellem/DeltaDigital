@@ -17,9 +17,7 @@ const SuccessScreen = ({navigation, route}: CyborgStackScreenProps<'SuccessScree
 
     const {type, message, title} = route.params
     const goNextScreen = () => {
-        navigation.navigate('CyborgBottomTab', {
-            screen: 'CyborgHome'
-        })
+        navigation.navigate('BottomTab')
     }
     return (
         <SafeAreaView style={styles.safeArea}>

@@ -222,7 +222,7 @@ const AllRevenue = () => {
                             onRefresh={refetch}
                             scrollEnabled
                             showsVerticalScrollIndicator={false}
-                            data={data.data['History Records']}
+                            data={data?.data['History Records']}
                             renderItem={renderItem}
                             keyExtractor={keyExtractor}
                             estimatedListSize={{height: 70, width: 320}}
@@ -424,6 +424,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
     },
     transactionTitle: {
+       // backgroundColor:'red',
+       // width:'60%',
         height: heightPixel(25),
         fontSize: fontPixel(14),
         fontFamily: Fonts.faktumSemiBold,

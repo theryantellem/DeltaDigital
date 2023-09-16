@@ -52,6 +52,7 @@ const HeaderWithTitle = ({title, clearData,logScreen, goBackLog,logAction, isBut
                 //backgroundColor: '#030D34',
             }]} onPress={goBackNav}>
                 <Ionicons name="md-chevron-back" color={"#fff"} size={heightPixel(24)}/>
+
             </TouchableOpacity>
 
             <Pressable onPress={seeLogs} style={[styles.titleWrap, {}]}>
