@@ -70,6 +70,7 @@ export type CyborgStackParamList = {
         id: string,
         dataLogs: {
             trade_type: string,
+            direction: string,
 
             price_above: string,
             "price_below": string,
@@ -122,7 +123,7 @@ export type CyborgStackParamList = {
         id: string,
         trade_type: string,
         exchange: string,
-        origin: 'Bot' | 'Other'
+        origin: 'Bot' | 'Other',
     };
     UserAccount: undefined;
     DepositScreen: undefined;
@@ -157,7 +158,12 @@ export type CyborgStackParamList = {
     SuccessScreen: {
         title: string,
         message: string,
-        type?: 'error' | 'success'
+        type?: 'error' | 'success',
+        market: string,
+        id: string,
+        trade_type: string,
+        exchange: string,
+        origin: 'TradeSetting' | 'BotToggle',
     };
     ViewAPIBinding: {
         exchange: string,

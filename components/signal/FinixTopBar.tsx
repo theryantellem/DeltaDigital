@@ -13,10 +13,11 @@ import {Fonts} from "../../constants/Fonts";
 interface props {
     profilePhoto?: string,
     userName?: string,
+    color?: string,
     homeDash?: boolean,
 }
 
-const FinixTopBar = ({profilePhoto, userName, homeDash}: props) => {
+const FinixTopBar = ({profilePhoto, userName, homeDash,color}: props) => {
 
     const navigation = useNavigation()
 
@@ -44,7 +45,9 @@ const FinixTopBar = ({profilePhoto, userName, homeDash}: props) => {
                     />
                 </View>
                 <View style={styles.userDetails}>
-                    <Text style={styles.greeting}>
+                    <Text style={[styles.greeting,{
+                        color: color ? color : '#131313',
+                    }]}>
                         {userName}
                     </Text>
                     {
@@ -62,6 +65,7 @@ const FinixTopBar = ({profilePhoto, userName, homeDash}: props) => {
 
                 <Text style={[styles.greeting,{
                     fontFamily: Fonts.faktumMedium,
+                    color: color ? color : '#131313',
                     fontSize: fontPixel(24),
                 }]}>
                     Finix

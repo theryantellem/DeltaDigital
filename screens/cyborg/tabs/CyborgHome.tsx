@@ -139,12 +139,31 @@ const HomeTradeCard = ({item, seeLogs, Exchanges, tickers}: props) => {
                 <View style={styles.assetChart}>
                     <LineChart.Provider data={ChartData}>
                         <LineChart height={heightPixel(70)} width={widthPixel(90)}>
-                            <LineChart.Path color={Colors.errorRed}/>
+                            <LineChart.Path color={item.profit  < 1 ? Colors.errorRed : Colors.successChart}/>
                         </LineChart>
                     </LineChart.Provider>
                 </View>
 
+                {
+                    item?.trade_type == '1'
+                &&
+                <View style={styles.priceSection}>
+                    <Text style={[styles.coinSymbol, {
+                        color:item.profit ? item.profit   < 0 ?  Colors.errorRed :Colors.successChart : Colors.successChart
+                    }]}>
 
+                        {/* {currencyFormatter('en-US', 'USD').format(item.Avg_Price)}*/}
+
+                        {item.profit ? parseFloat(item.profit).toFixed(2) : '0.00'}%
+                    </Text>
+                    <Text style={styles.coinNameText}>
+                        {parseFloat(item.Positionamount).toFixed(2)}
+                    </Text>
+                </View>
+                }
+                {
+                    item?.trade_type == '0'
+                &&
                 <View style={styles.priceSection}>
                     <Text style={[styles.coinSymbol, {
                         color:finalvalue ? invertNumber((finalvalue))   < 0 ?  Colors.errorRed :Colors.successChart : Colors.successChart
@@ -158,7 +177,7 @@ const HomeTradeCard = ({item, seeLogs, Exchanges, tickers}: props) => {
                         {parseFloat(item.Positionamount).toFixed(2)}
                     </Text>
                 </View>
-
+}
             </Pressable>
 
 

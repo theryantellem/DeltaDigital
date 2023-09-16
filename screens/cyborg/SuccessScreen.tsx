@@ -15,9 +15,24 @@ import HorizontalLine from "../../components/HorizontalLine";
 
 const SuccessScreen = ({navigation, route}: CyborgStackScreenProps<'SuccessScreen'>) => {
 
-    const {type, message, title} = route.params
+    const {type, message, title, origin, trade_type,market,exchange,id } = route.params
+
+
     const goNextScreen = () => {
-        navigation.navigate('BottomTab')
+
+        if(origin == 'BotToggle'){
+          navigation.navigate('CyborgHome')
+        }else if(origin == 'TradeSetting'){
+            navigation.navigate('LogScreen', {
+                screenFrom: 'CyborgHome',
+                trade_type,
+                market,
+                id,
+                exchange,
+            })
+        }else{
+            navigation.navigate('CyborgHome')
+        }
     }
     return (
         <SafeAreaView style={styles.safeArea}>

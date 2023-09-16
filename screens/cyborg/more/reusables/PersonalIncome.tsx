@@ -26,6 +26,7 @@ interface props {
         reward_total: string,
         level: string,
         username: string,
+        total_profit: string,
     }
 }
 
@@ -55,7 +56,7 @@ const LeaderboardItem = ({item,index}: props) => {
 
             <View style={styles.bodyRight}>
                 <Text style={styles.transactionTitle}>
-                    {item.reward_total}
+                    {parseFloat(item.total_profit).toFixed(2)}
                 </Text>
                 {/*  <Text style={styles.transactionDate}>
                             10:53 AM

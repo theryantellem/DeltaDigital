@@ -118,19 +118,21 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                                 <View style={styles.innerBoxBody}>
                                     <View style={styles.assetImage}>
 
-                                        <Image source={{uri: details.photo}} style={styles.assetImageLogo}/>
+                                        <Image
+                                            source={{uri: details.asset == 'ETHUSDT' ? 'https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/512/Ethereum-ETH-icon.png' : 'https://www.spectre.ai/assets/images/assets/LTC-logo.png?v=2.13'}}
+                                            style={styles.assetImageLogo}/>
 
 
                                     </View>
                                     <View style={styles.innerBox}>
 
                                         <View style={styles.statusWrap}>
-                                        <Text style={[styles.innerBoxAmount,{
-                                            color: "#fff"
-                                        }]}>
+                                            <Text style={[styles.innerBoxAmount, {
+                                                color: "#fff"
+                                            }]}>
 
-                                            {details.status}
-                                        </Text>
+                                                {details.status}
+                                            </Text>
                                         </View>
                                         <Text style={[styles.innerBoxStatus, {}]}>
 
@@ -149,18 +151,17 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                                 <View style={styles.leftInfo}>
 
 
+                                    <View style={styles.userImage}>
 
-                                <View style={styles.userImage}>
+                                        <Image source={{uri: details.photo}} style={styles.logo}/>
 
-                                    <Image source={{uri: details.photo}} style={styles.logo}/>
 
+                                    </View>
+                                    <Text style={styles.leftInfoNameText}>
+                                        {details.educator.last_name} {details.educator.first_name}
+                                    </Text>
 
                                 </View>
-                                <Text style={styles.leftInfoNameText}>
-                                    {details.educator.last_name} {details.educator.first_name}
-                                </Text>
-
-</View>
                             </View>
 
 
@@ -207,7 +208,10 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                                         }]}>
                                             {details.entry_price}
                                         </Text>
-                                        <Pressable style={styles.copyBtn}>
+                                        <Pressable onPress={() => {
+                                            // setItemCopied('Entry price')
+                                            copyToClipboard('Entry price', details.entry_price.toString())
+                                        }} style={styles.copyBtn}>
                                             <Text style={styles.copyText}>
                                                 Copy
                                             </Text>
@@ -230,7 +234,10 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                                         }]}>
                                             {details.stop_loss}
                                         </Text>
-                                        <Pressable style={styles.copyBtn}>
+                                        <Pressable nPress={() => {
+
+                                            copyToClipboard('Stop loss', `${details.stop_loss}`)
+                                        }} style={styles.copyBtn}>
                                             <Text style={styles.copyText}>
                                                 Copy
                                             </Text>
@@ -247,7 +254,6 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                                     </Text>
 
                                     <TouchableOpacity onPress={() => {
-                                        //   setItemCopied('Target price')
                                         copyToClipboard('Target price', `${details.target_price}`)
                                     }} activeOpacity={0.7} style={styles.reference}>
                                         <Text style={[styles.rowValue, {
@@ -255,7 +261,9 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                                         }]}>
                                             {details.target_price}
                                         </Text>
-                                        <Pressable style={styles.copyBtn}>
+                                        <Pressable onPress={() => {
+                                            copyToClipboard('Target price', `${details.target_price}`)
+                                        }} style={styles.copyBtn}>
                                             <Text style={styles.copyText}>
                                                 Copy
                                             </Text>
@@ -287,8 +295,6 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                             </View>
 
 
-
-
                             <View style={styles.qrBoxWrap}>
 
 
@@ -297,7 +303,7 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
 
                             </View>
 
-            {/*                <View style={styles.buttonWrap}>
+                            {/*                <View style={styles.buttonWrap}>
 
 
                                 <TouchableOpacity
@@ -339,6 +345,19 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
 
 
                             </View>*/}
+
+                            <View style={styles.imageCover}>
+
+                                <Text style={styles.brandName}>
+                                    FINIX
+                                </Text>
+
+                                <Image source={require('../../assets/images/logos/finixLogo.png')} style={{
+                                    width: 50,
+                                    height: '60%',
+                                    resizeMode: 'contain'
+                                }}/>
+                            </View>
                         </View>
                         <ToastAnimated/>
                     </ScrollView>
@@ -454,7 +473,7 @@ const styles = StyleSheet.create({
 
     },
     topReceipt: {
-
+        zIndex: 10,
         // height: heightPixel(440),
         width: '100%',
         alignItems: 'center',
@@ -479,22 +498,22 @@ const styles = StyleSheet.create({
         shadowRadius: 2.62,
 
         elevation: 4,
-        top:-40,
-        zIndex:-1,
-        paddingVertical:pixelSizeVertical(20),
-backgroundColor:"#fff",
+        top: -40,
+        zIndex: 2,
+        paddingVertical: pixelSizeVertical(20),
+        backgroundColor: "#fff",
         minHeight: heightPixel(330),
         width: '90%',
-        borderRadius:15,
+        borderRadius: 25,
         alignItems: 'center',
         justifyContent: 'flex-start'
     },
     receiptDetailsRow: {
         flexDirection: 'row',
         width: "90%",
-        paddingHorizontal:pixelSizeHorizontal(40),
+        paddingHorizontal: pixelSizeHorizontal(40),
         height: 55,
-        backgroundColor:"#F1F1F1",
+        backgroundColor: "#F1F1F1",
         justifyContent: 'space-between',
         alignItems: 'center',
         borderBottomColor: "#B6B6B6",
@@ -564,7 +583,7 @@ backgroundColor:"#fff",
         shadowRadius: 2.62,
 
         elevation: 4,
-        zIndex:10,
+        zIndex: 10,
     },
     innerBoxBody: {
 
@@ -589,11 +608,11 @@ backgroundColor:"#fff",
         resizeMode: 'cover'
     },
 
-    leftInfo:{
-      alignItems:'center',
-      justifyContent:'center'
+    leftInfo: {
+        alignItems: 'center',
+        justifyContent: 'center'
     },
-    leftInfoNameText:{
+    leftInfoNameText: {
         color: Colors.textDark,
         fontSize: fontPixel(12),
         fontFamily: Fonts.faktumRegular
@@ -629,11 +648,11 @@ backgroundColor:"#fff",
         fontSize: fontPixel(24),
         fontFamily: Fonts.faktumBold
     },
-    statusWrap:{
-        textTransform:'capitalize',
-        backgroundColor:"#00B2FF",
-        paddingHorizontal:5,
-        borderRadius:10,
+    statusWrap: {
+        textTransform: 'capitalize',
+        backgroundColor: "#00B2FF",
+        paddingHorizontal: 5,
+        borderRadius: 10,
     },
     innerBoxStatus: {
         color: Colors.textDark,
@@ -669,19 +688,19 @@ backgroundColor:"#fff",
         alignItems: 'center',
         justifyContent: 'flex-end'
     },
-    copyBtn:{
-      backgroundColor:"#00B2FF",
-        paddingHorizontal:pixelSizeHorizontal(8),
-        borderRadius:10,
-        height:20,
+    copyBtn: {
+        backgroundColor: "#00B2FF",
+        paddingHorizontal: pixelSizeHorizontal(8),
+        borderRadius: 10,
+        height: 20,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    copyText:{
-        color:"#fff",
-        fontSize:fontPixel(12),
+    copyText: {
+        color: "#fff",
+        fontSize: fontPixel(12),
 
-        fontFamily:Fonts.faktumRegular
+        fontFamily: Fonts.faktumRegular
     },
     buttonCategory: {
         alignItems: 'center',
@@ -759,15 +778,15 @@ backgroundColor:"#fff",
         alignItems: 'center'
     },
     qrBoxWrap: {
-        top:-60,
-        borderRadius:34,
+        top: -60,
+        borderRadius: 34,
         marginVertical: pixelSizeVertical(10),
         width: '90%',
         height: heightPixel(300),
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: "space-between",
-        backgroundColor:"#fff",
+        backgroundColor: "#fff",
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
@@ -783,6 +802,22 @@ backgroundColor:"#fff",
         height: '100%',
         resizeMode: 'cover',
         borderRadius: 24,
+    },
+    imageCover: {
+        alignSelf: 'center',
+        marginBottom: 15,
+        height: 65,
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+
+    },
+    brandName: {
+        marginRight: 5,
+        fontFamily: Fonts.faktumMedium,
+        fontSize: fontPixel(20),
+        color: "#fff"
     },
 
 })

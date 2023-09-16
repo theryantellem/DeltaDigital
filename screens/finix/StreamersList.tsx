@@ -118,6 +118,7 @@ const StreamersList = ({navigation} :SignalStackScreenProps<'StreamersList'>) =>
     const [refreshing, setRefreshing] = useState(false);
 
     const {data:dataFollowing, isLoading:loadingEducators, refetch:fetchEducators} = useQuery([`get-Educators-Following`], getEducatorsFollowing)
+
     const {data, isLoading, refetch} = useQuery([`get-educators`], getEducators)
 
 

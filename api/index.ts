@@ -571,6 +571,7 @@ export const quantitativeStrategies = async (userId: string) => {
         "ID": userId
     }
 
+
     let timeoutId: NodeJS.Timeout
 
     const requestOptions = {

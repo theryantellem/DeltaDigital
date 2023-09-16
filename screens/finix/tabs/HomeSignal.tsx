@@ -106,14 +106,22 @@ const ItemSignal = ({item,viewSignal}: Props) => {
             <View style={styles.topCard}>
                 <View style={styles.IconImageWrap}>
                     <Image style={styles.IconImage}
-                           source={{uri: item.photo}}/>
+                           source={{uri: item.asset == 'ETHUSDT' ? 'https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/512/Ethereum-ETH-icon.png' : 'https://www.spectre.ai/assets/images/assets/LTC-logo.png?v=2.13'}}/>
 
 
                 </View>
 
-                <Text style={styles.assetText}>
-                    {item.asset}
-                </Text>
+                <View>
+                    <Text style={styles.assetText}>
+                        {item.asset}
+                    </Text>
+                    <Text style={[styles.assetText,{
+                        fontFamily: Fonts.faktumRegular
+                    }]}>
+                     Crypto
+                    </Text>
+                </View>
+
             </View>
 
             <View style={styles.bottomCard}>

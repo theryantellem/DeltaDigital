@@ -87,7 +87,9 @@ const ItemSignal = ({item, viewSignal}: Props) => {
             <View style={styles.signalCardValueWrap}>
 
                 <TouchableOpacity style={styles.signalViewBtn}>
-
+<Text style={styles.viewText}>
+    View
+</Text>
                 </TouchableOpacity>
             </View>
 
@@ -344,8 +346,19 @@ const styles = StyleSheet.create({
      fontSize: fontPixel(14)
     },
     signalViewBtn:{
+        backgroundColor:"#00B2FF",
+        paddingHorizontal:pixelSizeHorizontal(8),
+        borderRadius:10,
+        height:20,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    viewText:{
+        color:"#fff",
+        fontSize:fontPixel(12),
 
-    }
+        fontFamily:Fonts.faktumRegular
+    },
 
 
 })

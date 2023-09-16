@@ -95,7 +95,7 @@ const ReviewScreen = ({navigation}: CyborgStackScreenProps<'ReviewScreen'>) => {
 
             onSuccess: async (data) => {
                 // alert(message)
-                console.log(data)
+
                 if (data.status == 1) {
                     navigation.navigate('BotSuccess', {
                         amount: tradeSetting.firstbuy_amount,
@@ -104,8 +104,13 @@ const ReviewScreen = ({navigation}: CyborgStackScreenProps<'ReviewScreen'>) => {
                         exchange: data.data.exchange,
                         trade_type: tradeSetting.trade_type,
                         origin: 'Bot',
+               message:''
                     })
-                    dispatch(clearTradeSetting())
+
+
+
+
+                        dispatch(clearTradeSetting())
                     /*navigation.navigate('SuccessScreen', {
                         title: 'Successful',
                         message: 'Trading Bot created',

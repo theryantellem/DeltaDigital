@@ -13,14 +13,14 @@ import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-re
 import {CyborgStackScreenProps, RootStackScreenProps} from "../../../types";
 import HorizontalLine from "../../../components/HorizontalLine";
 
-const BotSuccess = ({navigation,route}: CyborgStackScreenProps<'BotSuccess'>) => {
-    const {market,amount,trade_type,id,exchange,message} = route.params
+const BotSuccess = ({navigation, route}: CyborgStackScreenProps<'BotSuccess'>) => {
+    const {market, amount, trade_type, id, exchange, message, origin} = route.params
 
     const goNextScreen = () => {
 
         navigation.navigate('LogScreen', {
-            screenFrom:'CyborgHome',
-     trade_type,
+            screenFrom: 'CyborgHome',
+            trade_type,
             market,
             id,
             exchange,
@@ -39,18 +39,15 @@ const BotSuccess = ({navigation,route}: CyborgStackScreenProps<'BotSuccess'>) =>
             >
 
 
-
                 <KeyboardAwareScrollView style={{
                     width: '100%'
                 }} contentContainerStyle={styles.scrollView} scrollEnabled
                                          showsVerticalScrollIndicator={false}>
 
 
-
-
                     <Animated.View key={'title-info'} layout={Layout.easing(Easing.bounce).delay(100)}
-                                   entering={FadeInDown.springify()} exiting={FadeOutDown} style={[styles.topWrap,{
-                                       justifyContent: 'space-evenly',
+                                   entering={FadeInDown.springify()} exiting={FadeOutDown} style={[styles.topWrap, {
+                        justifyContent: 'space-evenly',
                         height: heightPixel(140)
                     }]}>
 
@@ -101,9 +98,8 @@ const BotSuccess = ({navigation,route}: CyborgStackScreenProps<'BotSuccess'>) =>
                         </View>
 
 
-
                     </View>
-                   {/* <Text style={styles.noticeText}>
+                    {/* <Text style={styles.noticeText}>
                         You will be notified as soon as it is completed typically within 5 minutes
                     </Text>*/}
 
@@ -218,21 +214,21 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     rowDetails: {
-        width:'100%',
+        width: '100%',
         flexDirection: 'row',
         height: 35,
         alignItems: 'center',
         justifyContent: 'space-between'
     },
-    amountText:{
+    amountText: {
         fontFamily: Fonts.faktumRegular,
         fontSize: fontPixel(14),
         color: Colors.text
     },
-    noticeText:{
-        width:'70%',
+    noticeText: {
+        width: '70%',
         marginVertical: pixelSizeVertical(55),
-        textAlign:'center',
+        textAlign: 'center',
         fontFamily: Fonts.faktumRegular,
         fontSize: fontPixel(14),
         color: Colors.text

@@ -178,7 +178,7 @@ const UserAccount = ({navigation}: CyborgStackScreenProps<'UserAccount'>) => {
                         </TouchableOpacity>
 
 
-                        <TouchableOpacity onPress={() => navigate('Earnings')} activeOpacity={0.6}
+                    {/*    <TouchableOpacity onPress={() => navigate('Earnings')} activeOpacity={0.6}
                                           style={styles.profileButton}>
 
                             <View style={styles.leftContent}>
@@ -195,7 +195,7 @@ const UserAccount = ({navigation}: CyborgStackScreenProps<'UserAccount'>) => {
                             <Octicons name="chevron-right" size={20} color="#979797"/>
 
 
-                        </TouchableOpacity>
+                        </TouchableOpacity>*/}
 
 
                         <TouchableOpacity onPress={() => navigate('RewardDetails')} activeOpacity={0.6}
