@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\Admin\Signal;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AssetResource;
+use App\Http\Resources\CategoryResource;
 use App\Http\Resources\SignalResource;
+use App\Models\Asset;
+use App\Models\Category;
 use App\Models\Signal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -35,7 +39,10 @@ class SignalController extends Controller
         $marketStaus = \App\Enums\SignalMarketStatus::options();
         $status = \App\Enums\SignalStatusEnum::options();
 
-        return response()->json(['signals' => $signals, 'order_type' => $orderType, 'market_status' => $marketStaus, 'status' => $status]);
+        $assets = AssetResource::collection(Asset::get());
+        $categories = CategoryResource::collection(Category::get());
+
+        return response()->json(['signals' => $signals, 'categories' => $categories, 'order_type' => $orderType, 'market_status' => $marketStaus, 'status' => $status, 'assets' => $assets]);
     }
 
     /**
@@ -55,10 +62,12 @@ class SignalController extends Controller
                 'asset_type' => 'required|string',
                 'order_type' => 'required|string',
                 'entry_price' => 'required|numeric',
+                'category' => 'required|string',
                 'stop_loss' => 'required|numeric',
                 'target_price' => 'required|numeric',
+                'percentage' => 'numeric',
                 'comment' => 'nullable|string',
-                'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                // 'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
                 'chart_photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
 
@@ -67,17 +76,17 @@ class SignalController extends Controller
                 return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
             }
 
-            $imageUrl = null;
+            // $imageUrl = null;
             $chartUrl = null;
 
-            if ($request->hasFile('photo')) {
-                // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
-                $image = $request->file('photo');
-                $image_name = time() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('images/signals'), $image_name);
+            // if ($request->hasFile('photo')) {
+            //     // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
+            //     $image = $request->file('photo');
+            //     $image_name = time() . '.' . $image->getClientOriginalExtension();
+            //     $image->move(public_path('images/signals'), $image_name);
 
-                $imageUrl = url('/images/signals/' . $image_name);
-            }
+            //     $imageUrl = url('/images/signals/' . $image_name);
+            // }
 
             if ($request->hasFile('chart_photo')) {
                 // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
@@ -95,8 +104,10 @@ class SignalController extends Controller
                 'entry_price' => $request->entry_price,
                 'stop_loss' => $request->stop_loss,
                 'target_price' => $request->target_price,
+                'category_id' => $request->category,
+                'percentage' => $request->percentage,
                 'comment' => $request->comment,
-                'photo' => $imageUrl,
+                // 'photo' => $imageUrl,
                 'chart_photo' =>  $chartUrl,
             ]);
 
@@ -169,11 +180,13 @@ class SignalController extends Controller
                 'asset_type' => 'required|string',
                 'order_type' => 'required|string',
                 'entry_price' => 'required|numeric',
+                'category' => 'required|string',
                 'stop_loss' => 'required|numeric',
                 'target_price' => 'required|numeric',
+                'percentage' => 'numeric',
                 'comment' => 'nullable|string',
-                'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                'chart_photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                // 'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                'chart_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
 
             // Handle validation errors
@@ -187,17 +200,17 @@ class SignalController extends Controller
                 return response()->json(['success' => false, 'errors' => "Signal not found."]);
             }
 
-            $imageUrl = $signal->photo;
+            // $imageUrl = $signal->photo;
             $chartUrl = $signal->chat_photo;
 
-            if ($request->hasFile('photo')) {
-                // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
-                $image = $request->file('photo');
-                $image_name = time() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('images/signals'), $image_name);
+            // if ($request->hasFile('photo')) {
+            //     // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
+            //     $image = $request->file('photo');
+            //     $image_name = time() . '.' . $image->getClientOriginalExtension();
+            //     $image->move(public_path('images/signals'), $image_name);
 
-                $imageUrl = url('/images/signals/' . $image_name);
-            }
+            //     $imageUrl = url('/images/signals/' . $image_name);
+            // }
 
             if ($request->hasFile('chart_photo')) {
                 // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
@@ -214,9 +227,12 @@ class SignalController extends Controller
                 'entry_price' => $request->entry_price,
                 'stop_loss' => $request->stop_loss,
                 'target_price' => $request->target_price,
+                'category_id' => $request->category,
+                'percentage' => $request->percentage,
                 'comment' => $request->comment,
-                'photo' => $imageUrl,
+                // 'photo' => $imageUrl,
                 'chart_photo' =>  $chartUrl,
+                'is_updated' => true
             ]);
 
             // broadcast events

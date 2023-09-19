@@ -16,6 +16,16 @@ class Signal extends Model
 
     protected $guarded = [];
 
+    public function asset()
+    {
+        return $this->belongsTo(Asset::class, 'asset_type', 'id');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id', 'id');
+    }
+
     /**
      * Define the route model binding key for a given model.
      */

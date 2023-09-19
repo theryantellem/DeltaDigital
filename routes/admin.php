@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\Cyborg\MarketController;
 use App\Http\Controllers\Admin\Cyborg\StrategyController;
 use App\Http\Controllers\Admin\Cyborg\TradeSettingsController;
 use App\Http\Controllers\Admin\EducatorController;
+use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\NewsManagement;
 use App\Http\Controllers\Admin\RolesPermissions;
 use App\Http\Controllers\Admin\Signal\SignalController;
@@ -51,6 +52,7 @@ Route::middleware(['auth:admin'])->group(function () {
 
     Route::get('get-signals', [SignalController::class, 'getSignals'])->name('signals.all');
     Route::post('/update-market-status', [SignalController::class, 'updateMarketStatus'])->name('signals.market.status');
+    Route::post('/all-assets', [SignalController::class, 'getAssets'])->name('signals.assets');
     Route::post('/update-status', [SignalController::class, 'updateStatus'])->name('signals.status');
     Route::resource('signals', SignalController::class);
 
@@ -72,4 +74,6 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::resource('banners', BannerController::class);
 
     Route::resource('roles', RolesPermissions::class);
+
+    Route::get('inbox', [MessageController::class, 'index'])->name('inbox');
 });

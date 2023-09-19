@@ -17,16 +17,19 @@ class SignalResource extends JsonResource
         return [
             'id' => $this->uuid,
             'educator' => new EducatorResource($this->educator),
-            'asset' => $this->asset_type,
+            'asset' => new AssetResource($this->asset),
+            'category' => new CategoryResource($this->category),
             'order_type' => $this->order_type,
             'entry_price' => $this->entry_price,
             'stop_loss' => $this->stop_loss,
             'target_price' => $this->target_price,
+            'percentage' => $this->percentage,
             'comment' => $this->comment,
-            'photo' => $this->photo,
+            // 'photo' => $this->photo,
             'chart_photo' => $this->chart_photo,
-            'market_status' => $this->market_status,
-            'status' => $this->status
+            'status' => $this->market_status,
+            'is_updated' => $this->is_updated,
+            // 'status' => $this->status
         ];
     }
 }

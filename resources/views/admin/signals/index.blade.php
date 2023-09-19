@@ -23,12 +23,13 @@
                             <thead>
                                 <tr role="row">
                                     <th>Asset</th>
+                                    <th>Category</th>
                                     <th>Order Type</th>
                                     <th>Entry Price</th>
                                     <th>Stop Loss</th>
                                     <th>Target Price</th>
                                     <th>Market Status</th>
-                                    <th>Status</th>
+                                    {{-- <th>Status</th> --}}
                                     <th>
                                         Action
                                     </th>
@@ -38,38 +39,40 @@
                                 <tr role="row" class="odd" v-for="(signal,index) in signals" :key="index">
                                     <td>
                                         <div class="products">
-                                            <img :src="signal.photo" class="avatar avatar-md" alt="">
+                                            <img :src="signal?.asset?.image" class="avatar avatar-md" alt="">
                                             <div>
-                                                <h6><a href="#">@{{ signal.asset }}</a></h6>
+                                                <h6><a href="#">@{{ signal?.asset?.name }}</a></h6>
                                             </div>
                                         </div>
                                     </td>
-                                    <td><span class="text-center">@{{ signal.order_type }}</span></td>
-                                    <td><span class="text-center">@{{ signal.entry_price }}</span></td>
+                                    <td><span class="d-flex justify-content-center">@{{ signal?.category?.name }}</span></td>
+                                    <td><span class="d-flex justify-content-center">@{{ signal?.order_type }}</span></td>
+                                    <td><span class="d-flex justify-content-center">@{{ signal?.entry_price }}</span></td>
                                     <td>
-                                        <span class="text-center">@{{ signal.stop_loss }}</span>
+                                        <span class="d-flex justify-content-center">@{{ signal?.stop_loss }}</span>
                                     </td>
                                     <td>
-                                        <span class="text-center">@{{ signal.target_price }}</span>
+                                        <span class="d-flex justify-content-center">@{{ signal?.target_price }}</span>
                                     </td>
                                     <td>
                                         <select class="default-select status-select"
                                             @change="updateMarketStatus($event,signal.id)">
                                             <option v-for="(status,index) in marketStatus" :value="index"
-                                                :selected="index === signal.market_status">
+                                                :selected="index === signal?.market_status">
                                                 @{{ status }}</option>
                                         </select>
                                     </td>
-                                    <td>
+                                    {{-- <td>
                                         <select class="default-select status-select"
                                             @change="updateStatus($event,signal.id)">
                                             <option v-for="(st,index) in status" :value="index"
-                                                :selected="index === signal.status">
+                                                :selected="index === signal?.status">
                                                 @{{ st }}</option>
                                         </select>
-                                    </td>
+                                    </td> --}}
                                     <td class="edit-action">
-                                        <a href="#" class="icon-box icon-box-xs bg-primary me-1">
+                                        <a href="#" @click.prevent="viewSignal(signal)"
+                                            class="icon-box icon-box-xs bg-primary me-1">
                                             <i class="fa-solid fa-pencil text-white"></i>
                                         </a>
                                         <a href="#" @click.prevent="deleteSignal(signal)"
@@ -112,9 +115,15 @@
                     stop_loss: "",
                     target_price: "",
                     comment: "",
+                    category: "",
                     orderTypes: [],
                     marketStatus: [],
                     status: [],
+                    assets: [],
+                    categories: [],
+                    edit: false,
+                    signalId: "",
+                    percentage: 0,
                     chart_photo_preview: null,
                     photo_preview: null
                 }
@@ -150,15 +159,25 @@
                 handleOrderType(event) {
                     this.order_type = event.target.value;
                 },
+                viewSignal(signal) {
+                    this.chart_photo_preview = signal?.chart_photo
+                    this.category = signal?.category?.id
+                    this.asset_type = signal?.asset?.id
+                    this.order_type = signal?.order_type
+                    this.entry_price = signal?.entry_price
+                    this.stop_loss = signal?.stop_loss
+                    this.target_price = signal?.target_price
+                    this.comment = signal?.comment
+                    this.percentage = signal?.percentage
+
+                    this.edit = true
+
+                    this.signalId = signal?.id
+
+                    offcanvasSignal.show()
+                },
                 handleCloseModal() {
-                    this.order_type = "";
-                    this.asset_type = "";
-                    this.entry_price = "";
-                    this.stop_loss = "";
-                    this.target_price = "";
-                    this.comment = "";
-                    this.photo = "";
-                    this.chart_photo = ""
+                    this.clearForm();
                 },
                 updateMarketStatus(event, signal) {
                     this.order_type = event.target.value;
@@ -203,6 +222,8 @@
                         this.orderTypes = response.data.order_type
                         this.marketStatus = response.data.market_status
                         this.status = response.data.status
+                        this.assets = response.data.assets
+                        this.categories = response.data.categories
                     }).catch(error => {
                         console.log(error);
                     })
@@ -220,7 +241,9 @@
                     formData.append('stop_loss', this.stop_loss);
                     formData.append('target_price', this.target_price);
                     formData.append('comment', this.comment);
-                    formData.append('photo', this.photo);
+                    formData.append('category', this.category);
+                    formData.append('percentage', this.percentage);
+                    // formData.append('photo', this.photo);
                     formData.append('chart_photo', this.chart_photo);
 
                     axios.post("{{ route('admin.signals.store') }}", formData, {
@@ -232,14 +255,7 @@
 
                             this.signals.push(response.data.signal);
 
-                            this.order_type = "";
-                            this.asset_type = "";
-                            this.entry_price = "";
-                            this.stop_loss = "";
-                            this.target_price = "";
-                            this.comment = "";
-                            this.photo = "";
-                            this.chart_photo = ""
+                            this.clearForm();
 
                             offcanvasSignal.hide();
 
@@ -260,6 +276,72 @@
                         }).finally(() => {
                             this.loading = false;
                         })
+                },
+                updateSignal(signalId) {
+                    this.errors = {};
+
+                    this.loading = true
+
+                    let formData = new FormData();
+                    formData.append('_token', '{{ csrf_token() }}');
+                    formData.append('asset_type', this.asset_type);
+                    formData.append('entry_price', this.entry_price);
+                    formData.append('order_type', this.order_type);
+                    formData.append('stop_loss', this.stop_loss);
+                    formData.append('target_price', this.target_price);
+                    formData.append('comment', this.comment);
+                    formData.append('category', this.category);
+                    formData.append('percentage', this.percentage);
+                    // formData.append('photo', this.photo);
+                    formData.append('chart_photo', this.chart_photo);
+
+                    console.log(formData)
+
+                    axios.put(`/admin/signals/${signalId}`, formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        })
+                        .then(response => {
+
+                            this.signals.push(response.data.signal);
+
+                            this.clearForm()
+                            offcanvasSignal.hide();
+
+                            Notiflix.Notify.Success(response.data.message);
+                        })
+                        .catch(error => {
+
+                            if (error.response && error.response.data && error.response.data.errors) {
+                                // Set validation errors from the backend response
+                                this.errors = error.response.data.errors;
+
+                            } else {
+                                // console.log(error.response)
+                                Notiflix.Notify.Failure(error.response.data.message)
+                                // Handle other types of errors, if needed
+                            }
+
+                        }).finally(() => {
+                            this.loading = false;
+                        })
+                },
+                clearForm() {
+                    this.errors = {};
+                    this.order_type = "";
+                    this.asset_type = "";
+                    this.entry_price = "";
+                    this.stop_loss = "";
+                    this.target_price = "";
+                    this.comment = "";
+                    this.photo = "";
+                    this.chart_photo = ""
+                    this.category = "";
+                    this.percentage = "";
+                    this.chart_photo_preview = ""
+                    this.photo_preview = ""
+                    this.signalId = ""
                 },
                 deleteSignal(signal) {
                     const strat = this.signals

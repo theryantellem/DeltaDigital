@@ -19,7 +19,7 @@ class EducatorResource extends JsonResource
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
             'email' => $this->email,
-            'photo' => $this->photo,
+            'photo' => empty($this->photo) ? $this->photo : url('/') . "/images/educator/default.png",
             'total_followers' => $this->followers->count()
         ];
     }

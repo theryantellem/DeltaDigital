@@ -15,6 +15,12 @@ class Navigation
                     'icon'  => 'bi bi-house-fill fs-3',
                     'hasPermission' => true
                 ],
+                (object) [
+                    'name'  => 'Inbox',
+                    'route' => 'admin.inbox',
+                    'icon'  => 'bi bi-house-fill fs-3',
+                    'hasPermission' => true
+                ],
                 // (object) [
                 //     'name'  => 'User Management',
                 //     'route' => 'admin.users.index',
