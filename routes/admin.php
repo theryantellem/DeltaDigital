@@ -77,3 +77,9 @@ Route::middleware(['auth:admin'])->group(function () {
 
     Route::get('inbox', [MessageController::class, 'index'])->name('inbox');
 });
+
+Route::get('test-notifications', function () {
+    event(new \App\Events\SignalNotification(1, "hello", "updated"));
+
+    return null;
+});

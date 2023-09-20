@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Signal;
 
+use App\Events\SignalNotification;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AssetResource;
 use App\Http\Resources\CategoryResource;
@@ -114,6 +115,9 @@ class SignalController extends Controller
             // broadcast events
             $signal = new SignalResource($signal);
 
+            // dispatch notification
+            event(new SignalNotification(Auth::guard('admin')->user()->uuid, $signal, "created"));
+
             return response()->json(['success' => true, 'signal' => $signal, 'message' => 'Signal created successfully.'], 201);
         } catch (\Throwable $th) {
             logger(['signal' => $th->getMessage()]);
@@ -122,29 +126,21 @@ class SignalController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
     public function updateMarketStatus(Request $request)
     {
         try {
 
-            $signal = Signal::where('uuid', $request->signal);
+            $signal = Signal::where('uuid', $request->signal)->first();
+
+            if (!$signal) {
+                return response()->json(['success' => false, 'message' => 'Signal not found.']);
+            }
 
             $signal->update(['market_status' => $request->market_status]);
+
+            $signal = new SignalResource($signal);
+
+            event(new SignalNotification(Auth::guard('admin')->user()->uuid, $signal, "updated"));
 
             return response()->json(['success' => true, 'message' => 'Market status updated successfully.']);
         } catch (\Exception $e) {
@@ -158,9 +154,17 @@ class SignalController extends Controller
     {
 
         try {
-            $signal = Signal::where('uuid', $request->signal);
+            $signal = Signal::where('uuid', $request->signal)->first();
+
+            if (!$signal) {
+                return response()->json(['success' => false, 'message' => 'Signal not found.']);
+            }
 
             $signal->update(['status' => $request->status]);
+
+            $signal = new SignalResource($signal);
+
+            event(new SignalNotification(Auth::guard('admin')->user()->uuid, $signal, "updated"));
 
             return response()->json(['success' => true, 'message' => 'Status updated successfully.']);
         } catch (\Exception $e) {
@@ -236,8 +240,9 @@ class SignalController extends Controller
             ]);
 
             // broadcast events
-
             $signal = new SignalResource($signal);
+
+            event(new SignalNotification(Auth::guard('admin')->user()->uuid, $signal, "updated"));
 
             return response()->json(['success' => true, 'signal' => $signal, 'message' => 'Signal update successfully.'], 201);
         } catch (\Throwable $th) {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\ChatNotification;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ChatResource;
@@ -51,6 +52,8 @@ class ChatController extends ApiController
             ]);
 
             $chat = new ChatResource($chat);
+
+            event(new ChatNotification($educator->uuid, $chat));
 
             return $this->sendResponse($chat, "Message sent successfully.", 201);
         } catch (\Exception $e) {
