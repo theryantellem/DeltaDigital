@@ -32,6 +32,7 @@ class ChatResource extends JsonResource
 
         return [
             'id' => $this->uuid,
+            'group_id' => $this->educator->uuid,
             'message' => $this->message,
             'sender' => $sender,
             'created_at' => $this->created_at
