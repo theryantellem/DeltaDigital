@@ -25,12 +25,17 @@ const FinixTopBar = ({profilePhoto, userName, homeDash,color}: props) => {
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
 
+    const openProfile = () => {
 
+        navigation.navigate('SignalBottomTab',{
+            screen:'SignalSettings'
+        })
+    }
     return (
         <View style={[styles.topBar, {
             width: homeDash ? '90%' : '100%',
         }]}>
-            <TouchableOpacity activeOpacity={0.8} style={styles.leftButton}>
+            <TouchableOpacity onPress={openProfile} activeOpacity={0.8} style={styles.leftButton}>
                 <View style={styles.userImageWrap}>
 
 

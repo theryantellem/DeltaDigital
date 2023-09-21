@@ -118,8 +118,8 @@ android {
         applicationId 'com.deltadigital.mobile'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 23
-        versionName "2.2.7"
+        versionCode 25
+        versionName "2.2.9"
     }
 
     splits {

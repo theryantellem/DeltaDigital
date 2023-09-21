@@ -16,6 +16,7 @@ import {FlashList} from "@shopify/flash-list";
 import {removeHTMLTags, wait} from "../../helpers";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from "react-native-reanimated";
 import Carousel from 'react-native-reanimated-carousel';
+import FastImage from "react-native-fast-image";
 
 
 interface props {
@@ -102,7 +103,7 @@ const NewsScreen = ({navigation}: CyborgStackScreenProps<'NewsScreen'>) => {
                 data={banner?.data?.Banners}
                 scrollAnimationDuration={2000}
                 // onSnapToItem={(index) => console.log('current index:', index)}
-                renderItem={({index, item}: { index: string, item: { image: string, id: string } }) => (
+                renderItem={({index, item}: { index: string, item: { image: string, id: string,name:string } }) => (
                     <View
                         key={item.id}
                         style={{
@@ -111,8 +112,19 @@ const NewsScreen = ({navigation}: CyborgStackScreenProps<'NewsScreen'>) => {
                             borderRadius: 20,
                         }}
                     >
-                        <Image source={{uri: item.image}}
-                               style={styles.itemImage}/>
+
+                        <FastImage
+                            style={styles.itemImage}
+                            source={{
+                                uri: item.image,
+                                cache: FastImage.cacheControl.web,
+                                priority: FastImage.priority.normal,
+                            }}
+                            resizeMode={FastImage.resizeMode.cover}
+                        />
+
+
+
                     </View>
                 )}
             />
@@ -136,7 +148,7 @@ const NewsScreen = ({navigation}: CyborgStackScreenProps<'NewsScreen'>) => {
                 <HeaderWithTitle title={"News"}/>
 
 
-                <View style={styles.flatList}>
+          <View style={styles.flatList}>
 
                     {
                         isLoading && <ActivityIndicator size='small' color={Colors.primary}/>

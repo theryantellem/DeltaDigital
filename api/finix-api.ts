@@ -131,7 +131,7 @@ export const followEducator = async (body: {}) => {
     let Token = await SecureStore.getItemAsync('delta-signal-token');
     const myHeaders = {
         "Authorization": `Bearer ${Token}`,
-
+        "Content-Type": "application/json",
     }
     let timeoutId: NodeJS.Timeout
 
@@ -159,8 +159,10 @@ export const unFollowEducator = async (body: {}) => {
 
 
     let Token = await SecureStore.getItemAsync('delta-signal-token');
+
     const myHeaders = {
         "Authorization": `Bearer ${Token}`,
+        "Content-Type": "application/json",
 
     }
     let timeoutId: NodeJS.Timeout

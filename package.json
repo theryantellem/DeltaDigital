@@ -41,7 +41,7 @@
     "expo-updates": "~0.16.4",
     "formik": "^2.4.2",
     "intl": "^1.2.5",
-
+    "laravel-echo": "^1.15.3",
     "react": "18.2.0",
     "react-native": "0.71.8",
     "react-native-config": "^1.5.1",
@@ -60,6 +60,7 @@
     "react-redux": "^8.1.1",
     "redux": "^4.2.1",
     "redux-persist": "^6.0.0",
+    "socket.io-client": "^4.7.2",
     "yup": "^1.2.0"
   },
   "devDependencies": {

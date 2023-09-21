@@ -162,7 +162,7 @@ const TradeSettingStrategy = ({navigation, route}: CyborgStackScreenProps<'Trade
     const {id, dataLogs} = route.params
     const dispatch = useAppDispatch()
     const queryClient = useQueryClient()
-    //console.log(dataLogs['whole position take profit'])
+ //   console.log(dataLogs['One-shot'])
 
     const dataSlice = useAppSelector(state => state.data)
     const {logTradeSetting} = dataSlice
@@ -205,7 +205,7 @@ const TradeSettingStrategy = ({navigation, route}: CyborgStackScreenProps<'Trade
     const [switchToggle, setSwitchToggle] = useState(false);
 
 
-    const [strategyPeriod, setStrategyPeriod] = useState('One shot');
+    const [strategyPeriod, setStrategyPeriod] = useState(dataLogs['One-shot'] == '1' ? 'One-shot' : 'Cycle' );
 
     const snapPoints = useMemo(() => ["1%", "65%", "70%"], []);
     const bankSheetRef = useRef<BottomSheet>(null);
@@ -301,11 +301,11 @@ const TradeSettingStrategy = ({navigation, route}: CyborgStackScreenProps<'Trade
             amount: amountContent,
             marginLimit: marginLimitCall,
             takeProfit: takeProfit,
-            direction: '',
+            direction:direction,
             whole_ratio: whole_ratio,
             highest_price: '',
             first_position_drop: '',
-            strategyPeriod: 'Cycle', //One-Shot
+            strategyPeriod: strategyPeriod, //One-Shot
             whole_position_stop_loss: whole_stop,
             whole_position_take_profit_callback: whole_position_take_profit_callback,
 

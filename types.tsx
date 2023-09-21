@@ -11,6 +11,7 @@ import SignalDetails from "./screens/finix/SignalDetails";
 import ViewEducator from "./screens/finix/ViewEducator";
 import StreamersList from "./screens/finix/StreamersList";
 import SignalSummary from "./screens/finix/SignalSummary";
+import MessageScreen from "./screens/finix/message/MessageScreen";
 
 
 declare global {
@@ -241,6 +242,14 @@ export type SignalStackParamList = {
     };
 
     StreamersList: undefined;
+    MessageScreen: {
+        educator:{ "email": string,
+            "first_name": string,
+            "id": string,
+            "last_name": string,
+            "photo": string,
+            "total_followers": number,}
+    };
     SignalSummary: undefined;
     //END CYBORG
 

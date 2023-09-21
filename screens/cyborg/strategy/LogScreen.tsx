@@ -290,6 +290,8 @@ const LogScreen = ({navigation, route}: CyborgStackScreenProps<'LogScreen'>) => 
 
     }
 
+   // console.log(newStrategy?.data['Operation Strategy'][0])
+
     return (
         <>
 

@@ -136,6 +136,8 @@ const HomeTradeCard = ({item, seeLogs, Exchanges, tickers}: props) => {
 
                 </View>
 
+                {
+                    item?.trade_type == '1' &&
                 <View style={styles.assetChart}>
                     <LineChart.Provider data={ChartData}>
                         <LineChart height={heightPixel(70)} width={widthPixel(90)}>
@@ -143,6 +145,17 @@ const HomeTradeCard = ({item, seeLogs, Exchanges, tickers}: props) => {
                         </LineChart>
                     </LineChart.Provider>
                 </View>
+                }
+                {
+                    item?.trade_type == '0' &&
+                <View style={styles.assetChart}>
+                    <LineChart.Provider data={ChartData}>
+                        <LineChart height={heightPixel(70)} width={widthPixel(90)}>
+                            <LineChart.Path color={finalvalue  < 1 ? Colors.errorRed : Colors.successChart}/>
+                        </LineChart>
+                    </LineChart.Provider>
+                </View>
+                }
 
                 {
                     item?.trade_type == '1'

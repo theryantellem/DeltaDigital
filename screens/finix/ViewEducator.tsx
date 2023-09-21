@@ -19,21 +19,21 @@ import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../hel
 import {Fonts} from "../../constants/Fonts";
 import {SignalRootTabScreenProps, SignalStackScreenProps} from "../../types";
 import {MyButton} from "../../components/MyButton";
-import {useQuery} from "@tanstack/react-query";
-import {getSignals} from "../../api/finix-api";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {getSignals, unFollowEducator} from "../../api/finix-api";
+import {addNotificationItem} from "../../app/slices/dataSlice";
+import {useAppDispatch} from "../../app/hooks";
 
 
-
-const Courses = [
-
-]
+const Courses = []
 
 
 const width = Dimensions.get('window').width
 
 interface Props {
 
-    viewSignal: (signal: {"id": string,
+    viewSignal: (signal: {
+        "id": string,
         "educator": {
             "id": string,
             "first_name": string,
@@ -51,7 +51,8 @@ interface Props {
         "photo": string,
         "chart_photo": string,
         "market_status": string,
-        "status": string}) => void
+        "status": string
+    }) => void
 
     item: {
         "id": string,
@@ -77,11 +78,11 @@ interface Props {
 }
 
 
-const ItemSignal = ({item,viewSignal}: Props) => {
+const ItemSignal = ({item, viewSignal}: Props) => {
 
     return (
 
-        <TouchableOpacity onPress={()=>viewSignal(item)} activeOpacity={0.8} style={styles.loanAppCard}>
+        <TouchableOpacity onPress={() => viewSignal(item)} activeOpacity={0.8} style={styles.loanAppCard}>
 
 
             <View style={styles.topCard}>
@@ -96,7 +97,7 @@ const ItemSignal = ({item,viewSignal}: Props) => {
                     <Text style={styles.assetText}>
                         {item.asset}
                     </Text>
-                    <Text style={[styles.assetText,{
+                    <Text style={[styles.assetText, {
                         fontFamily: Fonts.faktumRegular
                     }]}>
                         Crypto
@@ -142,7 +143,6 @@ const ItemSignal = ({item,viewSignal}: Props) => {
             </View>
 
 
-
         </TouchableOpacity>
     )
 }
@@ -151,7 +151,8 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
 
     const {educator} = route.params
 
-
+    const dispatch = useAppDispatch()
+    const queryClient = useQueryClient()
 
     const viewSignal = (details: {
         "id": string,
@@ -176,11 +177,34 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
     }) => {
 
         navigation.navigate('SignalDetails', {
-         details: details
+            details: details
 
         })
     }
 
+    const {mutate: unFollowNow, isLoading: unFollowing} = useMutation(['unFollowEducator'], unFollowEducator, {
+        onSuccess: (data) => {
+
+            if (data.success) {
+                // fetchEducators()
+                //refetch()
+
+                dispatch(addNotificationItem({
+                    id: Math.random(),
+                    type: 'success',
+                    body: data.message,
+                }))
+
+                //  refetchFavs()
+            } else {
+
+            }
+
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries(['unFollowEducator']);
+        }
+    })
 
     const {data: signals, isLoading: loadingSignals, refetch: refetchSignals} = useQuery(['getSignals'], getSignals)
 
@@ -191,7 +215,7 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
         [],
     );
 
-    const seeSignalSummary = ()=>{
+    const seeSignalSummary = () => {
         navigation.navigate('SignalSummary')
     }
     const goBackNow = () => {
@@ -294,7 +318,7 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
                     <View style={styles.fakeTabWrapper}>
 
                         <Pressable style={styles.tabButton}>
-                            <Text style={[styles.tabButtonText,{
+                            <Text style={[styles.tabButtonText, {
                                 color: "#8E32C5"
                             }]}>
                                 Crypto
@@ -315,21 +339,19 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
                     </View>
 
 
-
-                    <ImageBackground resizeMethod={"scale"} source={require('../../assets/images/signal/educator_BG.png')}
-                                     style={[styles.segmentBody,{
+                    <ImageBackground resizeMethod={"scale"}
+                                     source={require('../../assets/images/signal/educator_BG.png')}
+                                     style={[styles.segmentBody, {
                                          height: 250,
-                                         marginTop:20,
+                                         marginTop: 20,
                                      }]}>
 
                         <View style={styles.ActivityCardTop}>
-                            <Text style={[styles.listTitle, {
-
-                            }]}>
+                            <Text style={[styles.listTitle, {}]}>
                                 Signals
                             </Text>
                             <TouchableOpacity onPress={seeSignalSummary} activeOpacity={0.7} style={styles.seeAll}>
-                                <FontAwesome name="plus-circle" size={24} color="#fff" />
+                                <FontAwesome name="plus-circle" size={24} color="#fff"/>
 
                             </TouchableOpacity>
                         </View>
@@ -354,38 +376,51 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
                     </ImageBackground>
 
 
-
-
-
-
-
-
-                    <ImageBackground resizeMethod={"scale"} source={require('../../assets/images/signal/educator_BG.png')}
-                                     style={[styles.segmentBody,{
+                    <ImageBackground resizeMethod={"scale"}
+                                     source={require('../../assets/images/signal/educator_BG.png')}
+                                     style={[styles.segmentBody, {
                                          height: 150,
-                                         marginTop:20,
+                                         marginTop: 20,
                                      }]}>
 
                         <View style={styles.ActivityCardTop}>
                             <Text style={[styles.listTitle, {
-fontFamily: Fonts.faktumBold
+                                fontFamily: Fonts.faktumBold
                             }]}>
                                 Courses
                             </Text>
 
                         </View>
 
+                        <View style={{
+                            width:'100%',
+                            flexDirection:'row',
+                            alignItems:'center',
+                            justifyContent:'space-evenly'
+                        }}>
 
+                            <Image source={require('../../assets/images/signal/cours_img.png')} style={{
+                                width:120,
+                                height:70,
+                                resizeMode:"contain"
+                            }}/>
+ <Image source={require('../../assets/images/signal/cours_img.png')} style={{
+                                width:120,
+                                height:70,
+                                resizeMode:"contain"
+                            }}/>
+
+                        </View>
 
 
                     </ImageBackground>
 
 
-
-                    <ImageBackground resizeMethod={"scale"} source={require('../../assets/images/signal/educator_BG.png')}
-                                     style={[styles.segmentBody,{
+                    <ImageBackground resizeMethod={"scale"}
+                                     source={require('../../assets/images/signal/educator_BG.png')}
+                                     style={[styles.segmentBody, {
                                          height: 150,
-                                         marginTop:20,
+                                         marginTop: 20,
                                      }]}>
 
                         <View style={styles.ActivityCardTop}>
@@ -398,10 +433,7 @@ fontFamily: Fonts.faktumBold
                         </View>
 
 
-
-
                     </ImageBackground>
-
 
 
                 </ScrollView>
@@ -537,30 +569,30 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     fakeTabWrapper: {
-        flexDirection:'row',
+        flexDirection: 'row',
         marginTop: 15,
         width: '90%',
         alignItems: 'center',
         justifyContent: 'flex-start',
         height: 40,
     },
-    tabButton:{
-        width:widthPixel(70),
-        height:30,
-        alignItems:'center',
-        justifyContent:'center'
+    tabButton: {
+        width: widthPixel(70),
+        height: 30,
+        alignItems: 'center',
+        justifyContent: 'center'
     },
-    tabButtonText:{
+    tabButtonText: {
         fontSize: fontPixel(12),
         fontFamily: Fonts.faktumBold,
-        color:"#9D9D9D"
+        color: "#9D9D9D"
     },
     loanAppCard: {
         marginHorizontal: pixelSizeHorizontal(12),
         width: widthPixel(170),
         height: heightPixel(180),
         borderRadius: 18,
-        backgroundColor:"rgba(255,255,255,0.16)",
+        backgroundColor: "rgba(255,255,255,0.16)",
         alignItems: 'center',
         justifyContent: 'space-evenly',
         paddingHorizontal: pixelSizeHorizontal(15),
@@ -584,7 +616,7 @@ const styles = StyleSheet.create({
     IconImage: {
         height: '100%',
         width: '100%',
-        borderRadius:50,
+        borderRadius: 50,
         alignItems: 'center',
         justifyContent: 'center'
     },
@@ -602,12 +634,12 @@ const styles = StyleSheet.create({
         width: '100%',
 
     },
-    bottomCardRow:{
-        width:'100%',
-        height:25,
-        flexDirection:'row',
-        alignItems:'center',
-        justifyContent:'space-between'
+    bottomCardRow: {
+        width: '100%',
+        height: 25,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
     },
     bottomCardText: {
         color: Colors.text,
@@ -632,15 +664,15 @@ const styles = StyleSheet.create({
         width: width - 40,
         alignItems: 'flex-start',
         height: 150,
-        resizeMode:'cover',
-        overflow:'hidden',
-        borderRadius:30,
+        resizeMode: 'cover',
+        overflow: 'hidden',
+        borderRadius: 30,
         justifyContent: 'flex-start',
         paddingVertical: pixelSizeHorizontal(10),
         // marginBottom: 20
     },
     ActivityCardTop: {
-        alignSelf:'center',
+        alignSelf: 'center',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -661,8 +693,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center'
     },
-
-
 
 
 })

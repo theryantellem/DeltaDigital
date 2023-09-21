@@ -9,7 +9,7 @@ import {
     Image,
     ActivityIndicator,
     Dimensions,
-    Platform, ImageBackground
+    Platform, ImageBackground, Pressable
 } from 'react-native';
 import {RootStackScreenProps} from "../types";
 import {SafeAreaView} from "react-native-safe-area-context";
@@ -26,6 +26,7 @@ import FastImage from "react-native-fast-image";
 import {useQuery} from "@tanstack/react-query";
 import {activeStrategy, binanceTicker, checkUserPlan, getAsset, getUser, quantitativeStrategies} from "../api";
 import {currencyFormatter, invertNumber, useRefreshOnFocus} from "../helpers";
+import {MaterialCommunityIcons} from "@expo/vector-icons";
 
 
 const {width} = Dimensions.get('screen');
@@ -46,16 +47,17 @@ type CardType = {
 
 
 interface itemProps {
-    tickers:[],
-    item:{
+    tickers: [],
+    item: {
         [x: string]: any;
         id: React.Key | null | undefined;
         Market: string,
-        Avg_Price: string ;
+        Avg_Price: string;
         Quantity: string
     }
 }
-const Item = ({item,tickers}:itemProps) =>{
+
+const Item = ({item, tickers}: itemProps) => {
 
     const tickerRes = tickers?.find((ticker: { symbol: string; }) => ticker.symbol == item.Market.replace('/', ''))
 
@@ -63,15 +65,15 @@ const Item = ({item,tickers}:itemProps) =>{
     let p2 = parseFloat(item?.Quantity) * parseFloat(tickerRes?.lastPrice);
     let val = (Number(item['Positionamount']) - (p2)) / Number(item['Positionamount']);
     let finalvalue = val * 100;
-    return(
-        <View  style={styles.assetCardDetails}>
-            <View  style={styles.assetCardIcon}>
+    return (
+        <View style={styles.assetCardDetails}>
+            <View style={styles.assetCardIcon}>
                 <Image
                     source={{uri: `https://backend.deltacyborg.pro/Upload/coin/${item['coin image']}`}}
                     style={styles.logo}/>
             </View>
             <Text style={{
-                color: finalvalue ? invertNumber(parseFloat(finalvalue)) < 0 ?  Colors.errorRed : Colors.successChart : Colors.successChart,
+                color: finalvalue ? invertNumber(parseFloat(finalvalue)) < 0 ? Colors.errorRed : Colors.successChart : Colors.successChart,
                 fontSize: fontPixel(14),
                 marginLeft: 5,
                 fontFamily: Fonts.faktumMedium
@@ -89,7 +91,11 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
     const [greeting, setGreeting] = useState('');
 
 
-    const {data: Asset, refetch: fetchAsset,isLoading:loading} = useQuery(['user-Asset'], () => getAsset(User_Details.id))
+    const {
+        data: Asset,
+        refetch: fetchAsset,
+        isLoading: loading
+    } = useQuery(['user-Asset'], () => getAsset(User_Details.id))
 
     //const {} =  useQuery(['checkUserPlan',User_Details.id],()=>checkUserPlan(User_Details.id))
 
@@ -99,7 +105,6 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
         refetch: fetchTickers,
         isLoading: fetchingTickers
     } = useQuery(['binanceTicker'], binanceTicker)
-
 
 
     useFocusEffect(
@@ -131,25 +136,12 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
 
     }
     const FinixHome = () => {
-navigation.navigate('MainSignalNav')
+        navigation.navigate('MainSignalNav')
     }
 
 
     const cards = [
         {
-            name: 'Cyborg',
-            bg: "#090A1C",
-            id: "1",
-            action: CyborgHome,
-            btnBg: "#fff",
-            balance: Asset?.data?.total_assets,
-            description: " Spot/Future",
-            image: <Image source={require('../assets/images/robots/cyborg.png')} style={[styles.imageRobot,{
-                resizeMode: Platform.OS == 'android' ? 'cover' : 'cover'
-            }]}/>,
-            icon: <Image source={require('../assets/images/logos/cyborlogo.png')} style={styles.imageLogo}/>,
-
-        }, /*{
             name: 'Finix',
             balance: 0,
             bg: "#090A1C",
@@ -164,23 +156,38 @@ navigation.navigate('MainSignalNav')
                 resizeMode: 'cover'
             }}/>,
 
-        },*/
-       /* {
-            name: 'Starfox',
-            balance: 0,
-            bg: "#090A1C",
-            id: "3",
-            action: StarfoxHome,
-            btnBg: "#fff",
-            description: "Forex",
-            image: <Image source={require('../assets/images/robots/cyborg.png')} style={styles.imageRobot}/>,
-            icon: <Image source={require('../assets/images/signal.jpeg')} style={{
-                width: 65,
-                height: '100%',
-                resizeMode: 'cover'
-            }}/>,
+        },
 
-        },*/
+        {
+            name: 'Cyborg',
+            bg: "#090A1C",
+            id: "1",
+            action: CyborgHome,
+            btnBg: "#fff",
+            balance: Asset?.data?.total_assets,
+            description: " Spot/Future",
+            image: <Image source={require('../assets/images/robots/cyborg.png')} style={[styles.imageRobot, {
+                resizeMode: Platform.OS == 'android' ? 'cover' : 'cover'
+            }]}/>,
+            icon: <Image source={require('../assets/images/logos/cyborlogo.png')} style={styles.imageLogo}/>,
+
+        },
+        /* {
+             name: 'Starfox',
+             balance: 0,
+             bg: "#090A1C",
+             id: "3",
+             action: StarfoxHome,
+             btnBg: "#fff",
+             description: "Forex",
+             image: <Image source={require('../assets/images/robots/cyborg.png')} style={styles.imageRobot}/>,
+             icon: <Image source={require('../assets/images/signal.jpeg')} style={{
+                 width: 65,
+                 height: '100%',
+                 resizeMode: 'cover'
+             }}/>,
+
+         },*/
     ]
 
     const {
@@ -190,12 +197,10 @@ navigation.navigate('MainSignalNav')
     } = useQuery(['activeStrategy'], () => activeStrategy(User_Details.id))
 
     const {
-        data:strategies,
-        isLoading:loadingStrategies,
-        refetch:fetchStrategies
+        data: strategies,
+        isLoading: loadingStrategies,
+        refetch: fetchStrategies
     } = useQuery(['quantitativeStrategies', User_Details.id], () => quantitativeStrategies(User_Details.id))
-
-
 
 
     const TotalBal = parseInt(strategies?.data?.binance_balance) + parseInt(strategies?.data?.futures_binance_balance)
@@ -204,9 +209,9 @@ navigation.navigate('MainSignalNav')
         return views.map(card => {
 
 
-      /*      let old_price = parseInt(card?.Quantity) * parseInt(card?.Avg_Price);
-            let new_value = parseInt(card?.Quantity) * tickerRes?.lastPrice;
-            let finalvalue = new_value - old_price;*/
+            /*      let old_price = parseInt(card?.Quantity) * parseInt(card?.Avg_Price);
+                  let new_value = parseInt(card?.Quantity) * tickerRes?.lastPrice;
+                  let finalvalue = new_value - old_price;*/
             return (
                 <TouchableOpacity
                     key={card.id}
@@ -225,44 +230,88 @@ navigation.navigate('MainSignalNav')
 
                         {
                             card.id == '1' &&
-                        <>
+                            <>
 
-                        <View style={styles.planBottomLeft}>
-                            <Text style={styles.balText}>
-                                Balance
-                            </Text>
-                            <Text
-                                style={styles.balance}>
+                                <View style={styles.planBottomLeft}>
+                                    <Text style={styles.balText}>
+                                        Balance
+                                    </Text>
+                                    <Text
+                                        style={styles.balance}>
 
-                                {currencyFormatter('en-US', 'USD').format(TotalBal)}
+                                        {currencyFormatter('en-US', 'USD').format(TotalBal)}
 
-                            </Text>
+                                    </Text>
 
-                        </View>
+                                </View>
 
-                        <View style={styles.planBottomLeft}>
-                            <Text style={styles.balText}>
-                                Active trades
-                            </Text>
+                                <View style={styles.planBottomLeft}>
+                                    <Text style={styles.balText}>
+                                        Active trades
+                                    </Text>
 
-                            {
-                                !loadingStrategy &&
-                                strategy &&  strategy?.data &&
-                                strategy?.data['Operation Strategy']?.slice(0, 2).map((item: {
-                                    [x: string]: any;
-                                    id: React.Key | null | undefined;
-                                    Market: string,
-                                    Avg_Price: number | bigint;
-                                    Quantity: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined;
-                                }, index: any) => (
-                                  <Item key={item.id} tickers={tickers} item={item}/>
-                                ))}
+                                    {
+                                        !loadingStrategy &&
+                                        strategy && strategy?.data &&
+                                        strategy?.data['Operation Strategy']?.slice(0, 2).map((item: {
+                                            [x: string]: any;
+                                            id: React.Key | null | undefined;
+                                            Market: string,
+                                            Avg_Price: number | bigint;
+                                            Quantity: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined;
+                                        }, index: any) => (
+                                            <Item key={item.id} tickers={tickers} item={item}/>
+                                        ))}
 
 
-                        </View>
-                        </>
+                                </View>
+                            </>
 
-                    }
+                        }
+
+
+                        {
+                            card.id == '2' &&
+                            <>
+
+                                <View style={styles.planBottomLeft}>
+                                    <Text style={styles.balText}>
+                                        Live Sessions
+                                    </Text>
+                                    {/* <Text
+                                        style={styles.balance}>
+
+                                        {currencyFormatter('en-US', 'USD').format(TotalBal)}
+
+                                    </Text>*/}
+
+                                </View>
+
+                                <View style={styles.planBottomLeft}>
+                                    <Text style={styles.balText}>
+                                        New Signals
+                                    </Text>
+                                    {/*
+
+                                    {
+                                        !loadingStrategy &&
+                                        strategy &&  strategy?.data &&
+                                        strategy?.data['Operation Strategy']?.slice(0, 2).map((item: {
+                                            [x: string]: any;
+                                            id: React.Key | null | undefined;
+                                            Market: string,
+                                            Avg_Price: number | bigint;
+                                            Quantity: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined;
+                                        }, index: any) => (
+                                            <Item key={item.id} tickers={tickers} item={item}/>
+                                        ))}
+*/}
+
+
+                                </View>
+                            </>
+
+                        }
                     </View>
 
 
@@ -285,14 +334,14 @@ navigation.navigate('MainSignalNav')
         <SafeAreaView style={styles.safeArea}>
             {
 
-           loading &&
+                loading &&
                 <View style={styles.loading}>
                     <ActivityIndicator size='large' color={Colors.primary}/>
                 </View>
 
             }
 
-        {/*    <LinearGradient style={styles.background}
+            {/*    <LinearGradient style={styles.background}
                             colors={['#4E044B', '#141621',]}
 
                             start={{x: 2.5, y: 0}}
@@ -301,8 +350,7 @@ navigation.navigate('MainSignalNav')
 
 
             >*/}
-                <ImageBackground source={require('../assets/images/Blackbackground.jpg')} style={styles.background}>
-
+            <ImageBackground source={require('../assets/images/Blackbackground.jpg')} style={styles.background}>
 
 
                 <View style={styles.topBar}>
@@ -310,7 +358,7 @@ navigation.navigate('MainSignalNav')
                         <View style={styles.userImageWrap}>
 
 
-                          <FastImage
+                            <FastImage
                                 style={styles.tAvatar}
                                 source={{
                                     uri: User_Details.image ? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png',
@@ -319,7 +367,6 @@ navigation.navigate('MainSignalNav')
                                 }}
                                 resizeMode={FastImage.resizeMode.cover}
                             />
-
 
 
                         </View>
@@ -337,11 +384,29 @@ navigation.navigate('MainSignalNav')
                 </View>
 
 
-                <ScrollView style={{width: '100%',}} contentContainerStyle={styles.scrollView} scrollEnabled showsVerticalScrollIndicator={false}>
+                <ScrollView style={{width: '100%',}} contentContainerStyle={styles.scrollView} scrollEnabled
+                            showsVerticalScrollIndicator={false}>
                     <View style={styles.introTextWrap}>
-                       <Image source={require('../assets/images/logos/deltadigitallogo2.png')} style={styles.deltadigitallogo2}/>
+                        <Image source={require('../assets/images/logos/deltadigitallogo2.png')}
+                               style={styles.deltadigitallogo2}/>
 
 
+                    </View>
+
+
+                    <View style={styles.buttonWRap}>
+
+                        <View style={styles.controlIconWrap}>
+                            <MaterialCommunityIcons name="sort-variant" size={32} color="#fff"/>
+                        </View>
+
+                        <Pressable style={styles.controlLogoWrap}>
+                            <Image source={require('../assets/images/logos/cyborlogo.png')} style={styles.controlLogo}/>
+                        </Pressable>
+
+                        <Pressable style={styles.controlLogoWrap}>
+                            <Image source={require('../assets/images/logos/finixLogo.png')} style={styles.controlLogo}/>
+                        </Pressable>
                     </View>
 
 
@@ -374,10 +439,13 @@ navigation.navigate('MainSignalNav')
                     }
                 </ScrollView>
 
-                    <Text>
-                        #OWNYOURFUTURE
+                <View style={styles.ownYourFutureWrap}>
+                    <Text style={styles.ownYourFuture}>
+                        #OwnYourFuture
                     </Text>
-                </ImageBackground>
+                </View>
+
+            </ImageBackground>
         </SafeAreaView>
     );
 };
@@ -393,9 +461,9 @@ const styles = StyleSheet.create({
     background: {
         flex: 1,
         width: '100%',
-        resizeMode:'cover',
-        alignItems:'center'
-       // paddingHorizontal: pixelSizeHorizontal(20),
+        resizeMode: 'cover',
+        alignItems: 'center'
+        // paddingHorizontal: pixelSizeHorizontal(20),
     },
     scrollView: {
         //  backgroundColor: Colors.background,
@@ -417,8 +485,6 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start'
 
     },
-
-
     leftButton: {
         width: '100%',
         height: '90%',
@@ -559,7 +625,7 @@ const styles = StyleSheet.create({
         color: "#fff"
     },
     introTextWrap: {
-        height: heightPixel(140),
+        height: heightPixel(100),
         width: '90%',
         alignItems: 'flex-start',
         justifyContent: 'space-evenly',
@@ -579,13 +645,13 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         height: 65,
         width: '100%',
-        flexDirection:'row',
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-start',
 
     },
-    brandName:{
-marginRight:5,
+    brandName: {
+        marginRight: 5,
         fontFamily: Fonts.faktumBold,
         fontSize: fontPixel(26),
         color: "#fff"
@@ -646,11 +712,52 @@ marginRight:5,
         resizeMode: 'cover',
 
     },
-    deltadigitallogo2:{
-        width:widthPixel(200),
-        height:50,
-        resizeMode:'cover'
+    deltadigitallogo2: {
+        width: widthPixel(200),
+        height: 50,
+        resizeMode: 'cover'
+    },
+    ownYourFuture: {
+        fontFamily: Fonts.faktumRegular,
+        fontSize: fontPixel(16),
+        color: "#fff",
+    },
+    ownYourFutureWrap: {
+        width: '80%',
+        height: 50,
+
+    },
+    buttonWRap: {
+        height: 80,
+        width: '90%',
+
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start'
+    },
+    controlIconWrap: {
+        width: 50,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 50,
+        backgroundColor: "#FFFFFF33"
+    },
+    controlLogoWrap: {
+        marginLeft:15,
+        width: 50,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 10,
+        backgroundColor: "#FFFFFF"
+    },
+    controlLogo:{
+        resizeMode:'contain',
+        width: 45,
+        height: 45,
     }
+
 })
 
 export default LandingScreen;

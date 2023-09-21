@@ -100,7 +100,7 @@ const ItemSignal = ({item, viewSignal}: Props) => {
 }
 
 
-const SignalSummary = ({navigation}: SignalRootTabScreenProps<'Signals'>) => {
+const SignalSummary = ({navigation}: SignalStackScreenProps<'SignalSummary'>) => {
 
 
 

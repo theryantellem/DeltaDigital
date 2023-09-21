@@ -10,8 +10,7 @@ import {
     TouchableOpacity
 } from 'react-native';
 import {SafeAreaView} from "react-native-safe-area-context";
-import {LinearGradient} from "expo-linear-gradient";
-import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
+
 import {useQuery} from "@tanstack/react-query";
 import {getEducatorsFollowing} from "../../../api/finix-api";
 import Colors from "../../../constants/Colors";
@@ -27,12 +26,14 @@ import FinixTopBar from "../../../components/signal/FinixTopBar";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 
 
-
-
-
 interface props {
-   // viewUser:(educator:{})=>void
-    item:{
+    startMessage: (educator: { "email": string,
+        "first_name": string,
+        "id": string,
+        "last_name": string,
+        "photo": string,
+        "total_followers": number,}) => void
+    item: {
         educator: {
             "email": string,
             "first_name": string,
@@ -44,10 +45,11 @@ interface props {
     }
 
 }
-const EducatorItem = ({item}:props) =>{
-    console.log(item)
-    return(
-        <TouchableOpacity  style={styles.favList}>
+
+const EducatorItem = ({item, startMessage}: props) => {
+
+    return (
+        <TouchableOpacity onPress={() => startMessage(item.educator)} style={styles.favList}>
             <View style={[styles.listIcon, {
                 //  backgroundColor: Colors.secondary,
             }]}>
@@ -65,7 +67,6 @@ const EducatorItem = ({item}:props) =>{
                 />
 
 
-
             </View>
             <View
                 style={styles.listBody}>
@@ -75,9 +76,8 @@ const EducatorItem = ({item}:props) =>{
                 <View style={styles.listBottom}>
 
 
-
                     <Text style={styles.bodySubText}>
-Hi i'm new here
+                        Hi i'm new here
                     </Text>
 
                 </View>
@@ -85,18 +85,12 @@ Hi i'm new here
             </View>
 
 
-
-
-                <Entypo name="chevron-right" size={14} color="#fff" />
-
-
-
+            <Entypo name="chevron-right" size={14} color="#fff"/>
 
 
         </TouchableOpacity>
     )
 }
-
 
 
 const ChatScreen = ({navigation}: SignalRootTabScreenProps<'SignalChat'>) => {
@@ -109,15 +103,26 @@ const ChatScreen = ({navigation}: SignalRootTabScreenProps<'SignalChat'>) => {
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
 
-    const renderItem = useCallback(
-        ({item}) => <EducatorItem item={item} />,
-        [],
-    );
-
-
 
     const keyExtractor = useCallback((item: { id: any; }) => item.id, [],);
 
+    const startMessage = (educator: {
+        "email": string,
+        "first_name": string,
+        "id": string,
+        "last_name": string,
+        "photo": string,
+        "total_followers": number,
+    }) => {
+        navigation.navigate('MainSignalNav', {
+            screen: 'MessageScreen', params: {educator}
+        })
+    }
+
+    const renderItem = useCallback(
+        ({item}) => <EducatorItem startMessage={startMessage} item={item}/>,
+        [],
+    );
 
     const refresh = () => {
         setRefreshing(true)
@@ -131,8 +136,6 @@ const ChatScreen = ({navigation}: SignalRootTabScreenProps<'SignalChat'>) => {
             <ImageBackground source={require('../../../assets/images/signal/streamer_BG.png')}
                              resizeMode={'cover'}
                              style={styles.dashboardImage}>
-
-
 
 
                 <View style={styles.flatList}>
@@ -174,7 +177,7 @@ const ChatScreen = ({navigation}: SignalRootTabScreenProps<'SignalChat'>) => {
 
             </ImageBackground>
         </SafeAreaView>
-                );
+    );
 };
 
 const styles = StyleSheet.create({
@@ -194,7 +197,7 @@ const styles = StyleSheet.create({
         // paddingHorizontal: pixelSizeHorizontal(20),
         resizeMode: 'cover',
         width: '100%',
-        flex:1,
+        flex: 1,
         borderRadius: 30,
         alignItems: 'center',
 
@@ -235,7 +238,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
 
-    followText:{
+    followText: {
         fontSize: fontPixel(12),
         fontFamily: Fonts.faktumBold,
         color: Colors.text
@@ -255,7 +258,7 @@ const styles = StyleSheet.create({
 
         fontSize: fontPixel(12),
         fontFamily: Fonts.faktumRegItalic,
-        color:Colors.tintText
+        color: Colors.tintText
     },
 
 })
