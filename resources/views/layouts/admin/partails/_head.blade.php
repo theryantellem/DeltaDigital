@@ -24,6 +24,8 @@
     <link href="{{ asset('assets/vendor/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css') }}"
         rel="stylesheet">
 
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
+
     <!-- tagify-css -->
     <link href="{{ asset('assets/vendor/tagify/dist/tagify.css') }}" rel="stylesheet">
 

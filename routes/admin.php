@@ -75,7 +75,12 @@ Route::middleware(['auth:admin'])->group(function () {
 
     Route::resource('roles', RolesPermissions::class);
 
-    Route::get('inbox', [MessageController::class, 'index'])->name('inbox');
+    Route::controller(MessageController::class)->prefix('inbox')->name('inbox.')->group(function () {
+        Route::get('', 'index')->name('index');
+        Route::get('followers', 'getFollowers')->name('followers');
+        Route::get('messages', 'getMessages')->name('messages');
+        Route::post('message', 'sendMessage')->name('messages.send');
+    });
 });
 
 Route::get('test-notifications', function () {

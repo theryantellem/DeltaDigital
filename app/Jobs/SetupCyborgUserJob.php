@@ -33,7 +33,7 @@ class SetupCyborgUserJob implements ShouldQueue
 
         try {
             if (in_array($this->user->plan, cyborgPlans())) {
-                $response = $cyborgService->setupUser($this->user->id);
+                $response = $cyborgService->setupUser($this->user);
 
                 logger(['user_set_response' => $response]);
             }

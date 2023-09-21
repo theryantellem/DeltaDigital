@@ -17,7 +17,7 @@ class Navigation
                 ],
                 (object) [
                     'name'  => 'Inbox',
-                    'route' => 'admin.inbox',
+                    'route' => 'admin.inbox.index',
                     'icon'  => 'bi bi-house-fill fs-3',
                     'hasPermission' => true
                 ],
@@ -48,30 +48,30 @@ class Navigation
                     'route' => 'admin.signals.index',
                     'icon'  => 'bi bi-house-fill fs-3',
                     'hasPermission' => true
-                ],
-                (object) [
-                    'name'  => 'Manage Educators',
-                    'route' => 'admin.educators.index',
-                    'icon'  => 'bi bi-house-fill fs-3',
-                    'hasPermission' => true
                 ]
             ],
             'Extras' => (object) [
+                // (object) [
+                //     'name'  => 'News Management',
+                //     'route' => 'admin.news.index',
+                //     'icon'  => 'bi bi-house-fill fs-3',
+                //     'hasPermission' => true
+                // ],
+                // (object) [
+                //     'name'  => 'Banner Management',
+                //     'route' => 'admin.banners.index',
+                //     'icon'  => 'bi bi-house-fill fs-3',
+                //     'hasPermission' => true
+                // ],
+                // (object) [
+                //     'name'  => 'Support Tickets',
+                //     'route' => 'admin.tickets.index',
+                //     'icon'  => 'bi bi-house-fill fs-3',
+                //     'hasPermission' => true
+                // ],
                 (object) [
-                    'name'  => 'News Management',
-                    'route' => 'admin.news.index',
-                    'icon'  => 'bi bi-house-fill fs-3',
-                    'hasPermission' => true
-                ],
-                (object) [
-                    'name'  => 'Banner Management',
-                    'route' => 'admin.banners.index',
-                    'icon'  => 'bi bi-house-fill fs-3',
-                    'hasPermission' => true
-                ],
-                (object) [
-                    'name'  => 'Support Tickets',
-                    'route' => 'admin.tickets.index',
+                    'name'  => 'Manage Educators',
+                    'route' => 'admin.educators.index',
                     'icon'  => 'bi bi-house-fill fs-3',
                     'hasPermission' => true
                 ],
@@ -80,7 +80,7 @@ class Navigation
                     'route' => 'admin.roles.index',
                     'icon'  => 'bi bi-house-fill fs-3',
                     'hasPermission' => true
-                ]
+                ],
             ],
 
         ];

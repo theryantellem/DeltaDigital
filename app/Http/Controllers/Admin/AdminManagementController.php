@@ -8,5 +8,8 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminManagementController extends Controller
 {
-
+    function index()
+    {
+        return view('admin.educator.index');
+    }
 }

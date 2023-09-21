@@ -28,7 +28,8 @@ class UserResource extends JsonResource
                 'right_link' => $this->right_link
             ],
             'role' => $this->role,
-            'iseligible' => $this->iseligible ? $this->iseligible : false
+            'iseligible' => $this->iseligible ? $this->iseligible : false,
+            'cyborg' => in_array($this->plan, cyborgPlans()) ? true : false,
         ];
     }
 }

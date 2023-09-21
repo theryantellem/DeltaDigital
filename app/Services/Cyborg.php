@@ -14,15 +14,15 @@ class Cyborg
         $this->client = new Client();
     }
 
-    public function setupUser($userId)
+    public function setupUser($user)
     {
-        return self::handle("/setupUser?userId={$userId}");
+        return self::handle("/setupUser?userId={$user->id}&expire={$user->expiry_date}&iseligible={$user->iseligible}");
     }
 
     protected function handle($uri)
     {
         try {
-            $request = new Request("GET", "https://backend.deltastreaming.pro/Api/Mobile/{$uri}");
+            $request = new Request("GET", "https://backend.deltacyborg.pro/Api/Mobile/{$uri}");
 
             $res = $this->client->sendAsync($request)->wait();
 

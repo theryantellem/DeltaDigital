@@ -25,6 +25,7 @@ class AuthenticationController extends ApiController
                 'password' => 'required|string',
             ]);
 
+
             if ($validator->fails()) {
                 return $this->sendError("Validation error", $validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
             }
@@ -32,6 +33,11 @@ class AuthenticationController extends ApiController
             $response = $authentication->login($request->username, $request->password);
 
             $data = $response['data'];
+
+
+            if (empty($data)) {
+                return $this->sendError("Service Unavailable", [], Response::HTTP_SERVICE_UNAVAILABLE);
+            }
 
             if (isset($data['user exist'])) {
                 return $this->sendError($data['user'], [], Response::HTTP_UNAUTHORIZED);
@@ -58,6 +64,7 @@ class AuthenticationController extends ApiController
                 $user->update([
                     'plan' => isset($data['package']['membership']) ? $data['package']['membership'] : null,
                     'expiry_date' => isset($data['package']['date']) ? $data['package']['date'] : null,
+                    'profile_picture' => isset($data['profilepic']) ? $data['profilepic'] : null,
                     'iseligible' => isset($data['iseligible']) ? $data['iseligible'] : 0
                 ]);
             }
@@ -67,9 +74,10 @@ class AuthenticationController extends ApiController
             $responseData['user'] = new UserResource($user);
             $responseData['auth_token'] = $token->plainTextToken;
 
-            dispatch(new \App\Jobs\SetupCyborgUserJob($user));
 
             DB::commit();
+
+            dispatch(new \App\Jobs\SetupCyborgUserJob($user));
 
             return $this->sendResponse($responseData, "Successful login.", Response::HTTP_OK);
         } catch (\Throwable $e) {
@@ -81,7 +89,7 @@ class AuthenticationController extends ApiController
 
     function loginWithPin(Request $request)
     {
-        try{
+        try {
 
             $validator = Validator::make($request->all(), [
                 'pin' => 'required|numeric|digits:4',
@@ -93,8 +101,7 @@ class AuthenticationController extends ApiController
 
             $user = $request->user();
 
-            if(!Hash::check($request->pin,$user->pin))
-            {
+            if (!Hash::check($request->pin, $user->pin)) {
                 return $this->sendError("Invalid pin", [], Response::HTTP_UNAUTHORIZED);
             }
 
@@ -104,11 +111,9 @@ class AuthenticationController extends ApiController
             $responseData['auth_token'] = $token->plainTextToken;
 
             return $this->sendResponse($responseData, "Successful login.", Response::HTTP_OK);
-
-        }catch (\Throwable $e) {
+        } catch (\Throwable $e) {
             logger(["auth error" => $e->getMessage()]);
             return $this->sendError("Service Unavailable", [], Response::HTTP_SERVICE_UNAVAILABLE);
         }
-
     }
 }

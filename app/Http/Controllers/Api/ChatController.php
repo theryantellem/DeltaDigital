@@ -38,6 +38,7 @@ class ChatController extends ApiController
 
             $validator = Validator::make($request->all(), [
                 'message' => 'required|string',
+                'media' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
 
             // Handle validation errors
@@ -45,10 +46,24 @@ class ChatController extends ApiController
                 return $this->sendError("Validations failed.", ['errors' => $validator->errors()], 422);
             }
 
+            if ($request->hasFile('media')) {
+                // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
+                $image = $request->file('media');
+                $image_name = time() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('media'), $image_name);
+
+                $message = url('media/' . $image_name);
+                $type = "media";
+            } else {
+                $message = $request->message;
+                $type = "text";
+            }
+
             $chat = Chat::create([
                 'chat_group_id' => $educator->chatGroup->id,
                 'sender_id' => auth()->user()->id,
-                'message' => $request->message
+                'message' => $message,
+                'type'=>$type
             ]);
 
             $chat = new ChatResource($chat);

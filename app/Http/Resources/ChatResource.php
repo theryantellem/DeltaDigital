@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -34,8 +35,11 @@ class ChatResource extends JsonResource
             'id' => $this->uuid,
             'group_id' => $this->educator->uuid,
             'message' => $this->message,
+            'type' => $this->type,
             'sender' => $sender,
-            'created_at' => $this->created_at
+            'created_at' => $this->created_at,
+            'formatedDate' => Carbon::parse($this->created_at)->format('d/m/Y'),
+            'formatedTime' => Carbon::parse($this->created_at)->format('g:i A')
         ];
     }
 }

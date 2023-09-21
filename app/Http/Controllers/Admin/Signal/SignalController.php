@@ -28,11 +28,13 @@ class SignalController extends Controller
     {
         $admin = Auth::guard('admin')->user();
 
-        if ($admin->hasRole('educator')) {
-            $signals = Signal::where('user_id', $admin->id)->get();
-        } else {
-            $signals = Signal::get();
-        }
+        // if ($admin->hasRole('educator')) {
+        //     $signals = Signal::where('user_id', $admin->id)->get();
+        // } else {
+        //     $signals = Signal::get();
+        // }
+
+        $signals = Signal::where('user_id', $admin->id)->get();
 
         $signals = SignalResource::collection($signals);
 
