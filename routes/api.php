@@ -54,9 +54,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('show/{signal}', 'show');
     });
 
-    Route::controller(ChatController::class)->prefix('chat')->group(function(){
+    Route::controller(ChatController::class)->prefix('chat')->group(function () {
         Route::get('messages/{educator}', 'messages');
-        Route::post('send/{educator}','sendMessage');
+        Route::post('send/{educator}', 'sendMessage');
     });
 
     Route::controller(\App\Http\Controllers\Api\NewsController::class)->prefix('news')->group(function () {
@@ -71,6 +71,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/reset-token', 'requestPinResetToken');
         Route::post('/verify-token', 'verifyPinResetToken');
         Route::post('/reset', 'resetPin');
+    });
+
+    Route::controller(\App\Http\Controllers\Api\ProfileController::class)->prefix('profile')->group(function () {
+        Route::get('','index');
+        Route::post('/update-push-token', 'updateToken');
     });
 
     Route::get('banners', [BannerController::class, 'banners']);

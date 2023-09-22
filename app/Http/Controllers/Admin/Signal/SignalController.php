@@ -13,6 +13,8 @@ use App\Models\Signal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Notifications\SendPushNotification;
+use Illuminate\Support\Facades\Notification;
 
 class SignalController extends Controller
 {
@@ -79,17 +81,9 @@ class SignalController extends Controller
                 return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
             }
 
-            // $imageUrl = null;
+            $user = Auth::guard('admin')->user();
+
             $chartUrl = null;
-
-            // if ($request->hasFile('photo')) {
-            //     // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
-            //     $image = $request->file('photo');
-            //     $image_name = time() . '.' . $image->getClientOriginalExtension();
-            //     $image->move(public_path('images/signals'), $image_name);
-
-            //     $imageUrl = url('/images/signals/' . $image_name);
-            // }
 
             if ($request->hasFile('chart_photo')) {
                 // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
@@ -101,7 +95,7 @@ class SignalController extends Controller
             }
 
             $signal = Signal::create([
-                'admin_id' => Auth::guard('admin')->user()->id,
+                'admin_id' => $user->id,
                 'asset_type' => $request->asset_type,
                 'order_type' => $request->order_type,
                 'entry_price' => $request->entry_price,
@@ -110,15 +104,19 @@ class SignalController extends Controller
                 'category_id' => $request->category,
                 'percentage' => $request->percentage,
                 'comment' => $request->comment,
-                // 'photo' => $imageUrl,
                 'chart_photo' =>  $chartUrl,
             ]);
 
             // broadcast events
             $signal = new SignalResource($signal);
 
+            $fcmTokens =  followersPushTokens($user->id);
+
+            if (!empty($fcmTokens)) {
+                Notification::send(null, new SendPushNotification("Signal Created", "A new signal has been created. Tap to view details.", $fcmTokens));
+            }
             // dispatch notification
-            event(new SignalNotification(Auth::guard('admin')->user()->uuid, $signal, "created"));
+            event(new SignalNotification($user->uuid, $signal, "created"));
 
             return response()->json(['success' => true, 'signal' => $signal, 'message' => 'Signal created successfully.'], 201);
         } catch (\Throwable $th) {
@@ -141,6 +139,12 @@ class SignalController extends Controller
             $signal->update(['market_status' => $request->market_status]);
 
             $signal = new SignalResource($signal);
+
+            $fcmTokens =  followersPushTokens($signal->admin_id);
+
+            if (!empty($fcmTokens)) {
+                Notification::send(null, new SendPushNotification("Signal Updated", "A new signal has been created. Tap to view details.", $fcmTokens));
+            }
 
             event(new SignalNotification(Auth::guard('admin')->user()->uuid, $signal, "updated"));
 
@@ -165,6 +169,12 @@ class SignalController extends Controller
             $signal->update(['status' => $request->status]);
 
             $signal = new SignalResource($signal);
+
+            $fcmTokens =  followersPushTokens($signal->admin_id);
+
+            if (!empty($fcmTokens)) {
+                Notification::send(null, new SendPushNotification("Signal Updated", "A new signal has been created. Tap to view details.", $fcmTokens));
+            }
 
             event(new SignalNotification(Auth::guard('admin')->user()->uuid, $signal, "updated"));
 
@@ -209,15 +219,6 @@ class SignalController extends Controller
             // $imageUrl = $signal->photo;
             $chartUrl = $signal->chat_photo;
 
-            // if ($request->hasFile('photo')) {
-            //     // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
-            //     $image = $request->file('photo');
-            //     $image_name = time() . '.' . $image->getClientOriginalExtension();
-            //     $image->move(public_path('images/signals'), $image_name);
-
-            //     $imageUrl = url('/images/signals/' . $image_name);
-            // }
-
             if ($request->hasFile('chart_photo')) {
                 // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
                 $image = $request->file('chart_photo');
@@ -243,6 +244,12 @@ class SignalController extends Controller
 
             // broadcast events
             $signal = new SignalResource($signal);
+
+            $fcmTokens =  followersPushTokens($signal->admin_id);
+
+            if (!empty($fcmTokens)) {
+                Notification::send(null, new SendPushNotification("Signal Updated", "A new signal has been created. Tap to view details.", $fcmTokens));
+            }
 
             event(new SignalNotification(Auth::guard('admin')->user()->uuid, $signal, "updated"));
 
