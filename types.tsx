@@ -215,7 +215,12 @@ export type SignalStackParamList = {
                 "photo": string,
                 "total_followers": number
             },
-            "asset": string,
+            "asset": {
+                "id": number,
+                "image": string,
+                "name": string,
+                "symbol": string
+            },
             "order_type": string,
             "entry_price": number,
             "stop_loss": number,
@@ -230,10 +235,10 @@ export type SignalStackParamList = {
     EducatorsScreen: undefined;
 
     ViewEducator: {
-        educator:{
+        educator: {
             "email": string,
             "first_name": string,
-            "id":string,
+            "id": string,
             "last_name": string,
             "photo": string,
             "total_followers": number,
@@ -243,12 +248,14 @@ export type SignalStackParamList = {
 
     StreamersList: undefined;
     MessageScreen: {
-        educator:{ "email": string,
+        educator: {
+            "email": string,
             "first_name": string,
             "id": string,
             "last_name": string,
             "photo": string,
-            "total_followers": number,}
+            "total_followers": number,
+        }
     };
     SignalSummary: undefined;
     //END CYBORG
@@ -265,7 +272,16 @@ export type RootTabParamList = {
 
 export type SignalTabParamList = {
     SignalHome: undefined;
-    SignalChat: undefined;
+    SignalChat: {
+        educator: {
+            "email":string,
+            "first_name": string,
+            "id": string,
+            "last_name": string,
+            "photo": string,
+            "total_followers": number
+        }
+    };
     Signals: undefined
     SignalSettings: undefined
 

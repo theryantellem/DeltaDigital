@@ -116,7 +116,12 @@ const SignalScreen = ({navigation}: SignalRootTabScreenProps<'Signals'>) => {
             "photo": string,
             "total_followers": number
         },
-        "asset": string,
+        "asset": {
+            "id": number,
+            "image": string,
+            "name": string,
+            "symbol": string
+        },
         "order_type": string,
         "entry_price": number,
         "stop_loss": number,

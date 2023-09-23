@@ -5,6 +5,7 @@ import * as SecureStore from 'expo-secure-store';
 import {store} from "./app/store";
 import {setResponse} from "./app/slices/userSlice";
 import {Alert} from "react-native";
+import {addNotificationItem} from "./app/slices/dataSlice";
 
 const requestUserPermission = async () => {
     const authStatus = await messaging().requestPermission();
@@ -63,12 +64,13 @@ const notificationListener = () => {
         .catch(error => console.log('failed', error));
 
     messaging().onMessage(async remoteMessage => {
-       store.dispatch(setResponse({
-            responseMessage:remoteMessage?.notification?.body,
-            responseType:'info',
-            responseState:true,
+
+        store.dispatch(addNotificationItem({
+            id: Math.random(),
+            type: 'info',
+            body: remoteMessage?.notification?.body,
         }))
-//console.log(remoteMessage)
+console.log(remoteMessage)
         //Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
     });
 };

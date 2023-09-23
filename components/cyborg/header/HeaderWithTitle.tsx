@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        // borderBottomColor: "#E5E7EB",
+        // backgroundColor: "#E5E7EB",
         // borderBottomWidth: 1,
     },
     backBtn: {

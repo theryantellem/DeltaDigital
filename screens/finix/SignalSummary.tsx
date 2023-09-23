@@ -41,7 +41,12 @@ interface Props {
             "photo": string,
             "total_followers": number
         },
-        "asset": string,
+        "asset": {
+            "id": number,
+            "image": string,
+            "name": string,
+            "symbol": string
+        },
         "order_type": string,
         "entry_price": number,
         "stop_loss": number,
@@ -51,6 +56,7 @@ interface Props {
         "chart_photo": string,
         "market_status": string,
         "status": string
+        "percentage": string
     }
 }
 
@@ -58,17 +64,17 @@ interface Props {
 const ItemSignal = ({item, viewSignal}: Props) => {
     return (
 
-        <TouchableOpacity style={styles.signalCard}>
+        <TouchableOpacity onPress={()=>viewSignal(item)} activeOpacity={0.8} style={styles.signalCard}>
 
             <View style={styles.signalCardValueWrap}>
                 <Text style={styles.signalCardValue}>
-                    {item.asset}
+                    {item.asset.symbol}
                 </Text>
             </View>
 
             <View style={styles.signalCardValueWrap}>
                 <Text style={styles.signalCardValue}>
-                    {item.asset}
+                    {item.asset.name}
                 </Text>
             </View>
 
@@ -79,14 +85,14 @@ const ItemSignal = ({item, viewSignal}: Props) => {
             </View>
             <View style={styles.signalCardValueWrap}>
                 <Text style={styles.signalCardValue}>
-                    40
+                    {item.percentage}
                 </Text>
             </View>
 
 
             <View style={styles.signalCardValueWrap}>
 
-                <TouchableOpacity style={styles.signalViewBtn}>
+                <TouchableOpacity onPress={()=>viewSignal(item)} style={styles.signalViewBtn}>
 <Text style={styles.viewText}>
     View
 </Text>
@@ -120,7 +126,12 @@ const SignalSummary = ({navigation}: SignalStackScreenProps<'SignalSummary'>) =>
             "photo": string,
             "total_followers": number
         },
-        "asset": string,
+        "asset": {
+            "id": number,
+            "image": string,
+            "name": string,
+            "symbol": string
+        },
         "order_type": string,
         "entry_price": number,
         "stop_loss": number,
@@ -129,7 +140,8 @@ const SignalSummary = ({navigation}: SignalStackScreenProps<'SignalSummary'>) =>
         "photo": string,
         "chart_photo": string,
         "market_status": string,
-        "status": string
+        "status": string,
+        "percentage": string
     }) => {
         navigation.navigate('MainSignalNav', {
             screen: 'SignalDetails', params: {details: details}

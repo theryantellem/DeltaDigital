@@ -125,6 +125,39 @@ export const getEducatorsFollowing = async () => {
     ])
 
 }
+export const updateUserPushToken = async (body: {}) => {
+
+
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+    const myHeaders = {
+        "Authorization": `Bearer ${Token}`,
+        "Content-Type": "application/json",
+    }
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body
+    };
+
+    return Promise.race([
+        fetch(`${BASE_ULR_NEW}/profile/update-push-token`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])
+
+}
+
+
+
 export const followEducator = async (body: {}) => {
 
 

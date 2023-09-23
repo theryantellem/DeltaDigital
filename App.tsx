@@ -22,7 +22,7 @@ import * as Notifications from 'expo-notifications';
 import * as SecureStore from "expo-secure-store";
 import {getFcmToken, getFcmTokenFromLocalStorage, requestUserPermission,    notificationListener} from "./notificationConfig";
 import inAppMessaging from '@react-native-firebase/in-app-messaging';
-import {BASE_ULR_AUTH, LIVE_PROD_URL} from "@env";
+import {BASE_ULR_AUTH, LIVE_PROD_URL,BASE_ULR_NEW} from "@env";
 
 enableScreens()
 
@@ -157,26 +157,26 @@ export default function App() {
     useEffect(() => {
         const fetchToken = async () => {
             const token = await getFcmToken();
-            const BearerToken = await SecureStore.getItemAsync('token');
 
+            let BearerToken = await SecureStore.getItemAsync('delta-signal-token');
             if (token) {
 
                 setGeneratedToken(token);
-                let timeoutId: NodeJS.Timeout
+                       let timeoutId: NodeJS.Timeout
                 const body = JSON.stringify({
-                    pushToken: token,
+                    token,
                 })
                 const myHeaders = {
                     'Content-Type': 'application/json',
-                    'x-access-token': `${BearerToken}`
+                    'Authorization': `Bearer ${BearerToken}`
                 }
                 const requestOptions = {
                     method: 'POST',
                     headers: myHeaders,
                     body: body,
                 };
-               /* const promise = Promise.race([
-                    fetch(`${BASE_URL}/profile`, requestOptions)
+               const promise = Promise.race([
+                    fetch(`${BASE_ULR_NEW}/profile/update-push-token`, requestOptions)
                         .then(response => response.json()),
                     new Promise((resolve, reject) => {
                         //  clearTimeout(timeoutId)
@@ -185,7 +185,7 @@ export default function App() {
                         clearTimeout(timeoutId)
                     })
 
-                ])*/
+                ])
 
 
             }

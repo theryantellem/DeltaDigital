@@ -52,7 +52,8 @@ interface props {
 
 interface Props {
 
-    viewSignal: (signal: {"id": string,
+    viewSignal: (signal: {
+        "id": string,
         "educator": {
             "id": string,
             "first_name": string,
@@ -61,7 +62,12 @@ interface Props {
             "photo": string,
             "total_followers": number
         },
-        "asset": string,
+        "asset": {
+            "id": number,
+            "image": string,
+            "name": string,
+            "symbol": string
+        },
         "order_type": string,
         "entry_price": number,
         "stop_loss": number,
@@ -70,7 +76,8 @@ interface Props {
         "photo": string,
         "chart_photo": string,
         "market_status": string,
-        "status": string}) => void
+        "status": string
+    }) => void
 
     item: {
         "id": string,
@@ -82,7 +89,15 @@ interface Props {
             "photo": string,
             "total_followers": number
         },
-        "asset": string,
+        "asset": {
+            "id": number,
+            "image": string,
+            "name": string,
+            "symbol": string
+        },
+        category:{
+            name:string
+        },
         "order_type": string,
         "entry_price": number,
         "stop_loss": number,
@@ -96,29 +111,29 @@ interface Props {
 }
 
 
-const ItemSignal = ({item,viewSignal}: Props) => {
+const ItemSignal = ({item, viewSignal}: Props) => {
 
     return (
 
-        <TouchableOpacity onPress={()=>viewSignal(item)} activeOpacity={0.8} style={styles.loanAppCard}>
+        <TouchableOpacity onPress={() => viewSignal(item)} activeOpacity={0.8} style={styles.loanAppCard}>
 
 
             <View style={styles.topCard}>
                 <View style={styles.IconImageWrap}>
-                    <Image style={styles.IconImage}
-                           source={{uri: item.asset == 'ETHUSDT' ? 'https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/512/Ethereum-ETH-icon.png' : 'https://www.spectre.ai/assets/images/assets/LTC-logo.png?v=2.13'}}/>
+                     <Image style={styles.IconImage}
+                           source={{uri: item.asset.image}}/>
 
 
                 </View>
 
                 <View>
                     <Text style={styles.assetText}>
-                        {item.asset}
+                            {item.asset.name}
                     </Text>
-                    <Text style={[styles.assetText,{
+                    <Text style={[styles.assetText, {
                         fontFamily: Fonts.faktumRegular
                     }]}>
-                     Crypto
+                        {item.category.name}
                     </Text>
                 </View>
 
@@ -128,19 +143,21 @@ const ItemSignal = ({item,viewSignal}: Props) => {
 
                 <View style={styles.bottomCardRow}>
                     <Text style={styles.bottomCardText}>
-            Order type
+                        Order type
                     </Text>
                     <Text style={styles.bottomCardSubText}>
-                        {item.order_type}
+                  {item.order_type}
                     </Text>
 
                 </View>
                 <View style={styles.bottomCardRow}>
                     <Text style={styles.bottomCardText}>
-                     Status
+                        Status
                     </Text>
-                    <Text style={styles.bottomCardSubText}>
-                        {item.status}
+                    <Text style={[styles.bottomCardSubText,{
+                        color: Colors.pendingYellow
+                    }]}>
+                       {item.status}
                     </Text>
 
                 </View>
@@ -149,17 +166,16 @@ const ItemSignal = ({item,viewSignal}: Props) => {
                         Target price
                     </Text>
                     <Text style={styles.bottomCardSubText}>
-                        {item.target_price}
+                    {item.target_price}
                     </Text>
 
                 </View>
                 <Text style={styles.educatorName}>
-                    Carlos Osorio
+                    {item.educator.last_name} {item.educator.first_name}
                 </Text>
 
 
             </View>
-
 
 
         </TouchableOpacity>
@@ -167,16 +183,13 @@ const ItemSignal = ({item,viewSignal}: Props) => {
 }
 
 
-
-const EducatorItem = ({item,viewEducator}: props) => {
+const EducatorItem = ({item, viewEducator}: props) => {
 
     return (
-        <TouchableOpacity activeOpacity={0.8} onPress={()=>viewEducator(item)} style={styles.educatorSmallCard}>
+        <TouchableOpacity activeOpacity={0.8} onPress={() => viewEducator(item)} style={styles.educatorSmallCard}>
             <View style={styles.liveTag}>
 
-                <Text style={[styles.liveText, {
-
-                }]}>
+                <Text style={[styles.liveText, {}]}>
                     1
                 </Text>
             </View>
@@ -216,12 +229,11 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
 
 
     const viewEducator = (details: {}) => {
-        navigation.navigate('MainSignalNav',{
-            screen:'ViewEducator', params:details
+        navigation.navigate('MainSignalNav', {
+            screen: 'ViewEducator', params: details
         })
 
     }
-
 
 
     const viewSignal = (details: {
@@ -234,7 +246,12 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
             "photo": string,
             "total_followers": number
         },
-        "asset": string,
+        "asset": {
+            "id": number,
+            "image": string,
+            "name": string,
+            "symbol": string
+        },
         "order_type": string,
         "entry_price": number,
         "stop_loss": number,
@@ -266,16 +283,16 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
     );
 
 
-    const seeSignalSummary = ()=>{
-        navigation.navigate('MainSignalNav',{
-            screen:'SignalSummary'
+    const seeSignalSummary = () => {
+        navigation.navigate('MainSignalNav', {
+            screen: 'SignalSummary'
         })
     }
 
-    const addFollowing = ()=>{
+    const addFollowing = () => {
 
-        navigation.navigate('MainSignalNav',{
-            screen:'StreamersList'
+        navigation.navigate('MainSignalNav', {
+            screen: 'StreamersList'
         })
     }
 
@@ -296,7 +313,7 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
                         userName={User_Details.username}/>
 
 
-                 {/*   <View style={styles.topTabButtons}>
+                    {/*   <View style={styles.topTabButtons}>
                         <HomeSegmentedTabs tabs={["Signals", "Categories"]}
                                            currentIndex={tabIndex}
                                            onChange={handleTabsChange}
@@ -312,22 +329,20 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
                     <IF condition={tabIndex == 0}>
 
 
-
-                        <ImageBackground source={require('../../../assets/images/signal/educator_BG.png')} style={styles.segmentBody}>
+                        <ImageBackground source={require('../../../assets/images/signal/educator_BG.png')}
+                                         style={styles.segmentBody}>
 
                             <View style={styles.ActivityCardTop}>
-                                <Text style={[styles.listTitle, {
-
-                                }]}>
+                                <Text style={[styles.listTitle, {}]}>
                                     Following
                                 </Text>
                                 <TouchableOpacity onPress={addFollowing} activeOpacity={0.7} style={styles.seeAll}>
-                                    <FontAwesome name="plus-circle" size={24} color="#fff" />
+                                    <FontAwesome name="plus-circle" size={24} color="#fff"/>
 
                                 </TouchableOpacity>
                             </View>
 
-                        {
+                            {
                                 isLoading && <ActivityIndicator color={Colors.primary} size='small'/>
                             }
                             {
@@ -348,25 +363,19 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
                         </ImageBackground>
 
 
-
-
-
-
-
-                        <ImageBackground resizeMethod={"scale"} source={require('../../../assets/images/signal/educator_BG.png')}
-                                         style={[styles.segmentBody,{
+                        <ImageBackground resizeMethod={"scale"}
+                                         source={require('../../../assets/images/signal/educator_BG.png')}
+                                         style={[styles.segmentBody, {
                                              height: 250,
-                                             marginTop:20,
+                                             marginTop: 20,
                                          }]}>
 
                             <View style={styles.ActivityCardTop}>
-                                <Text style={[styles.listTitle, {
-
-                                }]}>
+                                <Text style={[styles.listTitle, {}]}>
                                     Signals
                                 </Text>
                                 <TouchableOpacity onPress={seeSignalSummary} activeOpacity={0.7} style={styles.seeAll}>
-                                    <FontAwesome name="plus-circle" size={24} color="#fff" />
+                                    <FontAwesome name="plus-circle" size={24} color="#fff"/>
 
                                 </TouchableOpacity>
                             </View>
@@ -392,11 +401,8 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
                     </IF>
 
 
-
                 </ScrollView>
-                    </ImageBackground>
-
-
+            </ImageBackground>
 
 
         </SafeAreaView>
@@ -487,15 +493,15 @@ const styles = StyleSheet.create({
         width: width - 40,
         alignItems: 'flex-start',
         height: 150,
-resizeMode:'cover',
-        overflow:'hidden',
-        borderRadius:30,
+        resizeMode: 'cover',
+        overflow: 'hidden',
+        borderRadius: 30,
         justifyContent: 'flex-start',
-      paddingVertical: pixelSizeHorizontal(10),
+        paddingVertical: pixelSizeHorizontal(10),
         // marginBottom: 20
     },
     ActivityCardTop: {
-        alignSelf:'center',
+        alignSelf: 'center',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -523,7 +529,7 @@ resizeMode:'cover',
         width: widthPixel(170),
         height: heightPixel(180),
         borderRadius: 18,
-        backgroundColor:"rgba(255,255,255,0.16)",
+        backgroundColor: "rgba(255,255,255,0.16)",
         alignItems: 'center',
         justifyContent: 'space-evenly',
         paddingHorizontal: pixelSizeHorizontal(15),
@@ -552,7 +558,7 @@ resizeMode:'cover',
     IconImage: {
         height: '100%',
         width: '100%',
-        borderRadius:50,
+        borderRadius: 50,
         alignItems: 'center',
         justifyContent: 'center'
     },
@@ -570,12 +576,12 @@ resizeMode:'cover',
         width: '100%',
 
     },
-    bottomCardRow:{
-      width:'100%',
-        height:25,
-      flexDirection:'row',
-      alignItems:'center',
-      justifyContent:'space-between'
+    bottomCardRow: {
+        width: '100%',
+        height: 25,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
     },
     bottomCardText: {
         color: Colors.text,
@@ -592,7 +598,7 @@ resizeMode:'cover',
         // paddingHorizontal: pixelSizeHorizontal(20),
         resizeMode: 'cover',
         width: '100%',
-        flex:1,
+        flex: 1,
         borderRadius: 30,
         alignItems: 'center',
 

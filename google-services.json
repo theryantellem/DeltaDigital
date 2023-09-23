@@ -7,42 +7,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:940130220376:android:cb5470b38f74b7859f4d2d",
-        "android_client_info": {
-          "package_name": "com.deltaSignal.mobile"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "940130220376-97fpnia9fr65o7clo27eoi3ck77nok89.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAn5qOtx-ApHOAede4p1W2t0cMX785Tf2Q"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "940130220376-97fpnia9fr65o7clo27eoi3ck77nok89.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "940130220376-ll25ta6niq0464mjpn5fiuqgssv3t7u0.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.deltaSignal.mobile"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:940130220376:android:54d68dc287d77af79f4d2d",
         "android_client_info": {
           "package_name": "com.deltadigital.mobile"

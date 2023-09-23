@@ -33,6 +33,7 @@ import QRCode from "react-native-qrcode-svg";
 import {
     BottomSheetDefaultBackdropProps
 } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
+import FastImage from "react-native-fast-image";
 
 
 const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetails'>) => {
@@ -94,6 +95,9 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
         })
     }
 
+
+
+
     return (
         <>
 
@@ -119,7 +123,7 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                                     <View style={styles.assetImage}>
 
                                         <Image
-                                            source={{uri: details.asset == 'ETHUSDT' ? 'https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/512/Ethereum-ETH-icon.png' : 'https://www.spectre.ai/assets/images/assets/LTC-logo.png?v=2.13'}}
+                                            source={{uri: details.asset.image}}
                                             style={styles.assetImageLogo}/>
 
 
@@ -128,16 +132,23 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
 
                                         <View style={styles.statusWrap}>
                                             <Text style={[styles.innerBoxAmount, {
-                                                color: "#fff"
+                                                color: "#fff",
+                                                textTransform: 'capitalize',
+                                                fontSize: fontPixel(14)
                                             }]}>
 
                                                 {details.status}
                                             </Text>
                                         </View>
-                                        <Text style={[styles.innerBoxStatus, {}]}>
+                                        <Text style={[styles.innerBoxStatus, {
+                                            marginVertical:pixelSizeVertical(5),
+                                            textTransform: 'uppercase',
+                                            fontFamily: Fonts.faktumBold,
+                                            fontSize: fontPixel(26)
+                                        }]}>
 
 
-                                            {details.asset}
+                                            {details.asset.name}
 
                                         </Text>
 
@@ -153,7 +164,7 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
 
                                     <View style={styles.userImage}>
 
-                                        <Image source={{uri: details.photo}} style={styles.logo}/>
+                                        <Image source={{uri: details.educator.photo}} style={styles.logo}/>
 
 
                                     </View>
@@ -176,7 +187,7 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                                         Asset
                                     </Text>
                                     <Text style={styles.rowValue}>
-                                        {details.asset}
+                                        {details.asset.name}
                                     </Text>
 
                                 </View>
@@ -296,9 +307,16 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
 
 
                             <View style={styles.qrBoxWrap}>
+                                <FastImage
+                                    style={styles.chart_photo}
+                                    source={{
+                                        uri: details.chart_photo,
+                                        cache: FastImage.cacheControl.web,
+                                        priority: FastImage.priority.normal,
+                                    }}
+                                    resizeMode={FastImage.resizeMode.cover}
+                                />
 
-
-                                <Image source={{uri: details.chart_photo}} style={styles.chart_photo}/>
 
 
                             </View>
@@ -359,8 +377,9 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                                 }}/>
                             </View>
                         </View>
-                        <ToastAnimated/>
+
                     </ScrollView>
+                    <ToastAnimated/>
                 </ImageBackground>
             </SafeAreaView>
 
@@ -652,6 +671,9 @@ const styles = StyleSheet.create({
         textTransform: 'capitalize',
         backgroundColor: "#00B2FF",
         paddingHorizontal: 5,
+        alignItems:'center',
+        justifyContent:'center',
+        height: 25,
         borderRadius: 10,
     },
     innerBoxStatus: {

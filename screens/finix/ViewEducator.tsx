@@ -42,7 +42,12 @@ interface Props {
             "photo": string,
             "total_followers": number
         },
-        "asset": string,
+        "asset": {
+            "id": number,
+            "image": string,
+            "name": string,
+            "symbol": string
+        },
         "order_type": string,
         "entry_price": number,
         "stop_loss": number,
@@ -64,7 +69,12 @@ interface Props {
             "photo": string,
             "total_followers": number
         },
-        "asset": string,
+        "asset": {
+            "id": number,
+            "image": string,
+            "name": string,
+            "symbol": string
+        },
         "order_type": string,
         "entry_price": number,
         "stop_loss": number,
@@ -88,14 +98,14 @@ const ItemSignal = ({item, viewSignal}: Props) => {
             <View style={styles.topCard}>
                 <View style={styles.IconImageWrap}>
                     <Image style={styles.IconImage}
-                           source={{uri: item.asset == 'ETHUSDT' ? 'https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/512/Ethereum-ETH-icon.png' : 'https://www.spectre.ai/assets/images/assets/LTC-logo.png?v=2.13'}}/>
+                           source={{uri: item.asset.image }}/>
 
 
                 </View>
 
                 <View>
                     <Text style={styles.assetText}>
-                        {item.asset}
+                        {item.asset.name}
                     </Text>
                     <Text style={[styles.assetText, {
                         fontFamily: Fonts.faktumRegular

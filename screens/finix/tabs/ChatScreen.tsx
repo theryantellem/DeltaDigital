@@ -24,6 +24,9 @@ import {fontPixel, heightPixel} from "../../../helpers/normalize";
 import {Entypo} from "@expo/vector-icons";
 import FinixTopBar from "../../../components/signal/FinixTopBar";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
+import Echo from "laravel-echo";
+
+
 
 
 interface props {
@@ -95,6 +98,8 @@ const EducatorItem = ({item, startMessage}: props) => {
 
 const ChatScreen = ({navigation}: SignalRootTabScreenProps<'SignalChat'>) => {
 
+
+
     const [refreshing, setRefreshing] = useState(false);
 
     const {data, isLoading, refetch} = useQuery([`get-Educators-Following`], getEducatorsFollowing)
@@ -129,6 +134,7 @@ const ChatScreen = ({navigation}: SignalRootTabScreenProps<'SignalChat'>) => {
         refetch()
         wait(2000).then(() => setRefreshing(false));
     }
+
 
 
     return (
