@@ -8,7 +8,7 @@ import {
     TextInput,
     TouchableOpacity,
     KeyboardAvoidingView,
-    Platform, Button
+    Platform, Button, ActivityIndicator
 } from 'react-native';
 import {SafeAreaView} from "react-native-safe-area-context";
 import {SignalStackScreenProps} from "../../../types";
@@ -17,7 +17,7 @@ import {Fonts} from "../../../constants/Fonts";
 import {fontPixel} from "../../../helpers/normalize";
 import Colors from "../../../constants/Colors";
 import MessagesList from "../../../components/MessagesList";
-import {useAppSelector} from "../../../app/hooks";
+import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 
 
@@ -29,10 +29,14 @@ import {
     PusherEvent, PusherAuthorizerResult,
 } from '@pusher/pusher-websocket-react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {useInfiniteQuery, useMutation} from "@tanstack/react-query";
+import {getAlMessage, sendMessage} from "../../../api/finix-api";
+import {useRefreshOnFocus} from "../../../helpers";
+import {addAllMessages, addSingleMessage} from "../../../app/slices/dataSlice";
 
 
 const pusher = Pusher.getInstance();
-
+/*
 const myMessages = [
     {
         text: "Nos vemos en 15 minutos en Streaming",
@@ -48,12 +52,30 @@ const myMessages = [
         user: '17409',
         _id: '1838a510-2b59-417b-92ef-c89ab5a7d70a',
     }
-]
+]*/
 
+
+/*{
+    "id": "83c2e97d-4279-4d5e-bb99-2824a5754b9f",
+    "group_id": "54f78417-510f-4f1b-9703-50be80959ff7",
+    "message": "hello world",
+    "type": "text",
+    "sender": {
+    "id": "86df8454-852c-4c55-80a8-54d55aca8814",
+        "name": "Carlosardilaco",
+        "photo": "https://cdn.deltadigital.pro/media/profile/1677211717-1UVG_crop_162--p--87_103--p--91_576--p--55_576--p--55_0--p--00.jpeg"
+},
+    "created_at": "2023-08-26T04:01:42.000000Z",
+    "formatedDate": "26/08/2023",
+    "formatedTime": "4:01 AM"
+}*/
 const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScreen'>) => {
 
     const {educator} = route.params
+    const dataSlice = useAppSelector(state => state.data)
+    const {myMessages} = dataSlice
 
+  // console.log([...myMessages].reverse())
 
     let logLines: string[] = [];
 
@@ -63,7 +85,7 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
 
     const [text, setText] = useState('')
 
-
+    const dispatch = useAppDispatch()
 
 
     const [apiKey, onChangeApiKey] = React.useState('2e03de85bbf93cd88884');
@@ -94,11 +116,11 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
 
     const connect = async () => {
         try {
-           /* await AsyncStorage.multiSet([
-                ['APIKEY', apiKey],
-                ['CLUSTER', cluster],
-                ['CHANNEL', channelName],
-            ]);*/
+            /* await AsyncStorage.multiSet([
+                 ['APIKEY', apiKey],
+                 ['CLUSTER', cluster],
+                 ['CHANNEL', channelName],
+             ]);*/
 
             await pusher.init({
                 apiKey,
@@ -117,7 +139,7 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
                 // See https://pusher.com/docs/channels/library_auth_reference/auth-signatures/
                 // for the format of this object, you need your key and secret from your Pusher
                 // Account.
-               // onAuthorizer,
+                // onAuthorizer,
                 onConnectionStateChange,
                 onError,
                 onEvent,
@@ -131,12 +153,14 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
             });
 
             await pusher.connect();
-            await pusher.subscribe({channelName:`chat.${educator.id}`,
+            await pusher.subscribe({
+                channelName: `chat.${educator.id}`,
                 onEvent: (event: PusherEvent) => {
-                    console.log(`onEvent: ${event}`);
+                  //  console.log(`The New Message: ${event.data.data}`);
+                    dispatch(addSingleMessage(event.data.data))
                 }
-            }).then(res =>{
-                console.log({channelName:res.channelName})
+            }).then(res => {
+                console.log({channelName: res.channelName})
 
             });
         } catch (e) {
@@ -144,6 +168,58 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
         }
     };
 
+    const {
+        status,
+        data,
+        error,
+        isRefetching,
+        isFetching,
+        isLoading,
+        refetch,
+        isFetchingNextPage,
+        isFetchingPreviousPage,
+        fetchNextPage,
+        fetchPreviousPage,
+        hasNextPage,
+        hasPreviousPage,
+    } = useInfiniteQuery(
+        [`all-messages`], async ({pageParam = 1}) => getAlMessage.messages({pageParam, id: educator.id}),
+        {
+            getNextPageParam: lastPage => {
+                if (lastPage.next !== null) {
+                    return lastPage.next;
+                }
+
+                return lastPage;
+            },
+            getPreviousPageParam: (firstPage) => firstPage.previousId ?? undefined,
+
+        },
+    )
+    useEffect(() => {
+        if (data) {
+           const allMessages= [...data?.pages[0]?.data]
+            dispatch(addAllMessages(allMessages.reverse()))
+        }
+
+    }, [data]);
+
+    // console.log(data?.pages[0].data)
+    const loadMore = () => {
+        if (hasNextPage) {
+            fetchNextPage();
+        }
+
+    }
+
+
+
+    useEffect(() => {
+
+        connect().then(r => console.log(r))
+
+
+    }, []);
 
 
     const onConnectionStateChange = (
@@ -221,28 +297,26 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
         onChangeMembers([...channel.members.values()]);
     };
 
-    // See https://pusher.com/docs/channels/library_auth_reference/auth-signatures/ for the format of this object.
-    const onAuthorizer = async (channelName: string, socketId: string) => {
-        log(
-            `calling onAuthorizer. channelName=${channelName}, socketId=${socketId}`
-        );
+    const {isLoading:isSending, mutate} = useMutation(['sendMessage'],sendMessage,{
+        onSuccess:(data)=>{
+            if(data.success){
+                setText('')
+                refetch()
+            }
+        }
 
-        const response = await fetch('some_url', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                socket_id: socketId,
-                channel_name: channelName,
-            }),
-        });
+    } )
 
-        const body = (await response.json()) as PusherAuthorizerResult;
+    const handleNewMessage = (message: string) => {
+      const body = JSON.stringify({
+            message
+        })
+        mutate({body,  id: educator.id })
 
-        log(`response: ${JSON.stringify(body)}`);
-        return body;
-    };
+
+
+
+    }
 
     const trigger = async () => {
         try {
@@ -261,28 +335,10 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
         }
     };
 
-/*
 
-    useEffect(()=>{
-        (async ()=>{
-            let myChannel = await pusher.subscribe({
-                channelName:'chat.1',
+    useRefreshOnFocus(refetch)
+    //console.log(pusher.connectionState)
 
-
-            });
-
-           console.log(myChannel.channelName)
-        })()
-    },[channelName])
-*/
-
-
-
-
-
-
-    console.log(pusher.connectionState)
-    console.log(members)
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -304,31 +360,15 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
 
                     style={[styles.root]}
                     behavior={Platform.OS === "ios" ? "padding" : "height"}
-                    keyboardVerticalOffset={15}
+                    keyboardVerticalOffset={50}
                 >
-                    <Button
-                        title="Connect"
-                        onPress={connect}
-                        disabled={!(apiKey && cluster && channelName)}
-                    />
 
-                    <Button
-                        title="Trigger Event"
-                        onPress={trigger}
-                        disabled={!eventName}
-                    />
 
                     {/*              <Button title={"SEND MESSAGE"} onPress={sendMessage}/>*/}
 
                     <View style={styles.innerContainer}>
                         <View style={styles.inputAndMicrophone}>
-                            {/*  <TouchableOpacity style={styles.rightIconButtonStyle}>
-                            <Icon
-                                name="paperclip"
-                                size={23}
-                                color={Colors.tintText}
-                            />
-                        </TouchableOpacity>*/}
+
                             <TextInput
 
 
@@ -340,10 +380,17 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
                                 onChangeText={(text) => setText(text)}
                             />
 
-                            <TouchableOpacity style={styles.rightIconButtonStyle}>
+                            {
+                                isSending && <ActivityIndicator size='small' color={Colors.primary}/>
+                            }
+                            {
+                                !isSending &&
+
+                            <TouchableOpacity onPress={()=>handleNewMessage(text)} style={styles.rightIconButtonStyle}>
 
                                 <Ionicons name="paper-plane-outline" size={24} color={Colors.textDark}/>
                             </TouchableOpacity>
+                            }
                         </View>
 
                     </View>

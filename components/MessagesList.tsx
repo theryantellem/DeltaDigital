@@ -1,6 +1,9 @@
 import React, {useState, useRef, useCallback, useId} from "react";
 import {FlatList, ScrollView,Text, StyleSheet, View} from "react-native";
 import Colors from "../constants/Colors";
+import {useAppSelector} from "../app/hooks";
+import {fontPixel} from "../helpers/normalize";
+import {Fonts} from "../constants/Fonts";
 
 
 interface props {
@@ -15,7 +18,7 @@ const Message = ({message,isLeft}) => {
         if (isLeft && type === "messageContainer") {
             return {
                 alignSelf: "flex-start",
-                backgroundColor: "#ccc",
+                backgroundColor: "#fff",
 
                 borderTopLeftRadius: 0,
             };
@@ -25,7 +28,7 @@ const Message = ({message,isLeft}) => {
             };
         } else if (isLeft && type === "time") {
             return {
-                color: "#eee",
+                color: "#fff",
             };
         } else {
             return {
@@ -42,7 +45,7 @@ const Message = ({message,isLeft}) => {
                     isOnLeft("messageContainer"),
                 ]}
             >
-<Text>
+<Text style={styles.messageText}>
     {message}
 </Text>
             </View>
@@ -53,19 +56,22 @@ const Message = ({message,isLeft}) => {
 
 const MessagesList = ({_id,roomID,messages}:{_id:string,roomID:string,messages:[]}) => {
 
+   const user = useAppSelector(state => state.user)
+    const {User_Details} = user
 
-//console.log("USER:"+_id)
 
-    const user = useRef(0);
+
+
+
     const scrollView = useRef();
 
     const renderItem = useCallback(
-        (item: { item: { updatedAt: any; user: string; text: any; }; }, index: React.Key | null | undefined) => (
+        (item: { item: { created_at: any; id:string,sender: { id: string; }; message: any; }; }) => (
             <Message
-                key={index}
-                time={item.item.updatedAt}
-                isLeft={item.item.user !== _id}
-                message={item.item.text}
+                key={item.item.id}
+                time={item.item.created_at}
+                isLeft={item.item.sender.id !== User_Details.id}
+                message={item.item.message}
 
             />
         ),
@@ -73,7 +79,7 @@ const MessagesList = ({_id,roomID,messages}:{_id:string,roomID:string,messages:[
     );
 
     const keyExtractor = useCallback(
-        (item) => item._id,
+        (item: { _id: any; }) => item._id,
         [],
     );
 
@@ -87,7 +93,7 @@ const MessagesList = ({_id,roomID,messages}:{_id:string,roomID:string,messages:[
           >*/
 
         <View style={{ flex: 1, width:'100%'}}>
-            <FlatList scrollEnabled  data={messages}   inverted={true} renderItem={renderItem} keyExtractor={keyExtractor}/>
+            <FlatList  scrollEnabled  data={messages}   inverted={true} renderItem={renderItem} keyExtractor={keyExtractor}/>
         </View>
 
 
@@ -112,6 +118,11 @@ const  styles = StyleSheet.create({
         paddingTop: 5,
         paddingBottom: 10,
     },
+    messageText:{
+        color:Colors.textDark,
+        fontFamily:Fonts.faktumMedium,
+        fontSize:fontPixel(12)
+    }
 })
 
 export default MessagesList;

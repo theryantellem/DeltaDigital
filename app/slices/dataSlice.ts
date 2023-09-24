@@ -9,6 +9,7 @@ interface TaskInterface {
 }
 
 export interface DataState {
+    myMessages:[],
     amountToWithdrawBank: string | number
     amountToDeposit: string | number
     amountToSend: string | number
@@ -91,7 +92,7 @@ export interface DataState {
 }
 
 const initialState: DataState = {
-
+    myMessages:[].reverse(),
     hideMissionBalance: false,
 
     amountToWithdrawBank: '',
@@ -101,6 +102,9 @@ const initialState: DataState = {
     hideBalance: false,
     hideSaveBalance: false,
     tradeSetting: {
+        entry_call:'',
+        re_capital:'',
+        stop_loss:'',
         id: '',
         firstbuy_amount: '',
         double_position: '',
@@ -125,6 +129,7 @@ const initialState: DataState = {
         price_drop:''
     },
     tradeSettingFutures: {
+        mt_ratio:'',
         firstbuy_amount: '',
         double_position: '',
         margin_limit: '',
@@ -162,7 +167,7 @@ const initialState: DataState = {
         direction: '',
         configType: '',
     },
-    notificationData: [].reverse()
+    notificationData: []
 
 }
 
@@ -275,6 +280,12 @@ export const dataSlice = createSlice({
             state.tradeSettingFutures = {...state.tradeSettingFutures, ...action.payload}
         },
 
+        addAllMessages: (state, action) => {
+            state.myMessages = action.payload
+        },
+        addSingleMessage: (state, action) => {
+            state.myMessages = [ action.payload,...state.myMessages,]
+        },
         cleanData: () => initialState
 
     },
@@ -300,7 +311,9 @@ export const {
     addNotificationItem,
     removeSingleNotification,
     removeNotificationItem,
-    clearNotification
+    clearNotification,
+    addSingleMessage,
+    addAllMessages
 } = dataSlice.actions
 
 export default dataSlice.reducer

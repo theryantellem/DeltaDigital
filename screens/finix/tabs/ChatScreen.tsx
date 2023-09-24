@@ -18,7 +18,7 @@ import {FlashList} from "@shopify/flash-list";
 import FastImage from "react-native-fast-image";
 import {Fonts} from "../../../constants/Fonts";
 import {MyButton} from "../../../components/MyButton";
-import {wait} from "../../../helpers";
+import {useRefreshOnFocus, wait} from "../../../helpers";
 import {SignalRootTabScreenProps} from "../../../types";
 import {fontPixel, heightPixel} from "../../../helpers/normalize";
 import {Entypo} from "@expo/vector-icons";
@@ -37,6 +37,7 @@ interface props {
         "photo": string,
         "total_followers": number,}) => void
     item: {
+        message:'',
         educator: {
             "email": string,
             "first_name": string,
@@ -80,7 +81,7 @@ const EducatorItem = ({item, startMessage}: props) => {
 
 
                     <Text style={styles.bodySubText}>
-                        Hi i'm new here
+                        {item.message}
                     </Text>
 
                 </View>
@@ -107,6 +108,7 @@ const ChatScreen = ({navigation}: SignalRootTabScreenProps<'SignalChat'>) => {
     const dispatch = useAppDispatch()
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
+
 
 
     const keyExtractor = useCallback((item: { id: any; }) => item.id, [],);
@@ -136,6 +138,7 @@ const ChatScreen = ({navigation}: SignalRootTabScreenProps<'SignalChat'>) => {
     }
 
 
+    useRefreshOnFocus(refetch)
 
     return (
         <SafeAreaView style={styles.safeArea}>

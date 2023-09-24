@@ -125,7 +125,9 @@ export const getEducatorsFollowing = async () => {
     ])
 
 }
-export const updateUserPushToken = async (body: {}) => {
+
+
+export const sendMessage = async ({body,id} :{body:any, id:string}) => {
 
 
     let Token = await SecureStore.getItemAsync('delta-signal-token');
@@ -142,7 +144,7 @@ export const updateUserPushToken = async (body: {}) => {
     };
 
     return Promise.race([
-        fetch(`${BASE_ULR_NEW}/profile/update-push-token`, requestOptions)
+        fetch(`${BASE_ULR_NEW}/chat/send/${id}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
@@ -154,6 +156,40 @@ export const updateUserPushToken = async (body: {}) => {
 
     ])
 
+}
+
+
+export const getAlMessage ={
+
+    messages: async ( {pageParam = 1,id}: { pageParam?: number,id:string}) => {
+
+
+        let Token = await SecureStore.getItemAsync('delta-signal-token');
+        const myHeaders = {
+            "Authorization": `Bearer ${Token}`,
+        }
+        let timeoutId: NodeJS.Timeout
+
+        const requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+
+        };
+
+        return Promise.race([
+            fetch(`${BASE_ULR_NEW}/chat/messages/${id}`, requestOptions)
+                .then(response => response.json()),
+            new Promise((resolve, reject) => {
+                timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+                //  clearTimeout(timeoutId)
+            }).then(() => {
+                clearTimeout(timeoutId)
+            })
+
+        ])
+
+    }
 }
 
 
