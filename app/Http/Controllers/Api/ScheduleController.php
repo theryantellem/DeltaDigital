@@ -42,7 +42,7 @@ class ScheduleController extends ApiController
 
         $resources = [
             "schedule" => new ScheduleResources($schedule),
-            "vidoes" => VideoResource::collection($videos->get())
+            "videos" => VideoResource::collection($videos->get())
         ];
 
         return $this->sendResponse($resources, "Schedules retrieved successfully.", Response::HTTP_OK);
