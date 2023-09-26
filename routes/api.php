@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthenticationController;
 use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\EducatorController;
+use App\Http\Controllers\Api\ScheduleController;
 use App\Http\Controllers\Api\SignalsController;
 use Illuminate\Support\Facades\Route;
 
@@ -74,9 +75,15 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::controller(\App\Http\Controllers\Api\ProfileController::class)->prefix('profile')->group(function () {
-        Route::get('','index');
+        Route::get('', 'index');
         Route::post('/update-push-token', 'updateToken');
     });
 
     Route::get('banners', [BannerController::class, 'banners']);
+});
+
+Route::controller(ScheduleController::class)->prefix('schedules')->group(function () {
+    Route::get('', 'index');
+    Route::get('/{schedule}', 'show');
+    Route::get('{educator}/educator-schedules', 'educatorSchedules');
 });

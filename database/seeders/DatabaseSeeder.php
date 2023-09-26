@@ -18,7 +18,9 @@ class DatabaseSeeder extends Seeder
             MarketSeeder::class,
             RolePermissionSeeder::class,
             CategorySeeder::class,
-            AssetSeeder::class
+            AssetSeeder::class,
+            ScheduleSeeder::class,
+            VideoSeeder::class
         ]);
     }
 }
