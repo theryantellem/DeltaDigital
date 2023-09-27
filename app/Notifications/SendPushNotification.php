@@ -12,12 +12,18 @@ class SendPushNotification extends Notification
 {
     use Queueable;
 
+    public $title;
+    public $message;
+    public $fcmTokens;
+
     /**
      * Create a new notification instance.
      */
-    public function __construct(public $title,public $message,public $fcmTokens)
+    public function __construct($title, $message, $fcmTokens)
     {
-        //
+        $this->title = $title;
+        $this->message = $message;
+        $this->fcmTokens = $fcmTokens;
     }
 
     /**
@@ -25,7 +31,7 @@ class SendPushNotification extends Notification
      *
      * @return array<int, string>
      */
-    public function via(object $notifiable): array
+    public function via($notifiable): array
     {
         return ['firebase'];
     }
@@ -36,9 +42,9 @@ class SendPushNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'))
+            ->line('Thank you for using our application!');
     }
 
     /**

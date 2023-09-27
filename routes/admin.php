@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\Cyborg\TradeSettingsController;
 use App\Http\Controllers\Admin\EducatorController;
 use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\NewsManagement;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\RolesPermissions;
 use App\Http\Controllers\Admin\Signal\SignalController;
 use App\Http\Controllers\Admin\SupportTicket;
@@ -81,10 +82,26 @@ Route::middleware(['auth:admin'])->group(function () {
         Route::get('messages', 'getMessages')->name('messages');
         Route::post('message', 'sendMessage')->name('messages.send');
     });
+
+    Route::controller(ProfileController::class)->prefix('profile')->name('profile.')->group(function () {
+        Route::get('profile', 'index')->name('index');
+        Route::post('update-password', 'updatePassword')->name('update.password');
+        Route::post('update-photo', 'updateProfileImage')->name('update.photo');
+        Route::post('update-profile', 'updateProfile')->name('update.profile');
+    });
 });
 
 Route::get('test-notifications', function () {
     event(new \App\Events\SignalNotification(1, "hello", "updated"));
 
     return null;
+});
+
+Route::get('push-notification', function () {
+
+    $fcmTokens =  followersPushTokens(1);
+
+    if (!empty($fcmTokens)) {
+        \Illuminate\Support\Facades\Notification::send(null, new \App\Notifications\SendPushNotification("Signal Created", "A new signal has been created. Tap to view details.", $fcmTokens));
+    }
 });

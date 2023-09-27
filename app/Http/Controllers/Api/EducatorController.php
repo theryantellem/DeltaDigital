@@ -63,9 +63,11 @@ class EducatorController extends ApiController
                 return $this->sendError("Validations failed.", ['errors' => $validator->errors()], 422);
             }
 
+            $user = $request->user();
+
             $educator = Admin::where('uuid', $request->educator)->firstOrFail();
 
-            $following = UserFollower::where('admin_id', $educator->id)->exists();
+            $following = UserFollower::where('admin_id', $educator->id)->where('user_id', $user->id)->exists();
 
             if ($following) {
                 return $this->sendError("You are already following {$educator->first_name} {$educator->last_name}", [], 422);
@@ -73,7 +75,7 @@ class EducatorController extends ApiController
 
             $follow = UserFollower::create([
                 'admin_id' => $educator->id,
-                'user_id' => auth()->user()->id
+                'user_id' => $user->id
             ]);
 
             return $this->sendResponse(null, "You are now following {$educator->first_name} {$educator->last_name}.", 201);
@@ -97,9 +99,11 @@ class EducatorController extends ApiController
                 return $this->sendError("Validations failed.", ['errors' => $validator->errors()], 422);
             }
 
+            $user = $request->user();
+
             $educator = Admin::where('uuid', $request->educator)->firstOrFail();
 
-            $following = UserFollower::where('admin_id', $educator->id)->first();
+            $following = UserFollower::where('admin_id', $educator->id)->where('user_id', $user->id)->first();
 
             if (!$following) {
                 return $this->sendError("You are not yet following {$educator->first_name} {$educator->last_name}.", [], 422);

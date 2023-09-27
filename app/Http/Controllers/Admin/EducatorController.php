@@ -7,6 +7,7 @@ use App\Http\Resources\EducatorResource;
 use App\Models\Admin;
 use App\Models\ChatGroup;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
@@ -55,36 +56,56 @@ class EducatorController extends Controller
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
-        $imageUrl = null;
+        try {
 
-        if ($request->hasFile('photo')) {
-            // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
-            $image = $request->file('photo');
-            $image_name = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('images/educator'), $image_name);
+            DB::beginTransaction();
 
-            $imageUrl = url('/images/educator/' . $image_name);
+            $imageUrl = null;
+
+            if ($request->hasFile('photo')) {
+                // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
+                $image = $request->file('photo');
+                $image_name = time() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('images/educator'), $image_name);
+
+                $imageUrl = url('/images/educator/' . $image_name);
+            }
+
+            $password = rand(000000, 999999);
+
+            $educator = Admin::create([
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'email' => $request->email,
+                'password' => Hash::make($password),
+                'photo' => $imageUrl
+            ]);
+
+            ChatGroup::create([
+                'admin_id' => $educator->id
+            ]);
+
+            $educator->assignRole('educator');
+
+            $educator = new EducatorResource($educator);
+
+            $data = [
+                'email' => $educator->email,
+                'password' => $password,
+                'name' => ucfirst($educator->first_name)
+            ];
+
+            dispatch(new \App\Jobs\Mail\AdminUnboardingMailJob($data));
+
+            DB::commit();
+
+            return response()->json(['success' => true, 'educator' => $educator, 'message' => 'Educator created successfully.'], 201);
+        } catch (\Exception $e) {
+            sendToLog($e);
+            DB::rollBack();
+
+            return response()->json(['success' => false, 'error' => 'Service currently unavailable'], 500);
         }
-
-        $password = rand(000000, 999999);
-
-        $educator = Admin::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'password' => Hash::make($password),
-            'photo' => $imageUrl
-        ]);
-
-        ChatGroup::create([
-            'admin_id' => $educator->id
-        ]);
-
-        $educator->assignRole('educator');
-
-        $educator = new EducatorResource($educator);
-
-        return response()->json(['success' => true, 'educator' => $educator, 'message' => 'Educator created successfully.'], 201);
     }
 
     /**
@@ -171,6 +192,8 @@ class EducatorController extends Controller
         if (!$educator) {
             return response()->json(['success' => false, 'message' => 'Educator not found.'], 404);
         }
+
+        \App\Models\UserFollower::where('admin_id', $educator->id)->delete();
 
         $educator->delete();
 

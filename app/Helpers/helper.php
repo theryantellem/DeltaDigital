@@ -110,13 +110,15 @@ if (!function_exists('followers')) { /* send to log" */
 if (!function_exists('followersPushTokens')) { /* send to log" */
     function followersPushTokens($educator)
     {
-        $followers = \App\Models\UserFollower::where('admin_id', $educator)
+        $followers = \App\Models\UserFollower::with('user')->where('admin_id', $educator)
             ->whereHas('user', function ($query) {
                 $query->whereNotNull('fcm_token')
                     ->select('fcm_token');
             })
             ->get();
 
-        return $followers;
+        $fcmTokens = $followers->pluck('user.fcm_token')->toArray();
+
+        return $fcmTokens;
     }
 }

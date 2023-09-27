@@ -1,10 +1,10 @@
 @include('layouts.admin.partails._head')
 <body>
-<div id="preloader">
+{{-- <div id="preloader">
     <div>
         <img src="{{ asset('images/logo.png') }}" alt="">
     </div>
-</div>
+</div> --}}
 
 <div id="main-wrapper">
 

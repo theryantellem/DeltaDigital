@@ -36,7 +36,7 @@ class SignalController extends Controller
         //     $signals = Signal::get();
         // }
 
-        $signals = Signal::where('user_id', $admin->id)->get();
+        $signals = Signal::where('admin_id', $admin->id)->get();
 
         $signals = SignalResource::collection($signals);
 
