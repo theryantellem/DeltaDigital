@@ -15,6 +15,6 @@ class CategoryController extends ApiController
         $categories = Category::orderBy('id', 'desc')->get();
         $resources =CategoryResource::collection($categories);
 
-        return $this->sendResponse($resources, "Schedules retrieved successfully.", Response::HTTP_OK);
+        return $this->sendResponse($resources, "Categories retrieved successfully.", Response::HTTP_OK);
     }
 }

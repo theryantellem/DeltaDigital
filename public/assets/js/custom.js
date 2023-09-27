@@ -29,6 +29,7 @@ var YashAdmin = function(){
 			}
 		});
 	}
+
     var handleAllChecked = function() {
 		$("#checkAll").on('change',function() {
 			$("td input, .email-list .custom-checkbox input").prop('checked', $(this).prop("checked"));
@@ -78,6 +79,7 @@ var YashAdmin = function(){
 			}
 		})
 	}
+
 	var handleMinHeight = function() {
 		var win_h = window.outerHeight;
 		var win_h = window.outerHeight;
@@ -85,6 +87,7 @@ var YashAdmin = function(){
 			$(".content-body").css("min-height", (win_h + 0) + "px");
 		};
 	}
+
 	var handleDataAction = function() {
 		$('a[data-action="collapse"]').on("click", function(i) {
 			i.preventDefault(),
@@ -122,6 +125,7 @@ var YashAdmin = function(){
 				$(this.window).scrollTop() >= headerHight ? $('.deznav').addClass('fixed') : $('.deznav').removeClass('fixed')
 		});
 	}
+
 	var handleMenuTabs = function() {
 		if(screenWidth <= 991 ){
 			jQuery('.menu-tabs .nav-link').on('click',function(){
@@ -175,11 +179,13 @@ var YashAdmin = function(){
 			jQuery('.chatbox').removeClass('active');
 		});
 	}
+
 	var handlePerfectScrollbar = function() {
 		if(jQuery('.deznav-scroll').length > 0)
 		{
 			//const qs = new PerfectScrollbar('.deznav-scroll');
 			const qs = new PerfectScrollbar('.deznav-scroll');
+
 			qs.isRtl = false;
 		}
 	}
@@ -202,6 +208,7 @@ var YashAdmin = function(){
 			}
 		});
 	}
+
 	var handleDzChatUser = function() {
 		jQuery('.dz-chat-user-box .dz-chat-user').on('click',function(){
 			jQuery('.dz-chat-user-box').addClass('d-none');
@@ -266,11 +273,13 @@ var YashAdmin = function(){
 		});
 	}
 
+
 	var heartBlast = function (){
 		$(".heart").on("click", function() {
 			$(this).toggleClass("heart-blast");
 		});
 	}
+
 	var handleDzLoadMore = function() {
 		$(".dz-load-more").on('click', function(e)
 		{
@@ -291,6 +300,7 @@ var YashAdmin = function(){
 			})
 		});
 	}
+
 	var handleLightgallery = function(){
 		if(jQuery('#lightgallery').length > 0){
 			$('#lightgallery').lightGallery({
@@ -306,6 +316,7 @@ var YashAdmin = function(){
 			$(this).siblings(".custom-file-label").addClass("selected").html(fileName);
 		});
 	}
+
   	var vHeight = function(){
         var ch = $(window).height() - 206;
         $(".chatbox .msg_card_body").css('height',ch);
@@ -417,6 +428,7 @@ var YashAdmin = function(){
 			});
 		}
 	}
+
 	var handleDraggableCard = function() {
 		var dzCardDraggable = function () {
 		 return {
@@ -435,11 +447,13 @@ var YashAdmin = function(){
 			 appendTo: 'body',
 			 constrainDimensions: true
 			}
+
 		   });
 		   swappable.on('drag:stop', () => {
 				setTimeout(function(){
 					setBoxCount();
 				}, 200);
+
 			})
 		  }
 		 };
@@ -482,6 +496,7 @@ var YashAdmin = function(){
 		loader = document.getElementById('loader');
 		loadNow(1);
 	}); */
+
 	/* Masonry Box ============ */
 	var masonryBox = function(){
 		'use strict';
@@ -618,6 +633,7 @@ var YashAdmin = function(){
 	}
 	var tagify = function(){
 		if(jQuery('input[name=tagify]').length > 0){
+
 		// The DOM element you wish to replace with Tagify
 			var input = document.querySelector('input[name=tagify]');
 
@@ -680,6 +696,7 @@ var YashAdmin = function(){
 			handleThemeMode();
 		},
 
+
 		load:function(){
 			handlePreloader();
 			//handleNiceSelect();
@@ -704,6 +721,7 @@ jQuery(document).ready(function() {
 	$('[data-bs-toggle="popover"]').popover();
     'use strict';
 	YashAdmin.init();
+
 });
 /* Document.ready END */
 
@@ -714,6 +732,7 @@ jQuery(window).on('load',function () {
 	setTimeout(function(){
 			YashAdmin.handleMenuPosition();
 	}, 1000);
+
 });
 /*  Window Load END */
 /* Window Resize START */

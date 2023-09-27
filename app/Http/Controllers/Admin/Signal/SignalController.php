@@ -276,4 +276,5 @@ class SignalController extends Controller
 
         return response()->json(['success' => true, 'message' => ' Signal was successfully deleted.']);
     }
+
 }
