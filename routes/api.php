@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthenticationController;
 use App\Http\Controllers\Api\BannerController;
+use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\EducatorController;
 use App\Http\Controllers\Api\ScheduleController;
@@ -87,3 +88,5 @@ Route::controller(ScheduleController::class)->prefix('schedules')->group(functio
     Route::get('/{schedule}', 'show');
     Route::get('{educator}/educator-schedules', 'educatorSchedules');
 });
+
+Route::get('categories', [CategoryController::class, 'index']);
