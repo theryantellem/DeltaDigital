@@ -9,6 +9,7 @@ use App\Http\Resources\CategoryResource;
 use App\Http\Resources\SignalResource;
 use App\Models\Asset;
 use App\Models\Category;
+use App\Models\EducatorCategory;
 use App\Models\Signal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -45,7 +46,8 @@ class SignalController extends Controller
         $status = \App\Enums\SignalStatusEnum::options();
 
         $assets = AssetResource::collection(Asset::get());
-        $categories = CategoryResource::collection(Category::get());
+        $categories = EducatorCategory::with('category')->where('admin_id', $admin->id)->get();
+        // $categories = CategoryResource::collection(Category::get());
 
         return response()->json(['signals' => $signals, 'categories' => $categories, 'order_type' => $orderType, 'market_status' => $marketStaus, 'status' => $status, 'assets' => $assets]);
     }

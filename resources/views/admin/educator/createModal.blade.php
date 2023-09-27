@@ -30,6 +30,25 @@
                             placeholder="">
                         <span v-if="errors.email" class="text-danger">@{{ errors.email[0] }}</span>
                     </div>
+                    <div class="col-xl-12 mb-3">
+                        <label for="exampleFormControlInput3" class="form-label">Password<span
+                                class="text-danger">*</span></label>
+                        <input type="password" v-model="password" class="form-control" id="exampleFormControlInput3"
+                            placeholder="">
+                        <span v-if="errors.password" class="text-danger">@{{ errors.password[0] }}</span>
+                    </div>
+                    <div class="col-xl-12 mb-3">
+                        <label for="exampleFormControlInput1" class="form-label">Categories<span
+                                class="text-danger">*</span></label>
+                        <select v-model="categories" class="form-control" multiple id="categoriesSelect" >
+                            {{-- <option value="">--select--category--</option> --}}
+                            <option v-for="(category,index) in categoryList" :key="index"
+                                :value="category?.id">
+                                @{{ category?.name }}
+                            </option>
+                        </select>
+                        <span v-if="errors.categories" class="text-danger">@{{ errors?.categories[0] }}</span>
+                    </div>
                     <div class="col-lg-12 mb-3">
                         <label>Photo</label>
                         <div class="d-flex justify-content-center mb-3">
@@ -49,8 +68,8 @@
                             <img v-else :src="photo_preview" alt="Chart Preview"
                                 style="max-width: 100%; max-height: 200px; height: 200px">
                         </div>
-                        <input class="form-control form-control-sm" @change="handlePhotoUpload($event)" id="formFileSm"
-                            type="file">
+                        <input class="form-control form-control-sm" @change="handlePhotoUpload($event)"
+                            id="formFileSm" type="file">
                         <span v-if="errors.photo" class="text-danger">@{{ errors.photo[0] }}</span>
                     </div>
                 </div>

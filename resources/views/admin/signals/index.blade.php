@@ -224,6 +224,8 @@
                         this.status = response.data.status
                         this.assets = response.data.assets
                         this.categories = response.data.categories
+
+                        // console.log(response.data.categories)
                     }).catch(error => {
                         console.log(error);
                     })

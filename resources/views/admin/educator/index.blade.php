@@ -83,9 +83,12 @@
                     first_name: "",
                     last_name: "",
                     email: "",
+                    password: "",
                     photo: "",
                     status: [],
-                    photo_preview: null
+                    photo_preview: null,
+                    categories: [],
+                    categoryList: []
                 }
             },
             mounted() {
@@ -101,7 +104,6 @@
                             this.photo_preview = e.target.result; // Set the preview URL
                         };
                         reader.readAsDataURL(this.photo);
-
                     }
                 },
                 handleCloseModal() {
@@ -110,14 +112,15 @@
                     this.email = "";
                     this.photo = "";
                 },
-                getEducators() {
-                    axios.get("{{ route('admin.educators.all') }}").then(response => {
+               async getEducators() {
+                  await  axios.get("{{ route('admin.educators.all') }}").then(response => {
                         this.educators = response.data.educators
+                        this.categoryList = response.data.categories
                     }).catch(error => {
                         console.log(error);
                     })
                 },
-                createEducator() {
+                async createEducator() {
                     this.errors = {};
 
                     this.loading = true
@@ -127,9 +130,11 @@
                     formData.append('first_name', this.first_name);
                     formData.append('last_name', this.last_name);
                     formData.append('email', this.email);
+                    formData.append('password', this.password);
                     formData.append('photo', this.photo);
+                    formData.append('categories', this.categories)
 
-                    axios.post("{{ route('admin.educators.store') }}", formData, {
+                    await axios.post("{{ route('admin.educators.store') }}", formData, {
                             headers: {
                                 'Content-Type': 'multipart/form-data'
                             }
@@ -142,6 +147,7 @@
                             this.first_name = "";
                             this.last_name = "";
                             this.photo = "";
+                            this.categories = []
 
                             offcanvasSignal.hide();
 
@@ -155,7 +161,7 @@
 
                             } else {
                                 // console.log(error.response)
-                                Notiflix.Notify.Failure(error.response.data.message)
+                                Notiflix.Notify.Failure("Service unavailable");
                                 // Handle other types of errors, if needed
                             }
 
@@ -194,5 +200,7 @@
         })
 
         const offcanvasSignal = new bootstrap.Offcanvas(document.getElementById('offcanvasSignal'));
+
+        $("#categoriesSelect").select2();
     </script>
 @endpush

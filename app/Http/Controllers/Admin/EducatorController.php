@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CategoryResource;
 use App\Http\Resources\EducatorResource;
 use App\Models\Admin;
+use App\Models\Category;
 use App\Models\ChatGroup;
+use App\Models\EducatorCategory;
+use App\Models\Signal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -27,15 +31,9 @@ class EducatorController extends Controller
         $role = Role::where('name', 'educator')->first();
 
         $educators = EducatorResource::collection($role->users);
+        $categories = CategoryResource::collection(Category::where('status',1)->get());
 
-        return response()->json(['success' => true, 'educators' => $educators], 200);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
+        return response()->json(['success' => true, 'educators' => $educators, 'categories' => $categories], 200);
     }
 
     /**
@@ -49,12 +47,15 @@ class EducatorController extends Controller
             'email' => 'required|email|unique:admins,email',
             'phone_number' => 'nullable|numeric',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'password' => 'required'
         ]);
 
         // Handle validation errors
         if ($validator->fails()) {
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
+
+        $commaSeparatedArray = explode(',', $request->categories);
 
         try {
 
@@ -77,8 +78,8 @@ class EducatorController extends Controller
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
                 'email' => $request->email,
-                'password' => Hash::make($password),
-                'photo' => $imageUrl
+                'password' => Hash::make($request->password),
+                'photo' => $imageUrl,
             ]);
 
             ChatGroup::create([
@@ -86,6 +87,14 @@ class EducatorController extends Controller
             ]);
 
             $educator->assignRole('educator');
+
+            // assign categories to educator
+            foreach ($commaSeparatedArray as $category) {
+                EducatorCategory::create([
+                    'admin_id' => $educator->id,
+                    'category_id' => $category
+                ]);
+            }
 
             $educator = new EducatorResource($educator);
 
@@ -95,7 +104,7 @@ class EducatorController extends Controller
                 'name' => ucfirst($educator->first_name)
             ];
 
-            dispatch(new \App\Jobs\Mail\AdminUnboardingMailJob($data));
+            // dispatch(new \App\Jobs\Mail\AdminUnboardingMailJob($data));
 
             DB::commit();
 
@@ -106,14 +115,6 @@ class EducatorController extends Controller
 
             return response()->json(['success' => false, 'error' => 'Service currently unavailable'], 500);
         }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
     }
 
     /**
@@ -144,6 +145,7 @@ class EducatorController extends Controller
             return response()->json(['success' => false, 'message' => 'Educator not found.']);
         }
 
+
         $validator = Validator::make($request->all(), [
             'first_name' => 'required|string',
             'last_name' => 'required|string',
@@ -168,14 +170,22 @@ class EducatorController extends Controller
             $imageUrl = url('/images/educator/' . $image_name);
         }
 
-        $educator = Admin::create([
+        $educator->update([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
             'photo' => $imageUrl
         ]);
 
-        $educator->assignRole('educator');
+        EducatorCategory::where('admin_id', $educator->id)->delete();
+
+        // assign categories to educator
+        foreach ($request->categories as $category) {
+            EducatorCategory::create([
+                'admin_id' => $educator->id,
+                'category_id' => $category
+            ]);
+        }
 
         $educator = new EducatorResource($educator);
 
@@ -193,7 +203,11 @@ class EducatorController extends Controller
             return response()->json(['success' => false, 'message' => 'Educator not found.'], 404);
         }
 
+        EducatorCategory::where('admin_id', $educator->id)->delete();
+
         \App\Models\UserFollower::where('admin_id', $educator->id)->delete();
+
+        Signal::where('admin_id', $educator->id)->delete();
 
         $educator->delete();
 

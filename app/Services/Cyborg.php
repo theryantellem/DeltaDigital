@@ -16,7 +16,7 @@ class Cyborg
 
     public function setupUser($user)
     {
-        return self::handle("/setupUser?userId={$user->id}&expire={$user->expiry_date}&iseligible={$user->iseligible}");
+        return self::handle("/setupUser?userId={$user->id}&expire={$user->expiry_date}&iseligible={$user->iseligible}&username={$user->username}&email={$user->email}");
     }
 
     protected function handle($uri)

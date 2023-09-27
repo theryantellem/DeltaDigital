@@ -10,6 +10,18 @@
             <form>
                 <div class="row">
                     <div class="col-xl-12 mb-3">
+                        <label for="exampleFormControlInput1" class="form-label">Category<span
+                                class="text-danger">*</span></label>
+                        <select v-model="category" class="form-control">
+                            <option value="">--select--category--</option>
+                            <option v-for="(category,index) in categories" :key="index"
+                                :value="category?.category?.id">
+                                <span class="text-capitalize"> @{{ category?.category?.name }}</span>
+                            </option>
+                        </select>
+                        <span v-if="errors?.category" class="text-danger">@{{ errors?.category[0] }}</span>
+                    </div>
+                    <div class="col-xl-12 mb-3">
                         <label for="exampleFormControlInput1" class="form-label">Asset<span
                                 class="text-danger">*</span></label>
                         <select v-model="asset_type" class="form-control">
@@ -19,18 +31,6 @@
                             </option>
                         </select>
                         <span v-if="errors.asset_type" class="text-danger">@{{ errors.asset_type[0] }}</span>
-                    </div>
-                    <div class="col-xl-12 mb-3">
-                        <label for="exampleFormControlInput1" class="form-label">Category<span
-                                class="text-danger">*</span></label>
-                        <select v-model="category" class="form-control">
-                            <option value="">--select--category--</option>
-                            <option v-for="(category,index) in categories" :key="index"
-                                :value="category.id">
-                                <span class="text-capitalize"> @{{ category?.name }}</span>
-                            </option>
-                        </select>
-                        <span v-if="errors?.category" class="text-danger">@{{ errors?.category[0] }}</span>
                     </div>
                     <div class="col-xl-6 mb-3">
                         <label for="exampleFormControlInput2" class="form-label">Order Type<span
