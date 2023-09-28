@@ -104,11 +104,12 @@ class SignalController extends Controller
 
             $fcmTokens =  followersPushTokens($user->id);
 
-            // if (!empty($fcmTokens)) {
-            //     Notification::send(null, new SendPushNotification("Signal Created", "A new signal has been created. Tap to view details.", $fcmTokens));
-            // }
+            if (!empty($fcmTokens)) {
+                Notification::send(null, new SendPushNotification("Signal Created", "A new signal has been created. Tap to view details.", $fcmTokens));
+            }
+
             // // dispatch notification
-            // event(new SignalNotification($user->uuid, $signal, "created"));
+            event(new SignalNotification($user->uuid, $signal, "created"));
 
             return response()->json(['success' => true, 'signal' => $signal, 'message' => 'Signal created successfully.'], 201);
         } catch (\Throwable $th) {
