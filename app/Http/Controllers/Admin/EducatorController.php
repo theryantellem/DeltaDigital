@@ -31,7 +31,7 @@ class EducatorController extends Controller
         $role = Role::where('name', 'educator')->first();
 
         $educators = EducatorResource::collection($role->users);
-        $categories = CategoryResource::collection(Category::where('status',1)->get());
+        $categories = CategoryResource::collection(Category::get());
 
         return response()->json(['success' => true, 'educators' => $educators, 'categories' => $categories], 200);
     }

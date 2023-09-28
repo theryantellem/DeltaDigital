@@ -6,10 +6,12 @@
     <div id="signal">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="heading mb-0">Signals Management</h2>
-            <div class="d-flex align-items-center">
-                <a class="btn btn-primary btn-sm me-2" data-bs-toggle="offcanvas" href="#offcanvasSignal" role="button"
-                    aria-controls="offcanvasSignal">+ Create Signal</a>
-            </div>
+            @if (auth()->user()->can('create_signal'))
+                <div class="d-flex align-items-center">
+                    <a class="btn btn-primary btn-sm me-2" data-bs-toggle="offcanvas" href="#offcanvasSignal" role="button"
+                        aria-controls="offcanvasSignal">+ Create Signal</a>
+                </div>
+            @endif
         </div>
 
         <div class="card">
@@ -28,8 +30,9 @@
                                     <th>Entry Price</th>
                                     <th>Stop Loss</th>
                                     <th>Target Price</th>
+                                    <th>Comment</th>
                                     <th>Market Status</th>
-                                    {{-- <th>Status</th> --}}
+
                                     <th>
                                         Action
                                     </th>
@@ -38,21 +41,24 @@
                             <tbody v-if="signals.length > 0">
                                 <tr role="row" class="odd" v-for="(signal,index) in signals" :key="index">
                                     <td>
-                                        <div class="products">
+                                        <div class="products" v-if="signal?.asset">
                                             <img :src="signal?.asset?.image" class="avatar avatar-md" alt="">
                                             <div>
                                                 <h6><a href="#">@{{ signal?.asset?.name }}</a></h6>
                                             </div>
                                         </div>
                                     </td>
-                                    <td><span class="d-flex justify-content-center">@{{ signal?.category?.name }}</span></td>
-                                    <td><span class="d-flex justify-content-center">@{{ signal?.order_type }}</span></td>
+                                    <td><span class="d-flex">@{{ signal?.category?.name }}</span></td>
+                                    <td><span class="d-flex ">@{{ signal?.order_type }}</span></td>
                                     <td><span class="d-flex justify-content-center">@{{ signal?.entry_price }}</span></td>
                                     <td>
                                         <span class="d-flex justify-content-center">@{{ signal?.stop_loss }}</span>
                                     </td>
                                     <td>
                                         <span class="d-flex justify-content-center">@{{ signal?.target_price }}</span>
+                                    </td>
+                                    <td>
+                                        @{{ signal?.comment }}
                                     </td>
                                     <td>
                                         <select class="default-select status-select"
@@ -62,14 +68,7 @@
                                                 @{{ status }}</option>
                                         </select>
                                     </td>
-                                    {{-- <td>
-                                        <select class="default-select status-select"
-                                            @change="updateStatus($event,signal.id)">
-                                            <option v-for="(st,index) in status" :value="index"
-                                                :selected="index === signal?.status">
-                                                @{{ st }}</option>
-                                        </select>
-                                    </td> --}}
+
                                     <td class="edit-action">
                                         <a href="#" @click.prevent="viewSignal(signal)"
                                             class="icon-box icon-box-xs bg-primary me-1">
@@ -110,11 +109,12 @@
                     photo: "",
                     chart_photo: "",
                     order_type: "",
-                    entry_price: "",
-                    asset_type: "",
-                    stop_loss: "",
-                    target_price: "",
+                    entry_price: 0,
+                    asset_type: 0,
+                    stop_loss: 0,
+                    target_price: 0,
                     comment: "",
+                    assetsList: [],
                     category: "",
                     orderTypes: [],
                     marketStatus: [],
@@ -124,14 +124,22 @@
                     edit: false,
                     signalId: "",
                     percentage: 0,
+                    type: "",
                     chart_photo_preview: null,
-                    photo_preview: null
+                    photo_preview: null,
+                    description:""
                 }
             },
             mounted() {
                 this.getSignals()
             },
             methods: {
+                filterAsset() {
+                    this.assets = this.assetsList.filter(item => item.category.id === this.category)
+
+                    const selectedOption = this.$el.querySelector('option[value="' + this.category + '"]');
+                    this.type = selectedOption ? selectedOption.getAttribute('data-type') : '';
+                },
                 handlePhotoUpload(event) {
                     this.photo = event.target.files[0];
 
@@ -162,17 +170,21 @@
                 viewSignal(signal) {
                     this.chart_photo_preview = signal?.chart_photo
                     this.category = signal?.category?.id
+                    this.type = signal?.category?.type
                     this.asset_type = signal?.asset?.id
                     this.order_type = signal?.order_type
                     this.entry_price = signal?.entry_price
                     this.stop_loss = signal?.stop_loss
                     this.target_price = signal?.target_price
                     this.comment = signal?.comment
+                    this.description = signal?.comment
                     this.percentage = signal?.percentage
 
                     this.edit = true
 
                     this.signalId = signal?.id
+
+                    this.filterAsset()
 
                     offcanvasSignal.show()
                 },
@@ -216,13 +228,13 @@
                         console.log(error);
                     })
                 },
-                getSignals() {
-                    axios.get("{{ route('admin.signals.all') }}").then(response => {
+                async getSignals() {
+                    await axios.get("{{ route('admin.signals.all') }}").then(response => {
                         this.signals = response.data.signals;
                         this.orderTypes = response.data.order_type
                         this.marketStatus = response.data.market_status
                         this.status = response.data.status
-                        this.assets = response.data.assets
+                        this.assetsList = response.data.assets
                         this.categories = response.data.categories
 
                         // console.log(response.data.categories)
@@ -230,7 +242,7 @@
                         console.log(error);
                     })
                 },
-                createSignal() {
+                async createSignal() {
                     this.errors = {};
 
                     this.loading = true
@@ -246,9 +258,11 @@
                     formData.append('category', this.category);
                     formData.append('percentage', this.percentage);
                     // formData.append('photo', this.photo);
-                    formData.append('chart_photo', this.chart_photo);
+                    formData.append('photo', this.chart_photo);
+                    formData.append('type', this.type);
+                    formData.append('description', this.description);
 
-                    axios.post("{{ route('admin.signals.store') }}", formData, {
+                    await axios.post("{{ route('admin.signals.store') }}", formData, {
                             headers: {
                                 'Content-Type': 'multipart/form-data'
                             }
@@ -279,7 +293,7 @@
                             this.loading = false;
                         })
                 },
-                updateSignal(signalId) {
+                async updateSignal(signalId) {
                     this.errors = {};
 
                     this.loading = true
@@ -295,11 +309,9 @@
                     formData.append('category', this.category);
                     formData.append('percentage', this.percentage);
                     // formData.append('photo', this.photo);
-                    formData.append('chart_photo', this.chart_photo);
+                    formData.append('photo', this.chart_photo);
 
-                    console.log(formData)
-
-                    axios.put(`/admin/signals/${signalId}`, formData, {
+                    await axios.put(`/admin/signals/${signalId}`, formData, {
                             headers: {
                                 'Content-Type': 'multipart/form-data'
                             }
@@ -344,7 +356,8 @@
                     this.chart_photo_preview = ""
                     this.photo_preview = ""
                     this.signalId = ""
-
+                    this.assets = []
+                    this.type = ""
                     this.edit = false
 
                     this.$refs.fileInput.value = null;
@@ -378,6 +391,9 @@
                 }
             }
         })
+
+        // $("#assetsSelect").select2();
+        // $('#categorySelect').select2();
 
         const offcanvasSignal = new bootstrap.Offcanvas(document.getElementById('offcanvasSignal'));
     </script>

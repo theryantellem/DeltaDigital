@@ -30,6 +30,7 @@ class CategoryController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'type' => 'string|required'
         ]);
 
         // Handle validation errors
@@ -52,6 +53,7 @@ class CategoryController extends Controller
             $category = Category::create([
                 'name' => $request->name,
                 'photo' =>  $photo,
+                'type' => $request->type
             ]);
 
             // broadcast events
@@ -83,6 +85,7 @@ class CategoryController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'type' => 'string|required'
         ]);
 
         // Handle validation errors
@@ -111,6 +114,7 @@ class CategoryController extends Controller
             $category->update([
                 'name' => $request->name,
                 'photo' =>  $photo,
+                'type' => $request->type
             ]);
 
             $category->refresh();

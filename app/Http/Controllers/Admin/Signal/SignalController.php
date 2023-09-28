@@ -31,13 +31,11 @@ class SignalController extends Controller
     {
         $admin = Auth::guard('admin')->user();
 
-        // if ($admin->hasRole('educator')) {
-        //     $signals = Signal::where('user_id', $admin->id)->get();
-        // } else {
-        //     $signals = Signal::get();
-        // }
-
-        $signals = Signal::where('admin_id', $admin->id)->get();
+        if ($admin->hasRole('super_admin')) {
+            $signals = Signal::get();
+        } else {
+            $signals = Signal::where('user_id', $admin->id)->get();
+        }
 
         $signals = SignalResource::collection($signals);
 
@@ -59,16 +57,16 @@ class SignalController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'asset_type' => 'required|string',
-                'order_type' => 'required|string',
-                'entry_price' => 'required|numeric',
                 'category' => 'required|string',
-                'stop_loss' => 'required|numeric',
-                'target_price' => 'required|numeric',
+                'asset_type' => 'required_if:type,trade',
+                'order_type' => 'required_if:type,trade',
+                'entry_price' => 'required_if:type,trade|numeric',
+                'stop_loss' => 'required_if:type,trade|numeric',
+                'target_price' => 'required_if:type,trade|numeric',
                 'percentage' => 'numeric',
                 'comment' => 'nullable|string',
-                // 'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-                'chart_photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                'description' => 'required_if:type,news'
             ]);
 
             // Handle validation errors
@@ -80,12 +78,11 @@ class SignalController extends Controller
 
             $chartUrl = null;
 
-            if ($request->hasFile('chart_photo')) {
+            if ($request->hasFile('photo')) {
                 // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
-                $image = $request->file('chart_photo');
+                $image = $request->file('photo');
                 $image_name = time() . '.' . $image->getClientOriginalExtension();
                 $image->move(public_path('images/signals'), $image_name);
-
                 $chartUrl = url('/images/signals/' . $image_name);
             }
 
@@ -98,7 +95,7 @@ class SignalController extends Controller
                 'target_price' => $request->target_price,
                 'category_id' => $request->category,
                 'percentage' => $request->percentage,
-                'comment' => $request->comment,
+                'comment' => !empty($request->comment) ? $request->comment : $request->description,
                 'chart_photo' =>  $chartUrl,
             ]);
 
@@ -107,11 +104,11 @@ class SignalController extends Controller
 
             $fcmTokens =  followersPushTokens($user->id);
 
-            if (!empty($fcmTokens)) {
-                Notification::send(null, new SendPushNotification("Signal Created", "A new signal has been created. Tap to view details.", $fcmTokens));
-            }
-            // dispatch notification
-            event(new SignalNotification($user->uuid, $signal, "created"));
+            // if (!empty($fcmTokens)) {
+            //     Notification::send(null, new SendPushNotification("Signal Created", "A new signal has been created. Tap to view details.", $fcmTokens));
+            // }
+            // // dispatch notification
+            // event(new SignalNotification($user->uuid, $signal, "created"));
 
             return response()->json(['success' => true, 'signal' => $signal, 'message' => 'Signal created successfully.'], 201);
         } catch (\Throwable $th) {
@@ -188,16 +185,16 @@ class SignalController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'asset_type' => 'required|string',
-                'order_type' => 'required|string',
-                'entry_price' => 'required|numeric',
                 'category' => 'required|string',
-                'stop_loss' => 'required|numeric',
-                'target_price' => 'required|numeric',
+                'asset_type' => 'required_if:type,trade',
+                'order_type' => 'required_if:type,trade|string',
+                'entry_price' => 'required_if:type,trade|numeric',
+                'stop_loss' => 'required_if:type,trade|numeric',
+                'target_price' => 'required_if:type,trade|numeric',
                 'percentage' => 'numeric',
                 'comment' => 'nullable|string',
-                // 'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-                'chart_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                'description' => 'required_if:type,news|string'
             ]);
 
             // Handle validation errors
@@ -214,9 +211,9 @@ class SignalController extends Controller
             // $imageUrl = $signal->photo;
             $chartUrl = $signal->chat_photo;
 
-            if ($request->hasFile('chart_photo')) {
+            if ($request->hasFile('photo')) {
                 // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
-                $image = $request->file('chart_photo');
+                $image = $request->file('photo');
                 $image_name = time() . '.' . $image->getClientOriginalExtension();
                 $image->move(public_path('images/signals'), $image_name);
 
@@ -231,8 +228,7 @@ class SignalController extends Controller
                 'target_price' => $request->target_price,
                 'category_id' => $request->category,
                 'percentage' => $request->percentage,
-                'comment' => $request->comment,
-                // 'photo' => $imageUrl,
+                'comment' => !empty($request->comment) ? $request->comment : $request->description,
                 'chart_photo' =>  $chartUrl,
                 'is_updated' => true
             ]);
@@ -271,5 +267,4 @@ class SignalController extends Controller
 
         return response()->json(['success' => true, 'message' => ' Signal was successfully deleted.']);
     }
-
 }

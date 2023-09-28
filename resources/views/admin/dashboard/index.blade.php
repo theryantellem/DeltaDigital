@@ -12,7 +12,11 @@
                             <i class="la la-users"></i>
                         </span>
                         <div class="media-body text-white">
-                            <p class="mb-1">Followers</p>
+                            @if (auth()->user()->hasRole('super_admin'))
+                                <p class="mb-1">Users</p>
+                            @else
+                                <p class="mb-1">Followers</p>
+                            @endif
                             <h3 class="text-white">{{ number_format($followerscount) }}</h3>
                         </div>
                     </div>
@@ -90,7 +94,8 @@
                                     <div class="card">
                                         <div class="card-body">
                                             <div class="card-media d-flex justify-content-center">
-                                                <img src="{{ $item->asset->image }}" alt="" style="width: 70% !important">
+                                                <img src="{{ $item->asset->image }}" alt=""
+                                                    style="width: 70% !important">
                                             </div>
                                             <div class="media-data">
                                                 <h4>{{ $item->asset->name }}</h4>
@@ -99,7 +104,8 @@
                                                         <p class="text-uppercase">{{ $item->asset->symbol }}</p>
                                                         <span class="text-capitalize">{{ $item->category->name }}</span>
                                                     </div>
-                                                    <span class="badge badge-primary light border-0 text-uppercase">{{ $item->market_status }}</span>
+                                                    <span
+                                                        class="badge badge-primary light border-0 text-uppercase">{{ $item->market_status }}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -501,7 +507,6 @@
                 prevEl: ".swiper-button-prev",
             },
             breakpoints: {
-
                 300: {
                     slidesPerView: 1,
                     spaceBetween: 20,

@@ -79,9 +79,14 @@
                     photo: "",
                     name: "",
                     catgoryId: "",
+                    type: "",
                     categories: [],
                     edit: false,
-                    photo_preview: null
+                    photo_preview: null,
+                    types: [
+                        "news",
+                        "trade"
+                    ]
                 }
             },
             mounted() {
@@ -117,7 +122,7 @@
                     await axios.get("{{ route('admin.category.all') }}").then(response => {
                         this.categories = response.data.categories
 
-                        console.log(response.data.categories)
+                        // console.log(response.data.categories)
                     }).catch(error => {
                         console.log(error);
                     })
@@ -131,6 +136,7 @@
                     formData.append('_token', '{{ csrf_token() }}');
                     formData.append('name', this.name);
                     formData.append('photo', this.photo);
+                    formData.append('type', this.type);
 
                     await axios.post("{{ route('admin.category.store') }}", formData, {
                             headers: {
@@ -172,6 +178,7 @@
                     formData.append('_token', '{{ csrf_token() }}');
                     formData.append('name', this.name);
                     formData.append('photo', this.photo);
+                    formData.append('type', this.type);
 
                     await axios.post(`/admin/category/update/${id}`, formData, {
                             headers: {
@@ -210,6 +217,7 @@
                     this.photo_preview = ""
                     this.catgoryId = ""
                     this.edit = false
+                    this.type = ""
 
                     this.$refs.fileInput.value = null;
                 },
