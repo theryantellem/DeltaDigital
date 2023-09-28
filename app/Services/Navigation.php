@@ -19,7 +19,7 @@ class Navigation
                     'name'  => 'Inbox',
                     'route' => 'admin.inbox.index',
                     'icon'  => 'bi bi-house-fill fs-3',
-                    'hasPermission' => true
+                    'hasPermission' => auth()->user()->can('manage_chat_room')
                 ],
                 // (object) [
                 //     'name'  => 'User Management',
@@ -47,7 +47,7 @@ class Navigation
                     'name'  => 'Manage Signals',
                     'route' => 'admin.signals.index',
                     'icon'  => 'bi bi-house-fill fs-3',
-                    'hasPermission' => true
+                    'hasPermission' => auth()->user()->can('manage_signal')
                 ]
             ],
             'Extras' => (object) [
@@ -73,25 +73,25 @@ class Navigation
                     'name'  => 'Manage Categories',
                     'route' => 'admin.category.index',
                     'icon'  => 'bi bi-house-fill fs-3',
-                    'hasPermission' => true
+                    'hasPermission' => auth()->user()->can('manage_categories'),
                 ],
                 (object) [
                     'name'  => 'Manage Assets',
                     'route' => 'admin.assets.index',
                     'icon'  => 'bi bi-house-fill fs-3',
-                    'hasPermission' => true
+                    'hasPermission' => auth()->user()->can('manage_assets'),
                 ],
                 (object) [
                     'name'  => 'Manage Educators',
                     'route' => 'admin.educators.index',
                     'icon'  => 'bi bi-house-fill fs-3',
-                    'hasPermission' => true
+                    'hasPermission' => auth()->user()->can('manage_educator'),
                 ],
                 (object) [
                     'name'  => 'Roles Management',
                     'route' => 'admin.roles.index',
                     'icon'  => 'bi bi-house-fill fs-3',
-                    'hasPermission' => true
+                    'hasPermission' => auth()->user()->hasRole('super_admin'),
                 ],
             ],
 
