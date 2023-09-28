@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\AdminManagementController;
 use App\Http\Controllers\Admin\AuthenticationController;
 use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\Cyborg\ExchangeController;
 use App\Http\Controllers\Admin\Cyborg\MarketController;
 use App\Http\Controllers\Admin\Cyborg\StrategyController;
@@ -89,6 +90,14 @@ Route::middleware(['auth:admin'])->group(function () {
         Route::post('update-photo', 'updateProfileImage')->name('update.photo');
         Route::post('update-profile', 'updateProfile')->name('update.profile');
     });
+
+    Route::controller(CategoryController::class)->prefix('category')->name('category.')->group((function () {
+        Route::get('', 'index')->name('index');
+        Route::get('list', 'allCategories')->name('all');
+        Route::get('show/{id}', 'show')->name('show');
+        Route::post('store', 'store')->name('store');
+        Route::post('update/{id}', 'update')->name('update');
+    }));
 });
 
 Route::get('test-notifications', function () {

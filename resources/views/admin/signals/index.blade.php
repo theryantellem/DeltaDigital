@@ -344,6 +344,8 @@
                     this.chart_photo_preview = ""
                     this.photo_preview = ""
                     this.signalId = ""
+
+                    this.$refs.fileInput.value = null;
                 },
                 deleteSignal(signal) {
                     const strat = this.signals

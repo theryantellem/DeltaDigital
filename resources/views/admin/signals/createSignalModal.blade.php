@@ -120,7 +120,7 @@
                             <img v-else :src="chart_photo_preview" alt="Chart Preview"
                                 style="max-width: 100%; max-height: 200px; height: 200px">
                         </div>
-                        <input class="form-control form-control-sm" @change="handleChartPhotoUpload($event)"
+                        <input class="form-control form-control-sm" ref="fileInput" @change="handleChartPhotoUpload($event)"
                             id="formFileSm" type="file">
                         <span v-if="errors.chart_photo" class="text-danger">@{{ errors.chart_photo[0] }}</span>
                     </div>

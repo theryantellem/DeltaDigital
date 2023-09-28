@@ -70,6 +70,12 @@ class Navigation
                 //     'hasPermission' => true
                 // ],
                 (object) [
+                    'name'  => 'Manage Categories',
+                    'route' => 'admin.category.index',
+                    'icon'  => 'bi bi-house-fill fs-3',
+                    'hasPermission' => true
+                ],
+                (object) [
                     'name'  => 'Manage Educators',
                     'route' => 'admin.educators.index',
                     'icon'  => 'bi bi-house-fill fs-3',
