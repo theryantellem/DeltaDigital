@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {SetStateAction, useCallback, useState} from 'react';
 
 import {
     Text,
@@ -8,14 +8,14 @@ import {
     TouchableOpacity,
     ImageBackground,
     Pressable,
-    ActivityIndicator, FlatList, Image, Dimensions
+    ActivityIndicator, FlatList, Image, Dimensions, Platform
 } from 'react-native';
 import FastImage from "react-native-fast-image";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {FontAwesome, Ionicons, SimpleLineIcons} from "@expo/vector-icons";
 import Colors from "../../constants/Colors";
 import {LinearGradient} from 'expo-linear-gradient';
-import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../helpers/normalize";
+import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPixel} from "../../helpers/normalize";
 import {Fonts} from "../../constants/Fonts";
 import {SignalRootTabScreenProps, SignalStackScreenProps} from "../../types";
 import {MyButton} from "../../components/MyButton";
@@ -23,6 +23,10 @@ import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {getSignals, unFollowEducator} from "../../api/finix-api";
 import {addNotificationItem} from "../../app/slices/dataSlice";
 import {useAppDispatch} from "../../app/hooks";
+import GradientSegmentControl from "../../components/segment-control/GradientSegmentControl";
+import SegmentedControl from "../../components/segment-control/SegmentContol";
+import NoItem from "../../components/NoItem";
+import {IF} from "../../helpers/ConditionJsx";
 
 
 const Courses = []
@@ -98,7 +102,7 @@ const ItemSignal = ({item, viewSignal}: Props) => {
             <View style={styles.topCard}>
                 <View style={styles.IconImageWrap}>
                     <Image style={styles.IconImage}
-                           source={{uri: item.asset.image }}/>
+                           source={{uri: item.asset.image}}/>
 
 
                 </View>
@@ -146,7 +150,7 @@ const ItemSignal = ({item, viewSignal}: Props) => {
 
                 </View>
                 <Text style={styles.educatorName}>
-                    Carlos Osorio
+                    {item.educator.last_name} {item.educator.first_name}
                 </Text>
 
 
@@ -160,6 +164,14 @@ const ItemSignal = ({item, viewSignal}: Props) => {
 const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'>) => {
 
     const {educator} = route.params
+
+
+    const [tabIndex, setTabIndex] = useState(0);
+    const handleTabsChange = (index: SetStateAction<number>) => {
+        setTabIndex(index);
+        //  setScreen(index === 0 ? 'Banks' : 'Wallets')
+    };
+
 
     const dispatch = useAppDispatch()
     const queryClient = useQueryClient()
@@ -231,6 +243,15 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
     const goBackNow = () => {
         navigation.goBack()
     }
+
+
+    const startMessage = () => {
+        navigation.navigate('MessageScreen', {
+            educator
+        })
+    }
+
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <ImageBackground source={require('../../assets/images/signal/signal_BG.png')}
@@ -325,9 +346,7 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
                     </ImageBackground>
 
 
-                    <View style={styles.fakeTabWrapper}>
-
-                        <Pressable style={styles.tabButton}>
+                    {/*  <Pressable style={styles.tabButton}>
                             <Text style={[styles.tabButtonText, {
                                 color: "#8E32C5"
                             }]}>
@@ -345,70 +364,135 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
                             <Text style={styles.tabButtonText}>
                                 Stocks
                             </Text>
+                        </Pressable>*/}
+
+
+                    {
+                        Platform.OS === 'ios' ?
+
+                            <GradientSegmentControl tabs={["Crypto", "Forex", "Stocks"]}
+                                                    currentIndex={tabIndex}
+                                                    onChange={handleTabsChange}
+                                                    segmentedControlBackgroundColor={Colors.secondary}
+                                                    activeSegmentBackgroundColor={"#fff"}
+                                                    activeTextColor={Colors.text}
+                                                    textColor={Colors.text}
+                                                    paddingVertical={pixelSizeVertical(12)}/>
+                            :
+
+                            <SegmentedControl tabs={["Crypto", "Forex", "Stocks"]}
+                                              currentIndex={tabIndex}
+                                              onChange={handleTabsChange}
+                                              segmentedControlBackgroundColor={Colors.tintPrimary}
+                                              activeSegmentBackgroundColor={Colors.primary}
+                                              activeTextColor={Colors.text}
+                                              textColor={"#CDD4D7"}
+                                              paddingVertical={pixelSizeVertical(16)}/>
+                    }
+                    <IF condition={tabIndex == 0}>
+
+                        <Pressable onPress={startMessage}>
+                            <ImageBackground resizeMethod={"scale"}
+                                             source={require('../../assets/images/signal/educator_BG.png')}
+                                             style={[styles.segmentBody, {
+                                                 height: 50,
+                                                 marginTop: 20,
+                                             }]}>
+
+                                <View style={styles.ActivityCardTop}>
+                                    <Text style={[styles.listTitle, {
+                                        fontFamily: Fonts.faktumBold
+                                    }]}>
+                                        Messages
+                                    </Text>
+
+                                </View>
+
+                                <View>
+
+                                </View>
+
+                            </ImageBackground>
                         </Pressable>
-                    </View>
 
 
-                    <ImageBackground resizeMethod={"scale"}
-                                     source={require('../../assets/images/signal/educator_BG.png')}
-                                     style={[styles.segmentBody, {
-                                         height: 250,
-                                         marginTop: 20,
-                                     }]}>
+                        <ImageBackground resizeMethod={"scale"}
+                                         source={require('../../assets/images/signal/educator_BG.png')}
+                                         style={[styles.segmentBody, {
+                                             height: 250,
+                                             marginTop: 20,
+                                         }]}>
 
-                        <View style={styles.ActivityCardTop}>
-                            <Text style={[styles.listTitle, {}]}>
-                                Signals
-                            </Text>
-                            <TouchableOpacity onPress={seeSignalSummary} activeOpacity={0.7} style={styles.seeAll}>
-                                <FontAwesome name="plus-circle" size={24} color="#fff"/>
+                            <View style={styles.ActivityCardTop}>
+                                <Text style={[styles.listTitle, {}]}>
+                                    Signals
+                                </Text>
+                                <TouchableOpacity onPress={seeSignalSummary} activeOpacity={0.7} style={styles.seeAll}>
+                                    <FontAwesome name="plus-circle" size={24} color="#fff"/>
 
-                            </TouchableOpacity>
-                        </View>
-                        {
-                            loadingSignals && <ActivityIndicator color={Colors.primary} size='small'/>
-                        }
-                        {
-                            !loadingSignals && signals && signals?.data?.length > 0 &&
-                            <FlatList
-                                data={signals?.data}
-                                keyExtractor={keyExtractor}
-                                horizontal
-                                pagingEnabled
-                                scrollEnabled
-                                snapToAlignment="center"
-                                scrollEventThrottle={16}
-                                decelerationRate={"fast"}
-                                showsHorizontalScrollIndicator={false}
-                                renderItem={renderItemSignal}
-                            />
-                        }
-                    </ImageBackground>
+                                </TouchableOpacity>
+                            </View>
+                            {!loadingSignals && signals && signals?.data?.length < 1 &&
+                                <View style={styles.messageWrap}>
+                                    <View style={styles.imageWrap}>
+
+                                        <Image source={require('../../assets/images/EmptyBox/empty_state.png')} style={styles.fileBroken}/>
 
 
-                    <ImageBackground resizeMethod={"scale"}
-                                     source={require('../../assets/images/signal/educator_BG.png')}
-                                     style={[styles.segmentBody, {
-                                         height: 150,
-                                         marginTop: 20,
-                                     }]}>
+                                    </View>
+                                    <Text style={styles.message}>
+                                    No signal from this educator!
 
-                        <View style={styles.ActivityCardTop}>
-                            <Text style={[styles.listTitle, {
-                                fontFamily: Fonts.faktumBold
-                            }]}>
-                                Courses
-                            </Text>
+                                    </Text>
+                                </View>
+                            }
+                            {
+                                loadingSignals && <ActivityIndicator color={Colors.primary} size='small'/>
+                            }
+                            {
+                                !loadingSignals && signals && signals?.data?.length > 0 &&
+                                <FlatList
+                                    data={signals?.data}
+                                    keyExtractor={keyExtractor}
+                                    horizontal
+                                    pagingEnabled
+                                    scrollEnabled
+                                    snapToAlignment="center"
+                                    scrollEventThrottle={16}
+                                    decelerationRate={"fast"}
+                                    showsHorizontalScrollIndicator={false}
+                                    renderItem={renderItemSignal}
+                                />
+                            }
+                        </ImageBackground>
 
-                        </View>
 
-                        <View style={{
-                            width:'100%',
-                            flexDirection:'row',
-                            alignItems:'center',
-                            justifyContent:'space-evenly'
-                        }}>
+                        <ImageBackground resizeMethod={"scale"}
+                                         source={require('../../assets/images/signal/educator_BG.png')}
+                                         style={[styles.segmentBody, {
+                                             height: 150,
+                                             marginTop: 20,
+                                         }]}>
 
+                            <View style={styles.ActivityCardTop}>
+                                <Text style={[styles.listTitle, {
+                                    fontFamily: Fonts.faktumBold
+                                }]}>
+                                    Courses
+                                </Text>
+
+                            </View>
+
+                            <View style={styles.boxWrap}>
+
+                                <View style={styles.messageWrap}>
+                                    <Ionicons name="ios-information-circle" size={24} color={Colors.text}/>
+                                    <Text style={styles.message}>
+                                        No courses available for this educator!
+
+                                    </Text>
+                                </View>
+                                {/*
                             <Image source={require('../../assets/images/signal/cours_img.png')} style={{
                                 width:120,
                                 height:70,
@@ -418,32 +502,55 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
                                 width:120,
                                 height:70,
                                 resizeMode:"contain"
-                            }}/>
+                            }}/>*/}
 
-                        </View>
-
-
-                    </ImageBackground>
+                            </View>
 
 
-                    <ImageBackground resizeMethod={"scale"}
-                                     source={require('../../assets/images/signal/educator_BG.png')}
-                                     style={[styles.segmentBody, {
-                                         height: 150,
-                                         marginTop: 20,
-                                     }]}>
-
-                        <View style={styles.ActivityCardTop}>
-                            <Text style={[styles.listTitle, {
-                                fontFamily: Fonts.faktumBold
-                            }]}>
-                                Streaming
-                            </Text>
-
-                        </View>
+                        </ImageBackground>
 
 
-                    </ImageBackground>
+                        <ImageBackground resizeMethod={"scale"}
+                                         source={require('../../assets/images/signal/educator_BG.png')}
+                                         style={[styles.segmentBody, {
+                                             height: 150,
+                                             marginTop: 20,
+                                         }]}>
+
+                            <View style={styles.ActivityCardTop}>
+                                <Text style={[styles.listTitle, {
+                                    fontFamily: Fonts.faktumBold
+                                }]}>
+                                    Streaming
+                                </Text>
+
+                            </View>
+
+                            <View style={styles.messageWrap}>
+                                <Ionicons name="ios-information-circle" size={24} color={Colors.text}/>
+
+
+                                <Text style={styles.message}>
+                                    No educator currently streaming!
+
+                                </Text>
+                            </View>
+
+
+                        </ImageBackground>
+
+                    </IF>
+
+
+                    <IF condition={tabIndex == 1}>
+                        <NoItem message={"No Forex Signal! "}/>
+
+                    </IF>
+
+                    <IF condition={tabIndex == 2}>
+                        <NoItem message={"No Stocks Signal! "}/>
+
+                    </IF>
 
 
                 </ScrollView>
@@ -508,6 +615,12 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         height: heightPixel(200),
     },
+    boxWrap: {
+            width: '100%',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-evenly'
+        },
     favList: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -702,6 +815,32 @@ const styles = StyleSheet.create({
     seeAll: {
         flexDirection: 'row',
         alignItems: 'center'
+    },
+    messageWrap: {
+        marginTop: 15,
+        width: '100%',
+        justifyContent: 'center',
+        flexDirection: 'column',
+        alignItems: 'center'
+    },
+    message: {
+        textAlign: 'center',
+        marginLeft: 8,
+        lineHeight: heightPixel(25),
+        color: "#fff",
+        fontSize: fontPixel(14),
+        fontFamily: Fonts.faktumBold
+    },
+    imageWrap: {
+        maxHeight: heightPixel(140),
+        width: heightPixel(100),
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    fileBroken: {
+        height: "80%",
+        width: "100%",
+        resizeMode: 'contain'
     },
 
 

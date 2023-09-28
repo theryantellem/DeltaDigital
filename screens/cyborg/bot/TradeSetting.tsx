@@ -180,7 +180,7 @@ const TradeSetting = ({navigation}: CyborgStackScreenProps<'TradeSetting'>) => {
     const [switchToggle, setSwitchToggle] = useState(false);
 
 
-    const [strategyPeriod, setStrategyPeriod] = useState('One-Shot');
+    const [strategyPeriod, setStrategyPeriod] = useState('Cycle');
 
     const snapPoints = useMemo(() => ["1%", "65%", "70%"], []);
     const bankSheetRef = useRef<BottomSheet>(null);

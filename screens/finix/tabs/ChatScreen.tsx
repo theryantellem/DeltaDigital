@@ -21,10 +21,12 @@ import {MyButton} from "../../../components/MyButton";
 import {useRefreshOnFocus, wait} from "../../../helpers";
 import {SignalRootTabScreenProps} from "../../../types";
 import {fontPixel, heightPixel} from "../../../helpers/normalize";
-import {Entypo} from "@expo/vector-icons";
+import {Entypo, Ionicons} from "@expo/vector-icons";
 import FinixTopBar from "../../../components/signal/FinixTopBar";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import Echo from "laravel-echo";
+import NoItem from "../../../components/NoItem";
+import educators from "../Educators";
 
 
 
@@ -53,7 +55,7 @@ interface props {
 const EducatorItem = ({item, startMessage}: props) => {
 
     return (
-        <TouchableOpacity onPress={() => startMessage(item.educator)} style={styles.favList}>
+        <TouchableOpacity disabled={!item.educator} onPress={() => startMessage(item.educator)} style={styles.favList}>
             <View style={[styles.listIcon, {
                 //  backgroundColor: Colors.secondary,
             }]}>
@@ -63,7 +65,7 @@ const EducatorItem = ({item, startMessage}: props) => {
                     style={styles.tAvatar}
                     source={{
                         cache: FastImage.cacheControl.web,
-                        uri: item.educator.photo,
+                        uri: item?.educator?.photo,
                         priority: FastImage.priority.normal,
                     }}
 
@@ -75,13 +77,13 @@ const EducatorItem = ({item, startMessage}: props) => {
             <View
                 style={styles.listBody}>
                 <Text style={styles.bodyTitle}>
-                    {item.educator.first_name} {item.educator.last_name}
+                    {item?.educator?.first_name} {item?.educator?.last_name}
                 </Text>
                 <View style={styles.listBottom}>
 
 
                     <Text style={styles.bodySubText}>
-                        {item.message}
+                        {item?.message}
                     </Text>
 
                 </View>
@@ -107,7 +109,7 @@ const ChatScreen = ({navigation}: SignalRootTabScreenProps<'SignalChat'>) => {
 
     const dispatch = useAppDispatch()
     const user = useAppSelector(state => state.user)
-    const {User_Details} = user
+    const {User_Details,userData} = user
 
 
 
@@ -119,9 +121,9 @@ const ChatScreen = ({navigation}: SignalRootTabScreenProps<'SignalChat'>) => {
         "id": string,
         "last_name": string,
         "photo": string,
-        "total_followers": number,
     }) => {
-        navigation.navigate('MainSignalNav', {
+      //  console.log(educator)
+       navigation.navigate('MainSignalNav', {
             screen: 'MessageScreen', params: {educator}
         })
     }
@@ -138,6 +140,7 @@ const ChatScreen = ({navigation}: SignalRootTabScreenProps<'SignalChat'>) => {
     }
 
 
+
     useRefreshOnFocus(refetch)
 
     return (
@@ -147,12 +150,67 @@ const ChatScreen = ({navigation}: SignalRootTabScreenProps<'SignalChat'>) => {
                              style={styles.dashboardImage}>
 
 
+
                 <View style={styles.flatList}>
 
                     <FinixTopBar
                         color={"#fff"}
                         profilePhoto={User_Details.image ? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'}
                         userName={User_Details.username}/>
+
+                    { !isLoading && !data.data?.length &&
+                    <View style={styles.messageWrap}>
+                        <Ionicons name="ios-information-circle" size={24} color={Colors.text}/>
+                        <Text style={styles.message}>
+                            You're not following any educator!
+
+                        </Text>
+                    </View>
+                    }
+                    <TouchableOpacity  onPress={() => startMessage({
+                        "email": userData.email,
+                        "first_name": userData.name,
+                        "id": userData.id,
+                        last_name:userData.name,
+                        "photo": userData.profile_picture,
+                    })} style={styles.favList}>
+                        <View style={[styles.listIcon, {
+                            //  backgroundColor: Colors.secondary,
+                        }]}>
+
+
+                            <FastImage
+                                style={styles.tAvatar}
+                                source={{
+                                    cache: FastImage.cacheControl.web,
+                                    uri: userData?.profile_picture,
+                                    priority: FastImage.priority.normal,
+                                }}
+
+                                resizeMode={FastImage.resizeMode.cover}
+                            />
+
+
+                        </View>
+                        <View
+                            style={styles.listBody}>
+                            <Text style={styles.bodyTitle}>
+                                {userData.name} (ME)
+                            </Text>
+                            <View style={styles.listBottom}>
+
+
+
+                            </View>
+
+                        </View>
+
+
+                        <Entypo name="chevron-right" size={14} color="#fff"/>
+
+
+                    </TouchableOpacity>
+
                     {
                         isLoading && <ActivityIndicator size='small' color={Colors.primary}/>
                     }
@@ -270,6 +328,21 @@ const styles = StyleSheet.create({
         color: Colors.tintText
     },
 
+    messageWrap: {
+        marginTop: 15,
+        width: '90%',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    message: {
+        textAlign: 'center',
+        marginLeft: 8,
+        lineHeight: heightPixel(25),
+        color: "#fff",
+        fontSize: fontPixel(14),
+        fontFamily: Fonts.faktumBold
+    },
 })
 
 export default ChatScreen;

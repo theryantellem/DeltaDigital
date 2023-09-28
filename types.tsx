@@ -254,7 +254,6 @@ export type SignalStackParamList = {
             "id": string,
             "last_name": string,
             "photo": string,
-            "total_followers": number,
         }
     };
     SignalSummary: undefined;

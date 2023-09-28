@@ -127,10 +127,11 @@ const LogScreen = ({navigation, route}: CyborgStackScreenProps<'LogScreen'>) => 
 
 
     let p2 = parseFloat(newStrategy?.data['Operation Strategy'][0]?.Quantity) * parseFloat(tickerRes?.lastPrice);
-    let val = (Number(newStrategy?.data['Operation Strategy'][0]['Positionamount']) - (p2)) / Number(newStrategy?.data['Operation Strategy'][0]['Positionamount']);
+    let val = newStrategy?.data['Operation Strategy'][0]['Positionamount']  > 0  ?  (Number(newStrategy?.data['Operation Strategy'][0]['Positionamount']) - (p2)) / Number(newStrategy?.data['Operation Strategy'][0]['Positionamount']) : 0;
 
 
     let finalvalue = val * 100;
+
 
     /*   if(finalvalue >= 0){
            element.floating_profit = finalvalue;

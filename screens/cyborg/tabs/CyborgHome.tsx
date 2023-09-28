@@ -89,9 +89,12 @@ const HomeTradeCard = ({item, seeLogs, Exchanges, tickers}: props) => {
  /*   let old_price = item?.Quantity * item?.Avg_Price;
     let new_value = item?.Quantity * parseFloat(tickerRes?.lastPrice);
     let finalvalue = new_value - old_price;*/
+
+
     let p2 = parseFloat(item?.Quantity) * parseFloat(tickerRes?.lastPrice);
-    let val = (Number(item['Positionamount']) - (p2)) / Number(item['Positionamount']);
+    let val = item['Positionamount'] > 0 ? (Number(item['Positionamount']) - (p2)) / Number(item['Positionamount']) : 0;
     let finalvalue = val * 100;
+
 
     return (
         <Animated.View key={item.id} layout={Layout.easing(Easing.bounce).delay(100)}

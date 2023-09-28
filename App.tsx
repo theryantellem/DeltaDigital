@@ -70,7 +70,7 @@ export default function App() {
         await inAppMessaging()
             .setMessagesDisplaySuppressed(true)
             .then(response => {
-                console.log(response);
+               // console.log(response);
             });
     }
 

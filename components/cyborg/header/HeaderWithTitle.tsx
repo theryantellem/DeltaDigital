@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
     title: {
         textAlign:'center',
         color: "#fff",
+        textTransform:'capitalize',
         fontSize: fontPixel(16),
         fontFamily: Fonts.faktumSemiBold
     },

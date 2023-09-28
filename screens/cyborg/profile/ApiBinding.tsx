@@ -75,9 +75,9 @@ const ApiBinding = ({navigation}: CyborgStackScreenProps<'ApiBinding'>) => {
                     <View style={styles.content}>
 
                         <TouchableOpacity activeOpacity={0.8}
-                                          onPress={() => editNow(data.data['User Details'][0].coinbaseproapi,
-                                              data.data['User Details'][0].coinbaseprosecret,
-                                              '3',data.data['User Details'][0].coinbaseprobind,'Coinbase Pro')
+                                          onPress={() => editNow(data?.data['User Details'][0]?.coinbaseproapi,
+                                              data?.data['User Details'][0]?.coinbaseprosecret,
+                                              '3',data?.data['User Details'][0]?.coinbaseprobind,'Coinbase Pro')
 
                         }
                                           style={styles.appListCard}>
@@ -94,13 +94,13 @@ const ApiBinding = ({navigation}: CyborgStackScreenProps<'ApiBinding'>) => {
                                         Coinbase
                                     </Text>
                                 </View>
-                                <TouchableOpacity   onPress={() => editNow(data?.data['User Details'][0].coinbaseproapi,
-                                    data?.data['User Details'][0].coinbaseprosecret,
+                                <TouchableOpacity   onPress={() => editNow(data?.data['User Details'][0]?.coinbaseproapi,
+                                    data?.data['User Details'][0]?.coinbaseprosecret,
                                     '3',data?.data['User Details'][0].coinbaseprobind, 'Coinbase Pro')} activeOpacity={0.8}
                                                   style={styles.connectBtn}>
 
                                     {
-                                        data.data["User Details"][0].coinbaseprobind == '1'
+                                        data?.data["User Details"][0]?.coinbaseprobind == '1'
                                             ?
                                             <Text style={[styles.appText, {
                                                 color: Colors.success
@@ -122,8 +122,8 @@ const ApiBinding = ({navigation}: CyborgStackScreenProps<'ApiBinding'>) => {
                         </TouchableOpacity>
 
 
-                        <TouchableOpacity  onPress={() => editNow(data.data['User Details'][0].binanceapi,
-                            data.data['User Details'][0].binancescret,
+                        <TouchableOpacity  onPress={() => editNow(data?.data['User Details'][0]?.binanceapi,
+                            data?.data['User Details'][0]?.binancescret,
                             '1',data.data['User Details'][0].binancebind,'Binance')}
                                            activeOpacity={0.8} style={styles.appListCard}>
                             <View style={styles.listTop}>
@@ -139,13 +139,13 @@ const ApiBinding = ({navigation}: CyborgStackScreenProps<'ApiBinding'>) => {
                                         Binance
                                     </Text>
                                 </View>
-                                <TouchableOpacity onPress={() => editNow(data.data['User Details'][0].binanceapi,
-                                    data.data['User Details'][0].binancescret,
-                                    '1',data.data['User Details'][0].binancebind,'Binance')} activeOpacity={0.8}
+                                <TouchableOpacity onPress={() => editNow(data?.data['User Details'][0]?.binanceapi,
+                                    data?.data['User Details'][0]?.binancescret,
+                                    '1',data.data['User Details'][0]?.binancebind,'Binance')} activeOpacity={0.8}
                                                   style={styles.connectBtn}>
 
                                     {
-                                        data.data["User Details"][0].binancebind == '1'
+                                        data?.data["User Details"][0]?.binancebind == '1'
                                             ?
                                             <Text style={[styles.appText, {
                                                 color: Colors.success
@@ -170,9 +170,9 @@ const ApiBinding = ({navigation}: CyborgStackScreenProps<'ApiBinding'>) => {
                         <TouchableOpacity
 
                             activeOpacity={0.7}
-                            onPress={() => editNow(data.data['User Details'][0].krakenapi,
-                            data.data['User Details'][0].krakensecret,
-                            '4',data.data['User Details'][0].krakenbind,'Kraken')}
+                            onPress={() => editNow(data?.data['User Details'][0].krakenapi,
+                            data?.data['User Details'][0].krakensecret,
+                            '4',data?.data['User Details'][0]?.krakenbind,'Kraken')}
                                           style={styles.appListCard}>
                             <View style={styles.listTop}>
                                 <View style={styles.listTopLeft}>
@@ -187,13 +187,13 @@ const ApiBinding = ({navigation}: CyborgStackScreenProps<'ApiBinding'>) => {
                                         Kraken
                                     </Text>
                                 </View>
-                                <TouchableOpacity onPress={() => editNow(data.data['User Details'][0].krakenapi,
-                                    data.data['User Details'][0].krakensecret,
-                                    '4',data.data['User Details'][0].krakenbind,'Kraken')} activeOpacity={0.8}
+                                <TouchableOpacity onPress={() => editNow(data?.data['User Details'][0]?.krakenapi,
+                                    data?.data['User Details'][0].krakensecret,
+                                    '4',data?.data['User Details'][0]?.krakenbind,'Kraken')} activeOpacity={0.8}
                                                   style={styles.connectBtn}>
 
                                     {
-                                        data.data["User Details"][0].krakenbind == '1'
+                                        data?.data["User Details"][0]?.krakenbind == '1'
                                             ?
                                             <Text style={[styles.appText, {
                                                 color: Colors.success
@@ -214,9 +214,9 @@ const ApiBinding = ({navigation}: CyborgStackScreenProps<'ApiBinding'>) => {
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity activeOpacity={0.7}
-                                          onPress={() => editNow(data.data['User Details'][0].kucoinapi,
-                            data.data['User Details'][0].kucoinsecret,
-                            '2',data.data['User Details'][0].kucoinbind, 'Kucoin')}
+                                          onPress={() => editNow(data?.data['User Details'][0]?.kucoinapi,
+                            data?.data['User Details'][0]?.kucoinsecret,
+                            '2',data?.data['User Details'][0]?.kucoinbind, 'Kucoin')}
 
                                           style={styles.appListCard}>
                             <View style={styles.listTop}>
@@ -232,13 +232,13 @@ const ApiBinding = ({navigation}: CyborgStackScreenProps<'ApiBinding'>) => {
                                         Kucoin
                                     </Text>
                                 </View>
-                                <TouchableOpacity onPress={() => editNow(data.data['User Details'][0].kucoinapi,
-                                    data.data['User Details'][0].kucoinsecret,
-                                    '2',data.data['User Details'][0].kucoinbind,'Kucoin')} activeOpacity={0.8}
+                                <TouchableOpacity onPress={() => editNow(data?.data['User Details'][0]?.kucoinapi,
+                                    data?.data['User Details'][0]?.kucoinsecret,
+                                    '2',data.data['User Details'][0]?.kucoinbind,'Kucoin')} activeOpacity={0.8}
                                                   style={styles.connectBtn}>
 
                                     {
-                                        data.data["User Details"][0].kucoinbind == '1'
+                                        data?.data["User Details"][0]?.kucoinbind == '1'
                                             ?
                                             <Text style={[styles.appText, {
                                                 color: Colors.success

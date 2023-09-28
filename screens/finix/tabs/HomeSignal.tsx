@@ -22,10 +22,10 @@ import SegmentedControl from "../../../components/segment-control/SegmentContol"
 import HomeSegmentedTabs from "../../../components/signal/HomeSegmentTabs";
 import {useQuery} from "@tanstack/react-query";
 import {getEducators, getEducatorsFollowing, getSignals} from "../../../api/finix-api";
-import {useRefreshOnFocus} from "../../../helpers";
+import {useRefreshOnFocus, wait} from "../../../helpers";
 import {Fonts} from "../../../constants/Fonts";
 import {IF} from "../../../helpers/ConditionJsx";
-import {Entypo, FontAwesome, Ionicons} from "@expo/vector-icons";
+import {AntDesign, Entypo, FontAwesome, Ionicons} from "@expo/vector-icons";
 import HorizontalLine from "../../../components/HorizontalLine";
 import {SignalRootTabScreenProps} from "../../../types";
 
@@ -95,8 +95,8 @@ interface Props {
             "name": string,
             "symbol": string
         },
-        category:{
-            name:string
+        category: {
+            name: string
         },
         "order_type": string,
         "entry_price": number,
@@ -120,7 +120,7 @@ const ItemSignal = ({item, viewSignal}: Props) => {
 
             <View style={styles.topCard}>
                 <View style={styles.IconImageWrap}>
-                     <Image style={styles.IconImage}
+                    <Image style={styles.IconImage}
                            source={{uri: item.asset.image}}/>
 
 
@@ -128,7 +128,7 @@ const ItemSignal = ({item, viewSignal}: Props) => {
 
                 <View>
                     <Text style={styles.assetText}>
-                            {item.asset.name}
+                        {item.asset.name}
                     </Text>
                     <Text style={[styles.assetText, {
                         fontFamily: Fonts.faktumRegular
@@ -146,7 +146,7 @@ const ItemSignal = ({item, viewSignal}: Props) => {
                         Order type
                     </Text>
                     <Text style={styles.bottomCardSubText}>
-                  {item.order_type}
+                        {item.order_type}
                     </Text>
 
                 </View>
@@ -154,10 +154,10 @@ const ItemSignal = ({item, viewSignal}: Props) => {
                     <Text style={styles.bottomCardText}>
                         Status
                     </Text>
-                    <Text style={[styles.bottomCardSubText,{
+                    <Text style={[styles.bottomCardSubText, {
                         color: Colors.pendingYellow
                     }]}>
-                       {item.status}
+                        {item.status}
                     </Text>
 
                 </View>
@@ -166,7 +166,7 @@ const ItemSignal = ({item, viewSignal}: Props) => {
                         Target price
                     </Text>
                     <Text style={styles.bottomCardSubText}>
-                    {item.target_price}
+                        {item.target_price}
                     </Text>
 
                 </View>
@@ -186,21 +186,22 @@ const ItemSignal = ({item, viewSignal}: Props) => {
 const EducatorItem = ({item, viewEducator}: props) => {
 
     return (
-        <TouchableOpacity activeOpacity={0.8} onPress={() => viewEducator(item)} style={styles.educatorSmallCard}>
-            <View style={styles.liveTag}>
+        <TouchableOpacity activeOpacity={0.8} disabled={!item.educator} onPress={() => viewEducator(item)} style={styles.educatorSmallCard}>
+       {/*     <View style={styles.liveTag}>
 
                 <Text style={[styles.liveText, {}]}>
                     1
                 </Text>
-            </View>
+            </View>*/}
             <View style={styles.educatorSmallCardImage}>
                 <Image style={styles.tAvatar}
-                       source={{uri: item.educator.photo}}/>
+                       resizeMethod={'scale'}
+                       source={{uri: item?.educator?.photo}}/>
             </View>
 
             <View style={styles.educatorNameWrap}>
                 <Text style={styles.educatorName}>
-                    {item.educator.last_name} {item.educator.first_name}
+                     {item?.educator?.first_name} {item?.educator?.last_name}
                 </Text>
             </View>
 
@@ -214,7 +215,7 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
 
-
+    const [refreshing, setRefreshing] = useState(false);
     const [tabIndex, setTabIndex] = useState(0);
     const handleTabsChange = (index: SetStateAction<number>) => {
         setTabIndex(index);
@@ -222,7 +223,11 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
     };
 
     const {data, isLoading, refetch} = useQuery([`get-educators`], getEducators)
-    const {data: myEducators, isLoading: loading} = useQuery([`getEducatorsFollowing`], getEducatorsFollowing)
+    const {
+        data: myEducators,
+        isLoading: loading,
+        refetch: fetchFollowing
+    } = useQuery([`getEducatorsFollowing`], getEducatorsFollowing)
 
 
     const {data: signals, isLoading: loadingSignals, refetch: refetchSignals} = useQuery(['getSignals'], getSignals)
@@ -296,7 +301,16 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
         })
     }
 
+    const refresh = () => {
+        setRefreshing(true)
+        fetchFollowing()
+        refetchSignals()
+        wait(2000).then(() => setRefreshing(false));
+    }
+
     useRefreshOnFocus(refetch)
+    useRefreshOnFocus(fetchFollowing)
+    useRefreshOnFocus(refetchSignals)
 
 
     return (
@@ -305,7 +319,10 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
                              resizeMode={'cover'}
                              style={styles.dashboardImage}>
                 <ScrollView style={{width: '100%',}} contentContainerStyle={styles.scrollView} scrollEnabled
-                            showsVerticalScrollIndicator={false}>
+                            showsVerticalScrollIndicator={false}
+
+                            refreshControl={<RefreshControl tintColor={Colors.primary} refreshing={refreshing}
+                                                            onRefresh={refresh}/>}>
 
 
                     <FinixTopBar
@@ -341,6 +358,16 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
 
                                 </TouchableOpacity>
                             </View>
+
+                            {!isLoading && myEducators && myEducators?.data?.length < 1 &&
+                                <View style={styles.messageWrap}>
+                                    <Ionicons name="ios-information-circle" size={24} color={Colors.text}/>
+                                    <Text style={styles.message}>
+                                        Click the plus button to follow an educator!
+
+                                    </Text>
+                                </View>
+                            }
 
                             {
                                 isLoading && <ActivityIndicator color={Colors.primary} size='small'/>
@@ -379,6 +406,26 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
 
                                 </TouchableOpacity>
                             </View>
+
+                            {!loadingSignals && signals && signals?.data?.length < 1 &&
+                                <View style={styles.messageWrap}>
+                                 {/*   <Ionicons name="ios-information-circle" size={24} color={Colors.text}/>*/}
+
+
+                                    <View style={styles.imageWrap}>
+
+                                        <Image source={require('../../../assets/images/EmptyBox/empty_state.png')} style={styles.fileBroken}/>
+
+
+                                    </View>
+
+
+                                    <Text style={styles.message}>
+                                        Follow an educator and receive signals!
+
+                                    </Text>
+                                </View>
+                            }
                             {
                                 loadingSignals && <ActivityIndicator color={Colors.primary} size='small'/>
                             }
@@ -404,7 +451,19 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
                 </ScrollView>
             </ImageBackground>
 
+            <TouchableOpacity onPress={()=>navigation.goBack()} activeOpacity={0.6} style={[styles.topButton,{
+                //  backgroundColor:Colors.primary
+            }]}>
+                <LinearGradient style={styles.innerBtn}
+                                start={{x: 1.5, y: 1}}
+                                end={{x: 0.5, y: 1.1,}}
 
+                                colors={['#4E044B', Colors.purplePrimary,]}>
+
+
+                <AntDesign name="back" size={24} color="#fff" />
+                </LinearGradient>
+            </TouchableOpacity>
         </SafeAreaView>
     );
 };
@@ -454,7 +513,7 @@ const styles = StyleSheet.create({
         resizeMode: 'cover',
         height: '100%',
         width: '100%',
-        borderRadius: 100,
+        borderRadius: 10,
     },
     liveTag: {
         right: 10,
@@ -603,6 +662,57 @@ const styles = StyleSheet.create({
         alignItems: 'center',
 
     },
+    boxWrap: {
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-evenly'
+    },
+    messageWrap: {
+        marginTop: 15,
+        width: '100%',
+        justifyContent: 'center',
+        flexDirection: 'column',
+        alignItems: 'center'
+    },
+    message: {
+        textAlign: 'center',
+        marginLeft: 8,
+        lineHeight: heightPixel(25),
+        color: "#fff",
+        fontSize: fontPixel(12),
+        fontFamily: Fonts.faktumBold
+    },
+    topButton:{
+        position:'absolute',
+        width:45,
+        height:45,
+        alignItems:'center',
+        justifyContent:'center',
+        zIndex:1,
+        borderRadius:60,
+        bottom:45,
+        right:30,
+    },
+    innerBtn:{
+        borderRadius:60,
+        width:'100%',
+        height:'100%',
+        alignItems:'center',
+        justifyContent:'center',
+    },
+    imageWrap: {
+        maxHeight: heightPixel(140),
+        width: heightPixel(100),
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    fileBroken: {
+        height: "80%",
+        width: "100%",
+        resizeMode: 'contain'
+    },
+
 
 })
 

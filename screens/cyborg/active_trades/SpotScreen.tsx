@@ -121,7 +121,7 @@ const QuantitativeItem = ({item, tickers, continueAsset}: props) => {
 
 
     let p2 = parseFloat(item?.Quantity) * parseFloat(tickerRes?.lastPrice);
-    let val = (Number(item['Positionamount']) - (p2)) / Number(item['Positionamount']);
+    let val =  item['Positionamount'] > 0  ? (Number(item['Positionamount']) - (p2)) / Number(item['Positionamount']) : 0;
     let finalvalue = val * 100;
     return (
         <Pressable onPress={() => continueAsset(item.exchange, item.id, item.Market,item.trade_type)} style={styles.quantitativeCard}>

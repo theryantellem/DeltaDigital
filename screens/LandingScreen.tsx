@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 
 import {
     Text,
@@ -63,7 +63,7 @@ const Item = ({item, tickers}: itemProps) => {
 
 
     let p2 = parseFloat(item?.Quantity) * parseFloat(tickerRes?.lastPrice);
-    let val = (Number(item['Positionamount']) - (p2)) / Number(item['Positionamount']);
+    let val = item['Positionamount'] > 0 ? (Number(item['Positionamount']) - (p2)) / Number(item['Positionamount']) : 0;
     let finalvalue = val * 100;
     return (
         <View style={styles.assetCardDetails}>
@@ -330,6 +330,14 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
     useRefreshOnFocus(fetchStrategies)
     useRefreshOnFocus(refetch)
 
+    const scrollViewRef = useRef(null);
+
+    const handleScroll = (x) => {
+        if (scrollViewRef.current) {
+            scrollViewRef?.current?.scrollTo({ x, animated: true });
+        }
+    };
+
     return (
         <SafeAreaView style={styles.safeArea}>
             {
@@ -400,12 +408,12 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                             <MaterialCommunityIcons name="sort-variant" size={32} color="#fff"/>
                         </View>
 
-                        <Pressable style={styles.controlLogoWrap}>
-                            <Image source={require('../assets/images/logos/cyborlogo.png')} style={styles.controlLogo}/>
+                        <Pressable onPress={()=>handleScroll(1)} style={styles.controlLogoWrap}>
+                            <Image source={require('../assets/images/logos/finixLogo.png')} style={styles.controlLogo}/>
                         </Pressable>
 
-                        <Pressable style={styles.controlLogoWrap}>
-                            <Image source={require('../assets/images/logos/finixLogo.png')} style={styles.controlLogo}/>
+                        <Pressable onPress={()=>handleScroll(400)} style={styles.controlLogoWrap}>
+                            <Image source={require('../assets/images/logos/cyborlogo.png')} style={styles.controlLogo}/>
                         </Pressable>
                     </View>
 
@@ -414,7 +422,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                         !isLoading && !loading &&
 
                         <Animated.ScrollView
-
+ref={scrollViewRef}
                             layout={Layout.easing(Easing.bounce).delay(100)} entering={FadeInDown.springify()}
                             exiting={FadeOutDown}
                             showsHorizontalScrollIndicator={false}
@@ -441,7 +449,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
 
                 <View style={styles.ownYourFutureWrap}>
                     <Text style={styles.ownYourFuture}>
-                        #OwnYourFuture
+                        #OwnTheFuture
                     </Text>
                 </View>
 

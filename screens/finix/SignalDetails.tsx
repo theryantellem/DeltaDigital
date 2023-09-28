@@ -245,7 +245,7 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                                         }]}>
                                             {details.stop_loss}
                                         </Text>
-                                        <Pressable nPress={() => {
+                                        <Pressable onPress={() => {
 
                                             copyToClipboard('Stop loss', `${details.stop_loss}`)
                                         }} style={styles.copyBtn}>

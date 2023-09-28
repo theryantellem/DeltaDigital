@@ -278,11 +278,16 @@ const EducatorsScreen = ({navigation}: SignalStackScreenProps<'EducatorsScreen'>
 
     const {mutate:followNow, isLoading: following} = useMutation(['followEducator'], followEducator, {
         onSuccess: (data) => {
+            console.log(data)
             if(data.status){
               //  refetchFavs()
             }
 
         },
+        onError:(error, variables, context)=>{
+            console.log(error)
+        },
+
             onSettled: () => {
                 queryClient.invalidateQueries(['followEducator']);
             }

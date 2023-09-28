@@ -2,7 +2,7 @@ import React, {useCallback, useState} from 'react';
 
 import {Text, View, StyleSheet, TouchableOpacity, Image, Platform} from 'react-native';
 import {useFocusEffect, useNavigation} from "@react-navigation/native";
-import {FontAwesome5, Ionicons, Octicons} from "@expo/vector-icons";
+import {AntDesign, FontAwesome5, Ionicons, Octicons} from "@expo/vector-icons";
 import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../../helpers/normalize";
 import {Fonts} from "../../../constants/Fonts";
 import FastImage from "react-native-fast-image";
@@ -100,6 +100,12 @@ const TopBar = ({ profilePhoto, userName,homeDash}: props) => {
 
             <View style={styles.rightButton}>
 
+                <TouchableOpacity onPress={()=>navigation.goBack()} activeOpacity={0.6} style={[styles.topButton,{
+                  //  backgroundColor:Colors.primary
+                }]}>
+                    <AntDesign name="back" size={24} color="#fff" />
+
+                </TouchableOpacity>
                 <TouchableOpacity onPress={openNotifications} activeOpacity={0.6} style={styles.topButton}>
                     <Octicons name="bell" size={18} color="#fff"/>
 
@@ -181,7 +187,7 @@ const styles = StyleSheet.create({
         height: '100%'
     },
     rightButton: {
-        width: widthPixel(75),
+        width: widthPixel(95),
         height: '90%',
 
         flexDirection: 'row',

@@ -31,18 +31,18 @@ import {useAppDispatch} from "../../app/hooks";
 import ToastAnimated from "../../components/toast";
 
 
-
-
 interface props {
-    viewUser:(educator:{})=>void
-    followEducator:(educatorId:string)=>void
-    unFollowEducator:(educatorId:string)=>void
-    unFollowing:boolean,
-    following:boolean,
-    item:{
+
+    followEducator: (educatorId: string) => void
+    unFollowEducator: (educatorId: string) => void
+    unFollowing: boolean,
+    following: boolean,
+    selected: string,
+
+    item: {
         "email": string,
         "first_name": string,
-        "id":string,
+        "id": string,
         "last_name": string,
         "photo": string,
         "total_followers": number,
@@ -51,39 +51,39 @@ interface props {
     }
 
 }
-const EducatorItem = ({item,viewUser,followEducator,unFollowEducator,following,unFollowing}:props) =>{
-    return(
+
+const EducatorItem = ({item, selected, followEducator, unFollowEducator, following, unFollowing}: props) => {
+
+    return (
         <View style={styles.favList}>
             <View style={[styles.listIcon, {
                 //  backgroundColor: Colors.secondary,
             }]}>
 
 
-                        <FastImage
-                            style={styles.tAvatar}
-                            source={{
-                                cache: FastImage.cacheControl.web,
-                                uri: item.photo,
-                                priority: FastImage.priority.normal,
-                            }}
+                <FastImage
+                    style={styles.tAvatar}
+                    source={{
+                        cache: FastImage.cacheControl.web,
+                        uri: item?.photo,
+                        priority: FastImage.priority.normal,
+                    }}
 
-                            resizeMode={FastImage.resizeMode.cover}
-                        />
-
+                    resizeMode={FastImage.resizeMode.cover}
+                />
 
 
             </View>
             <View
                 style={styles.listBody}>
                 <Text style={styles.bodyTitle}>
-                    {item.first_name} {item.last_name}
+                    {item?.first_name} {item?.last_name}
                 </Text>
                 <View style={styles.listBottom}>
 
 
-
                     <Text style={styles.bodySubText}>
-                        {item.total_followers} <Text style={{fontFamily:Fonts.faktumRegular}}>followers </Text>
+                        {item?.total_followers} <Text style={{fontFamily: Fonts.faktumRegular}}>followers </Text>
                     </Text>
                     {/* <Octicons name="dot-fill" size={14} color="#D1D5DB"/>
                     <Text style={styles.bodySubText}>
@@ -94,51 +94,52 @@ const EducatorItem = ({item,viewUser,followEducator,unFollowEducator,following,u
             </View>
 
             {
-                item.following &&
+                item?.following &&
 
 
-            <MyButton onPress={()=>unFollowEducator(item.id)} style={[styles.listBodyRight, {
-                // backgroundColor: !isValid ? Colors.border : Colors.primary
-            }]}>
-                <LinearGradient style={styles.createBtnGradient}
-                                colors={['#8D34F1' ,  '#0075FF' ]}
+                <MyButton onPress={() => unFollowEducator(item.id)} style={[styles.listBodyRight, {
+                    // backgroundColor: !isValid ? Colors.border : Colors.primary
+                }]}>
+                    <LinearGradient style={styles.createBtnGradient}
+                                    colors={['#8D34F1', '#0075FF']}
 
-                                start={{x: 0.3, y: 1}}
-                                end={{x: 1, y: 3.3,}}
+                                    start={{x: 0.3, y: 1}}
+                                    end={{x: 1, y: 3.3,}}
 
-                    // locations={[0.1, 0.7,]}
-                >
-                    {
-                        unFollowing
-                        ? <ActivityIndicator size='small' color={"#fff"}/>
-                            :
-                    <Text style={styles.buttonTxt}>
-                        Following
-                    </Text>
-                    }
-                </LinearGradient>
-            </MyButton>
+                        // locations={[0.1, 0.7,]}
+                    >
+                        {
+                            item.id == selected && unFollowing
+                                ? <ActivityIndicator size='small' color={"#fff"}/>
+                                :
+                                <Text style={styles.buttonTxt}>
+                                    Following
+                                </Text>
+                        }
+                    </LinearGradient>
+                </MyButton>
             }
             {
-                !item.following &&
+                !item?.following &&
 
 
-            <TouchableOpacity onPress={()=>followEducator(item.id)} activeOpacity={0.8}  style={[styles.listBodyRight, {
-                 backgroundColor: Colors.border
-            }]}>
+                <TouchableOpacity onPress={() => followEducator(item?.id)} activeOpacity={0.8}
+                                  style={[styles.listBodyRight, {
+                                      backgroundColor: Colors.border
+                                  }]}>
 
-                {
-                    following ? <ActivityIndicator size='small' color={Colors.primary}/>
-                        :
-                    <Text style={[styles.buttonTxt,{
-                        color: Colors.primary,
-                        fontFamily: Fonts.faktumMedium
-                    }]}>
-                        Follow
-                    </Text>
-                }
+                    {
+                        item.id == selected && following ? <ActivityIndicator size='small' color={Colors.primary}/>
+                            :
+                            <Text style={[styles.buttonTxt, {
+                                color: Colors.primary,
+                                fontFamily: Fonts.faktumMedium
+                            }]}>
+                                Follow
+                            </Text>
+                    }
 
-            </TouchableOpacity>
+                </TouchableOpacity>
             }
 
 
@@ -147,34 +148,38 @@ const EducatorItem = ({item,viewUser,followEducator,unFollowEducator,following,u
 }
 
 
+const StreamersList = ({navigation}: SignalStackScreenProps<'StreamersList'>) => {
 
-const StreamersList = ({navigation} :SignalStackScreenProps<'StreamersList'>) => {
 
-
-    const  queryClient = useQueryClient()
-    const  dispatch = useAppDispatch()
+    const queryClient = useQueryClient()
+    const dispatch = useAppDispatch()
     const [refreshing, setRefreshing] = useState(false);
 
-    const {data:dataFollowing, isLoading:loadingEducators, refetch:fetchEducators} = useQuery([`get-Educators-Following`], getEducatorsFollowing)
+    const {
+        data: dataFollowing,
+        isLoading: loadingEducators,
+        refetch: fetchEducators
+    } = useQuery([`get-Educators-Following`], getEducatorsFollowing)
 
     const {data, isLoading, refetch} = useQuery([`get-educators`], getEducators)
 
+    const [selected, setSelected] = useState('');
 
 // Create a new array with the following information
     const newArray = data?.data?.map((obj2: { id: any; }) => ({
         ...obj2,
-        following: dataFollowing?.data?.some((obj1: { educator: { id: any; }; }) => obj1.educator.id === obj2.id),
+        following: dataFollowing?.data?.some((obj1: { educator: { id: any; }; }) => obj1?.educator?.id === obj2?.id),
     }));
 
-   // console.log(newArray);
+    // console.log(newArray);
 
-   // dataFollowing.data.filter
+    // dataFollowing.data.filter
 
 
-    const {mutate:followNow, isLoading: following} = useMutation(['followEducator'], followEducator, {
+    const {mutate: followNow, isLoading: following} = useMutation(['followEducator'], followEducator, {
         onSuccess: (data) => {
 
-            if(data.success){
+            if (data.success) {
                 fetchEducators()
                 refetch()
                 //  refetchFavs()
@@ -186,16 +191,19 @@ const StreamersList = ({navigation} :SignalStackScreenProps<'StreamersList'>) =>
                 }))
             }
 
+        },
+        onError: (error, variables, context) => {
+          //  console.log(error)
         },
         onSettled: () => {
             queryClient.invalidateQueries(['followEducator']);
         }
     })
 
-    const {mutate:unFollowNow, isLoading: unFollowing} = useMutation(['unFollowEducator'], unFollowEducator, {
+    const {mutate: unFollowNow, isLoading: unFollowing} = useMutation(['unFollowEducator'], unFollowEducator, {
         onSuccess: (data) => {
 
-            if(data.success){
+            if (data.success) {
                 fetchEducators()
                 refetch()
 
@@ -206,44 +214,47 @@ const StreamersList = ({navigation} :SignalStackScreenProps<'StreamersList'>) =>
                 }))
 
                 //  refetchFavs()
-            }else{
+            } else {
 
             }
 
+        },
+        onError: (error, variables, context) => {
+            console.log(error)
         },
         onSettled: () => {
             queryClient.invalidateQueries(['unFollowEducator']);
         }
     })
 
-    const followEducatorNow = (educator:string) =>{
-
-        const body =  JSON.stringify({
+    const followEducatorNow = (educator: string) => {
+        setSelected(educator)
+        const body = JSON.stringify({
             educator
         })
         followNow(body)
     }
 
-    const unFollowEducatorNow = (educator:string) =>{
-
+    const unFollowEducatorNow = (educator: string) => {
+        setSelected(educator)
         const body = JSON.stringify({
             educator
         })
         unFollowNow(body)
     }
-    const viewUser = async (educator:{}) => {
+    const viewUser = async (educator: {}) => {
         // await setContentBraceTag(userId)
         //  await setFieldValue('braceTag', userId)
-        navigation.navigate('ViewEducator',{
+        navigation.navigate('ViewEducator', {
             educator
         })
     }
 
     const renderItem = useCallback(
-        ({item}) => <EducatorItem unFollowing={unFollowing} following={following} item={item} viewUser={viewUser} followEducator={followEducatorNow} unFollowEducator={unFollowEducatorNow}/>,
-        [following, unFollowing],
+        ({item}) => <EducatorItem selected={selected} unFollowing={unFollowing} following={following} item={item}
+                                  followEducator={followEducatorNow} unFollowEducator={unFollowEducatorNow}/>,
+        [following, unFollowing,selected],
     );
-
 
 
     const keyExtractor = useCallback((item: { id: any; }) => item.id, [],);
@@ -256,7 +267,6 @@ const StreamersList = ({navigation} :SignalStackScreenProps<'StreamersList'>) =>
     }
 
 
-
     return (
         <SafeAreaView style={styles.safeArea}>
             <ImageBackground source={require('../../assets/images/signal/streamer_BG.png')}
@@ -265,42 +275,37 @@ const StreamersList = ({navigation} :SignalStackScreenProps<'StreamersList'>) =>
                 <HeaderWithTitle title="Streamers List"/>
 
 
+                <View style={styles.flatList}>
+                    {
+                        isLoading && <ActivityIndicator size='small' color={Colors.primary}/>
+                    }
+
+                    {
+                        !isLoading && data &&
+                        <FlashList
+                            estimatedItemSize={200}
+                            refreshing={isLoading}
 
 
+                            scrollEnabled
+                            showsVerticalScrollIndicator={false}
+                            data={newArray}
+                            renderItem={renderItem}
+                            keyExtractor={keyExtractor}
+                            onEndReachedThreshold={0.3}
+                            refreshControl={
+                                <RefreshControl
+                                    tintColor={Colors.text}
+                                    refreshing={refreshing}
+                                    onRefresh={refresh}
+                                />
+                            }
 
 
-                    <View style={styles.flatList}>
-                        {
-                            isLoading && <ActivityIndicator size='small' color={Colors.primary}/>
-                        }
+                        />
+                    }
 
-                        {
-                            !isLoading && data &&
-                            <FlashList
-                                estimatedItemSize={200}
-                                refreshing={isLoading}
-
-
-                                scrollEnabled
-                                showsVerticalScrollIndicator={false}
-                                data={newArray}
-                                renderItem={renderItem}
-                                keyExtractor={keyExtractor}
-                                onEndReachedThreshold={0.3}
-                                refreshControl={
-                                    <RefreshControl
-                                        tintColor={Colors.text}
-                                        refreshing={refreshing}
-                                        onRefresh={refresh}
-                                    />
-                                }
-
-
-                            />
-                        }
-
-                    </View>
-
+                </View>
 
 
                 <ToastAnimated/>
@@ -340,14 +345,12 @@ const styles = StyleSheet.create({
         // paddingHorizontal: pixelSizeHorizontal(20),
         resizeMode: 'cover',
         width: '100%',
-        flex:1,
+        flex: 1,
         borderRadius: 30,
         alignItems: 'center',
 
     },
-    streamerCard:{
-
-    },
+    streamerCard: {},
     favList: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -393,13 +396,13 @@ const styles = StyleSheet.create({
 
 
     listBodyRight: {
-        borderRadius:20,
+        borderRadius: 20,
         width: 100,
         height: 35,
         alignItems: 'center',
         justifyContent: 'center'
     },
-    followText:{
+    followText: {
         fontSize: fontPixel(12),
         fontFamily: Fonts.faktumBold,
         color: Colors.text
@@ -412,7 +415,7 @@ const styles = StyleSheet.create({
     bodySubText: {
         fontSize: fontPixel(12),
         fontFamily: Fonts.faktumMedium,
-        color:Colors.tintText
+        color: Colors.tintText
     },
     flagIcon: {
         width: widthPixel(15),

@@ -128,8 +128,18 @@ const SignInScreen = ({navigation}: AuthStackScreenProps<'SignInScreen'>) => {
                       SecureStore.setItemAsync('delta-signal-ID', data.data.user.user_id)
 
                        SecureStore.setItemAsync('delta-signal-token', data.data.auth_token).then(() => {
-                          getUserInfo(data.data.user.user_id)
-                             dispatch((updateUserInfo({...data.data.user})))
+                           if (data.data.user.cyborg){
+                               getUserInfo(data.data.user.user_id)
+                               dispatch((updateUserInfo({...data.data.user})))
+
+                           }else{
+                               dispatch((updateUserInfo({...data.data.user})))
+                               dispatch(setAuthenticated({
+                                   isAuthenticated: true
+                               }))
+                           }
+
+
                            /* dispatch(setAuthenticated({
                                  isAuthenticated: true
                              }))*/
