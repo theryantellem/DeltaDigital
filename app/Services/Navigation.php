@@ -76,6 +76,12 @@ class Navigation
                     'hasPermission' => true
                 ],
                 (object) [
+                    'name'  => 'Manage Assets',
+                    'route' => 'admin.assets.index',
+                    'icon'  => 'bi bi-house-fill fs-3',
+                    'hasPermission' => true
+                ],
+                (object) [
                     'name'  => 'Manage Educators',
                     'route' => 'admin.educators.index',
                     'icon'  => 'bi bi-house-fill fs-3',

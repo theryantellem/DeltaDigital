@@ -345,6 +345,8 @@
                     this.photo_preview = ""
                     this.signalId = ""
 
+                    this.edit = false
+
                     this.$refs.fileInput.value = null;
                 },
                 deleteSignal(signal) {

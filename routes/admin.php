@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\AdminManagementController;
+use App\Http\Controllers\Admin\AssetsController;
 use App\Http\Controllers\Admin\AuthenticationController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -94,6 +95,14 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::controller(CategoryController::class)->prefix('category')->name('category.')->group((function () {
         Route::get('', 'index')->name('index');
         Route::get('list', 'allCategories')->name('all');
+        Route::get('show/{id}', 'show')->name('show');
+        Route::post('store', 'store')->name('store');
+        Route::post('update/{id}', 'update')->name('update');
+    }));
+
+    Route::controller(AssetsController::class)->prefix('assets')->name('assets.')->group((function () {
+        Route::get('', 'index')->name('index');
+        Route::get('list', 'all')->name('all');
         Route::get('show/{id}', 'show')->name('show');
         Route::post('store', 'store')->name('store');
         Route::post('update/{id}', 'update')->name('update');

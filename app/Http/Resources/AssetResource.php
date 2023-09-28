@@ -19,6 +19,7 @@ class AssetResource extends JsonResource
             'symbol' => ucwords($this->symbol),
             'name' => $this->name,
             'image' => $this->image,
+            'category'=> $this->category
         ];
     }
 }
