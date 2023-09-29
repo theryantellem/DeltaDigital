@@ -80,7 +80,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-xl-6 col-xxl-8 col-lg-7">
+        <div class="col-xl-12 col-xxl-12 col-lg-12">
             <div class="card h-auto">
                 <div class="card-header border-0 pb-3">
                     <h4 class="heading mb-0">Signals</h4>
@@ -94,25 +94,28 @@
                                     <div class="swiper-slide">
                                         <div class="card">
                                             @if ($item->category->type === 'trade')
-                                                <div class="card-body">
-                                                    <div class="card-media d-flex justify-content-center">
-                                                        <img src="{{ $item->asset->image }}" alt=""
-                                                            style="width: 70% !important">
-                                                    </div>
-                                                    <div class="media-data">
-                                                        <h4>{{ $item->asset->name }}</h4>
-                                                        <div
-                                                            class="dateformat d-flex justify-content-between align-items-end">
-                                                            <div>
-                                                                <p class="text-uppercase">{{ $item->asset->symbol }}</p>
+                                                @if (!empty($item->asset))
+                                                    <div class="card-body">
+                                                        <div class="card-media d-flex justify-content-center">
+                                                            <img src="{{ $item->asset ? $item->asset->image : null }}"
+                                                                alt="" style="width: 70% !important">
+                                                        </div>
+                                                        <div class="media-data">
+                                                            <h4>{{ $item->asset ? $item->asset->name : '' }}</h4>
+                                                            <div
+                                                                class="dateformat d-flex justify-content-between align-items-end">
+                                                                <div>
+                                                                    <p class="text-uppercase">
+                                                                        {{ $item->asset ? $item->asset->symbol : '' }}</p>
+                                                                    <span
+                                                                        class="text-capitalize">{{ $item->asset ? $item->category->name : '' }}</span>
+                                                                </div>
                                                                 <span
-                                                                    class="text-capitalize">{{ $item->category->name }}</span>
+                                                                    class="badge badge-primary light border-0 text-uppercase">{{ $item->market_status }}</span>
                                                             </div>
-                                                            <span
-                                                                class="badge badge-primary light border-0 text-uppercase">{{ $item->market_status }}</span>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                @endif
                                             @else
                                                 <div class="card-body">
                                                     <div class="card-media d-flex justify-content-center">
@@ -151,7 +154,7 @@
             </div>
 
         </div>
-        <div class="col-xl-3 respo col-xxl-4 col-lg-5">
+        {{-- <div class="col-xl-3 respo col-xxl-4 col-lg-5">
             <div class="row">
                 <div class="col-xl-12">
                     <div class="card my-calendar">
@@ -499,7 +502,7 @@
                                     </li>
                                 </ul>
                             </div>
-                            {{-- <div class="events">
+                        <div class="events">
                             <h6>events</h6>
                             <div class="dz-scroll event-scroll">
                                 <div class="event-media">
@@ -516,12 +519,12 @@
                                     <span class="text-white">12:05 PM</span>
                                 </div>
                             </div>
-                        </div> --}}
+                        </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
     </div>
 @endsection
 @push('scripts')

@@ -19,7 +19,7 @@ class Navigation
                     'name'  => 'Inbox',
                     'route' => 'admin.inbox.index',
                     'icon'  => 'bi bi-house-fill fs-3',
-                    'hasPermission' => auth()->user()->can('manage_chat_room')
+                    'hasPermission' => auth()->user()->hasRole('educator')
                 ],
                 // (object) [
                 //     'name'  => 'User Management',
