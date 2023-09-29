@@ -35,6 +35,9 @@ class AuthenticationController extends ApiController
             $data = $response['data'];
 
 
+            dd($data);
+
+
             if (empty($data)) {
                 return $this->sendError("Service Unavailable", [], Response::HTTP_SERVICE_UNAVAILABLE);
             }
@@ -42,6 +45,25 @@ class AuthenticationController extends ApiController
             if (isset($data['user exist'])) {
                 return $this->sendError($data['user'], [], Response::HTTP_UNAUTHORIZED);
             }
+
+            $role = $data['role'];
+
+            if (!empty($role)) {
+                if ($role == 'Customer') {
+                    $referallinks1 = $data['referallinks'];
+                } else {
+                    $referallinks1 = $data['referallinks']['left_link'];
+                    $referallinks2 = $data['referallinks']['right_link'];
+                }
+            } else {
+                $referallinks1 = null;
+                $referallinks2 = null;
+            }
+
+            $ref = !empty($data['sponsorname']) ? $data['sponsorname'] : null;
+            $level1 = !empty($data['sponsor_levels']['level_1']) ? $data['sponsor_levels']['level_1'] : null;
+            $level2 = !empty($data['sponsor_levels']['level_2']) ?  $data['sponsor_levels']['level_2'] : null;
+            $level3 = !empty($data['sponsor_levels']['level_3']) ? $data['sponsor_levels']['level_3'] : null;
 
             $user = User::where('id', $data['uid'])->where('username', $request->username)->first();
 
@@ -58,14 +80,24 @@ class AuthenticationController extends ApiController
                     'left_link' => isset($data['referallinks']['left_link']) ? $data['referallinks']['left_link'] : null,
                     'right_link' => isset($data['referallinks']['right_link']) ? $data['referallinks']['right_link'] : null,
                     'profile_picture' => isset($data['profilepic']) ? $data['profilepic'] : null,
-                    'iseligible' => isset($data['iseligible']) ? $data['iseligible'] : 0
+                    'iseligible' => isset($data['iseligible']) ? $data['iseligible'] : 0,
+                    'ref' => $ref,
+                    'referallinks' => $referallinks1,
+                    'referallinks2' => $referallinks2,
+                    'level2' => $level2,
+                    'level3' => $level3,
                 ]);
             } else {
                 $user->update([
                     'plan' => isset($data['package']['membership']) ? $data['package']['membership'] : null,
                     'expiry_date' => isset($data['package']['date']) ? $data['package']['date'] : null,
                     'profile_picture' => isset($data['profilepic']) ? $data['profilepic'] : null,
-                    'iseligible' => isset($data['iseligible']) ? $data['iseligible'] : 0
+                    'iseligible' => isset($data['iseligible']) ? $data['iseligible'] : 0,
+                    'ref' => $ref,
+                    'referallinks' => $referallinks1,
+                    'referallinks2' => $referallinks2,
+                    'level2' => $level2,
+                    'level3' => $level3,
                 ]);
             }
 
@@ -74,8 +106,9 @@ class AuthenticationController extends ApiController
             $responseData['user'] = new UserResource($user);
             $responseData['auth_token'] = $token->plainTextToken;
 
-
             DB::commit();
+
+            $user->refresh();
 
             dispatch(new \App\Jobs\SetupCyborgUserJob($user));
 
