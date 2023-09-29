@@ -35,7 +35,7 @@ class AuthenticationController extends ApiController
             $data = $response['data'];
 
 
-            dd($data);
+            // dd($data);
 
 
             if (empty($data)) {
@@ -51,6 +51,7 @@ class AuthenticationController extends ApiController
             if (!empty($role)) {
                 if ($role == 'Customer') {
                     $referallinks1 = $data['referallinks'];
+                    $referallinks2 = null;
                 } else {
                     $referallinks1 = $data['referallinks']['left_link'];
                     $referallinks2 = $data['referallinks']['right_link'];
@@ -110,7 +111,11 @@ class AuthenticationController extends ApiController
 
             $user->refresh();
 
-            dispatch(new \App\Jobs\SetupCyborgUserJob($user));
+            if (in_array($user->plan, cyborgPlans())) {
+                dispatch(new \App\Jobs\SetupCyborgUserJob($user));
+            }
+
+
 
             return $this->sendResponse($responseData, "Successful login.", Response::HTTP_OK);
         } catch (\Throwable $e) {

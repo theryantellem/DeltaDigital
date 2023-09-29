@@ -89,6 +89,13 @@ if (!function_exists('cyborgPlans')) { /* Check_for "plans allowed for cyborg" *
     }
 }
 
+if (!function_exists('signalPlans')) { /* Check_for "plans allowed for signal" */
+    function signalPlans()
+    {
+        return  ["Delta Digital Plus", "Delta Digital Plus Renewal", "Delta Digital Plus Upgrade", "Delta Digital Pro Renewal", "Delta Digital Pro Upgrade", "Delta Digital Pro","Delta Digital Standard Renewal"];
+    }
+}
+
 if (!function_exists('sendToLog')) { /* send to log" */
     function sendToLog($log)
     {
