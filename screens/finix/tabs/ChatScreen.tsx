@@ -167,49 +167,7 @@ const ChatScreen = ({navigation}: SignalRootTabScreenProps<'SignalChat'>) => {
                         </Text>
                     </View>
                     }
-                    <TouchableOpacity  onPress={() => startMessage({
-                        "email": userData.email,
-                        "first_name": userData.name,
-                        "id": userData.id,
-                        last_name:userData.name,
-                        "photo": userData.profile_picture,
-                    })} style={styles.favList}>
-                        <View style={[styles.listIcon, {
-                            //  backgroundColor: Colors.secondary,
-                        }]}>
 
-
-                            <FastImage
-                                style={styles.tAvatar}
-                                source={{
-                                    cache: FastImage.cacheControl.web,
-                                    uri: userData?.profile_picture,
-                                    priority: FastImage.priority.normal,
-                                }}
-
-                                resizeMode={FastImage.resizeMode.cover}
-                            />
-
-
-                        </View>
-                        <View
-                            style={styles.listBody}>
-                            <Text style={styles.bodyTitle}>
-                                {userData.name} (ME)
-                            </Text>
-                            <View style={styles.listBottom}>
-
-
-
-                            </View>
-
-                        </View>
-
-
-                        <Entypo name="chevron-right" size={14} color="#fff"/>
-
-
-                    </TouchableOpacity>
 
                     {
                         isLoading && <ActivityIndicator size='small' color={Colors.primary}/>

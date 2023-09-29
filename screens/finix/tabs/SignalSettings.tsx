@@ -26,7 +26,7 @@ const SignalSettings = () => {
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
 
-    const {data, refetch} = useQuery(['user-data'], () => getUser(User_Details.id))
+   // const {data, refetch} = useQuery(['user-data'], () => getUser(User_Details.id))
 
     const [username, setUsername] = useState(User_Details.username);
     const [focusUsername, setFocusUsername] = useState<boolean>(false);

@@ -21,12 +21,14 @@ import Colors from "../constants/Colors";
 import {useFocusEffect} from "@react-navigation/native";
 import Animated, {Easing, FadeInDown, FadeOutDown, Layout} from 'react-native-reanimated';
 
-import {useAppSelector} from "../app/hooks";
+import {useAppDispatch, useAppSelector} from "../app/hooks";
 import FastImage from "react-native-fast-image";
 import {useQuery} from "@tanstack/react-query";
 import {activeStrategy, binanceTicker, checkUserPlan, getAsset, getUser, quantitativeStrategies} from "../api";
 import {currencyFormatter, invertNumber, useRefreshOnFocus} from "../helpers";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
+import {addNotificationItem} from "../app/slices/dataSlice";
+import ToastAnimated from "../components/toast";
 
 
 const {width} = Dimensions.get('screen');
@@ -86,11 +88,11 @@ const Item = ({item, tickers}: itemProps) => {
 
 const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
     const user = useAppSelector(state => state.user)
-    const {User_Details} = user
+    const {User_Details,userData} = user
 
     const [greeting, setGreeting] = useState('');
 
-
+const dispatch = useAppDispatch()
     const {
         data: Asset,
         refetch: fetchAsset,
@@ -130,13 +132,31 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
     );
 
     const CyborgHome = () => {
-        navigation.navigate('CyborgBottomTab')
+        if(userData.cyborg) {
+            navigation.navigate('CyborgBottomTab')
+        }else {
+            dispatch(addNotificationItem({
+                id: Math.random(),
+                type: 'error',
+                body: "You cannot access Delta Cyborg with your current plan. Please upgrade your plane to be able to access Delta Cyborg",
+            }))
+        }
     }
     const StarfoxHome = () => {
 
     }
     const FinixHome = () => {
-        navigation.navigate('MainSignalNav')
+        if(userData.signal) {
+            navigation.navigate('MainSignalNav')
+        }else {
+            dispatch(addNotificationItem({
+                id: Math.random(),
+                type: 'error',
+                body: "You cannot access Finix with your current plan. Please upgrade your plane to be able to access Finix",
+
+            }))
+        }
+
     }
 
 
@@ -334,7 +354,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
 
     const handleScroll = (x) => {
         if (scrollViewRef.current) {
-            scrollViewRef?.current?.scrollTo({ x, animated: true });
+            scrollViewRef?.current?.scrollTo({x, animated: true});
         }
     };
 
@@ -408,11 +428,11 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                             <MaterialCommunityIcons name="sort-variant" size={32} color="#fff"/>
                         </View>
 
-                        <Pressable onPress={()=>handleScroll(1)} style={styles.controlLogoWrap}>
+                        <Pressable onPress={() => handleScroll(1)} style={styles.controlLogoWrap}>
                             <Image source={require('../assets/images/logos/finixLogo.png')} style={styles.controlLogo}/>
                         </Pressable>
 
-                        <Pressable onPress={()=>handleScroll(400)} style={styles.controlLogoWrap}>
+                        <Pressable onPress={() => handleScroll(400)} style={styles.controlLogoWrap}>
                             <Image source={require('../assets/images/logos/cyborlogo.png')} style={styles.controlLogo}/>
                         </Pressable>
                     </View>
@@ -422,7 +442,7 @@ const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
                         !isLoading && !loading &&
 
                         <Animated.ScrollView
-ref={scrollViewRef}
+                            ref={scrollViewRef}
                             layout={Layout.easing(Easing.bounce).delay(100)} entering={FadeInDown.springify()}
                             exiting={FadeOutDown}
                             showsHorizontalScrollIndicator={false}
@@ -452,7 +472,7 @@ ref={scrollViewRef}
                         #OwnTheFuture
                     </Text>
                 </View>
-
+                <ToastAnimated/>
             </ImageBackground>
         </SafeAreaView>
     );
@@ -752,7 +772,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFFFFF33"
     },
     controlLogoWrap: {
-        marginLeft:15,
+        marginLeft: 15,
         width: 50,
         height: 50,
         alignItems: 'center',
@@ -760,8 +780,8 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: "#FFFFFF"
     },
-    controlLogo:{
-        resizeMode:'contain',
+    controlLogo: {
+        resizeMode: 'contain',
         width: 45,
         height: 45,
     }

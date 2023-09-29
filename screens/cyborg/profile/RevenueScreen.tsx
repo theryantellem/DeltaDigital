@@ -85,6 +85,7 @@ const seeAll = () => {
     }
 
 
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <LinearGradient style={styles.background}
@@ -233,7 +234,7 @@ const seeAll = () => {
 
 
                     { data?.data['History Records'] !== null &&
-                        data?.data['History Records'].slice(0,30).map((item: { profit: string ; price: string ; market: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined; Date: number; })=>(
+                        data?.data['History Records'].slice(0,30).map((item: { profit: string ; price: string ;market_type:string, market: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined; Date: number; })=>(
                             <Animated.View  layout={Layout.easing(Easing.bounce).delay(10)}
                                    entering={FadeInDown.springify()} exiting={FadeOutDown} key={item.profit +item.Date} style={styles.transactionCard}>
 
@@ -241,9 +242,25 @@ const seeAll = () => {
 
 
                                 <View style={styles.bodyLeft}>
+
+                                    <View style={styles.leftWrap}>
                                     <Text style={styles.transactionTitle}>
                                         {item.market}
+
                                     </Text>
+                                    <View style={styles.tagWrap}>
+
+                                        {
+                                            item.market_type == '1' ?<Text style={styles.tagText}>
+                                            Futures
+                                        </Text>
+                                                :
+                                                <Text style={styles.tagText}>
+                                                    Spot
+                                                </Text>
+                                        }
+                                    </View>
+                                    </View>
                                     <Text style={styles.transactionDate}>
 
                                         {dayjs.unix(item.Date).format('ddd, DD MMM YYYY')}
@@ -428,6 +445,13 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         justifyContent: 'space-evenly',
     },
+    leftWrap: {
+        width: '100%',
+
+        flexDirection:'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+    },
     bodyRight: {
         width: '35%',
         height: '80%',
@@ -519,7 +543,23 @@ const styles = StyleSheet.create({
         width:1,
         height:'80%',
         backgroundColor:Colors.borderColor
-    }
+    },
+    tagWrap: {
+        position:'absolute',
+        backgroundColor: Colors.textDark,
+        paddingHorizontal: 10,
+        height: 20,
+        right:50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 5,
+    },
+    tagText: {
+        color: Colors.pendingYellow,
+        fontFamily: Fonts.faktumSemiBold,
+        fontSize: fontPixel(10),
+    },
+
 
 })
 

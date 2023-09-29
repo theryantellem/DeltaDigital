@@ -40,6 +40,7 @@ import Animated, {
 interface RewardItem {
     item: {
         "Date": string,
+        "market_type": string,
         "market": string,
         "profit": string,
         "buysell": string,
@@ -59,9 +60,24 @@ const RewardItem = ({item}: RewardItem) => {
 
 
             <View style={styles.bodyLeft}>
+                <View style={styles.leftWrap}>
                 <Text style={styles.transactionTitle}>
                     {item.market}
                 </Text>
+                <View style={styles.tagWrap}>
+
+                    {
+                        item.market_type == '1' ?<Text style={styles.tagText}>
+                                Futures
+                            </Text>
+                            :
+                            <Text style={styles.tagText}>
+                                Spot
+                            </Text>
+                    }
+                </View>
+                </View>
+
                 <Text style={styles.transactionDate}>
 
                     {dayjs.unix(item.Date).format('ddd, DD MMM YYYY')}
@@ -436,6 +452,28 @@ const styles = StyleSheet.create({
         fontSize: fontPixel(12),
         fontFamily: Fonts.faktumRegular,
         color: Colors.tintText
+    },
+    tagWrap: {
+        position:'absolute',
+        backgroundColor: Colors.textDark,
+        paddingHorizontal: 10,
+        height: 20,
+        right:50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 5,
+    },
+    tagText: {
+        color: Colors.pendingYellow,
+        fontFamily: Fonts.faktumSemiBold,
+        fontSize: fontPixel(10),
+    },
+    leftWrap: {
+        width: '100%',
+
+        flexDirection:'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
     },
 
 })

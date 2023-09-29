@@ -35,7 +35,7 @@ const Courses = []
 const width = Dimensions.get('window').width
 
 interface Props {
-
+    viewSignalImage: (item: {}) => void,
     viewSignal: (signal: {
         "id": string,
         "educator": {
@@ -79,6 +79,10 @@ interface Props {
             "name": string,
             "symbol": string
         },
+        category: {
+            name: string,
+            type: string
+        },
         "order_type": string,
         "entry_price": number,
         "stop_loss": number,
@@ -92,70 +96,102 @@ interface Props {
 }
 
 
-const ItemSignal = ({item, viewSignal}: Props) => {
+const ItemSignal = ({item, viewSignal, viewSignalImage}: Props) => {
+
+
+    const viewItemSignal = (signal) => {
+        if (item.category.type == 'news') {
+            viewSignalImage(signal)
+
+        } else {
+            viewSignal(signal)
+        }
+    }
 
     return (
 
-        <TouchableOpacity onPress={() => viewSignal(item)} activeOpacity={0.8} style={styles.loanAppCard}>
+        <TouchableOpacity onPress={() => viewItemSignal(item)} activeOpacity={0.8} style={styles.loanAppCard}>
+
+            {item.category.type == 'news' ?
+                <>
+
+                    <View style={styles.chart_photoImageWrap}>
+                        <Image style={styles.chart_photoImage}
+                               source={{uri: item.chart_photo}}/>
 
 
-            <View style={styles.topCard}>
-                <View style={styles.IconImageWrap}>
-                    <Image style={styles.IconImage}
-                           source={{uri: item.asset.image}}/>
+                    </View>
 
 
-                </View>
-
-                <View>
-                    <Text style={styles.assetText}>
-                        {item.asset.name}
-                    </Text>
                     <Text style={[styles.assetText, {
-                        fontFamily: Fonts.faktumRegular
+                        fontFamily: Fonts.faktumBold
                     }]}>
-                        Crypto
-                    </Text>
-                </View>
-
-            </View>
-
-            <View style={styles.bottomCard}>
-
-                <View style={styles.bottomCardRow}>
-                    <Text style={styles.bottomCardText}>
-                        Order type
-                    </Text>
-                    <Text style={styles.bottomCardSubText}>
-                        {item.order_type}
+                        {item.category.name}
                     </Text>
 
-                </View>
-                <View style={styles.bottomCardRow}>
-                    <Text style={styles.bottomCardText}>
-                        Status
-                    </Text>
-                    <Text style={styles.bottomCardSubText}>
-                        {item.status}
-                    </Text>
 
-                </View>
-                <View style={styles.bottomCardRow}>
-                    <Text style={styles.bottomCardText}>
-                        Target price
-                    </Text>
-                    <Text style={styles.bottomCardSubText}>
-                        {item.target_price}
-                    </Text>
+                </>
+                :
+                <>
 
-                </View>
-                <Text style={styles.educatorName}>
-                    {item.educator.last_name} {item.educator.first_name}
-                </Text>
+                    <View style={styles.topCard}>
+                        <View style={styles.IconImageWrap}>
+                            <Image style={styles.IconImage}
+                                   source={{uri: item.asset.image}}/>
 
 
-            </View>
+                        </View>
 
+                        <View>
+                            <Text style={styles.assetText}>
+                                {item.asset.name}
+                            </Text>
+                            <Text style={[styles.assetText, {
+                                fontFamily: Fonts.faktumRegular
+                            }]}>
+                                Crypto
+                            </Text>
+                        </View>
+
+                    </View>
+
+                    <View style={styles.bottomCard}>
+
+                        <View style={styles.bottomCardRow}>
+                            <Text style={styles.bottomCardText}>
+                                Order type
+                            </Text>
+                            <Text style={styles.bottomCardSubText}>
+                                {item.order_type}
+                            </Text>
+
+                        </View>
+                        <View style={styles.bottomCardRow}>
+                            <Text style={styles.bottomCardText}>
+                                Status
+                            </Text>
+                            <Text style={styles.bottomCardSubText}>
+                                {item.status}
+                            </Text>
+
+                        </View>
+                        <View style={styles.bottomCardRow}>
+                            <Text style={styles.bottomCardText}>
+                                Target price
+                            </Text>
+                            <Text style={styles.bottomCardSubText}>
+                                {item.target_price}
+                            </Text>
+
+                        </View>
+                        <Text style={styles.educatorName}>
+                            {item.educator.last_name} {item.educator.first_name}
+                        </Text>
+
+
+                    </View>
+                </>
+            }
 
         </TouchableOpacity>
     )
@@ -436,12 +472,13 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
                                 <View style={styles.messageWrap}>
                                     <View style={styles.imageWrap}>
 
-                                        <Image source={require('../../assets/images/EmptyBox/empty_state.png')} style={styles.fileBroken}/>
+                                        <Image source={require('../../assets/images/EmptyBox/empty_state.png')}
+                                               style={styles.fileBroken}/>
 
 
                                     </View>
                                     <Text style={styles.message}>
-                                    No signal from this educator!
+                                        No signal from this educator!
 
                                     </Text>
                                 </View>
@@ -616,11 +653,11 @@ const styles = StyleSheet.create({
         height: heightPixel(200),
     },
     boxWrap: {
-            width: '100%',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-evenly'
-        },
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-evenly'
+    },
     favList: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -842,7 +879,19 @@ const styles = StyleSheet.create({
         width: "100%",
         resizeMode: 'contain'
     },
-
+    chart_photoImageWrap: {
+        width: widthPixel(160),
+        height: heightPixel(160),
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    chart_photoImage: {
+        height: '100%',
+        width: '100%',
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
 
 })
 

@@ -50,7 +50,7 @@ interface props {
 }
 
 
-interface Props {
+interface PropsSignal {
 
     viewSignal: (signal: {
         "id": string,
@@ -78,7 +78,7 @@ interface Props {
         "market_status": string,
         "status": string
     }) => void
-
+    viewSignalImage:(item:{})=>void
     item: {
         "id": string,
         "educator": {
@@ -96,7 +96,8 @@ interface Props {
             "symbol": string
         },
         category: {
-            name: string
+            name: string,
+            type: string
         },
         "order_type": string,
         "entry_price": number,
@@ -111,71 +112,107 @@ interface Props {
 }
 
 
-const ItemSignal = ({item, viewSignal}: Props) => {
+const ItemSignal = ({item, viewSignal,viewSignalImage}: PropsSignal) => {
+
+    const viewItemSignal = (signal) => {
+        if(item.category.type == 'news' ) {
+            viewSignalImage(signal)
+
+        }else{
+            viewSignal(signal)
+        }
+    }
 
     return (
 
-        <TouchableOpacity onPress={() => viewSignal(item)} activeOpacity={0.8} style={styles.loanAppCard}>
+        <TouchableOpacity onPress={() => viewItemSignal(item)} activeOpacity={0.8} style={styles.loanAppCard}>
+
+            {
+                item.category.type == 'news' ?
+                    <>
+
+                            <View style={styles.chart_photoImageWrap}>
+                                <Image style={styles.chart_photoImage}
+                                       source={{uri: item.chart_photo}}/>
 
 
-            <View style={styles.topCard}>
-                <View style={styles.IconImageWrap}>
-                    <Image style={styles.IconImage}
-                           source={{uri: item.asset.image}}/>
+                            </View>
 
 
-                </View>
 
-                <View>
-                    <Text style={styles.assetText}>
-                        {item.asset.name}
-                    </Text>
-                    <Text style={[styles.assetText, {
-                        fontFamily: Fonts.faktumRegular
-                    }]}>
-                        {item.category.name}
-                    </Text>
-                </View>
-
-            </View>
-
-            <View style={styles.bottomCard}>
-
-                <View style={styles.bottomCardRow}>
-                    <Text style={styles.bottomCardText}>
-                        Order type
-                    </Text>
-                    <Text style={styles.bottomCardSubText}>
-                        {item.order_type}
-                    </Text>
-
-                </View>
-                <View style={styles.bottomCardRow}>
-                    <Text style={styles.bottomCardText}>
-                        Status
-                    </Text>
-                    <Text style={[styles.bottomCardSubText, {
-                        color: Colors.pendingYellow
-                    }]}>
-                        {item.status}
-                    </Text>
-
-                </View>
-                <View style={styles.bottomCardRow}>
-                    <Text style={styles.bottomCardText}>
-                        Target price
-                    </Text>
-                    <Text style={styles.bottomCardSubText}>
-                        {item.target_price}
-                    </Text>
-
-                </View>
-                <Text style={styles.educatorName}>
-                    {item.educator.last_name} {item.educator.first_name}
-                </Text>
+                        <Text style={styles.educatorName}>
+                                    {item.educator.last_name} {item.educator.first_name}
+                                </Text>
 
 
-            </View>
+
+
+
+                    </>
+
+                    :
+                    <>
+                        <View style={styles.topCard}>
+                            <View style={styles.IconImageWrap}>
+                                <Image style={styles.IconImage}
+                                       source={{uri: item.asset.image}}/>
+
+
+                            </View>
+
+                            <View>
+                                <Text style={styles.assetText}>
+                                    {item.asset.name}
+                                </Text>
+                                <Text style={[styles.assetText, {
+                                    fontFamily: Fonts.faktumRegular
+                                }]}>
+                                    {item.category.name}
+                                </Text>
+                            </View>
+
+                        </View>
+
+                        <View style={styles.bottomCard}>
+
+                            <View style={styles.bottomCardRow}>
+                                <Text style={styles.bottomCardText}>
+                                    Order type
+                                </Text>
+                                <Text style={styles.bottomCardSubText}>
+                                    {item.order_type}
+                                </Text>
+
+                            </View>
+                            <View style={styles.bottomCardRow}>
+                                <Text style={styles.bottomCardText}>
+                                    Status
+                                </Text>
+                                <Text style={[styles.bottomCardSubText, {
+                                    color: Colors.pendingYellow
+                                }]}>
+                                    {item.status}
+                                </Text>
+
+                            </View>
+                            <View style={styles.bottomCardRow}>
+                                <Text style={styles.bottomCardText}>
+                                    Target price
+                                </Text>
+                                <Text style={styles.bottomCardSubText}>
+                                    {item.target_price}
+                                </Text>
+
+                            </View>
+                            <Text style={styles.educatorName}>
+                                {item.educator.last_name} {item.educator.first_name}
+                            </Text>
+
+
+                        </View>
+                    </>
+            }
+
 
 
         </TouchableOpacity>
@@ -241,6 +278,13 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
     }
 
 
+    const viewSignalImage = (details)=>{
+        navigation.navigate('MainSignalNav', {
+            screen: 'SignalImageDetails', params: {details}
+
+        })
+    }
+
     const viewSignal = (details: {
         "id": string,
         "educator": {
@@ -283,7 +327,7 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
     );
 
     const renderItemSignal = useCallback(
-        ({item}) => <ItemSignal item={item} viewSignal={viewSignal}/>,
+        ({item}) => <ItemSignal viewSignalImage={viewSignalImage} item={item} viewSignal={viewSignal}/>,
         [],
     );
 
@@ -330,20 +374,8 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
                         userName={User_Details.username}/>
 
 
-                    {/*   <View style={styles.topTabButtons}>
-                        <HomeSegmentedTabs tabs={["Signals", "Categories"]}
-                                           currentIndex={tabIndex}
-                                           onChange={handleTabsChange}
-                                           segmentedControlBackgroundColor={Colors.tintPrimary}
-                                           activeSegmentBackgroundColor={"#EAF6EB"}
-                                           activeTextColor={Colors.text}
-                                           textColor={Colors.text}
-                                           paddingVertical={pixelSizeVertical(8)}
-                        />
-                    </View>*/}
 
-
-                    <IF condition={tabIndex == 0}>
+        <IF condition={tabIndex == 0}>
 
 
                         <ImageBackground source={require('../../../assets/images/signal/educator_BG.png')}
@@ -409,7 +441,7 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
 
                             {!loadingSignals && signals && signals?.data?.length < 1 &&
                                 <View style={styles.messageWrap}>
-                                 {/*   <Ionicons name="ios-information-circle" size={24} color={Colors.text}/>*/}
+                                    <Ionicons name="ios-information-circle" size={24} color={Colors.text}/>
 
 
                                     <View style={styles.imageWrap}>
@@ -618,6 +650,19 @@ const styles = StyleSheet.create({
         height: '100%',
         width: '100%',
         borderRadius: 50,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    chart_photoImageWrap: {
+        width: widthPixel(150),
+        height: heightPixel(140),
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    chart_photoImage: {
+        height: '100%',
+        width: '100%',
+        borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center'
     },

@@ -56,7 +56,9 @@ export interface UserState {
             right_link: string
         },
         role: string,
-        iseligible: number
+        iseligible: number,
+        cyborg: boolean,
+        signal: boolean,
     }
 }
 
@@ -85,7 +87,9 @@ const initialState: UserState = {
             right_link: ""
         },
         role: "",
-        iseligible: 1
+        iseligible: 1,
+        cyborg: false,
+        signal: false,
     },
     User_Details:
         {

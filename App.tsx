@@ -166,6 +166,7 @@ export default function App() {
                 const body = JSON.stringify({
                     token,
                 })
+
                 const myHeaders = {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${BearerToken}`

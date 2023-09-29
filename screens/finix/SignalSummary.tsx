@@ -21,16 +21,10 @@ import {useQuery} from "@tanstack/react-query";
 import {getSignals} from "../../api/finix-api";
 
 
-
-
-
-
-
-
 interface Props {
 
     viewSignal: (signal: {}) => void
-
+    viewSignalImage:(item:{})=>void
     item: {
         "id": string,
         "educator": {
@@ -47,6 +41,10 @@ interface Props {
             "name": string,
             "symbol": string
         },
+        category: {
+            name: string,
+            type: string
+        },
         "order_type": string,
         "entry_price": number,
         "stop_loss": number,
@@ -61,43 +59,96 @@ interface Props {
 }
 
 
-const ItemSignal = ({item, viewSignal}: Props) => {
+const ItemSignal = ({item, viewSignal,viewSignalImage}: Props) => {
+
+
+    const viewItemSignal = (signal) => {
+        if(item.category.type == 'news' ) {
+            viewSignalImage(signal)
+
+        }else{
+           viewSignal(signal)
+        }
+    }
+
     return (
 
-        <TouchableOpacity onPress={()=>viewSignal(item)} activeOpacity={0.8} style={styles.signalCard}>
+        <TouchableOpacity onPress={() => viewItemSignal(item)} activeOpacity={0.8} style={styles.signalCard}>
 
-            <View style={styles.signalCardValueWrap}>
-                <Text style={styles.signalCardValue}>
-                    {item.asset.symbol}
-                </Text>
-            </View>
+            {item.category.type !== 'news' ?
+                <>
 
-            <View style={styles.signalCardValueWrap}>
-                <Text style={styles.signalCardValue}>
-                    {item.asset.name}
-                </Text>
-            </View>
+                    <View style={styles.signalCardValueWrap}>
+                        <Text style={styles.signalCardValue}>
+                            {item.asset.symbol}
+                        </Text>
+                    </View>
 
-            <View style={styles.signalCardValueWrap}>
-                <Text style={styles.signalCardValue}>
-                    {item.status}
-                </Text>
-            </View>
-            <View style={styles.signalCardValueWrap}>
-                <Text style={styles.signalCardValue}>
-                    {item.percentage}
-                </Text>
-            </View>
+                    <View style={styles.signalCardValueWrap}>
+                        <Text style={styles.signalCardValue}>
+                            {item.asset.name}
+                        </Text>
+                    </View>
+
+                    <View style={styles.signalCardValueWrap}>
+                        <Text style={styles.signalCardValue}>
+                            {item.status}
+                        </Text>
+                    </View>
+                    <View style={styles.signalCardValueWrap}>
+                        <Text style={styles.signalCardValue}>
+                            {item.percentage}
+                        </Text>
+                    </View>
 
 
-            <View style={styles.signalCardValueWrap}>
+                    <View style={styles.signalCardValueWrap}>
 
-                <TouchableOpacity onPress={()=>viewSignal(item)} style={styles.signalViewBtn}>
-<Text style={styles.viewText}>
-    View
-</Text>
-                </TouchableOpacity>
-            </View>
+                        <TouchableOpacity onPress={() => viewSignal(item)} style={styles.signalViewBtn}>
+                            <Text style={styles.viewText}>
+                                View
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </>
+                :
+                <>
+
+                    <View style={styles.signalCardValueWrap}>
+                        <Text style={[styles.signalCardValue,{
+                            textTransform:'capitalize'
+                        }]}>
+                            {item.category.type}
+                        </Text>
+                    </View>
+                    <View style={styles.signalCardValueWrap}>
+                        <Text style={styles.signalCardValue}>
+                            {item.category.name}
+                        </Text>
+                    </View>
+
+                    <View style={styles.signalCardValueWrap}>
+                        <Text style={styles.signalCardValue}>
+                            {item.status}
+                        </Text>
+                    </View>
+                    <View style={styles.signalCardValueWrap}>
+                        <Text style={styles.signalCardValue}>
+                            {item.percentage}
+                        </Text>
+                    </View>
+
+
+                    <View style={styles.signalCardValueWrap}>
+
+                        <TouchableOpacity onPress={() => viewItemSignal(item)} style={styles.signalViewBtn}>
+                            <Text style={styles.viewText}>
+                                View
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </>
+            }
 
 
         </TouchableOpacity>
@@ -109,11 +160,9 @@ const ItemSignal = ({item, viewSignal}: Props) => {
 const SignalSummary = ({navigation}: SignalStackScreenProps<'SignalSummary'>) => {
 
 
-
     const {data, isLoading, refetch} = useQuery(['getSignals'], getSignals)
 
     const keyExtractor = useCallback((item: { id: any; }) => item.id, [],)
-
 
 
     const viewSignal = (details: {
@@ -149,8 +198,16 @@ const SignalSummary = ({navigation}: SignalStackScreenProps<'SignalSummary'>) =>
         })
     }
 
+
+    const viewSignalImage = (details)=>{
+        navigation.navigate('MainSignalNav', {
+            screen: 'SignalImageDetails', params: {details}
+
+        })
+    }
+
     const renderItem = useCallback(
-        ({item}) => <ItemSignal item={item} viewSignal={viewSignal}/>,
+        ({item}) => <ItemSignal viewSignalImage={viewSignalImage} item={item} viewSignal={viewSignal}/>,
         [],
     );
 
@@ -196,26 +253,26 @@ const SignalSummary = ({navigation}: SignalStackScreenProps<'SignalSummary'>) =>
                     <View style={styles.listHead}>
 
                         <View style={styles.signalCardValueWrap}>
-                        <Text style={styles.listHeadText}>
-                            Asset
-                        </Text>
+                            <Text style={styles.listHeadText}>
+                                Asset
+                            </Text>
                         </View>
                         <View style={styles.signalCardValueWrap}>
-                        <Text style={styles.listHeadText}>
-                            Name
-                        </Text>
-                        </View>
-
-                        <View style={styles.signalCardValueWrap}>
-                        <Text style={styles.listHeadText}>
-                            Status
-                        </Text>
+                            <Text style={styles.listHeadText}>
+                                Name
+                            </Text>
                         </View>
 
                         <View style={styles.signalCardValueWrap}>
-                        <Text style={styles.listHeadText}>
-                            %
-                        </Text>
+                            <Text style={styles.listHeadText}>
+                                Status
+                            </Text>
+                        </View>
+
+                        <View style={styles.signalCardValueWrap}>
+                            <Text style={styles.listHeadText}>
+                                %
+                            </Text>
                         </View>
 
                         <View style={styles.signalCardValueWrap}>
@@ -336,40 +393,40 @@ const styles = StyleSheet.create({
         color: Colors.text,
         fontSize: fontPixel(14)
     },
-    signalCard:{
+    signalCard: {
         alignSelf: 'center',
-        width:'90%',
-        alignItems:'center',
-        justifyContent:'space-between',
+        width: '90%',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         flexDirection: 'row',
-        height:55,
-        borderBottomColor:Colors.text,
-        borderBottomWidth:1,
+        height: 55,
+        borderBottomColor: Colors.text,
+        borderBottomWidth: 1,
     },
-    signalCardValueWrap:{
-        width:'20%',
-        height:'90%',
-        alignItems:'center',
-        justifyContent:'center'
+    signalCardValueWrap: {
+        width: '20%',
+        height: '90%',
+        alignItems: 'center',
+        justifyContent: 'center'
     },
- signalCardValue:{
-     fontFamily: Fonts.faktumMedium,
-     color: Colors.text,
-     fontSize: fontPixel(14)
+    signalCardValue: {
+        fontFamily: Fonts.faktumMedium,
+        color: Colors.text,
+        fontSize: fontPixel(14)
     },
-    signalViewBtn:{
-        backgroundColor:"#00B2FF",
-        paddingHorizontal:pixelSizeHorizontal(8),
-        borderRadius:10,
-        height:20,
+    signalViewBtn: {
+        backgroundColor: "#00B2FF",
+        paddingHorizontal: pixelSizeHorizontal(8),
+        borderRadius: 10,
+        height: 20,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    viewText:{
-        color:"#fff",
-        fontSize:fontPixel(12),
+    viewText: {
+        color: "#fff",
+        fontSize: fontPixel(12),
 
-        fontFamily:Fonts.faktumRegular
+        fontFamily: Fonts.faktumRegular
     },
 
 

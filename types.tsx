@@ -203,7 +203,34 @@ export type CyborgStackParamList = {
 
 export type SignalStackParamList = {
     SignalBottomTab: undefined;
-
+    SignalImageDetails: {details: {
+        "id": string,
+        "educator": {
+            "id": string,
+            "first_name": string,
+            last_name: string,
+            "email": string,
+            "photo": string,
+            "total_followers": number
+        },
+            "asset": null,
+            "category": {
+                "id": 4,
+                "name": string,
+                "photo": null,
+                "type": string
+            },
+        "order_type": string,
+        "entry_price": number,
+        "stop_loss": number,
+        "target_price": number,
+        "comment": string,
+        "photo": string,
+        "chart_photo": string,
+        "market_status": string,
+        "status": string
+    }
+};
     SignalDetails: {
         details: {
             "id": string,

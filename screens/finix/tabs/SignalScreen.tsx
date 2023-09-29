@@ -122,6 +122,10 @@ const SignalScreen = ({navigation}: SignalRootTabScreenProps<'Signals'>) => {
             "name": string,
             "symbol": string
         },
+        category: {
+            name: string,
+            type: string
+        },
         "order_type": string,
         "entry_price": number,
         "stop_loss": number,
