@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Signal extends Model
 {
-    use HasFactory, SoftDeletes, GeneratesUuid;
+    use HasFactory, GeneratesUuid;
 
     protected $guarded = [];
 

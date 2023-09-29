@@ -199,7 +199,7 @@ class EducatorController extends Controller
 
         \App\Models\UserFollower::where('admin_id', $educator->id)->delete();
 
-        Signal::where('admin_id', $educator->id)->delete();
+        \App\Models\Signal::where('admin_id', $educator->id)->delete();
 
         $educator->delete();
 
