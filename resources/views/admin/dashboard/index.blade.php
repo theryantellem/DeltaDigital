@@ -87,33 +87,66 @@
                     <a href="{{ route('admin.signals.index') }}" class="btn btn-sm btn-primary">View All</a>
                 </div>
                 <div class="card-body pt-0">
-                    <div class="swiper mySwiper">
-                        <div class="swiper-wrapper">
-                            @foreach ($signals as $item)
-                                <div class="swiper-slide">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <div class="card-media d-flex justify-content-center">
-                                                <img src="{{ $item->asset->image }}" alt=""
-                                                    style="width: 70% !important">
-                                            </div>
-                                            <div class="media-data">
-                                                <h4>{{ $item->asset->name }}</h4>
-                                                <div class="dateformat d-flex justify-content-between align-items-end">
-                                                    <div>
-                                                        <p class="text-uppercase">{{ $item->asset->symbol }}</p>
-                                                        <span class="text-capitalize">{{ $item->category->name }}</span>
+                    @if (count($signals) > 0)
+                        <div class="swiper mySwiper">
+                            <div class="swiper-wrapper">
+                                @foreach ($signals as $item)
+                                    <div class="swiper-slide">
+                                        <div class="card">
+                                            @if ($item->category->type === 'trade')
+                                                <div class="card-body">
+                                                    <div class="card-media d-flex justify-content-center">
+                                                        <img src="{{ $item->asset->image }}" alt=""
+                                                            style="width: 70% !important">
                                                     </div>
-                                                    <span
-                                                        class="badge badge-primary light border-0 text-uppercase">{{ $item->market_status }}</span>
+                                                    <div class="media-data">
+                                                        <h4>{{ $item->asset->name }}</h4>
+                                                        <div
+                                                            class="dateformat d-flex justify-content-between align-items-end">
+                                                            <div>
+                                                                <p class="text-uppercase">{{ $item->asset->symbol }}</p>
+                                                                <span
+                                                                    class="text-capitalize">{{ $item->category->name }}</span>
+                                                            </div>
+                                                            <span
+                                                                class="badge badge-primary light border-0 text-uppercase">{{ $item->market_status }}</span>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            @else
+                                                <div class="card-body">
+                                                    <div class="card-media d-flex justify-content-center">
+                                                        <img src="{{ $item->chart_photo }}" alt=""
+                                                            style="width: 70% !important">
+                                                    </div>
+                                                    <div class="media-data">
+                                                        @php
+                                                            $caption = Str::limit(strip_tags($item->comment), 100, '...');
+                                                        @endphp
+                                                        <h4> {{ $caption }}</h4>
+                                                        <div
+                                                            class="dateformat d-flex justify-content-between align-items-end">
+                                                            <div>
+                                                                <span
+                                                                    class="text-capitalize">{{ $item->category->name }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
-                                </div>
-                            @endforeach
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
+                    @else
+                        <div class="d-flex flex-column justify-content-center align-items-center h-50">
+                            <h5 class="text-warning">
+                                No Signals Available
+                            </h5>
+                        </div>
+                    @endif
+
                 </div>
             </div>
 

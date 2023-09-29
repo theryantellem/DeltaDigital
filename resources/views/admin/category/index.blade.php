@@ -109,6 +109,8 @@
                     this.photo_preview = category?.photo
                     this.name = category?.name
 
+                    this.type = category?.type
+
                     this.edit = true
 
                     this.catgoryId = category?.id
@@ -209,6 +211,19 @@
                         }).finally(() => {
                             this.loading = false;
                         })
+                },
+                async removeImage(id) {
+                    await axios.post(`/admin/category/remove-image/${id}`).then(response => {
+                        this.photo_preview = null
+
+                        this.$refs.fileInput.value = null;
+
+                        this.getCategories();
+
+                        Notiflix.Notify.Success(response.data.message);
+                    }).catch(error => {
+                        Notiflix.Notify.Failure(error.response.data.message)
+                    })
                 },
                 clearForm() {
                     this.errors = {};

@@ -49,4 +49,9 @@ class Admin extends Authenticatable
     {
         return $this->hasOne(ChatGroup::class, 'admin_id');
     }
+
+    function categories()
+    {
+        return $this->hasMany(EducatorCategory::class, 'admin_id');
+    }
 }

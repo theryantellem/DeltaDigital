@@ -43,9 +43,10 @@
                                         </td>
                                         <td><span class="text-center">@{{ educator.email }}</span></td>
                                         <td class="edit-action">
-                                            {{-- <a href="#" class="icon-box icon-box-xs bg-primary me-1">
+                                            <a href="#" class="icon-box icon-box-xs bg-primary me-1"
+                                                @click.prevent="show(educator)">
                                                 <i class="fa-solid fa-pencil text-white"></i>
-                                            </a> --}}
+                                            </a>
                                             <a href="#" @click.prevent="deleteSignal(educator)"
                                                 class="icon-box icon-box-xs bg-danger  ms-1">
                                                 <i class="fa-solid fa-trash text-white"></i>
@@ -88,7 +89,9 @@
                     status: [],
                     photo_preview: null,
                     categories: [],
-                    categoryList: []
+                    categoryList: [],
+                    edit: false,
+                    educatorId: ""
                 }
             },
             mounted() {
@@ -106,19 +109,44 @@
                         reader.readAsDataURL(this.photo);
                     }
                 },
-                handleCloseModal() {
+                clearForm() {
+                    this.errors = {}
                     this.first_name = "";
                     this.last_name = "";
                     this.email = "";
                     this.photo = "";
+                    this.password = "";
+                    this.categories = []
+                    this.edit = false
+                    this.educatorId = ""
+
+                    this.photo_preview = null
+
+                    this.$refs.fileInput.value = null;
+
                 },
-               async getEducators() {
-                  await  axios.get("{{ route('admin.educators.all') }}").then(response => {
+                handleCloseModal() {
+                    this.clearForm()
+                },
+                async getEducators() {
+                    await axios.get("{{ route('admin.educators.all') }}").then(response => {
                         this.educators = response.data.educators
                         this.categoryList = response.data.categories
                     }).catch(error => {
                         console.log(error);
                     })
+                },
+                show(educator) {
+                    this.first_name = educator?.first_name
+                    this.educatorId = educator?.id
+                    this.last_name = educator?.last_name
+                    this.email = educator?.email
+                    this.photo_preview = educator?.photo
+                    this.categories = educator?.categories.map(item => item.category.id);
+
+                    this.edit = true
+
+                    offcanvasSignal.show()
                 },
                 async createEducator() {
                     this.errors = {};
@@ -132,7 +160,7 @@
                     formData.append('email', this.email);
                     formData.append('password', this.password);
                     formData.append('photo', this.photo);
-                    formData.append('categories', this.categories)
+                    formData.append('categories', this.categories);
 
                     await axios.post("{{ route('admin.educators.store') }}", formData, {
                             headers: {
@@ -143,12 +171,53 @@
 
                             this.educators.push(response.data.educator);
 
-                            this.email = "";
-                            this.first_name = "";
-                            this.last_name = "";
-                            this.photo = "";
-                            this.categories = []
+                            this.clearForm();
 
+                            offcanvasSignal.hide();
+
+                            Notiflix.Notify.Success(response.data.message);
+                        })
+                        .catch(error => {
+                            console.log(error)
+                            if (error.response && error.response.data && error.response.data.errors) {
+                                // Set validation errors from the backend response
+                                this.errors = error.response.data.errors;
+
+                            } else {
+                                // console.log(error.response)
+                                Notiflix.Notify.Failure("Service unavailable");
+                                // Handle other types of errors, if needed
+                            }
+
+                        }).finally(() => {
+                            this.loading = false;
+                        })
+                },
+                async update(id) {
+                    this.errors = {};
+
+                    this.loading = true
+
+                    let formData = new FormData();
+                    formData.append('_token', '{{ csrf_token() }}');
+                    formData.append('first_name', this.first_name);
+                    formData.append('last_name', this.last_name);
+                    formData.append('email', this.email);
+                    // formData.append('password', this.password);
+                    formData.append('photo', this.photo);
+                    formData.append('categories', this.categories);
+                    formData.append('_method', 'put')
+
+                    await axios.post(`/admin/educators/${id}`, formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        })
+                        .then(response => {
+
+                            this.getEducators();
+
+                            this.clearForm();
                             offcanvasSignal.hide();
 
                             Notiflix.Notify.Success(response.data.message);

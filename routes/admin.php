@@ -98,6 +98,7 @@ Route::middleware(['auth:admin'])->group(function () {
         Route::get('show/{id}', 'show')->name('show');
         Route::post('store', 'store')->name('store');
         Route::post('update/{id}', 'update')->name('update');
+        Route::post('/remove-image/{id}', 'removeImage')->name('remove.image');
     }));
 
     Route::controller(AssetsController::class)->prefix('assets')->name('assets.')->group((function () {

@@ -34,7 +34,7 @@ class SignalController extends Controller
         if ($admin->hasRole('super_admin')) {
             $signals = Signal::get();
         } else {
-            $signals = Signal::where('user_id', $admin->id)->get();
+            $signals = Signal::where('admin_id', $admin->id)->get();
         }
 
         $signals = SignalResource::collection($signals);
@@ -79,11 +79,7 @@ class SignalController extends Controller
             $chartUrl = null;
 
             if ($request->hasFile('photo')) {
-                // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
-                $image = $request->file('photo');
-                $image_name = time() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('images/signals'), $image_name);
-                $chartUrl = url('/images/signals/' . $image_name);
+                $chartUrl = uploadFile($request->file('photo'), "signals");
             }
 
             $signal = Signal::create([
@@ -113,7 +109,7 @@ class SignalController extends Controller
 
             return response()->json(['success' => true, 'signal' => $signal, 'message' => 'Signal created successfully.'], 201);
         } catch (\Throwable $th) {
-            logger(['signal' => $th->getMessage()]);
+            sendToLog($th);
 
             return response()->json(['success' => false, 'message' => 'Ops Somthing went wrong. try again later.'], 500);
         }
@@ -184,24 +180,25 @@ class SignalController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        try {
-            $validator = Validator::make($request->all(), [
-                'category' => 'required|string',
-                'asset_type' => 'required_if:type,trade',
-                'order_type' => 'required_if:type,trade|string',
-                'entry_price' => 'required_if:type,trade|numeric',
-                'stop_loss' => 'required_if:type,trade|numeric',
-                'target_price' => 'required_if:type,trade|numeric',
-                'percentage' => 'numeric',
-                'comment' => 'nullable|string',
-                'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-                'description' => 'required_if:type,news|string'
-            ]);
+        $validator = Validator::make($request->all(), [
+            'category' => 'required|string',
+            'asset_type' => 'required_if:type,trade',
+            'order_type' => 'required_if:type,trade',
+            'entry_price' => 'required_if:type,trade|numeric',
+            'stop_loss' => 'required_if:type,trade|numeric',
+            'target_price' => 'required_if:type,trade|numeric',
+            'percentage' => 'numeric',
+            'comment' => 'nullable|string',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'description' => 'required_if:type,news'
+        ]);
 
-            // Handle validation errors
-            if ($validator->fails()) {
-                return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
-            }
+        // Handle validation errors
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        try {
 
             $signal = Signal::where('uuid', $id)->first();
 
@@ -213,12 +210,7 @@ class SignalController extends Controller
             $chartUrl = $signal->chat_photo;
 
             if ($request->hasFile('photo')) {
-                // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
-                $image = $request->file('photo');
-                $image_name = time() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('images/signals'), $image_name);
-
-                $chartUrl = url('/images/signals/' . $image_name);
+                $chartUrl = uploadFile($request->file('photo'), "signals");
             }
 
             $signal->update([
@@ -246,8 +238,9 @@ class SignalController extends Controller
             event(new SignalNotification(Auth::guard('admin')->user()->uuid, $signal, "updated"));
 
             return response()->json(['success' => true, 'signal' => $signal, 'message' => 'Signal update successfully.'], 201);
+
         } catch (\Throwable $th) {
-            logger(['signal' => $th->getMessage()]);
+            sendToLog($th);
 
             return response()->json(['success' => false, 'message' => 'Ops Somthing went wrong. try again later.'], 500);
         }

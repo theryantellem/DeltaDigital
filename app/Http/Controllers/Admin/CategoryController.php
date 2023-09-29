@@ -42,12 +42,7 @@ class CategoryController extends Controller
             $photo = null;
 
             if ($request->hasFile('photo')) {
-                // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
-                $image = $request->file('photo');
-                $image_name = time() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('images/category'), $image_name);
-
-                $photo = url('/images/category/' . $image_name);
+                $photo = uploadFile($request->file('photo'), "category");
             }
 
             $category = Category::create([
@@ -103,12 +98,7 @@ class CategoryController extends Controller
             $photo = $category->photo;
 
             if ($request->hasFile('photo')) {
-                // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
-                $image = $request->file('photo');
-                $image_name = time() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('images/category'), $image_name);
-
-                $photo = url('/images/category/' . $image_name);
+                $photo = uploadFile($request->file('photo'), "category");
             }
 
             $category->update([
@@ -127,6 +117,36 @@ class CategoryController extends Controller
             sendToLog($th);
 
             return response()->json(['success' => false, 'message' => 'Ops Somthing went wrong. try again later.'], 500);
+        }
+    }
+
+    function removeImage($id)
+    {
+        $category = Category::where('id', $id)->first();
+
+        if (!$category) {
+            return response()->json(['success' => false, 'errors' => 'Category not found.']);
+        }
+
+        // Parse the URL to get the file path
+        $filePath = parse_url($category->photo, PHP_URL_PATH);
+
+        // Convert the encoded URL characters back to their original form
+        $filePath = urldecode($filePath);
+
+        if (file_exists(public_path($filePath))) {
+            if (unlink(public_path($filePath))) {
+                $category->update([
+                    'photo' => null
+                ]);
+                // File successfully deleted
+                return response()->json(['success' => true, 'message' => 'File successfully deleted'], 201);
+            } else {
+                // File deletion failed
+                return response()->json(['success' => false, 'message' => 'Failed to delete the file.'], 404);
+            }
+        } else {
+            return response()->json(['success' => false, 'message' => 'File not found.'], 404);
         }
     }
 }

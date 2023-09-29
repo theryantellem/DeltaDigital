@@ -32,10 +32,11 @@
                                     <th>Target Price</th>
                                     <th>Comment</th>
                                     <th>Market Status</th>
-
-                                    <th>
-                                        Action
-                                    </th>
+                                    @if (Auth::user()->hasRole('educator'))
+                                        <th>
+                                            Action
+                                        </th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tbody v-if="signals.length > 0">
@@ -58,27 +59,36 @@
                                         <span class="d-flex justify-content-center">@{{ signal?.target_price }}</span>
                                     </td>
                                     <td>
-                                        @{{ signal?.comment }}
+                                        @{{ signal?.caption }}
                                     </td>
-                                    <td>
-                                        <select class="default-select status-select"
-                                            @change="updateMarketStatus($event,signal.id)">
-                                            <option v-for="(status,index) in marketStatus" :value="index"
-                                                :selected="index === signal?.market_status">
-                                                @{{ status }}</option>
-                                        </select>
-                                    </td>
-
-                                    <td class="edit-action">
-                                        <a href="#" @click.prevent="viewSignal(signal)"
-                                            class="icon-box icon-box-xs bg-primary me-1">
-                                            <i class="fa-solid fa-pencil text-white"></i>
-                                        </a>
-                                        <a href="#" @click.prevent="deleteSignal(signal)"
-                                            class="icon-box icon-box-xs bg-danger  ms-1">
-                                            <i class="fa-solid fa-trash text-white"></i>
-                                        </a>
-                                    </td>
+                                    @if (Auth::user()->hasRole('educator'))
+                                        <td>
+                                            <select class="default-select status-select"
+                                                @change="updateMarketStatus($event,signal.id)">
+                                                <option v-for="(status,index) in marketStatus" :value="index"
+                                                    :selected="index === signal?.market_status">
+                                                    @{{ status }}</option>
+                                            </select>
+                                        </td>
+                                        <td class="edit-action">
+                                            <a href="#" @click.prevent="viewSignal(signal)"
+                                                class="icon-box icon-box-xs bg-primary me-1">
+                                                <i class="fa-solid fa-pencil text-white"></i>
+                                            </a>
+                                            <a href="#" @click.prevent="deleteSignal(signal)"
+                                                class="icon-box icon-box-xs bg-danger  ms-1">
+                                                <i class="fa-solid fa-trash text-white"></i>
+                                            </a>
+                                        </td>
+                                    @else
+                                        <td>
+                                            <select class="default-select status-select" disabled>
+                                                <option v-for="(status,index) in marketStatus" :value="index"
+                                                    :selected="index === signal?.market_status">
+                                                    @{{ status }}</option>
+                                            </select>
+                                        </td>
+                                    @endif
                                 </tr>
                             </tbody>
                             <tbody v-else>
@@ -127,7 +137,7 @@
                     type: "",
                     chart_photo_preview: null,
                     photo_preview: null,
-                    description:""
+                    description: ""
                 }
             },
             mounted() {
@@ -308,25 +318,25 @@
                     formData.append('comment', this.comment);
                     formData.append('category', this.category);
                     formData.append('percentage', this.percentage);
-                    // formData.append('photo', this.photo);
                     formData.append('photo', this.chart_photo);
+                    formData.append('_method', 'put')
 
-                    await axios.put(`/admin/signals/${signalId}`, formData, {
+                    await axios.post(`/admin/signals/${signalId}`, formData, {
                             headers: {
                                 'Content-Type': 'multipart/form-data'
                             }
                         })
                         .then(response => {
 
-                            this.signals.push(response.data.signal);
+                            this.getSignals()
 
                             this.clearForm()
+
                             offcanvasSignal.hide();
 
                             Notiflix.Notify.Success(response.data.message);
                         })
                         .catch(error => {
-
                             if (error.response && error.response.data && error.response.data.errors) {
                                 // Set validation errors from the backend response
                                 this.errors = error.response.data.errors;
@@ -391,9 +401,6 @@
                 }
             }
         })
-
-        // $("#assetsSelect").select2();
-        // $('#categorySelect').select2();
 
         const offcanvasSignal = new bootstrap.Offcanvas(document.getElementById('offcanvasSignal'));
     </script>

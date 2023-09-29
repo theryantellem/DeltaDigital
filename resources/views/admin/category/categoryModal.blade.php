@@ -31,6 +31,9 @@
 
                     <div class="col-lg-12 mb-3">
                         <label>Photo</label>
+                        <div v-if="edit && photo_preview" @click.prevent="removeImage(catgoryId)" class="d-flex justify-content-end">
+                            <a href="#" class="btn btn-danger btn-sm rounded">Remove image</a>
+                        </div>
                         <div class="d-flex justify-content-center mb-3">
                             <svg v-if="!photo_preview" width="41" height="200" viewbox="0 0 41 40" fill="none"
                                 xmlns="http://www.w3.org/2000/svg">

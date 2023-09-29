@@ -122,3 +122,15 @@ if (!function_exists('followersPushTokens')) { /* send to log" */
         return $fcmTokens;
     }
 }
+
+if (!function_exists('uploadFile')) { /* send to log" */
+    function uploadFile($file, $folder)
+    {
+        $file_name = time() . '.' . $file->getClientOriginalExtension();
+        $file->move(public_path("images/{$folder}"), $file_name);
+
+        $fileUrl = url("/images/{$folder}/" . $file_name);
+
+        return $fileUrl;
+    }
+}

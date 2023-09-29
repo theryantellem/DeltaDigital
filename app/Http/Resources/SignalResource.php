@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Str;
 
 class SignalResource extends JsonResource
 {
@@ -25,6 +26,7 @@ class SignalResource extends JsonResource
             'target_price' => $this->target_price,
             'percentage' => $this->percentage,
             'comment' => $this->comment,
+            'caption' => Str::limit(strip_tags($this->comment), 30, '...'),
             // 'photo' => $this->photo,
             'chart_photo' => $this->chart_photo,
             'status' => $this->market_status,

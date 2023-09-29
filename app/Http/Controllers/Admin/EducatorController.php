@@ -55,24 +55,19 @@ class EducatorController extends Controller
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
-        $commaSeparatedArray = explode(',', $request->categories);
-
         try {
 
-            DB::beginTransaction();
+            $commaSeparatedArray =  explode(',', $request->categories);
+
+            // DB::beginTransaction();
 
             $imageUrl = null;
 
             if ($request->hasFile('photo')) {
-                // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
-                $image = $request->file('photo');
-                $image_name = time() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('images/educator'), $image_name);
-
-                $imageUrl = url('/images/educator/' . $image_name);
+                $imageUrl = uploadFile($request->file('photo'), "educator");
             }
 
-            $password = rand(000000, 999999);
+            // $password = rand(000000, 999999);
 
             $educator = Admin::create([
                 'first_name' => $request->first_name,
@@ -98,20 +93,20 @@ class EducatorController extends Controller
 
             $educator = new EducatorResource($educator);
 
-            $data = [
-                'email' => $educator->email,
-                'password' => $password,
-                'name' => ucfirst($educator->first_name)
-            ];
+            // $data = [
+            //     'email' => $educator->email,
+            //     'password' => $password,
+            //     'name' => ucfirst($educator->first_name)
+            // ];
 
             // dispatch(new \App\Jobs\Mail\AdminUnboardingMailJob($data));
 
-            DB::commit();
+            // DB::commit();
 
             return response()->json(['success' => true, 'educator' => $educator, 'message' => 'Educator created successfully.'], 201);
         } catch (\Exception $e) {
             sendToLog($e);
-            DB::rollBack();
+            // DB::rollBack();
 
             return response()->json(['success' => false, 'error' => 'Service currently unavailable'], 500);
         }
@@ -138,20 +133,19 @@ class EducatorController extends Controller
      */
     public function update(Request $request, string $id)
     {
-
         $educator = Admin::where('uuid', $id)->first();
 
         if (!$educator) {
             return response()->json(['success' => false, 'message' => 'Educator not found.']);
         }
 
-
         $validator = Validator::make($request->all(), [
             'first_name' => 'required|string',
             'last_name' => 'required|string',
-            'email' => 'required|email',
+            // 'email' => 'required|email|unique:admins,email',
             'phone_number' => 'nullable|numeric',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            // 'password' => 'required'
         ]);
 
         // Handle validation errors
@@ -159,28 +153,26 @@ class EducatorController extends Controller
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
+        $commaSeparatedArray =  explode(',', $request->categories);
+
         $imageUrl = $educator->photo;
 
         if ($request->hasFile('photo')) {
-            // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
-            $image = $request->file('photo');
-            $image_name = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('images/educator'), $image_name);
-
-            $imageUrl = url('/images/educator/' . $image_name);
+            $imageUrl = uploadFile($request->file('photo'), "educator");
         }
 
         $educator->update([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
-            'photo' => $imageUrl
+            'password' => Hash::make($request->password),
+            'photo' => $imageUrl,
         ]);
 
         EducatorCategory::where('admin_id', $educator->id)->delete();
 
         // assign categories to educator
-        foreach ($request->categories as $category) {
+        foreach ($commaSeparatedArray as $category) {
             EducatorCategory::create([
                 'admin_id' => $educator->id,
                 'category_id' => $category
