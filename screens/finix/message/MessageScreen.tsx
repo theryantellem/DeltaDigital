@@ -8,13 +8,13 @@ import {
     TextInput,
     TouchableOpacity,
     KeyboardAvoidingView,
-    Platform, Button, ActivityIndicator
+    Platform, Button, ActivityIndicator, Image
 } from 'react-native';
 import {SafeAreaView} from "react-native-safe-area-context";
 import {SignalStackScreenProps} from "../../../types";
 import {Ionicons} from "@expo/vector-icons";
 import {Fonts} from "../../../constants/Fonts";
-import {fontPixel} from "../../../helpers/normalize";
+import {fontPixel, heightPixel} from "../../../helpers/normalize";
 import Colors from "../../../constants/Colors";
 import MessagesList from "../../../components/MessagesList";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
@@ -33,6 +33,7 @@ import {getAlMessage, sendMessage} from "../../../api/finix-api";
 import {useRefreshOnFocus} from "../../../helpers";
 import {addAllMessages, addSingleMessage} from "../../../app/slices/dataSlice";
 import {IF} from "../../../helpers/ConditionJsx";
+import NoItem from "../../../components/NoItem";
 
 
 
@@ -152,12 +153,13 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
         isFetchingNextPage,
         isFetchingPreviousPage,
         fetchNextPage,
+
         fetchPreviousPage,
         isError,
         hasNextPage,
         hasPreviousPage,
     } = useInfiniteQuery(
-        [`all-messages`], async ({pageParam = 1}) => getAlMessage.messages({pageParam, id: educator.id}),
+        [`all-messages`,educator.id], async ({pageParam = 1}) => getAlMessage.messages({pageParam, id: educator.id}),
         {
             getNextPageParam: lastPage => {
                 if (lastPage.next !== null) {
@@ -171,7 +173,7 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
         },
     )
 
-
+//console.log(data?.pages[0])
 
  /*   var pusher = new Pusher('2e03de85bbf93cd88884', {
         cluster: 'eu',
@@ -211,7 +213,7 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
 
            connect()
        // connect()
-        console.log(pusher.connectionState)
+       // console.log(pusher.connectionState)
 
     }, []);
 
@@ -331,12 +333,39 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
                              style={styles.dashboardImage}>
 
 
-                <HeaderWithTitle title={`${educator.last_name}`}/>
+                <HeaderWithTitle title={`${educator.first_name} ${educator.last_name} Chanel`}/>
 
                 <View style={styles.flatList}>
+                    {
+                        isLoading && <ActivityIndicator size='large' color={"#fff"}/>
+                    }
 
+                 {
+                     !isLoading && data?.pages[0].data.length > 0 &&
 
                     <MessagesList _id={User_Details.id} roomID={''} messages={myMessages}/>
+                    }
+
+                    {!isLoading && data?.pages[0].data.length < 1 &&
+                        <View style={styles.messageWrap}>
+
+
+
+                            <View style={styles.imageWrap}>
+
+                                <Image source={require('../../../assets/images/EmptyBox/empty_state.png')} style={styles.fileBroken}/>
+
+
+                            </View>
+
+
+                            <Text style={styles.message}>
+                                No Messages yet!
+
+                            </Text>
+                        </View>
+                    }
+
 
                 </View>
 
@@ -463,6 +492,33 @@ const styles = StyleSheet.create({
 
 
     },
+    messageWrap: {
+        marginTop: 15,
+        width: '100%',
+        justifyContent: 'center',
+        flexDirection: 'column',
+        alignItems: 'center'
+    },
+    message: {
+        textAlign: 'center',
+        marginLeft: 8,
+        lineHeight: heightPixel(25),
+        color: "#fff",
+        fontSize: fontPixel(12),
+        fontFamily: Fonts.faktumBold
+    },
+    imageWrap: {
+        maxHeight: heightPixel(140),
+        width: heightPixel(100),
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    fileBroken: {
+        height: "80%",
+        width: "100%",
+        resizeMode: 'contain'
+    },
+
 })
 
 export default MessageScreen;

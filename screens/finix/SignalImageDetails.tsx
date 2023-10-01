@@ -9,6 +9,7 @@ import FastImage from "react-native-fast-image";
 import {SignalStackScreenProps} from "../../types";
 import {useAppDispatch} from "../../app/hooks";
 import Colors from "../../constants/Colors";
+import Pinchable from "react-native-pinchable";
 
 const SignalImageDetails = ({navigation, route}:SignalStackScreenProps<'SignalImageDetails'>) => {
     const dispatch = useAppDispatch()
@@ -29,7 +30,8 @@ const SignalImageDetails = ({navigation, route}:SignalStackScreenProps<'SignalIm
 
 
 
-                    <View style={styles.qrBoxWrap}>
+
+                        <Pinchable style={styles.qrBoxWrap}>
                         <FastImage
                             style={styles.chart_photo}
                             source={{
@@ -39,10 +41,10 @@ const SignalImageDetails = ({navigation, route}:SignalStackScreenProps<'SignalIm
                             }}
                             resizeMode={FastImage.resizeMode.cover}
                         />
+                        </Pinchable>
 
 
 
-                    </View>
 
                     <View style={styles.note}>
                         <Text style={styles.noteText}>
@@ -81,25 +83,17 @@ const styles = StyleSheet.create({
            borderRadius: 34,
         marginVertical: pixelSizeVertical(10),
         width: '90%',
-        height: heightPixel(450),
+        height: heightPixel(650),
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: "space-between",
-        backgroundColor: "#fff",
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.23,
-        shadowRadius: 2.62,
 
-        elevation: 4,
+
     },
     chart_photo: {
         width: '100%',
         height: '100%',
-        resizeMode: 'cover',
+        resizeMode: 'contain',
         borderRadius: 24,
     },
     imageCover: {
@@ -123,6 +117,10 @@ const styles = StyleSheet.create({
         color: Colors.text,
         fontSize: fontPixel(16),
         fontFamily: Fonts.faktumMedium,
+    },
+    pinchable: {
+        flex: 1,
+
     },
 })
 

@@ -22,6 +22,7 @@ import {store} from "../app/store";
 import {timeDifference} from "../helpers";
 import {CyborgMainNavigator} from "./cyborg/MainCyborgNav";
 import {MainSignalNav} from "./signal/MainSignalNav";
+import EditProfile from "../screens/EditProfile";
 
 
 export default function Navigation({colorScheme}: { colorScheme: ColorSchemeName }) {
@@ -135,7 +136,7 @@ animation:'slide_from_right'
                 <Stack.Screen name={"LandingScreen"} component={LandingScreen}/>
                 <Stack.Screen name={"CyborgBottomTab"} component={CyborgMainNavigator}/>
                 <Stack.Screen name={"MainSignalNav"} component={MainSignalNav}/>
-
+                <Stack.Screen name={"EditProfile"} component={EditProfile}/>
 
 
 

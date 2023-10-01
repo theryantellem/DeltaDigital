@@ -34,6 +34,9 @@ import {
     BottomSheetDefaultBackdropProps
 } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
 import FastImage from "react-native-fast-image";
+import Pinchable from 'react-native-pinchable';
+
+
 
 
 const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetails'>) => {
@@ -60,7 +63,7 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
 
 
     // variables
-    const snapPoints = useMemo(() => ["1%", "60%"], []);
+    const snapPoints = useMemo(() => ["1%", "90%"], []);
 
 
     const renderBackdrop = useCallback(
@@ -95,7 +98,13 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
         })
     }
 
+    const viewEducator = () => {
+        navigation.navigate('MainSignalNav', {
+            screen: 'ViewEducator', params: details
+        })
 
+
+    }
 
 
     return (
@@ -112,6 +121,7 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                     }} contentContainerStyle={styles.scrollView} scrollEnabled
                                 showsVerticalScrollIndicator={false}
                     >
+
 
                         <View style={styles.topReceipt}>
 
@@ -159,7 +169,7 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                                     </View>
                                 </View>
 
-                                <View style={styles.leftInfo}>
+                                <Pressable onPress={viewEducator} style={styles.leftInfo}>
 
 
                                     <View style={styles.userImage}>
@@ -169,10 +179,10 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
 
                                     </View>
                                     <Text style={styles.leftInfoNameText}>
-                                        {details.educator.last_name} {details.educator.first_name}
+                                         {details.educator.first_name} {details.educator.last_name}
                                     </Text>
 
-                                </View>
+                                </Pressable>
                             </View>
 
 
@@ -306,7 +316,10 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                             </View>
 
 
-                            <View style={styles.qrBoxWrap}>
+                            <Pressable onPress={handlePresentModalPress} style={[styles.qrBoxWrap,{
+                                top: -60,
+                                width: '90%',
+                            }]}>
                                 <FastImage
                                     style={styles.chart_photo}
                                     source={{
@@ -319,50 +332,9 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
 
 
 
-                            </View>
-
-                            {/*                <View style={styles.buttonWrap}>
+                            </Pressable>
 
 
-                                <TouchableOpacity
-                                    onPress={handlePresentModalPress}
-                                    activeOpacity={0.6} style={styles.receiptButton}>
-                                    <View style={styles.buttonCircle}>
-                                        <Ionicons name="md-image" size={18} color="#fff"/>
-
-                                    </View>
-
-                                    <Text style={styles.receiptButtonTxt}>
-                                        View photo
-                                    </Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity activeOpacity={0.6} style={styles.receiptButton}>
-                                    <View style={styles.buttonCircle}>
-                                        <Ionicons name="receipt-outline" size={18} color="#fff"/>
-
-                                    </View>
-
-                                    <Text style={styles.receiptButtonTxt}>
-                                        Download
-                                    </Text>
-                                </TouchableOpacity>
-
-
-                                <TouchableOpacity
-                                    activeOpacity={0.6} style={styles.receiptButton}>
-                                    <View style={styles.buttonCircle}>
-
-                                        <Ionicons name="share-social" size={18} color="#fff"/>
-                                    </View>
-
-                                    <Text style={styles.receiptButtonTxt}>
-                                        Share receipt
-                                    </Text>
-                                </TouchableOpacity>
-
-
-                            </View>*/}
 
                             <View style={styles.imageCover}>
 
@@ -428,13 +400,26 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
 
                         <View style={styles.contentContainer}>
 
-                            <View style={styles.qrBoxWrap}>
+
+                                <Pinchable style={[styles.qrBoxWrap,{
+                                    width:'100%',
+                                    height: heightPixel(600),
+                                }]}>
+                                <FastImage
+
+                                    style={styles.chart_photo}
+                                    source={{
+                                        uri: details.chart_photo,
+                                        cache: FastImage.cacheControl.web,
+                                        priority: FastImage.priority.normal,
+                                    }}
+                                    resizeMode={FastImage.resizeMode.cover}
+                                />
+                                </Pinchable>
 
 
-                                <Image source={{uri: details.chart_photo}} style={styles.chart_photo}/>
 
 
-                            </View>
 
 
                         </View>
@@ -794,35 +779,26 @@ const styles = StyleSheet.create({
 
     contentContainer: {
         marginTop: 10,
-        paddingHorizontal: pixelSizeHorizontal(10),
+     //   paddingHorizontal: pixelSizeHorizontal(10),
         width: '100%',
         justifyContent: 'center',
         alignItems: 'center'
     },
     qrBoxWrap: {
-        top: -60,
+
         borderRadius: 34,
         marginVertical: pixelSizeVertical(10),
-        width: '90%',
+        width: '100%',
         height: heightPixel(300),
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: "space-between",
-        backgroundColor: "#fff",
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.23,
-        shadowRadius: 2.62,
 
-        elevation: 4,
     },
     chart_photo: {
         width: '100%',
         height: '100%',
-        resizeMode: 'cover',
+        resizeMode: 'contain',
         borderRadius: 24,
     },
     imageCover: {
@@ -841,7 +817,10 @@ const styles = StyleSheet.create({
         fontSize: fontPixel(20),
         color: "#fff"
     },
+    pinchable: {
+        flex: 1,
 
+    },
 })
 
 export default SignalDetails;

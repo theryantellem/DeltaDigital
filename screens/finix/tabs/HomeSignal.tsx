@@ -28,6 +28,7 @@ import {IF} from "../../../helpers/ConditionJsx";
 import {AntDesign, Entypo, FontAwesome, Ionicons} from "@expo/vector-icons";
 import HorizontalLine from "../../../components/HorizontalLine";
 import {SignalRootTabScreenProps} from "../../../types";
+import FastImage from "react-native-fast-image";
 
 
 const width = Dimensions.get('window').width
@@ -132,10 +133,19 @@ const ItemSignal = ({item, viewSignal,viewSignalImage}: PropsSignal) => {
                     <>
 
                             <View style={styles.chart_photoImageWrap}>
-                                <Image style={styles.chart_photoImage}
-                                       source={{uri: item.chart_photo}}/>
 
 
+                                <FastImage
+
+                                    style={styles.chart_photoImage}
+                                    source={{
+                                        uri: item.chart_photo,
+                                        cache: FastImage.cacheControl.web,
+                                        priority: FastImage.priority.normal,
+
+                                    }}
+                                    resizeMode={FastImage.resizeMode.cover}
+                                />
                             </View>
 
 
@@ -238,7 +248,7 @@ const EducatorItem = ({item, viewEducator}: props) => {
 
             <View style={styles.educatorNameWrap}>
                 <Text style={styles.educatorName}>
-                     {item?.educator?.first_name} {item?.educator?.last_name}
+                    {item?.educator?.first_name} {item?.educator?.last_name}
                 </Text>
             </View>
 
@@ -250,19 +260,15 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
 
     const dispatch = useAppDispatch()
     const user = useAppSelector(state => state.user)
-    const {User_Details} = user
+    const {User_Details,userData} = user
 
     const [refreshing, setRefreshing] = useState(false);
-    const [tabIndex, setTabIndex] = useState(0);
-    const handleTabsChange = (index: SetStateAction<number>) => {
-        setTabIndex(index);
-        //  setScreen(index === 0 ? 'Banks' : 'Wallets')
-    };
 
-    const {data, isLoading, refetch} = useQuery([`get-educators`], getEducators)
+
+
     const {
         data: myEducators,
-        isLoading: loading,
+        isLoading,
         refetch: fetchFollowing
     } = useQuery([`getEducatorsFollowing`], getEducatorsFollowing)
 
@@ -352,7 +358,7 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
         wait(2000).then(() => setRefreshing(false));
     }
 
-    useRefreshOnFocus(refetch)
+
     useRefreshOnFocus(fetchFollowing)
     useRefreshOnFocus(refetchSignals)
 
@@ -375,7 +381,7 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
 
 
 
-        <IF condition={tabIndex == 0}>
+
 
 
                         <ImageBackground source={require('../../../assets/images/signal/educator_BG.png')}
@@ -404,6 +410,8 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
                             {
                                 isLoading && <ActivityIndicator color={Colors.primary} size='small'/>
                             }
+
+
                             {
                                 !isLoading && myEducators && myEducators?.data?.length > 0 &&
                                 <FlatList
@@ -441,7 +449,7 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
 
                             {!loadingSignals && signals && signals?.data?.length < 1 &&
                                 <View style={styles.messageWrap}>
-                                    <Ionicons name="ios-information-circle" size={24} color={Colors.text}/>
+
 
 
                                     <View style={styles.imageWrap}>
@@ -477,7 +485,7 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
                                 />
                             }
                         </ImageBackground>
-                    </IF>
+
 
 
                 </ScrollView>

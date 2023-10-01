@@ -17,7 +17,7 @@ interface props {
     homeDash?: boolean,
 }
 
-const FinixTopBar = ({profilePhoto, userName, homeDash,color}: props) => {
+const FinixTopBar = ({profilePhoto, userName, homeDash, color}: props) => {
 
     const navigation = useNavigation()
 
@@ -27,8 +27,8 @@ const FinixTopBar = ({profilePhoto, userName, homeDash,color}: props) => {
 
     const openProfile = () => {
 
-        navigation.navigate('SignalBottomTab',{
-            screen:'SignalSettings'
+        navigation.navigate('SignalBottomTab', {
+            screen: 'SignalSettings'
         })
     }
     return (
@@ -50,7 +50,7 @@ const FinixTopBar = ({profilePhoto, userName, homeDash,color}: props) => {
                     />
                 </View>
                 <View style={styles.userDetails}>
-                    <Text style={[styles.greeting,{
+                    <Text style={[styles.greeting, {
                         color: color ? color : '#131313',
                     }]}>
                         {userName}
@@ -68,18 +68,17 @@ const FinixTopBar = ({profilePhoto, userName, homeDash,color}: props) => {
             <View style={styles.rightButton}>
 
 
-                <Text style={[styles.greeting,{
+                <Text style={[styles.greeting, {
                     fontFamily: Fonts.faktumMedium,
                     color: color ? color : '#131313',
                     fontSize: fontPixel(24),
                 }]}>
                     Finix
                 </Text>
-                <Image source={require('../../assets/images/logos/finixLogo.png')} style={{
-                    width: 30,
-                    height: '40%',
-                    resizeMode: 'cover'
-                }}/>
+                <View style={styles.logoWrap}>
+                    <Image source={require('../../assets/images/logos/finixLogo.png')} style={styles.logoImage}/>
+                </View>
+
             </View>
         </View>
     );
@@ -164,7 +163,21 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         alignItems: 'center',
         justifyContent: 'center'
-    }
+    },
+    logoWrap:{
+        width:40,
+        height:40,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    logoImage:
+        {
+            width: '100%',
+            height: '100%',
+            resizeMode: 'contain'
+        }
+
 })
 
 export default FinixTopBar;

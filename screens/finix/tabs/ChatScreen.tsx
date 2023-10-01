@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
 
     messageWrap: {
         marginTop: 15,
-        width: '90%',
+        width: '100%',
         justifyContent: 'center',
         flexDirection: 'row',
         alignItems: 'center'

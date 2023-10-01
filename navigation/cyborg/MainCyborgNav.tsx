@@ -30,7 +30,7 @@ import TwoFactorAuth from "../../screens/cyborg/profile/pages/TwoFactorAuth";
 import BotSuccess from "../../screens/cyborg/bot/BotSuccess";
 import SuccessScreen from "../../screens/cyborg/SuccessScreen";
 import SelectType from "../../screens/cyborg/bot/SelectType";
-import EditProfile from "../../screens/cyborg/profile/EditProfile";
+import EditProfile from "../../screens/EditProfile";
 import CouncellerScreen from "../../screens/cyborg/profile/CouncellerScreen";
 import ViewAPIBinding from "../../screens/cyborg/profile/ViewAPIBinding";
 import SyncStrategy from "../../screens/cyborg/profile/SyncStrategy";
@@ -101,7 +101,7 @@ export function CyborgMainNavigator() {
             <StackNav.Screen name={"SuccessScreen"} options={{animation: 'slide_from_bottom'}} component={SuccessScreen}/>
 
             <StackNav.Screen name={"SelectType"} component={SelectType}/>
-            <StackNav.Screen name={"EditProfile"} component={EditProfile}/>
+
             <StackNav.Screen name={"CouncellerScreen"} component={CouncellerScreen}/>
             <StackNav.Screen name={"ViewAPIBinding"} component={ViewAPIBinding}/>
             <StackNav.Screen name={"SyncStrategy"} component={SyncStrategy}/>

@@ -152,21 +152,7 @@ export const SignalBottomTab = () => {
                     )
                 }}/>
 
-<Tab.Screen name={"SignalSettings"} component={SignalSettings} options={{
 
-
-                    tabBarIcon: ({focused}) => (
-                        <Animated.View style={[scaleAnimatedStyle, {
-
-                            backgroundColor: "#070A21",
-
-                        },styles.tabButton]}>
-                            <FontAwesome5 name="cog" size={20} color={focused ? Colors.primary : '#fff'} />
-
-
-                        </Animated.View>
-                    )
-                }}/>
 
 
 

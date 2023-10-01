@@ -1,4 +1,4 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 
 import {
     Text,
@@ -34,7 +34,7 @@ import ToastAnimated from "../components/toast";
 const {width} = Dimensions.get('screen');
 const CARD_WIDTH = Dimensions.get('window').width * 0.8
 const CARD_HEIGHT = Dimensions.get('window').height * 0.7
-const SPACING_FOR_CARD_INSET = Dimensions.get('window').width * 0.1 - 10
+const SPACING_FOR_CARD_INSET = Dimensions.get('window').width * 0.1 - 20
 
 type CardType = {
     name: string,
@@ -138,7 +138,7 @@ const dispatch = useAppDispatch()
             dispatch(addNotificationItem({
                 id: Math.random(),
                 type: 'error',
-                body: "You cannot access Delta Cyborg with your current plan. Please upgrade your plane to be able to access Delta Cyborg",
+                body: "You cannot access Delta Cyborg with your current plan. Please upgrade your plan to be able to access Delta Cyborg",
             }))
         }
     }
@@ -146,16 +146,9 @@ const dispatch = useAppDispatch()
 
     }
     const FinixHome = () => {
-        if(userData.signal) {
-            navigation.navigate('MainSignalNav')
-        }else {
-            dispatch(addNotificationItem({
-                id: Math.random(),
-                type: 'error',
-                body: "You cannot access Finix with your current plan. Please upgrade your plane to be able to access Finix",
 
-            }))
-        }
+            navigation.navigate('MainSignalNav')
+
 
     }
 
@@ -237,7 +230,14 @@ const dispatch = useAppDispatch()
                     key={card.id}
                     onPress={card.action}
                     activeOpacity={0.8} style={[styles.plan,
-                    {backgroundColor: '#000000', width: CARD_WIDTH,}]}>
+                    {backgroundColor: '#000000', width: CARD_WIDTH,},
+             card.id == '2' && {
+                        marginRight: 20
+                    },
+                    /*
+                    card.id !== '2' &&{
+                        marginLeft: 30
+                    }*/]}>
                     <View style={styles.planLeft}>
                         <View style={styles.imageCover}>
 
@@ -259,7 +259,7 @@ const dispatch = useAppDispatch()
                                     <Text
                                         style={styles.balance}>
 
-                                        {currencyFormatter('en-US', 'USD').format(TotalBal)}
+                                        { TotalBal ? currencyFormatter('en-US', 'USD').format(TotalBal)  :"0.00"}
 
                                     </Text>
 
@@ -358,6 +358,17 @@ const dispatch = useAppDispatch()
         }
     };
 
+    const viewProfile = () => {
+      navigation.navigate('EditProfile')
+    }
+
+    useEffect(()=>{
+        let x = 1
+        if (scrollViewRef.current) {
+            scrollViewRef?.current?.scrollTo({x, animated: true});
+        }
+    },[scrollViewRef])
+
     return (
         <SafeAreaView style={styles.safeArea}>
             {
@@ -383,7 +394,7 @@ const dispatch = useAppDispatch()
 
                 <View style={styles.topBar}>
                     <View style={styles.leftButton}>
-                        <View style={styles.userImageWrap}>
+                        <Pressable onPress={viewProfile} style={styles.userImageWrap}>
 
 
                             <FastImage
@@ -397,10 +408,10 @@ const dispatch = useAppDispatch()
                             />
 
 
-                        </View>
+                        </Pressable>
                         <View style={styles.userDetails}>
                             <Text style={styles.greeting}>
-                                Hello, {User_Details.username}
+                                Hello, {userData.name}
                             </Text>
                             <Text style={styles.tag}>
                                 Welcome back
@@ -453,13 +464,14 @@ const dispatch = useAppDispatch()
                             snapToAlignment='center' // Snap to the center
                             contentInset={{ // iOS ONLY
                                 top: 0,
-                                left: SPACING_FOR_CARD_INSET, // Left spacing for the very first card
+                               // left: SPACING_FOR_CARD_INSET, // Left spacing for the very first card
                                 bottom: 0,
                                 right: SPACING_FOR_CARD_INSET // Right spacing for the very last card
                             }}
 
                             contentContainerStyle={{ // contentInset alternative for Android
-                                paddingHorizontal: Platform.OS === 'android' ? SPACING_FOR_CARD_INSET : 0// Horizontal spacing before and after the ScrollView
+                            // paddingHorizontal: Platform.OS === 'android' ? SPACING_FOR_CARD_INSET : 15// Horizontal spacing before and after the ScrollView
+                                paddingHorizontal:SPACING_FOR_CARD_INSET,
                             }}
                         >
                             {_renderViews(cards)}
@@ -589,7 +601,8 @@ const styles = StyleSheet.create({
     },
     plan: {
         flexDirection: 'row',
-        marginRight: 15,
+
+     //  marginRight: 15,
         height: heightPixel(400),
         width: '100%',
         borderRadius: 30,

@@ -40,7 +40,7 @@ const UserAccount = ({navigation}: CyborgStackScreenProps<'UserAccount'>) => {
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
     const navigate = (screen: 'Assets' | 'RewardDetails' | 'SettingsScreen' | 'ApiBinding' | 'RevenueScreen' |
-        'Earnings' | 'EditProfile' | 'CouncellerScreen' | 'SyncStrategy' | 'ContactUs' | 'Quantitative') => {
+        'Earnings'  | 'CouncellerScreen' | 'SyncStrategy' | 'ContactUs' | 'Quantitative') => {
         navigation.navigate(screen)
     }
 
@@ -103,12 +103,7 @@ const UserAccount = ({navigation}: CyborgStackScreenProps<'UserAccount'>) => {
                             </Text>
                         </View>
 
-                        <TouchableOpacity onPress={() => navigate('EditProfile')} activeOpacity={0.6}
-                                          style={styles.editProfile}>
-                            <Text style={styles.btnTxt}>
-                                Edit profile
-                            </Text>
-                        </TouchableOpacity>
+
 
                         {
                             Platform.OS == 'android'&&

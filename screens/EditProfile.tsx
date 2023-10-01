@@ -1,24 +1,27 @@
-import React, {useState} from 'react';
+ import React, {useState} from 'react';
 
 import {Text, View, StyleSheet, TouchableOpacity, ActivityIndicator} from 'react-native';
-import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
+import HeaderWithTitle from "../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
-import {useQuery} from "@tanstack/react-query";
-import {getUser} from "../../../api";
-import {useAppSelector} from "../../../app/hooks";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
+import {getUser} from "../api";
+import {useAppSelector} from "../app/hooks";
 import FastImage from "react-native-fast-image";
 
-import {fontPixel, heightPixel} from "../../../helpers/normalize";
+import {fontPixel, heightPixel, pixelSizeVertical} from "../helpers/normalize";
 
-import TextInput from "../../../components/inputs/TextInput";
+import TextInput from "../components/inputs/TextInput";
 import {useFormik} from "formik";
 import * as yup from "yup";
-import Colors from "../../../constants/Colors";
+import Colors from "../constants/Colors";
 import dayjs from "dayjs";
-import {MyButton} from "../../../components/MyButton";
-import {Fonts} from "../../../constants/Fonts";
+import {MyButton} from "../components/MyButton";
+import {Fonts} from "../constants/Fonts";
+ import * as SecureStore from "expo-secure-store";
+ import {logoutUser} from "../app/slices/userSlice";
+ import {useDispatch} from "react-redux";
 
 
 //my counceller
@@ -35,13 +38,16 @@ const formSchema = yup.object().shape({
 
 const EditProfile = () => {
 
+    const queryClient = useQueryClient()
+    const dispatch = useDispatch()
+
 
     const user = useAppSelector(state => state.user)
-    const {User_Details} = user
+    const {User_Details,userData} = user
 
-    const {data, refetch} = useQuery(['user-data'], () => getUser(User_Details.id))
+  //  const {data, refetch} = useQuery(['user-data'], () => getUser(userData.id))
 
-    const [username, setUsername] = useState(User_Details.username);
+    const [username, setUsername] = useState(userData.username);
     const [focusUsername, setFocusUsername] = useState<boolean>(false);
 
     const {
@@ -77,6 +83,17 @@ const EditProfile = () => {
     });
 
 
+    const logout = async () => {
+        // setLoggingOut(true)
+        await queryClient.invalidateQueries()
+
+        await SecureStore.setItemAsync('delta-signal-token', '')
+        dispatch(logoutUser())
+        //  dispatch( setLockUser({lockUser: false}))
+        // setUserLastSession({cleanLastActive: ''})
+        //await queryClient.removeQueries()
+
+    }
     return (
         <SafeAreaView style={styles.safeArea}>
             <LinearGradient style={styles.background}
@@ -101,7 +118,7 @@ const EditProfile = () => {
                             <FastImage
                                 style={styles.Avatar}
                                 source={{
-                                    uri: User_Details.image ? User_Details.image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png',
+                                    uri: userData.profile_picture ? userData.profile_picture  : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png',
                                     cache: FastImage.cacheControl.web,
                                     priority: FastImage.priority.normal,
                                 }}
@@ -158,7 +175,7 @@ const EditProfile = () => {
                                 setFocusUsername(false);
                             }}
 
-                            defaultValue={User_Details.Email}
+                            defaultValue={userData.email}
                             label="Email"/>
 
                         <TextInput
@@ -172,7 +189,7 @@ const EditProfile = () => {
                                 setFocusUsername(false);
                             }}
 
-                            defaultValue={dayjs.unix(User_Details.expires).format('ddd, DD MMM YYYY')}
+                            defaultValue={dayjs.unix(userData.expiry_time).format('ddd, DD MMM YYYY')}
                             label="Expiry"/>
 
                         <TextInput
@@ -183,7 +200,7 @@ const EditProfile = () => {
 
 
 
-                            defaultValue={User_Details.plan}
+                            defaultValue={userData.plan}
                             label="Title"/>
 
 
@@ -201,9 +218,13 @@ const EditProfile = () => {
                                  Submit
                                 </Text>
 
-
-
                     </MyButton>*/}
+
+                    <TouchableOpacity onPress={logout}>
+                        <Text style={styles.logoutText}>
+                            Logout
+                        </Text>
+                    </TouchableOpacity>
                 </KeyboardAwareScrollView>
             </LinearGradient>
         </SafeAreaView>
@@ -268,6 +289,13 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         bottom: 0,
     },
+    logoutText: {
+        marginVertical:pixelSizeVertical(20),
+        color: Colors.errorRed,
+        fontSize: fontPixel(16),
+        fontFamily: Fonts.faktumSemiBold,
+
+    }
 })
 
 export default EditProfile;

@@ -31,6 +31,7 @@ export type RootStackParamList = {
     MainSignalNav: NavigatorScreenParams<SignalStackParamList> | undefined;
 
     OnBoardingScreen: undefined;
+    EditProfile: undefined;
     LandingScreen: undefined;
     NotFound: undefined;
 };
@@ -132,7 +133,6 @@ export type CyborgStackParamList = {
         amount: string
     };
     WithdrawalAmount: undefined;
-    EditProfile: undefined;
     RewardDetails: undefined;
     SettingsScreen: undefined;
     Earnings: undefined;

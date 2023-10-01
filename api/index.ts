@@ -229,6 +229,13 @@ export const getRevenues = async (userId: string) => {
     ])
 
 }
+
+
+
+
+
+
+
 export const getDepositAddress = async (userId: string,) => {
 
     let Token = await SecureStore.getItemAsync('delta-signal-token');

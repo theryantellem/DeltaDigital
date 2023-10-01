@@ -24,11 +24,11 @@ const SignalSettings = () => {
     const queryClient = useQueryClient()
     const dispatch = useDispatch()
     const user = useAppSelector(state => state.user)
-    const {User_Details} = user
+    const {User_Details,userData} = user
 
    // const {data, refetch} = useQuery(['user-data'], () => getUser(User_Details.id))
 
-    const [username, setUsername] = useState(User_Details.username);
+    const [username, setUsername] = useState(userData.username);
     const [focusUsername, setFocusUsername] = useState<boolean>(false);
 
     const logout = async () => {
@@ -110,7 +110,7 @@ const SignalSettings = () => {
                             onFocus={() => setFocusUsername(true)}
 
 
-                            defaultValue={User_Details.Email}
+                            defaultValue={userData.email}
                             label="Email"/>
 
                         <TextInput
@@ -130,7 +130,7 @@ const SignalSettings = () => {
                             onFocus={() => setFocusUsername(true)}
 
 
-                            defaultValue={User_Details.plan}
+                            defaultValue={userData.plan}
                             label="Title"/>
 
 
