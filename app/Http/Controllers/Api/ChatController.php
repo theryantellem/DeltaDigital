@@ -34,7 +34,7 @@ class ChatController extends ApiController
     {
         try {
 
-            $educator = Admin::where('uuid', $educator)->firstOrFail();
+            $educatorDetails = Admin::where('uuid', $educator)->firstOrFail();
 
             $validator = Validator::make($request->all(), [
                 'message' => 'required|string',
@@ -60,15 +60,29 @@ class ChatController extends ApiController
             }
 
             $chat = Chat::create([
-                'chat_group_id' => $educator->chatGroup->id,
+                'chat_group_id' => $educatorDetails->chatGroup->id,
                 'sender_id' => auth()->user()->id,
                 'message' => $message,
-                'type'=>$type
+                'type' => $type
             ]);
 
             $chat = new ChatResource($chat);
 
-            event(new ChatNotification($educator->uuid, $chat));
+            event(new ChatNotification($educatorDetails->uuid, $chat));
+
+            $fcmTokens =  followersPushTokens($educatorDetails->id);
+
+            if (!empty($fcmTokens)) {
+                $name = ucfirst($educatorDetails->first_name) . ' ' . ucfirst($educatorDetails->last_name);
+
+                $data = [
+                    'push_tokens' =>  $fcmTokens,
+                    'title' => "Chat Notification",
+                    'message' => "You have new message in {$name}'s channel"
+                ];
+
+                dispatch(new \App\Jobs\PushNotificationJob($data));
+            }
 
             return $this->sendResponse($chat, "Message sent successfully.", 201);
         } catch (\Exception $e) {

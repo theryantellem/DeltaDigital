@@ -19,7 +19,7 @@ use App\Http\Controllers\Admin\Signal\SignalController;
 use App\Http\Controllers\Admin\SupportTicket;
 use App\Http\Controllers\Admin\UserManagementController;
 use Illuminate\Support\Facades\Route;
-use PHPUnit\Framework\Attributes\Group;
+use Kutia\Larafirebase\Facades\Larafirebase;
 
 /*
 |--------------------------------------------------------------------------
@@ -118,9 +118,22 @@ Route::get('test-notifications', function () {
 
 Route::get('push-notification', function () {
 
-    $fcmTokens =  followersPushTokens(1);
+    // $fcmTokens =  followersPushTokens(1);
 
-    if (!empty($fcmTokens)) {
-        \Illuminate\Support\Facades\Notification::send(null, new \App\Notifications\SendPushNotification("Signal Created", "A new signal has been created. Tap to view details.", $fcmTokens));
-    }
+    // if (!empty($fcmTokens)) {
+    //     \Illuminate\Support\Facades\Notification::send(null, new \App\Notifications\SendPushNotification("Signal Created", "A new signal has been created. Tap to view details.", $fcmTokens));
+    // }
+
+    $firebaseToken = ["f-7-xyUjI05-g2xU13RXtr:APA91bHamFGUhQy476Forn8hKozkkGNqKOnPSTtA9xhjOpRCK1v-moHicASA-IEqXtyU_8wDx43US5apAeYq83iRjnImUPvfEDnunDvzWJR5vndvUQhMvZZMp4iEOWAUTUrOqPu2-sGd"];
+
+    $data = [
+        'push_tokens' => $firebaseToken,
+        'title' => "Hello World",
+        'message' => "Trust your day is fine."
+    ];
+
+    $firebase = new \App\Services\PushNotification();
+
+    dd($firebase->sendNotification($data));
+
 });

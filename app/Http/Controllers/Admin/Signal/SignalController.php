@@ -101,11 +101,21 @@ class SignalController extends Controller
             $fcmTokens =  followersPushTokens($user->id);
 
             if (!empty($fcmTokens)) {
-                Notification::send(null, new SendPushNotification("Signal Created", "A new signal has been created. Tap to view details.", $fcmTokens));
+
+                $name = ucfirst($user->first_name) . ' ' . ucfirst($user->last_name);
+
+                $data = [
+                    'push_tokens' =>  $fcmTokens,
+                    'title' => "Signal Created.",
+                    'message' => "{$name} created new signal."
+                ];
+
+                dispatch(new \App\Jobs\PushNotificationJob($data));
+                // Notification::send(null, new SendPushNotification("Signal Created", "A new signal has been created. Tap to view details.", $fcmTokens));
             }
 
             // // dispatch notification
-            event(new SignalNotification($user->uuid, $signal, "created"));
+            // event(new SignalNotification($user->uuid, $signal, "created"));
 
             return response()->json(['success' => true, 'signal' => $signal, 'message' => 'Signal created successfully.'], 201);
         } catch (\Throwable $th) {
@@ -129,10 +139,22 @@ class SignalController extends Controller
 
             $signal = new SignalResource($signal);
 
-            $fcmTokens =  followersPushTokens($signal->admin_id);
+            $user = Auth::guard('admin')->user();
+
+            $fcmTokens =  followersPushTokens($user->id);
 
             if (!empty($fcmTokens)) {
-                Notification::send(null, new SendPushNotification("Signal Updated", "A new signal has been created. Tap to view details.", $fcmTokens));
+
+                $name = ucfirst($user->first_name) . ' ' . ucfirst($user->last_name);
+
+                $data = [
+                    'push_tokens' =>  $fcmTokens,
+                    'title' => "Signal Status updated.",
+                    'message' => "{$name} updated signal status."
+                ];
+
+                dispatch(new \App\Jobs\PushNotificationJob($data));
+                // Notification::send(null, new SendPushNotification("Signal Created", "A new signal has been created. Tap to view details.", $fcmTokens));
             }
 
             event(new SignalNotification(Auth::guard('admin')->user()->uuid, $signal, "updated"));
@@ -159,13 +181,23 @@ class SignalController extends Controller
 
             $signal = new SignalResource($signal);
 
-            $fcmTokens =  followersPushTokens($signal->admin_id);
+            $user = Auth::guard('admin')->user();
+
+            $fcmTokens =  followersPushTokens($user->id);
 
             if (!empty($fcmTokens)) {
-                Notification::send(null, new SendPushNotification("Signal Updated", "A new signal has been created. Tap to view details.", $fcmTokens));
-            }
 
-            event(new SignalNotification(Auth::guard('admin')->user()->uuid, $signal, "updated"));
+                $name = ucfirst($user->first_name) . ' ' . ucfirst($user->last_name);
+
+                $data = [
+                    'push_tokens' =>  $fcmTokens,
+                    'title' => "Signal Status updated",
+                    'message' => "{$name} updated signal status."
+                ];
+
+                dispatch(new \App\Jobs\PushNotificationJob($data));
+                // Notification::send(null, new SendPushNotification("Signal Created", "A new signal has been created. Tap to view details.", $fcmTokens));
+            }
 
             return response()->json(['success' => true, 'message' => 'Status updated successfully.']);
         } catch (\Exception $e) {
@@ -229,16 +261,26 @@ class SignalController extends Controller
             // broadcast events
             $signal = new SignalResource($signal);
 
-            $fcmTokens =  followersPushTokens($signal->admin_id);
+            $user = Auth::guard('admin')->user();
+
+            $fcmTokens =  followersPushTokens($user->id);
 
             if (!empty($fcmTokens)) {
-                Notification::send(null, new SendPushNotification("Signal Updated", "A new signal has been created. Tap to view details.", $fcmTokens));
+
+                $name = ucfirst($user->first_name) . ' ' . ucfirst($user->last_name);
+
+                $data = [
+                    'push_tokens' =>  $fcmTokens,
+                    'title' => "Signal Updated",
+                    'message' => "{$name} updated signal."
+                ];
+
+                dispatch(new \App\Jobs\PushNotificationJob($data));
+                // Notification::send(null, new SendPushNotification("Signal Created", "A new signal has been created. Tap to view details.", $fcmTokens));
             }
 
-            event(new SignalNotification(Auth::guard('admin')->user()->uuid, $signal, "updated"));
 
             return response()->json(['success' => true, 'signal' => $signal, 'message' => 'Signal update successfully.'], 201);
-
         } catch (\Throwable $th) {
             sendToLog($th);
 

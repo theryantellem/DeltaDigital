@@ -78,6 +78,20 @@ class MessageController extends Controller
 
             event(new ChatNotification($user->uuid, $chat));
 
+            $fcmTokens =  followersPushTokens($user->id);
+
+            if (!empty($fcmTokens)) {
+                $name = ucfirst($user->first_name) . ' ' . ucfirst($user->last_name);
+
+                $data = [
+                    'push_tokens' =>  $fcmTokens,
+                    'title' => "Chat Notification",
+                    'message' => "You have new message in {$name}'s channel"
+                ];
+
+                dispatch(new \App\Jobs\PushNotificationJob($data));
+            }
+
             return response()->json(['success' => true, 'message' => $chat]);
         } catch (\Exception $e) {
             sendToLog($e);
