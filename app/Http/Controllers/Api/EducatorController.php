@@ -6,7 +6,9 @@ use App\Http\Controllers\ApiController;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\EducatorResource;
 use App\Http\Resources\FollowResource;
+use App\Http\Resources\SignalResource;
 use App\Models\Admin;
+use App\Models\Signal;
 use App\Models\UserFollower;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -112,6 +114,28 @@ class EducatorController extends ApiController
             $following->delete();
 
             return $this->sendResponse(null, "You have successfully unfollowed {$educator->first_name} {$educator->last_name}.", 201);
+        } catch (\Exception $e) {
+            sendToLog($e);
+
+            return $this->sendError("Unable to complete your request at the moment.", [], 500);
+        }
+    }
+
+    function signals($educatorId)
+    {
+        try {
+            // get list of eductors user is following
+            $educator = Admin::where('uuid', $educatorId)->first();
+
+            if (!$educator) {
+                return $this->sendError("Educator not found.", [], 400);
+            }
+
+            $signals = Signal::where('admin_id', $educator->id)->get();
+
+            $signals = SignalResource::collection($signals);
+
+            return $this->sendResponse($signals);
         } catch (\Exception $e) {
             sendToLog($e);
 

@@ -49,6 +49,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('following', 'following');
         Route::post('follow', 'follow');
         Route::post('unfollow', 'unfollow');
+        Route::get('/signals/{educatorId}', 'signals');
     });
 
     Route::controller(SignalsController::class)->prefix('signals')->group(function () {

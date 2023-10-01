@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SignalResource;
+use App\Models\Admin;
 use App\Models\Signal;
 use App\Models\UserFollower;
 use Illuminate\Http\Request;
