@@ -324,7 +324,7 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
 
     useRefreshOnFocus(refetch)
     //console.log(pusher.connectionState)
-
+//console.log(educator.id)
 
     return (
         <SafeAreaView style={styles.safeArea}>

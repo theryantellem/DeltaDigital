@@ -2,11 +2,12 @@ import React, {useState, useRef, useCallback, useId} from "react";
 import {FlatList, ScrollView, Text, StyleSheet, View} from "react-native";
 import Colors from "../constants/Colors";
 import {useAppSelector} from "../app/hooks";
-import {fontPixel} from "../helpers/normalize";
+import {fontPixel, heightPixel, pixelSizeVertical} from "../helpers/normalize";
 import {Fonts} from "../constants/Fonts";
 import dayjs from "dayjs";
 import FastImage from "react-native-fast-image";
 import {Entypo} from "@expo/vector-icons";
+import Pinchable from "react-native-pinchable";
 
 
 interface props {
@@ -14,7 +15,7 @@ interface props {
     message: string
 }
 
-const Message = ({message,time, image,name,isLeft}) => {
+const Message = ({message, time, image, name, isLeft,type}) => {
 
 
     const isOnLeft = (type: string) => {
@@ -47,51 +48,72 @@ const Message = ({message,time, image,name,isLeft}) => {
                 isLeft &&
                 <View>
 
-                <View style={{flexDirection:'row'}}>
+                    <View style={{flexDirection: 'row'}}>
 
-                    <View style={styles.profileImage}>
+                        <View style={styles.profileImage}>
 
 
-                        <FastImage
-                            style={styles.Avatar}
-                            source={{
-                                uri: image ? image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png',
-                                cache: FastImage.cacheControl.web,
-                                priority: FastImage.priority.normal,
-                            }}
-                            resizeMode={FastImage.resizeMode.cover}
-                        />
-                    </View>
+                            <FastImage
+                                style={styles.Avatar}
+                                source={{
+                                    uri: image ? image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png',
+                                    cache: FastImage.cacheControl.web,
+                                    priority: FastImage.priority.normal,
+                                }}
+                                resizeMode={FastImage.resizeMode.cover}
+                            />
+                        </View>
 
-                    <View
-                    style={[
-                        styles.messageContainer,
+
                         {
+                            type == 'media'?
+                        <View
+                            style={[
+                                styles.messageContainer,
+                                styles.messageBox,
 
-                            alignSelf: "flex-start",
-                            backgroundColor: Colors.text,
-borderColor:Colors.background,
-                            borderWidth:0.5,
-                            borderTopLeftRadius: 0,
-                        }
-                    ]}
-                >
-                    <Text style={[styles.messageText,{
-                        color: Colors.textDark
-                    }]}>
-                        {message}
-                    </Text>
-                </View>
 
-                </View>
-                    <View style={[styles.timeView,{
+                            ]}
+                        >
+                            <Pinchable style={styles.qrBoxWrap}>
+                                <FastImage
+                                    style={styles.chart_photo}
+                                    source={{
+                                        uri: message,
+                                        cache: FastImage.cacheControl.web,
+                                        priority: FastImage.priority.normal,
+                                    }}
+                                    resizeMode={FastImage.resizeMode.contain}
+                                />
+                            </Pinchable>
+
+                        </View>
+                                :
+                                <View
+                                    style={[
+                                        styles.messageContainer,
+                                        styles.messageBox,
+
+                                    ]}
+                                >
+                                    <Text style={[styles.messageText, {
+                                        color: Colors.textDark
+                                    }]}>
+                                        {message}
+                                    </Text>
+                                </View>
+
+                                    }
+
+                    </View>
+                    <View style={[styles.timeView, {
                         paddingLeft: 35,
                     }]}>
-                        <Text style={[styles.time, {  alignSelf: "flex-start",}]}>
+                        <Text style={[styles.time, {alignSelf: "flex-start",}]}>
                             {dayjs(time).format('hh:mm A')}
-                            <Entypo style={{marginHorizontal:5,}} name="dot-single" size={14} color="#fff" />
-                            <Text style={[styles.time,{
-fontFamily:Fonts.faktumSemiBold,color: Colors.text
+                            <Entypo style={{marginHorizontal: 5,}} name="dot-single" size={14} color="#fff"/>
+                            <Text style={[styles.time, {
+                                fontFamily: Fonts.faktumSemiBold, color: Colors.text
                             }]}>
                                 {name}
                             </Text>
@@ -104,17 +126,16 @@ fontFamily:Fonts.faktumSemiBold,color: Colors.text
                 <View>
 
 
-
-                <View
-                    style={[
-                        styles.messageContainer,
-                        {     borderTopRightRadius: 0,}
-                    ]}
-                >
-                    <Text style={styles.messageText}>
-                        {message}
-                    </Text>
-                </View>
+                    <View
+                        style={[
+                            styles.messageContainer,
+                            {borderTopRightRadius: 0,}
+                        ]}
+                    >
+                        <Text style={styles.messageText}>
+                            {message}
+                        </Text>
+                    </View>
                     <View style={styles.timeView}>
                         <Text style={[styles.time,]}>
                             {dayjs(time).format('hh:mm A')}
@@ -147,6 +168,7 @@ const MessagesList = ({_id, roomID, messages}: { _id: string, roomID: string, me
                 message={item.item.message}
                 image={item.item.sender.photo}
                 name={item.item.sender.name}
+                type={item.item.type}
 
             />
         ),
@@ -154,7 +176,7 @@ const MessagesList = ({_id, roomID, messages}: { _id: string, roomID: string, me
     );
 
     const keyExtractor = useCallback(
-        (item: { _id: any; }) => item._id,
+        (item: { id: string; }) => item.id,
         [],
     );
 
@@ -194,13 +216,20 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         paddingBottom: 10,
     },
+    messageBox:{
+        alignSelf: "flex-start",
+        backgroundColor: Colors.text,
+        borderColor: Colors.background,
+        borderWidth: 0.5,
+        borderTopLeftRadius: 0,
+    },
     messageText: {
         color: Colors.textDark,
         fontFamily: Fonts.faktumSemiBold,
         fontSize: fontPixel(12)
     },
     timeView: {
-        marginTop:5,
+        marginTop: 5,
         paddingEnd: 10,
         backgroundColor: "transparent",
         justifyContent: "flex-end",
@@ -225,6 +254,21 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         alignItems: 'center',
         justifyContent: 'center'
+    },
+    qrBoxWrap: {
+
+        width: '100%',
+        height: heightPixel(200),
+        alignItems: 'center',
+        justifyContent: "center",
+
+
+    },
+    chart_photo: {
+        width: '100%',
+        height: '100%',
+        resizeMode: 'contain',
+
     },
 
 })

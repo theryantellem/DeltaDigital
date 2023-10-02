@@ -415,7 +415,9 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
                     </ImageBackground>
 
 
-
+                    {
+                        loadingEducator && <ActivityIndicator color={Colors.primary} size={'small'}/>
+                    }
 
                     {
                         !loadingEducator &&

@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 
 import {
     Text,
@@ -9,7 +9,7 @@ import {
     FlatList,
     TouchableOpacity,
     Dimensions,
-    ActivityIndicator
+    ActivityIndicator, RefreshControl
 } from 'react-native';
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
@@ -22,7 +22,7 @@ import Colors from "../../../constants/Colors";
 import {Fonts} from "../../../constants/Fonts";
 import Animated, {Easing, FadeInRight, FadeOutLeft, Layout} from 'react-native-reanimated';
 import {Feather, Ionicons} from "@expo/vector-icons";
-import {useRefreshOnFocus} from "../../../helpers";
+import {useRefreshOnFocus, wait} from "../../../helpers";
 import {SignalRootTabScreenProps} from "../../../types";
 import HorizontalLine from "../../../components/HorizontalLine";
 
@@ -101,7 +101,7 @@ const SignalScreen = ({navigation}: SignalRootTabScreenProps<'Signals'>) => {
     const dispatch = useAppDispatch()
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
-
+    const [refreshing, setRefreshing] = useState(false);
 
     const {data, isLoading, refetch} = useQuery(['getSignals'], getSignals)
 
@@ -152,6 +152,11 @@ const SignalScreen = ({navigation}: SignalRootTabScreenProps<'Signals'>) => {
 
 
     useRefreshOnFocus(refetch)
+    const refresh = () => {
+        setRefreshing(true)
+        refetch()
+        wait(2000).then(() => setRefreshing(false));
+    }
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -206,6 +211,8 @@ const SignalScreen = ({navigation}: SignalRootTabScreenProps<'Signals'>) => {
                             snapToAlignment="center"
                             scrollEventThrottle={16}
                             decelerationRate={"fast"}
+                            onRefresh={refetch}
+
                             showsHorizontalScrollIndicator={false}
                             renderItem={renderItem}
                         />

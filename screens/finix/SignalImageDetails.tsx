@@ -39,7 +39,7 @@ const SignalImageDetails = ({navigation, route}:SignalStackScreenProps<'SignalIm
                                 cache: FastImage.cacheControl.web,
                                 priority: FastImage.priority.normal,
                             }}
-                            resizeMode={FastImage.resizeMode.cover}
+                            resizeMode={FastImage.resizeMode.contain}
                         />
                         </Pinchable>
 
@@ -80,10 +80,10 @@ const styles = StyleSheet.create({
 
     },
     qrBoxWrap: {
-           borderRadius: 34,
+
         marginVertical: pixelSizeVertical(10),
         width: '90%',
-        height: heightPixel(650),
+        height: heightPixel(400),
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: "space-between",
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         resizeMode: 'contain',
-        borderRadius: 24,
+
     },
     imageCover: {
         alignSelf: 'center',

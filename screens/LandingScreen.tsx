@@ -435,9 +435,9 @@ const dispatch = useAppDispatch()
 
                     <View style={styles.buttonWRap}>
 
-                        <View style={styles.controlIconWrap}>
+                        <Pressable onPress={viewProfile} style={styles.controlIconWrap}>
                             <MaterialCommunityIcons name="sort-variant" size={32} color="#fff"/>
-                        </View>
+                        </Pressable>
 
                         <Pressable onPress={() => handleScroll(1)} style={styles.controlLogoWrap}>
                             <Image source={require('../assets/images/logos/finixLogo.png')} style={styles.controlLogo}/>

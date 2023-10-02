@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 
 import {
     Text,
@@ -8,7 +8,7 @@ import {
     TouchableOpacity,
     Pressable,
     Image,
-    ActivityIndicator, FlatList
+    ActivityIndicator, FlatList, RefreshControl
 } from 'react-native';
 import HeaderWithTitle from "../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
@@ -19,6 +19,7 @@ import Colors from "../../constants/Colors";
 import {Fonts} from "../../constants/Fonts";
 import {useQuery} from "@tanstack/react-query";
 import {getSignals} from "../../api/finix-api";
+import {wait} from "../../helpers";
 
 
 interface Props {
@@ -161,7 +162,7 @@ const SignalSummary = ({navigation}: SignalStackScreenProps<'SignalSummary'>) =>
 
 
     const {data, isLoading, refetch} = useQuery(['getSignals'], getSignals)
-
+    const [refreshing, setRefreshing] = useState(false);
     const keyExtractor = useCallback((item: { id: any; }) => item.id, [],)
 
 
@@ -215,6 +216,12 @@ const SignalSummary = ({navigation}: SignalStackScreenProps<'SignalSummary'>) =>
     const goBackNav = () => {
         navigation.goBack()
     }
+    const refresh = () => {
+        setRefreshing(true)
+        refetch()
+        wait(2000).then(() => setRefreshing(false));
+    }
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <ImageBackground source={require('../../assets/images/signal/signal_BG.png')}
@@ -296,6 +303,13 @@ const SignalSummary = ({navigation}: SignalStackScreenProps<'SignalSummary'>) =>
                             decelerationRate={"fast"}
                             showsHorizontalScrollIndicator={false}
                             renderItem={renderItem}
+                            refreshControl={
+                                <RefreshControl
+                                    tintColor={Colors.text}
+                                    refreshing={refreshing}
+                                    onRefresh={refresh}
+                                />
+                            }
                         />
                     }
 

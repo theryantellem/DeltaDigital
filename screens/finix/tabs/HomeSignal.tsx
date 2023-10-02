@@ -108,7 +108,8 @@ interface PropsSignal {
         "photo": string,
         "chart_photo": string,
         "market_status": string,
-        "status": string
+        "status": string,
+        is_updated: number,
     }
 }
 
@@ -124,10 +125,19 @@ const ItemSignal = ({item, viewSignal,viewSignalImage}: PropsSignal) => {
         }
     }
 
+
     return (
 
         <TouchableOpacity onPress={() => viewItemSignal(item)} activeOpacity={0.8} style={styles.loanAppCard}>
+            {
+                item.is_updated == 1 &&
+            <View style={styles.signalTag}>
 
+                <Text style={[styles.liveText, {}]}>
+                    New
+                </Text>
+            </View>
+            }
             {
                 item.category.type == 'news' ?
                     <>
@@ -472,7 +482,7 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
                             {
                                 !loadingSignals && signals && signals?.data?.length > 0 &&
                                 <FlatList
-                                    data={signals?.data}
+                                    data={signals?.data.slice(0,12)}
                                     keyExtractor={keyExtractor}
                                     horizontal
                                     pagingEnabled
@@ -567,6 +577,20 @@ const styles = StyleSheet.create({
         position: "absolute",
 
         borderRadius: 10,
+        backgroundColor: Colors.primary
+    },
+    signalTag: {
+        right: 10,
+        top: 0,
+        zIndex: 1,
+        height: 18,
+        width: 60,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        position: "absolute",
+
+        borderRadius: 5,
         backgroundColor: Colors.primary
     },
     liveText: {

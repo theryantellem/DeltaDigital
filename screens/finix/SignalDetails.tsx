@@ -403,7 +403,7 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
 
                                 <Pinchable style={[styles.qrBoxWrap,{
                                     width:'100%',
-                                    height: heightPixel(600),
+                                    height: heightPixel(400),
                                 }]}>
                                 <FastImage
 
@@ -413,7 +413,7 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                                         cache: FastImage.cacheControl.web,
                                         priority: FastImage.priority.normal,
                                     }}
-                                    resizeMode={FastImage.resizeMode.cover}
+                                    resizeMode={FastImage.resizeMode.contain}
                                 />
                                 </Pinchable>
 
@@ -778,7 +778,7 @@ const styles = StyleSheet.create({
     },
 
     contentContainer: {
-        marginTop: 10,
+
      //   paddingHorizontal: pixelSizeHorizontal(10),
         width: '100%',
         justifyContent: 'center',

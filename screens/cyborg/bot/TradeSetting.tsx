@@ -643,7 +643,7 @@ The below inputs are not needed!
 
                             }*/}
 
-{/*
+
                             {
                                 tradeSetting.trade_type == '1'
                                 &&
@@ -662,7 +662,7 @@ The below inputs are not needed!
                                     label="Capital"/>
 
 
-                            }*/}
+                            }
 
                            {/* {
                                 tradeSetting.trade_type == '1'
