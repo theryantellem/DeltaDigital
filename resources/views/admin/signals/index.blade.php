@@ -93,7 +93,7 @@
                             </tbody>
                             <tbody v-else>
                                 <tr>
-                                    <td colspan="4">
+                                    <td colspan="5">
                                         <span class="text-center text-warning">No Signals Created</span>
                                     </td>
                                 </tr>

@@ -129,16 +129,18 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <button type="button" class="btn btn-primary p-2" @click.prevent="sendMessage">
-                                        <svg width="16" height="16" viewbox="0 0 16 16" fill="none"
+                                    <button type="button" class="btn btn-primary p-2" :disabled="loading"
+                                        @click.prevent="sendMessage">
+                                        <svg v-if="loading" width="16" height="16" viewbox="0 0 16 16" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
                                             <path
                                                 d="M10.555 5.44976L6.73936 9.30612L2.39962 6.59178C1.77783 6.20276 1.90718 5.25829 2.61048 5.05262L12.9142 2.03518C13.5582 1.84642 14.155 2.44855 13.9637 3.09466L10.9154 13.3912C10.7066 14.0955 9.76747 14.2213 9.38214 13.5968L6.73734 9.3068"
                                                 stroke="white" stroke-linecap="round" stroke-linejoin="round"></path>
                                         </svg>
-                                        Send
+                                        <span v-else>Send</span>
                                     </button>
-                                    <button type="button" class="btn btn-primary p-2" @click="openFileInput">
+                                    <button type="button" class="btn btn-primary p-2" :disabled="loading"
+                                        @click.prevent="openFileInput">
                                         <i class="fa fa-paperclip me-2"></i>
                                         Attach
                                     </button>
@@ -156,11 +158,10 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         {{-- <h5 class="modal-title">Modal title</h5> --}}
-                        <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" @click.prevent="clearForm">
                         </button>
                     </div>
                     <div class="modal-body">
-
                         <div class="d-flex justify-content-center mb-3">
                             <svg v-if="!photo_preview" width="41" height="200" viewbox="0 0 41 40" fill="none"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -175,9 +176,9 @@
                                 <path d="M27.1666 26.6667L20.4999 20L13.8333 26.6667" stroke="#DADADA" stroke-width="2"
                                     stroke-linecap="round" stroke-linejoin="round"></path>
                             </svg>
-                            <a  v-else :href="photo_preview" data-lightbox="profile">
-                                <img  :src="photo_preview" alt="Media Preview"
-                                style="max-width: 100%; max-height: 200px; height: 200px">
+                            <a v-else :href="photo_preview" data-lightbox="profile">
+                                <img :src="photo_preview" alt="Media Preview"
+                                    style="max-width: 100%; max-height: 200px; height: 200px">
                             </a>
                         </div>
 
@@ -185,7 +186,7 @@
                     </div>
                     <div class="modal-footer">
                         {{-- <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Close</button> --}}
-                        <button :disabled="loading" @click="sendMessage" class="btn btn-primary me-1">
+                        <button :disabled="loading" @click.prevent="sendMessage" class="btn btn-primary me-1">
                             <span v-if="loading" class="spinner-border spinner-border-sm" role="status"
                                 aria-hidden="true"></span>
                             <span v-else>Send</span>
@@ -202,7 +203,6 @@
             'resizeDuration': 200,
             'wrapAround': true
         });
-
     </script>
     <script>
         //$(".nav-control").on('click', function() {
@@ -220,7 +220,7 @@
                     followers: [],
                     educator: "{{ Auth::guard('admin')->user()->uuid }}",
                     currentDate: "",
-                    media: "",
+                    media: null,
                     photo_preview: null,
                     loading: false,
                     errors: {}
@@ -239,8 +239,8 @@
                 },
                 closeModal() {
                     this.errors = {}
-                    this.photo_preview = null,
-                        this.media = ""
+                    this.photo_preview = null
+                    this.media = null
                     this.message = ""
                     previewMediaModal.hide()
                 },
@@ -318,8 +318,12 @@
 
                     const formData = new FormData();
                     formData.append('_token', '{{ csrf_token() }}');
-                    formData.append('media', this.media)
+
                     formData.append('message', this.message)
+
+                    if (this.media) {
+                        formData.append('media', this.media)
+                    }
 
                     this.loading = true
 
@@ -332,6 +336,7 @@
                             const data = response.data
                             // console.log(data)
                             if (data.success) {
+                                this.clearForm()
                                 this.messages.unshift(data.message)
                                 this.scrollToBottom()
 
@@ -354,11 +359,17 @@
                         }
 
                     }).finally(() => {
-                        this.message = ""
+                        this.clearForm()
                         this.loading = false
                     })
                 },
-
+                clearForm() {
+                    this.media = null;
+                    this.message = null;
+                    this.photo_preview = null
+                    this.$refs.fileInput.value = null;
+                    previewMediaModal.hide()
+                }
             },
             computed: {
                 reversedMessages() {
