@@ -22,7 +22,7 @@ class MessageController extends Controller
     {
         $user = Auth::guard('admin')->user();
 
-        $messages = Chat::where('chat_group_id', $user->id)->latest()->get();
+        $messages = Chat::where('chat_group_id', $user->chatGroup->id)->latest()->get();
 
         $messages = ChatResource::collection($messages);
 
@@ -68,7 +68,7 @@ class MessageController extends Controller
             }
 
             $chat = Chat::create([
-                'chat_group_id' => $user->id,
+                'chat_group_id' => $user->chatGroup->id,
                 'sender_id' => $user->id,
                 'message' => $message,
                 'type' => $type

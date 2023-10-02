@@ -20,7 +20,7 @@
                                             alt="">
                                         <div class="ms-2">
                                             <h6 class="mb-0">@{{ follower?.user?.name }}</h6>
-                                            <span>@{{ follower?.user?.email }}</span>
+                                            {{-- <span>@{{ follower?.user?.email }}</span> --}}
                                         </div>
                                     </div>
                                     {{-- <span>1 mIn</span> --}}

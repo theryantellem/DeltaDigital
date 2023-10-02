@@ -44,6 +44,6 @@ class Chat extends Model
 
     function educator()
     {
-        return $this->belongsTo(Admin::class, 'chat_group_id');
+        return $this->belongsTo(Admin::class, 'sender_id');
     }
 }

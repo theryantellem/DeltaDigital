@@ -2,9 +2,9 @@
     <div class="deznav-scroll">
         <ul class="metismenu" id="menu">
             @forelse (App\Services\Navigation::adminRoutes() as $key => $navigation)
-                @if (!empty($key))
+                {{-- @if (!empty($key))
                     <li class="menu-title">{{ $key }}</li>
-                @endif
+                @endif --}}
                 @foreach ($navigation as $subNavigation)
                     @if (!isset($subNavigation->subMenu))
                         <li style="display: {{ $subNavigation->hasPermission ? 'block' : 'none' }}">
