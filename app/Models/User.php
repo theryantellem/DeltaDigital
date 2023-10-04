@@ -74,4 +74,8 @@ class User extends Authenticatable
         return $this->hasMany(ExchangeBind::class);
     }
 
+    public function academyEnrolments()
+    {
+        return $this->hasMany(AcademyEnrolment::class);
+    }
 }

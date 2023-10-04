@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\Academy\AcademyEnrolController;
+use App\Http\Controllers\Api\Academy\AcademyModuleController;
+use App\Http\Controllers\Api\Academy\AcademyVideoController;
 use App\Http\Controllers\Api\AuthenticationController;
 use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\CategoryController;
@@ -82,6 +85,18 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::get('banners', [BannerController::class, 'banners']);
+
+    Route::group(['prefix' => 'academy'], function () {
+        Route::get('modules', [AcademyModuleController::class, 'index']);
+        Route::get('modules/{category}', [AcademyModuleController::class, 'categoryModule']); // This endpoint list all module under a category
+        Route::get('modules/show/{module}', [AcademyModuleController::class, 'show']); // This endpoint list all video under a module
+        Route::get('video/{video}', [AcademyVideoController::class, 'index']);
+        Route::post('enrolments', [AcademyEnrolController::class, 'store']);
+        Route::get('enrolments', [AcademyEnrolController::class, 'index']);
+        Route::get('enrolments/{enrolment}', [AcademyEnrolController::class, 'show']);
+        Route::delete('enrolments/{enrolment}', [AcademyEnrolController::class, 'delete']);
+    });
+    
 });
 
 Route::controller(ScheduleController::class)->prefix('schedules')->group(function () {

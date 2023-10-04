@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\Academy\AcademyModuleController;
+use App\Http\Controllers\Admin\Academy\AcademyVideoController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\AdminManagementController;
 use App\Http\Controllers\Admin\AssetsController;
@@ -108,6 +110,22 @@ Route::middleware(['auth:admin'])->group(function () {
         Route::post('store', 'store')->name('store');
         Route::post('update/{id}', 'update')->name('update');
     }));
+
+    Route::controller(AcademyModuleController::class)->prefix('academy/modules')->name('academy.modules.')->group((function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/{category}', 'categoryModule')->name('categoryModule'); // This endpoint list all module under a category
+        Route::post('store', 'store')->name('store');
+        Route::get('show/{module}', 'show')->name('show'); // This endpoint list all video under a module
+        Route::put('update/{module}', 'update')->name('update');
+        Route::delete('delete/{module}', 'delete')->name('delete');
+    }));
+
+    Route::controller(AcademyVideoController::class)->prefix('academy/videos')->name('academy.videos.')->group((function () {
+        Route::get('/{video}', 'index')->name('index');
+        Route::post('store', 'store')->name('store');
+        Route::put('update/{video}', 'update')->name('update');
+        Route::delete('delete/{video}', 'delete')->name('delete');
+    }));
 });
 
 Route::get('test-notifications', function () {
@@ -135,5 +153,4 @@ Route::get('push-notification', function () {
     $firebase = new \App\Services\PushNotification();
 
     dd($firebase->sendNotification($data));
-
 });

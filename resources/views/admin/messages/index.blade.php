@@ -128,7 +128,7 @@
                                             placeholder="Hello Hanuman..."></textarea>
                                     </div>
                                 </div>
-                                <div>
+                                <div class="right-content">
                                     <button type="button" class="btn btn-primary p-2" @click.prevent="sendMessage">
                                         <svg width="16" height="16" viewbox="0 0 16 16" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
