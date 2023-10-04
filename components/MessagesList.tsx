@@ -1,5 +1,5 @@
-import React, {useState, useRef, useCallback, useId} from "react";
-import {FlatList, ScrollView, Text, StyleSheet, View} from "react-native";
+import React, {useState, useRef, useCallback, useId, useEffect, useMemo} from "react";
+import {FlatList, ScrollView, Text, StyleSheet, View, RefreshControl, TouchableOpacity} from "react-native";
 import Colors from "../constants/Colors";
 import {useAppSelector} from "../app/hooks";
 import {fontPixel, heightPixel, pixelSizeVertical} from "../helpers/normalize";
@@ -8,14 +8,35 @@ import dayjs from "dayjs";
 import FastImage from "react-native-fast-image";
 import {Entypo} from "@expo/vector-icons";
 import Pinchable from "react-native-pinchable";
-
+import {wait} from "../helpers";
+import TextWithLinks from "./TextWithLink";
+import Autolink from 'react-native-autolink';
+import * as Clipboard from "expo-clipboard";
+import {addNotificationItem} from "../app/slices/dataSlice";
 
 interface props {
 
-    message: string
+    isLeft: boolean,
+    copyToClipboard:(text:string)=>void
+    item: {
+        id: string,
+        "group_id": string,
+        "message": string,
+        "type": string,
+        "sender": {
+            "id": string,
+            "name": string,
+            "photo": string
+        },
+        "created_at": string,
+        "formatedDate": string,
+        "formatedTime": string
+    }
 }
 
-const Message = ({message, time, image, name, isLeft,type}) => {
+const Message = ({item, isLeft,copyToClipboard}: props) => {
+
+
 
 
     const isOnLeft = (type: string) => {
@@ -56,7 +77,7 @@ const Message = ({message, time, image, name, isLeft,type}) => {
                             <FastImage
                                 style={styles.Avatar}
                                 source={{
-                                    uri: image ? image : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png',
+                                    uri: item?.sender?.photo ? item?.sender?.photo : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png',
                                     cache: FastImage.cacheControl.web,
                                     priority: FastImage.priority.normal,
                                 }}
@@ -66,56 +87,82 @@ const Message = ({message, time, image, name, isLeft,type}) => {
 
 
                         {
-                            type == 'media'?
-                        <View
-                            style={[
-                                styles.messageContainer,
-                                styles.messageBox,
-
-
-                            ]}
-                        >
-                            <Pinchable style={styles.qrBoxWrap}>
-                                <FastImage
-                                    style={styles.chart_photo}
-                                    source={{
-                                        uri: message,
-                                        cache: FastImage.cacheControl.web,
-                                        priority: FastImage.priority.normal,
-                                    }}
-                                    resizeMode={FastImage.resizeMode.contain}
-                                />
-                            </Pinchable>
-
-                        </View>
-                                :
+                            item?.type == 'media' ?
                                 <View
+                                    style={[
+                                        styles.messageContainer,
+                                        styles.messageBox,
+
+
+                                    ]}
+                                >
+                                    <Pinchable style={styles.qrBoxWrap}>
+                                        <FastImage
+                                            style={styles.chart_photo}
+                                            source={{
+                                                uri: item?.message,
+                                                cache: FastImage.cacheControl.web,
+                                                priority: FastImage.priority.normal,
+                                            }}
+                                            resizeMode={FastImage.resizeMode.contain}
+                                        />
+                                    </Pinchable>
+
+                                </View>
+                                :
+                                <TouchableOpacity
+                                    activeOpacity={0.8}
+                                    onLongPress={() => {
+                                        copyToClipboard(item?.message)
+                                    }}
                                     style={[
                                         styles.messageContainer,
                                         styles.messageBox,
 
                                     ]}
                                 >
-                                    <Text style={[styles.messageText, {
+                                    <Text  style={[styles.messageText, {
                                         color: Colors.textDark
                                     }]}>
-                                        {message}
-                                    </Text>
-                                </View>
 
-                                    }
+                                        <Autolink
+
+                                            linkStyle={{
+                                                fontFamily:Fonts.faktumMedium,
+                                                color:'blue',
+                                                textDecorationLine:'underline'
+                                            }}
+                                            // Required: the text to parse for links
+                                            text={item?.message}
+                                            // Optional: enable email linking
+                                            email
+                                            // Optional: enable hashtag linking to instagram
+                                            hashtag="instagram"
+                                            // Optional: enable @username linking to twitter
+                                            mention="twitter"
+                                            // Optional: enable phone linking
+                                            phone="sms"
+                                            // Optional: enable URL linking
+                                            url
+                                            // Optional: custom linking matchers
+                                         //   matchers={[MyCustomTextMatcher]}
+                                        />
+                                    </Text>
+                                </TouchableOpacity>
+
+                        }
 
                     </View>
                     <View style={[styles.timeView, {
                         paddingLeft: 35,
                     }]}>
                         <Text style={[styles.time, {alignSelf: "flex-start",}]}>
-                            {dayjs(time).format('hh:mm A')}
+                            {dayjs(item?.created_at).format('hh:mm A')}
                             <Entypo style={{marginHorizontal: 5,}} name="dot-single" size={14} color="#fff"/>
                             <Text style={[styles.time, {
                                 fontFamily: Fonts.faktumSemiBold, color: Colors.text
                             }]}>
-                                {name}
+                                {item?.sender?.name}
                             </Text>
                         </Text>
                     </View>
@@ -133,12 +180,12 @@ const Message = ({message, time, image, name, isLeft,type}) => {
                         ]}
                     >
                         <Text style={styles.messageText}>
-                            {message}
+                            {item?.message}
                         </Text>
                     </View>
                     <View style={styles.timeView}>
                         <Text style={[styles.time,]}>
-                            {dayjs(time).format('hh:mm A')}
+                            {dayjs(item?.created_at).format('hh:mm A')}
 
                         </Text>
 
@@ -150,25 +197,37 @@ const Message = ({message, time, image, name, isLeft,type}) => {
     )
 }
 
+interface MessagesList {
+    _id: string,
+    roomID: string,
+    messages: [],
+    refresh: () => void,
+    copyToClipboard: (text:string) => void,
+    refreshing: boolean
+}
 
-const MessagesList = ({_id, roomID, messages}: { _id: string, roomID: string, messages: [] }) => {
+const MessagesList = ({_id, roomID, refreshing, messages, refresh,copyToClipboard}: MessagesList) => {
+
+
 
     const user = useAppSelector(state => state.user)
     const {User_Details, userData} = user
 
 
+    // Create a memoized reversedData array using useMemo
+   ; // Only recomputed when data changes
+
+//console.log(messages)
     const scrollView = useRef();
 
     const renderItem = useCallback(
-        (item: { item: { created_at: any; id: string, sender: { id: string; }; message: any; }; }) => (
+        ({item}) => (
             <Message
-                key={item.item.id}
-                time={item.item.created_at}
-                isLeft={item.item.sender.id !== userData.id}
-                message={item.item.message}
-                image={item.item.sender.photo}
-                name={item.item.sender.name}
-                type={item.item.type}
+                copyToClipboard={copyToClipboard}
+                item={item}
+                key={item.id}
+                isLeft={item.sender.id !== userData.id}
+
 
             />
         ),
@@ -190,7 +249,14 @@ const MessagesList = ({_id, roomID, messages}: { _id: string, roomID: string, me
           >*/
 
         <View style={{flex: 1, width: '100%'}}>
-            <FlatList scrollEnabled data={messages} inverted={true} renderItem={renderItem}
+            <FlatList refreshControl={
+                <RefreshControl
+                    tintColor={Colors.primary}
+                    refreshing={refreshing}
+                    onRefresh={refresh}
+                />
+            } refreshing={refreshing} onRefresh={refresh} showsVerticalScrollIndicator={false} scrollEnabled
+                      data={messages} inverted  renderItem={renderItem}
                       keyExtractor={keyExtractor}/>
         </View>
 
@@ -216,7 +282,7 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         paddingBottom: 10,
     },
-    messageBox:{
+    messageBox: {
         alignSelf: "flex-start",
         backgroundColor: Colors.text,
         borderColor: Colors.background,

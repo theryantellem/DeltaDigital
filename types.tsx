@@ -274,6 +274,10 @@ export type SignalStackParamList = {
     };
 
     StreamersList: undefined;
+    EducatorSignalSummary: {
+        educator:string,
+        educatorName:string,
+    };
     MessageScreen: {
         educator: {
             "email": string,

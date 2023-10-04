@@ -190,7 +190,8 @@ const HomeTradeCard = ({item, seeLogs, Exchanges, tickers}: props) => {
                         {finalvalue ? invertNumber(parseFloat(finalvalue)) : '0.00'}%
                     </Text>
                     <Text style={styles.coinNameText}>
-                        {parseFloat(item.Positionamount).toFixed(2)}
+                        {item.Positionamount ? parseFloat(item.Positionamount).toFixed(2) : '0.00'}%
+
                     </Text>
                 </View>
 }

@@ -29,6 +29,7 @@ import {addNotificationItem} from "../../app/slices/dataSlice";
 import {useDispatch} from "react-redux";
 import {useAppDispatch} from "../../app/hooks";
 import ToastAnimated from "../../components/toast";
+import SearchInput from "../../components/inputs/SearchInput";
 
 
 interface props {
@@ -150,7 +151,7 @@ const EducatorItem = ({item, selected, followEducator, unFollowEducator, followi
 
 const StreamersList = ({navigation}: SignalStackScreenProps<'StreamersList'>) => {
 
-
+    const [searchValue, setSearchValue] = useState('');
     const queryClient = useQueryClient()
     const dispatch = useAppDispatch()
     const [refreshing, setRefreshing] = useState(false);
@@ -267,6 +268,14 @@ const StreamersList = ({navigation}: SignalStackScreenProps<'StreamersList'>) =>
     }
 
 
+    let filterUsers: readonly any[] | null | undefined = []
+    if (!isLoading && data && data?.data) {
+        filterUsers = newArray?.filter((educators: {  first_name:string  }) =>
+                educators.first_name.includes(searchValue.trim())
+
+        )
+    }
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <ImageBackground source={require('../../assets/images/signal/streamer_BG.png')}
@@ -282,6 +291,22 @@ const StreamersList = ({navigation}: SignalStackScreenProps<'StreamersList'>) =>
 
                     {
                         !isLoading && data &&
+                        
+                        <>
+
+                            <SearchInput
+
+                                placeholder="Search educator"
+                                keyboardType={"default"}
+
+                                onChangeText={(e) => {
+                                    setSearchValue(e);
+
+                                }}
+                                value={searchValue}
+                            />
+                        
+                    
                         <FlashList
                             estimatedItemSize={200}
                             refreshing={isLoading}
@@ -289,7 +314,7 @@ const StreamersList = ({navigation}: SignalStackScreenProps<'StreamersList'>) =>
 
                             scrollEnabled
                             showsVerticalScrollIndicator={false}
-                            data={newArray}
+                            data={filterUsers}
                             renderItem={renderItem}
                             keyExtractor={keyExtractor}
                             onEndReachedThreshold={0.3}
@@ -303,6 +328,7 @@ const StreamersList = ({navigation}: SignalStackScreenProps<'StreamersList'>) =>
 
 
                         />
+                        </>
                     }
 
                 </View>

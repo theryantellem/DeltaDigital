@@ -134,7 +134,7 @@ const ItemSignal = ({item, viewSignal,viewSignalImage}: PropsSignal) => {
             <View style={styles.signalTag}>
 
                 <Text style={[styles.liveText, {}]}>
-                    New
+                    1
                 </Text>
             </View>
             }
@@ -251,9 +251,19 @@ const EducatorItem = ({item, viewEducator}: props) => {
                 </Text>
             </View>*/}
             <View style={styles.educatorSmallCardImage}>
-                <Image style={styles.tAvatar}
-                       resizeMethod={'scale'}
-                       source={{uri: item?.educator?.photo}}/>
+
+                <FastImage
+
+                    style={styles.tAvatar}
+                    source={{
+                        uri: item?.educator?.photo,
+                        cache: FastImage.cacheControl.web,
+                        priority: FastImage.priority.normal,
+
+                    }}
+                    resizeMode={FastImage.resizeMode.cover}
+                />
+
             </View>
 
             <View style={styles.educatorNameWrap}>
@@ -425,7 +435,7 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
                             {
                                 !isLoading && myEducators && myEducators?.data?.length > 0 &&
                                 <FlatList
-                                    data={myEducators?.data}
+                                    data={myEducators?.data.slice(0,12)}
                                     keyExtractor={keyExtractor}
                                     horizontal
                                     pagingEnabled
@@ -584,7 +594,7 @@ const styles = StyleSheet.create({
         top: 0,
         zIndex: 1,
         height: 18,
-        width: 60,
+        width: 30,
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',

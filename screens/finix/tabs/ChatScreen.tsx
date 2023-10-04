@@ -27,6 +27,7 @@ import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import Echo from "laravel-echo";
 import NoItem from "../../../components/NoItem";
 import educators from "../Educators";
+import SearchInput from "../../../components/inputs/SearchInput";
 
 
 
@@ -102,7 +103,7 @@ const EducatorItem = ({item, startMessage}: props) => {
 const ChatScreen = ({navigation}: SignalRootTabScreenProps<'SignalChat'>) => {
 
 
-
+    const [searchValue, setSearchValue] = useState('');
     const [refreshing, setRefreshing] = useState(false);
 
     const {data, isLoading, refetch} = useQuery([`get-Educators-Following`], getEducatorsFollowing)
@@ -143,6 +144,15 @@ const ChatScreen = ({navigation}: SignalRootTabScreenProps<'SignalChat'>) => {
 
     useRefreshOnFocus(refetch)
 
+
+    let filterUsers: readonly any[] | null | undefined = []
+    if (!isLoading && data && data?.data) {
+        filterUsers = data?.data?.filter((educators: { educator: { first_name:string }; }) =>
+            educators?.educator.first_name.includes(searchValue.toUpperCase().trim())
+           // console.log(educators.educator.last_name)
+        )
+    }
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <ImageBackground source={require('../../../assets/images/signal/streamer_BG.png')}
@@ -175,6 +185,21 @@ const ChatScreen = ({navigation}: SignalRootTabScreenProps<'SignalChat'>) => {
 
                     {
                         !isLoading && data &&
+                        <>
+
+                            <SearchInput
+
+                                placeholder="Search educator"
+                                keyboardType={"default"}
+
+                                onChangeText={(e) => {
+                                    setSearchValue(e);
+
+                                }}
+                                value={searchValue}
+                            />
+
+
                         <FlashList
                             estimatedItemSize={200}
                             refreshing={isLoading}
@@ -182,7 +207,7 @@ const ChatScreen = ({navigation}: SignalRootTabScreenProps<'SignalChat'>) => {
 
                             scrollEnabled
                             showsVerticalScrollIndicator={false}
-                            data={data?.data}
+                            data={filterUsers}
                             renderItem={renderItem}
                             keyExtractor={keyExtractor}
                             onEndReachedThreshold={0.3}
@@ -196,7 +221,9 @@ const ChatScreen = ({navigation}: SignalRootTabScreenProps<'SignalChat'>) => {
 
 
                         />
+                        </>
                     }
+
                 </View>
 
 

@@ -29,6 +29,7 @@ import {currencyFormatter, invertNumber, useRefreshOnFocus} from "../helpers";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {addNotificationItem} from "../app/slices/dataSlice";
 import ToastAnimated from "../components/toast";
+import {getSignals} from "../api/finix-api";
 
 
 const {width} = Dimensions.get('screen');
@@ -89,6 +90,7 @@ const Item = ({item, tickers}: itemProps) => {
 const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
     const user = useAppSelector(state => state.user)
     const {User_Details,userData} = user
+    const {data: signals, isLoading: loadingSignals, refetch: refetchSignals} = useQuery(['getSignals'], getSignals)
 
     const [greeting, setGreeting] = useState('');
 
@@ -294,38 +296,47 @@ const dispatch = useAppDispatch()
                             card.id == '2' &&
                             <>
 
-                                <View style={styles.planBottomLeft}>
-                                    <Text style={styles.balText}>
+                               {/* <View style={styles.planBottomLeft}>
+                                   <Text style={styles.balText}>
                                         Live Sessions
                                     </Text>
-                                    {/* <Text
+                               <Text
                                         style={styles.balance}>
 
                                         {currencyFormatter('en-US', 'USD').format(TotalBal)}
 
-                                    </Text>*/}
+                                    </Text>
 
-                                </View>
+                                </View>*/}
 
                                 <View style={styles.planBottomLeft}>
                                     <Text style={styles.balText}>
                                         New Signals
                                     </Text>
-                                    {/*
+
 
                                     {
-                                        !loadingStrategy &&
-                                        strategy &&  strategy?.data &&
-                                        strategy?.data['Operation Strategy']?.slice(0, 2).map((item: {
-                                            [x: string]: any;
-                                            id: React.Key | null | undefined;
-                                            Market: string,
-                                            Avg_Price: number | bigint;
-                                            Quantity: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined;
-                                        }, index: any) => (
-                                            <Item key={item.id} tickers={tickers} item={item}/>
+                                        !loadingSignals &&
+                                        signals &&  signals?.data &&
+                                        signals?.data.filter(sigs => sigs.category.type == 'trade').slice(0,3).map((item, index: any) => (
+                                            <View style={styles.assetCardDetails} key={item.id}>
+                                                <View style={styles.assetCardIcon}>
+                                                    <Image
+                                                        source={{uri: item.asset.image}}
+                                                        style={styles.logo}/>
+                                                </View>
+                                                <Text style={{
+                                                    color:Colors.text,
+                                                    fontSize: fontPixel(14),
+                                                    marginLeft: 5,
+                                                    fontFamily: Fonts.faktumMedium
+                                                }}>
+
+                                                    {item.asset.name}
+                                                </Text>
+                                            </View>
                                         ))}
-*/}
+
 
 
                                 </View>

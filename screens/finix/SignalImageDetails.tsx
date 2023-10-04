@@ -2,7 +2,7 @@ import React from 'react';
 
 import {Text, View, StyleSheet, Image, ImageBackground, ScrollView} from 'react-native';
 import HeaderWithTitle from "../../components/cyborg/header/HeaderWithTitle";
-import {fontPixel, heightPixel, pixelSizeVertical} from "../../helpers/normalize";
+import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical} from "../../helpers/normalize";
 import {Fonts} from "../../constants/Fonts";
 import {SafeAreaView} from "react-native-safe-area-context";
 import FastImage from "react-native-fast-image";
@@ -10,6 +10,10 @@ import {SignalStackScreenProps} from "../../types";
 import {useAppDispatch} from "../../app/hooks";
 import Colors from "../../constants/Colors";
 import Pinchable from "react-native-pinchable";
+import dayjs from "dayjs";
+
+var relativeTime = require('dayjs/plugin/relativeTime')
+dayjs.extend(relativeTime)
 
 const SignalImageDetails = ({navigation, route}:SignalStackScreenProps<'SignalImageDetails'>) => {
     const dispatch = useAppDispatch()
@@ -28,8 +32,29 @@ const SignalImageDetails = ({navigation, route}:SignalStackScreenProps<'SignalIm
                             showsVerticalScrollIndicator={false}
                 >
 
+<View style={styles.containerWrap}>
+                    <View style={[styles.category,{
+                        backgroundColor:Colors.primary,
+                    }]}>
+                        <Text style={styles.categoryText}>
+                            {details.category.name}
+                        </Text>
+                    </View>
 
+    <View style={[styles.category,{
+        marginLeft:5,
+      //  backgroundColor: Colors.purplePrimary
+    }]}>
+                        <Text style={[styles.categoryText,{
 
+                        }]}>
+
+                            {
+                                dayjs(details.created_at).fromNow()
+                            }
+                        </Text>
+                    </View>
+</View>
 
                         <Pinchable style={styles.qrBoxWrap}>
                         <FastImage
@@ -122,6 +147,28 @@ const styles = StyleSheet.create({
         flex: 1,
 
     },
+    containerWrap:{
+        width:'90%',
+
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'flex-start'
+    },
+    category:{
+        minWidth:70,
+        paddingHorizontal:pixelSizeHorizontal(5),
+        height:25,
+        borderRadius:8,
+
+        alignSelf:'flex-start',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    categoryText:{
+        color: Colors.text,
+        fontSize: fontPixel(14),
+        fontFamily: Fonts.faktumSemiBold,
+    }
 })
 
 export default SignalImageDetails;

@@ -155,7 +155,7 @@ const ItemSignal = ({item, viewSignal, viewSignalImage}: Props) => {
                             <Text style={[styles.assetText, {
                                 fontFamily: Fonts.faktumRegular
                             }]}>
-                                Crypto
+                                {item.category.name}
                             </Text>
                         </View>
 
@@ -246,7 +246,7 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
             if (data.success) {
                 // fetchEducators()
                 //refetch()
-
+navigation.replace('SignalBottomTab')
                 dispatch(addNotificationItem({
                     id: Math.random(),
                     type: 'success',
@@ -263,6 +263,7 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
             queryClient.invalidateQueries(['unFollowEducator']);
         }
     })
+
 
   //  const {data: signals, isLoading: loadingSignals, refetch: refetchSignals} = useQuery(['getSignals'], getSignals)
 
@@ -318,6 +319,20 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
         })
     }
 
+    const unFollowEducatorNow = () => {
+
+        const body = JSON.stringify({
+            educator:educator.id
+        })
+        unFollowNow(body)
+    }
+
+    const viewMore = () => {
+      navigation.navigate('EducatorSignalSummary',{
+          educator:educator.id,
+          educatorName:educator.first_name
+      })
+    }
     useRefreshOnFocus(refetchEducator)
     useRefreshOnFocus(refetchSignals)
 
@@ -357,7 +372,7 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
 
                         <View style={styles.favList}>
                             <View style={[styles.listIcon, {
-                                //  backgroundColor: Colors.secondary,
+                                 backgroundColor: Colors.text,
                             }]}>
 
 
@@ -391,8 +406,10 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
 
                             </View>
 
+                            {
+                                !unFollowing &&
 
-                            <MyButton style={[styles.listBodyRight, {
+                            <MyButton disabled={unFollowing} onPress={unFollowEducatorNow} style={[styles.listBodyRight, {
                                 backgroundColor:'transparent'
                             }]}>
                                 <LinearGradient style={styles.createBtnGradient}
@@ -409,6 +426,10 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
 
                                 </LinearGradient>
                             </MyButton>
+                            }
+                            {
+                                unFollowing && <ActivityIndicator size='small' color={Colors.text}/>
+                            }
 
 
                         </View>
@@ -512,11 +533,12 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
                             <Text style={[styles.listTitle, {}]}>
                                 Signals
                             </Text>
-                            <TouchableOpacity onPress={seeSignalSummary} activeOpacity={0.7} style={styles.seeAll}>
+                            <TouchableOpacity onPress={viewMore} activeOpacity={0.7} style={styles.seeAll}>
                                 <FontAwesome name="plus-circle" size={24} color="#fff"/>
 
                             </TouchableOpacity>
                         </View>
+                        
                         {!loadingSignals && educatorSignals && educatorSignals?.data.filter((signals: { category: { name: any; }; }) => signals.category.name == filterCategory)?.length < 1 &&
                             <View style={styles.messageWrap}>
                                 <View style={styles.imageWrap}>
@@ -538,7 +560,7 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
                    {
                             !loadingSignals && educatorSignals && educatorSignals?.data?.length > 0 &&
                             <FlatList
-                                data={educatorSignals?.data.filter((signals: { category: { name: any; }; }) => signals.category.name == filterCategory)}
+                                data={educatorSignals?.data.slice(0,10).filter((signals: { category: { name: any; }; }) => signals.category.name == filterCategory)}
                                 keyExtractor={keyExtractor}
                                 horizontal
                                 pagingEnabled
@@ -717,6 +739,7 @@ const styles = StyleSheet.create({
     listIcon: {
         width: 55,
         height: 55,
+        borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center'
     },

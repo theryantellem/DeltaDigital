@@ -119,6 +119,7 @@ export const getRevenueDetails = async (userId: string) => {
         "TOKEN": Token,
         "ID": userId
     }
+
     let timeoutId: NodeJS.Timeout
 
     const requestOptions = {

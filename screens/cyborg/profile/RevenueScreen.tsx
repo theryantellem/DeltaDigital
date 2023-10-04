@@ -234,9 +234,9 @@ const seeAll = () => {
 
 
                     { data?.data['History Records'] !== null &&
-                        data?.data['History Records'].slice(0,30).map((item: { profit: string ; price: string ;market_type:string, market: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined; Date: number; })=>(
+                        data?.data['History Records'].slice(0,30).map((item: { profit: string ; price: string ;id:string,market_type:string, market: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined; Date: number; })=>(
                             <Animated.View  layout={Layout.easing(Easing.bounce).delay(10)}
-                                   entering={FadeInDown.springify()} exiting={FadeOutDown} key={item.profit +item.Date} style={styles.transactionCard}>
+                                   entering={FadeInDown.springify()} exiting={FadeOutDown} key={item.id} style={styles.transactionCard}>
 
 
 
@@ -263,7 +263,7 @@ const seeAll = () => {
                                     </View>
                                     <Text style={styles.transactionDate}>
 
-                                        {dayjs.unix(item.Date).format('ddd, DD MMM YYYY')}
+                                        {dayjs.unix(item.Date).format('ddd, DD MMM YYYY hh:m A' )}
                                     </Text>
                                 </View>
 

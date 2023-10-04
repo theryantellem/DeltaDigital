@@ -132,7 +132,7 @@ const LogScreen = ({navigation, route}: CyborgStackScreenProps<'LogScreen'>) => 
 
     let finalvalue = val * 100;
 
-
+//console.log({id:User_Details.id})
     /*   if(finalvalue >= 0){
            element.floating_profit = finalvalue;
        }

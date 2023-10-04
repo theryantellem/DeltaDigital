@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 
 import {
     Text,
@@ -8,7 +8,7 @@ import {
     TextInput,
     TouchableOpacity,
     KeyboardAvoidingView,
-    Platform, Button, ActivityIndicator, Image
+    Platform, Button, ActivityIndicator, Image, RefreshControl
 } from 'react-native';
 import {SafeAreaView} from "react-native-safe-area-context";
 import {SignalStackScreenProps} from "../../../types";
@@ -30,15 +30,11 @@ import {
 
 import {useInfiniteQuery, useMutation, useQueryClient} from "@tanstack/react-query";
 import {getAlMessage, sendMessage} from "../../../api/finix-api";
-import {useRefreshOnFocus} from "../../../helpers";
-import {addAllMessages, addSingleMessage} from "../../../app/slices/dataSlice";
+import {useRefreshOnFocus, wait} from "../../../helpers";
+import {addAllMessages, addNotificationItem, addSingleMessage} from "../../../app/slices/dataSlice";
 import {IF} from "../../../helpers/ConditionJsx";
-import NoItem from "../../../components/NoItem";
-
-
-
-
-
+import * as Clipboard from "expo-clipboard";
+import ToastAnimated from "../../../components/toast";
 
 
 const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScreen'>) => {
@@ -51,6 +47,7 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
     // console.log([...myMessages].reverse())
 
     let logLines: string[] = [];
+    const [refreshing, setRefreshing] = useState(false);
 
     const [token, setToken] = useState('');
     const user = useAppSelector(state => state.user)
@@ -126,7 +123,7 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
 
             });
 
-             pusher.connect().then((r: any) => console.log(r));
+            pusher.connect().then((r: any) => console.log(r));
             await pusher.subscribe({
                 channelName: `chat.${educator.id}`,
                 onEvent: (event: PusherEvent) => {
@@ -159,7 +156,7 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
         hasNextPage,
         hasPreviousPage,
     } = useInfiniteQuery(
-        [`all-messages`,educator.id], async ({pageParam = 1}) => getAlMessage.messages({pageParam, id: educator.id}),
+        [`all-messages`, educator.id], async ({pageParam = 1}) => getAlMessage.messages({pageParam, id: educator.id}),
         {
             getNextPageParam: lastPage => {
                 if (lastPage.next !== null) {
@@ -175,17 +172,17 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
 
 //console.log(data?.pages[0])
 
- /*   var pusher = new Pusher('2e03de85bbf93cd88884', {
-        cluster: 'eu',
-    });*/
+    /*   var pusher = new Pusher('2e03de85bbf93cd88884', {
+           cluster: 'eu',
+       });*/
 
- /*   var channel = pusher.subscribe('chat.1');
-    channel.bind('chat-message', function(data) {
-        //add sound
-        // fetch notification details ( both read and unread )
-        console.log(data)
-        alert(JSON.stringify(data))
-    });*/
+    /*   var channel = pusher.subscribe('chat.1');
+       channel.bind('chat-message', function(data) {
+           //add sound
+           // fetch notification details ( both read and unread )
+           console.log(data)
+           alert(JSON.stringify(data))
+       });*/
 
 
     let allMessages = []
@@ -211,9 +208,9 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
 
     useEffect(() => {
 
-           connect()
-       // connect()
-       // console.log(pusher.connectionState)
+        connect()
+        // connect()
+        // console.log(pusher.connectionState)
 
     }, []);
 
@@ -284,10 +281,6 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
     };
 
 
-
-
-
-
     const onMemberRemoved = (channelName: string, member: PusherMember) => {
         log(`onMemberRemoved: ${channelName} user: ${member}`);
         const channel: PusherChannel | undefined = pusher.getChannel(channelName);
@@ -321,10 +314,34 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
 
     }
 
+    const copyToClipboard = useCallback(async (content: string) => {
+
+        await Clipboard.setStringAsync(content);
+
+        dispatch(addNotificationItem({
+            id: Math.random(),
+            type: 'success',
+            body: `Text copied 👍`,
+        }))
+        // setCopied(true)
+    }, []);
+
 
     useRefreshOnFocus(refetch)
     //console.log(pusher.connectionState)
 //console.log(educator.id)
+
+    const refresh = () => {
+        setRefreshing(true)
+        refetch()
+
+        wait(2000).then(() => setRefreshing(false));
+    }
+
+   /* const reversedData = useMemo(() => {
+        return data?.pages[0]?.data.slice().reverse();
+    }, [data])*/
+
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -340,20 +357,21 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
                         isLoading && <ActivityIndicator size='large' color={"#fff"}/>
                     }
 
-                 {
-                     !isLoading && data?.pages[0].data.length > 0 &&
+                    {
+                        !isLoading && data && data?.pages[0]?.data.length > 0 &&
 
-                    <MessagesList _id={User_Details.id} roomID={''} messages={myMessages}/>
+                        <MessagesList refresh={refresh} copyToClipboard={copyToClipboard} refreshing={refreshing}
+                                      _id={User_Details.id} roomID={educator.id} messages={data?.pages[0]?.data.slice().reverse()}/>
                     }
 
                     {!isLoading && data?.pages[0].data.length < 1 &&
                         <View style={styles.messageWrap}>
 
 
-
                             <View style={styles.imageWrap}>
 
-                                <Image source={require('../../../assets/images/EmptyBox/empty_state.png')} style={styles.fileBroken}/>
+                                <Image source={require('../../../assets/images/EmptyBox/empty_state.png')}
+                                       style={styles.fileBroken}/>
 
 
                             </View>
@@ -370,8 +388,6 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
                 </View>
 
 
-
-
                 <KeyboardAvoidingView
 
                     style={[styles.root]}
@@ -380,8 +396,7 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
                 >
                     <IF condition={educator.id === userData.id}>
 
-                    {/*              <Button title={"SEND MESSAGE"} onPress={sendMessage}/>*/}
-
+                        {/*              <Button title={"SEND MESSAGE"} onPress={sendMessage}/>*/}
 
 
                         <View style={styles.innerContainer}>
@@ -415,6 +430,7 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
                         </View>
                     </IF>
                 </KeyboardAvoidingView>
+                <ToastAnimated/>
             </ImageBackground>
         </SafeAreaView>
     );

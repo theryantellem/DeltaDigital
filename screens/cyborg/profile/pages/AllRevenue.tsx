@@ -80,7 +80,7 @@ const RewardItem = ({item}: RewardItem) => {
 
                 <Text style={styles.transactionDate}>
 
-                    {dayjs.unix(item.Date).format('ddd, DD MMM YYYY')}
+                    {dayjs.unix(item.Date).format('ddd, DD MMM YYYY hh:m A' )}
                 </Text>
             </View>
 
@@ -88,7 +88,8 @@ const RewardItem = ({item}: RewardItem) => {
                 <Text style={[styles.transactionTitle,{
                     color: Colors.success
                 }]}>
-                    +{item.profit}
+
+                    +{currencyFormatter('en-US','USD').format(item.profit)}
                 </Text>
                 <Text style={styles.transactionDate}>
 
@@ -136,7 +137,8 @@ const AllRevenue = () => {
     const [refreshing, setRefreshing] = useState(false);
 
     const user = useAppSelector(state => state.user)
-    const {User_Details} = user
+    const {User_Details,userData} = user
+
 
 
     const [tabIndex, setTabIndex] = useState(0);
@@ -171,7 +173,7 @@ const AllRevenue = () => {
     );
 
 
-    const keyExtractor = useCallback((item: { Date: string, profit: string }) => item.Date, [],);
+    const keyExtractor = useCallback((item) => item.id, [],);
     const keyExtractorIncome = useCallback((item: {  profit: string },index) => item.profit + index, [],);
 
 

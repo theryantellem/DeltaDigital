@@ -14,6 +14,7 @@ import SignalSummary from "../../screens/finix/SignalSummary";
 import ChatScreen from "../../screens/finix/tabs/ChatScreen";
 import MessageScreen from "../../screens/finix/message/MessageScreen";
 import SignalImageDetails from "../../screens/finix/SignalImageDetails";
+import EducatorSignalSummary from "../../screens/finix/EducatorSignalSummary";
 
 
 const StackNav = createNativeStackNavigator<SignalStackParamList>();
@@ -29,6 +30,7 @@ export function MainSignalNav() {
 
      <StackNav.Screen name={"SignalBottomTab"} options={{headerShown: false}} component={SignalBottomTab}/>
      <StackNav.Screen name={"SignalDetails"} component={SignalDetails}/>
+     <StackNav.Screen name={"EducatorSignalSummary"} component={EducatorSignalSummary}/>
      <StackNav.Screen name={"EducatorsScreen"} component={EducatorsScreen}/>
      <StackNav.Screen name={"ViewEducator"} component={ViewEducator}/>
      <StackNav.Screen name={"StreamersList"} component={StreamersList}/>

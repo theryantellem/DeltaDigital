@@ -18,7 +18,7 @@ import {fontPixel, heightPixel, pixelSizeHorizontal} from "../../helpers/normali
 import Colors from "../../constants/Colors";
 import {Fonts} from "../../constants/Fonts";
 import {useQuery} from "@tanstack/react-query";
-import {getSignals} from "../../api/finix-api";
+import {getEducatorSignals, getSignals} from "../../api/finix-api";
 import {wait} from "../../helpers";
 
 
@@ -158,10 +158,16 @@ const ItemSignal = ({item, viewSignal,viewSignalImage}: Props) => {
 }
 
 
-const SignalSummary = ({navigation}: SignalStackScreenProps<'SignalSummary'>) => {
+const EducatorSignalSummary = ({navigation,route}: SignalStackScreenProps<'EducatorSignalSummary'>) => {
+
+    const {educator,educatorName} = route.params
+    const {
+        data,
+        isLoading,
+        refetch
+    } = useQuery(['get-educator-signals',educator], () => getEducatorSignals(educator))
 
 
-    const {data, isLoading, refetch} = useQuery(['getSignals'], getSignals)
     const [refreshing, setRefreshing] = useState(false);
     const keyExtractor = useCallback((item: { id: any; }) => item.id, [],)
 
@@ -222,6 +228,8 @@ const SignalSummary = ({navigation}: SignalStackScreenProps<'SignalSummary'>) =>
         wait(2000).then(() => setRefreshing(false));
     }
 
+
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <ImageBackground source={require('../../assets/images/signal/signal_BG.png')}
@@ -240,7 +248,7 @@ const SignalSummary = ({navigation}: SignalStackScreenProps<'SignalSummary'>) =>
 
 
                             <Text style={styles.title}>
-                                Signals Summary
+                                {educatorName} Signals
                             </Text>
                         </View>
                     </Pressable>
@@ -447,4 +455,4 @@ const styles = StyleSheet.create({
 
 })
 
-export default SignalSummary;
+export default EducatorSignalSummary;

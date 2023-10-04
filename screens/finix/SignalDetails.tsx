@@ -35,7 +35,10 @@ import {
 } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
 import FastImage from "react-native-fast-image";
 import Pinchable from 'react-native-pinchable';
+import dayjs from "dayjs";
 
+var relativeTime = require('dayjs/plugin/relativeTime')
+dayjs.extend(relativeTime)
 
 
 
@@ -163,8 +166,8 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                                         </Text>
 
                                         <Text style={styles.innerBoxDate}>
+                                            {details.category.name}
 
-                                            Crypto
                                         </Text>
                                     </View>
                                 </View>
@@ -304,6 +307,24 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                                             color: details.market_status == 'pending' ? Colors.pendingYellow : Colors.successChart
                                         }]}>
                                             {details.market_status}
+                                        </Text>
+                                    </View>
+
+                                </View>
+
+                                <View style={styles.receiptDetailsRow}>
+                                    <Text style={styles.rowKey}>
+                                       Time
+                                    </Text>
+
+                                    <View style={styles.reference}>
+                                        <Text style={[styles.rowValue, {
+
+
+                                        }]}>
+                                            {
+                                                dayjs(details.created_at).fromNow()
+                                            }
                                         </Text>
                                     </View>
 
