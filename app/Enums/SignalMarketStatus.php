@@ -10,6 +10,7 @@ enum SignalMarketStatus: string
     case Win = "win";
     case Loss = "loss";
     case BreakEven = "breakeven";
+    case Cancelled = "cancelled";
 
     public function label(): string
     {
@@ -19,6 +20,7 @@ enum SignalMarketStatus: string
             self::Win => 'WIN',
             self::Loss => 'LOSS',
             self::BreakEven => "BREAKEVEN",
+            self::Cancelled => "CANCELLED",
         };
     }
 
