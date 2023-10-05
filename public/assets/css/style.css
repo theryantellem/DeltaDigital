@@ -44745,10 +44745,18 @@ table.dataTable thead .sorting_asc {
 .message-send {
     background: #F3F0EC;
     padding: 7px 8px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    position: relative;
     border-radius: 0.625rem;
+}
+
+/* Add a child element for right-aligned content */
+.message-send .right-content {
+    text-align: right;
+}
+
+/* Style the right-aligned content */
+.message-send .right-content > * {
+    margin-left: auto; /* Push the content to the right */
 }
 
 .custome-tooltip .apexcharts-tooltip.apexcharts-theme-light {

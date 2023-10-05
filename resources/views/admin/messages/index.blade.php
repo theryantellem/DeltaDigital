@@ -128,7 +128,7 @@
                                             placeholder="Hello Hanuman..."></textarea>
                                     </div>
                                 </div>
-                                <div>
+                                <div class="right-content">
                                     <button type="button" class="btn btn-primary p-2" :disabled="loading"
                                         @click.prevent="sendMessage">
                                         <svg v-if="loading" width="16" height="16" viewbox="0 0 16 16" fill="none"
