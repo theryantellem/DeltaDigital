@@ -49,7 +49,7 @@ class MessageController extends Controller
                 'media' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
 
-            if ($request->message == 'null') {
+            if ($request->message == 'null' && !$request->hasFile('media')) {
                 return response()->json(['success' => false, 'error' => "Cannot send null message."], 400);
             }
 
