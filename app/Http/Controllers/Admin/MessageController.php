@@ -45,9 +45,13 @@ class MessageController extends Controller
             $user = Auth::guard('admin')->user();
 
             $validator = Validator::make($request->all(), [
-                'message' => 'nullable|string',
+                'message' => 'required|string',
                 'media' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
+
+            if ($request->message == 'null') {
+                return response()->json(['success' => false, 'error' => "Cannot send null message."], 400);
+            }
 
             // Handle validation errors
             if ($validator->fails()) {
