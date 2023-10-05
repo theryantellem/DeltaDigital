@@ -127,7 +127,7 @@
                                 <div class="type-massage style-1">
                                     <div class="input-group">
                                         <textarea rows="1" v-model="message" @keyup.enter="sendMessage" class="form-control"
-                                            placeholder="Hello Hanuman..."></textarea>
+                                            placeholder="Enter Text Here ..."></textarea>
                                     </div>
                                 </div>
                                 <div class="right-content">
