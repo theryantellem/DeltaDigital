@@ -27,12 +27,12 @@ class Navigation
                 //     'icon'  => 'bi bi-house-fill fs-3',
                 //     'hasPermission' => true
                 // ],
-                // (object) [
-                //     'name'  => 'Admin Management',
-                //     'route' => 'admin.administrative.index',
-                //     'icon'  => 'bi bi-house-fill fs-3',
-                //     'hasPermission' => true
-                // ]
+                (object) [
+                    'name'  => 'Administrators',
+                    'route' => 'admin.administrative.index',
+                    'icon'  => 'bi bi-house-fill fs-3',
+                    'hasPermission' =>  auth()->user()->hasRole('super_admin')
+                ]
             ],
             // 'Cyborg' => (object) [
             //     (object) [

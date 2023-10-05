@@ -59,6 +59,7 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::post('/update-status', [SignalController::class, 'updateStatus'])->name('signals.status');
     Route::resource('signals', SignalController::class);
 
+    Route::get('admins/all', [AdminManagementController::class, 'allAdmins'])->name('admins.all');
     Route::resource('administrative', AdminManagementController::class);
 
     Route::prefix('users')->name('users.')->controller(UserManagementController::class)->group(function () {
@@ -135,5 +136,4 @@ Route::get('push-notification', function () {
     $firebase = new \App\Services\PushNotification();
 
     dd($firebase->sendNotification($data));
-
 });
