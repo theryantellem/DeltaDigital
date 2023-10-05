@@ -45,8 +45,8 @@ class MessageController extends Controller
             $user = Auth::guard('admin')->user();
 
             $validator = Validator::make($request->all(), [
-                'message' => 'required|string',
                 'media' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                'message' => 'nullable|string|required_if:media,null',
             ]);
 
             if ($request->message == 'null' && !$request->hasFile('media')) {
