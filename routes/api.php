@@ -95,6 +95,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('enrolments', [AcademyEnrolController::class, 'index']);
         Route::get('enrolments/{enrolment}', [AcademyEnrolController::class, 'show']);
         Route::delete('enrolments/{enrolment}', [AcademyEnrolController::class, 'delete']);
+        Route::post('rating', [AcademyModuleController::class, 'rating']);
+        Route::patch('watch-time/{module}', [AcademyEnrolController::class, 'watchTime']);
     });
     
 });

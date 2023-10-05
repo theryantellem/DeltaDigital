@@ -25,18 +25,17 @@ class AcademyVideoController extends Controller
             'module_uuid' => ['required', 'exists:academy_modules,uuid'],
             'description' => ['nullable', 'max:10000'],
             'video_file' => ['required', 'mimes:mp4,avi,flv,mov,wmvp', 'max:10000'],
+            'length' => ['required', 'numeric', 'min:5'],
         ]);
 
         $module = AcademyModule::where('uuid', $request->module_uuid)->first();
         $video = $request->file('video_file')->store('academy/videos', 'public_uploads');
 
-        // $durationInMinutes = $durationInSeconds / 60;
-
         $module->videos()->create([
             'uuid' => Str::orderedUuid(),
             'name' => $request->name,
             'video_file' => $video,
-            'length' => $durationInMinutes ??  '20 Minutes',
+            'length' => $request->length,
             'description' => $request->description,
         ]);
 

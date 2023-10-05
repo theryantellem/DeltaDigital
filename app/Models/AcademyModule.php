@@ -31,4 +31,9 @@ class AcademyModule extends Model
     {
         return $this->hasMany(AcademyVideo::class);
     }
+
+    public function ratings()
+    {
+        return $this->hasMany(AcademyRating::class);
+    }
 }
