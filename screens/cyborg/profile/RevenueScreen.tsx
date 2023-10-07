@@ -109,7 +109,7 @@ const seeAll = () => {
                         <View style={styles.interestGained}>
 
 
-                            <View activeOpacity={0.7}
+                            <View
                                               style={[styles.balanceTitle, {
                                                   justifyContent: 'flex-start',
 
@@ -128,7 +128,7 @@ const seeAll = () => {
                                 <View>
                                     <Text style={[styles.balance, {color: Colors.success}]}>
 
-                                        {currencyFormatter('en-US','USD').format(data.data.today_profit)}
+                                        { data?.data?.today_profit ? currencyFormatter('en-US','USD').format(data?.data?.today_profit) : "$0.00"}
                                     </Text>
 
                                 </View>
@@ -162,7 +162,7 @@ const seeAll = () => {
                                 <Text style={[styles.balance]}>
 
 
-                                    {currencyFormatter('en-US','USD').format(data.data.total_profit)}
+                                    { data?.data?.total_profit ? currencyFormatter('en-US','USD').format(data?.data?.total_profit) : '$0.00'}
                                 </Text>
 
 

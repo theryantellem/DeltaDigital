@@ -29,6 +29,7 @@ import {useDispatch} from "react-redux";
 import * as SecureStore from "expo-secure-store";
 import {logoutUser} from "../../app/slices/userSlice";
 import Quantitative from "./profile/quantitative/Quantitative";
+import {getUserInfo} from "../../api/finix-api";
 
 
 
@@ -44,7 +45,8 @@ const UserAccount = ({navigation}: CyborgStackScreenProps<'UserAccount'>) => {
         navigation.navigate(screen)
     }
 
-    const {data, refetch} = useQuery(['user-data'], () => getUser(User_Details.id))
+    const {data, refetch} = useQuery(['user-data',User_Details.id], () => getUser(User_Details.id))
+
 
 
     const logout = async () => {

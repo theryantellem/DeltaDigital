@@ -41,7 +41,6 @@ var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime)
 
 
-
 const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetails'>) => {
 
     const dispatch = useAppDispatch()
@@ -49,7 +48,7 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
 
     const [itemCopied, setItemCopied] = useState('');
 
-
+    //console.log({stop_loss: details.stop_loss, entry_price: details.entry_price})
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
     // variables
@@ -154,7 +153,7 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                                             </Text>
                                         </View>
                                         <Text style={[styles.innerBoxStatus, {
-                                            marginVertical:pixelSizeVertical(5),
+                                            marginVertical: pixelSizeVertical(5),
                                             textTransform: 'uppercase',
                                             fontFamily: Fonts.faktumBold,
                                             fontSize: fontPixel(26)
@@ -182,7 +181,7 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
 
                                     </View>
                                     <Text style={styles.leftInfoNameText}>
-                                         {details.educator.first_name} {details.educator.last_name}
+                                        {details.educator.first_name} {details.educator.last_name}
                                     </Text>
 
                                 </Pressable>
@@ -314,14 +313,11 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
 
                                 <View style={styles.receiptDetailsRow}>
                                     <Text style={styles.rowKey}>
-                                       Time
+                                        Time
                                     </Text>
 
                                     <View style={styles.reference}>
-                                        <Text style={[styles.rowValue, {
-
-
-                                        }]}>
+                                        <Text style={[styles.rowValue, {}]}>
                                             {
                                                 dayjs(details.created_at).fromNow()
                                             }
@@ -337,7 +333,7 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                             </View>
 
 
-                            <Pressable onPress={handlePresentModalPress} style={[styles.qrBoxWrap,{
+                            <Pressable onPress={handlePresentModalPress} style={[styles.qrBoxWrap, {
                                 top: -60,
                                 width: '90%',
                             }]}>
@@ -352,9 +348,7 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                                 />
 
 
-
                             </Pressable>
-
 
 
                             <View style={styles.imageCover}>
@@ -422,10 +416,10 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                         <View style={styles.contentContainer}>
 
 
-                                <Pinchable style={[styles.qrBoxWrap,{
-                                    width:'100%',
-                                    height: heightPixel(400),
-                                }]}>
+                            <Pinchable style={[styles.qrBoxWrap, {
+                                width: '100%',
+                                height: heightPixel(400),
+                            }]}>
                                 <FastImage
 
                                     style={styles.chart_photo}
@@ -436,11 +430,7 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                                     }}
                                     resizeMode={FastImage.resizeMode.contain}
                                 />
-                                </Pinchable>
-
-
-
-
+                            </Pinchable>
 
 
                         </View>
@@ -677,8 +667,8 @@ const styles = StyleSheet.create({
         textTransform: 'capitalize',
         backgroundColor: "#00B2FF",
         paddingHorizontal: 5,
-        alignItems:'center',
-        justifyContent:'center',
+        alignItems: 'center',
+        justifyContent: 'center',
         height: 25,
         borderRadius: 10,
     },
@@ -800,7 +790,7 @@ const styles = StyleSheet.create({
 
     contentContainer: {
 
-     //   paddingHorizontal: pixelSizeHorizontal(10),
+        //   paddingHorizontal: pixelSizeHorizontal(10),
         width: '100%',
         justifyContent: 'center',
         alignItems: 'center'

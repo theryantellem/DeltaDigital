@@ -1,4 +1,4 @@
-import React, {SetStateAction, useCallback, useState} from 'react';
+import React, {SetStateAction, useCallback, useEffect, useState} from 'react';
 
 import {
     Text,
@@ -21,7 +21,7 @@ import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPix
 import SegmentedControl from "../../../components/segment-control/SegmentContol";
 import HomeSegmentedTabs from "../../../components/signal/HomeSegmentTabs";
 import {useQuery} from "@tanstack/react-query";
-import {getEducators, getEducatorsFollowing, getSignals} from "../../../api/finix-api";
+import {getEducators, getEducatorsFollowing, getSignals, getSignalsTest} from "../../../api/finix-api";
 import {useRefreshOnFocus, wait} from "../../../helpers";
 import {Fonts} from "../../../constants/Fonts";
 import {IF} from "../../../helpers/ConditionJsx";
@@ -29,6 +29,7 @@ import {AntDesign, Entypo, FontAwesome, Ionicons} from "@expo/vector-icons";
 import HorizontalLine from "../../../components/HorizontalLine";
 import {SignalRootTabScreenProps} from "../../../types";
 import FastImage from "react-native-fast-image";
+import dayjs from "dayjs";
 
 
 const width = Dimensions.get('window').width
@@ -293,7 +294,19 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
     } = useQuery([`getEducatorsFollowing`], getEducatorsFollowing)
 
 
-    const {data: signals, isLoading: loadingSignals, refetch: refetchSignals} = useQuery(['getSignals'], getSignals)
+    const {data: signals, isLoading: loadingSignals, refetch: refetchSignals} = useQuery(['get-user-Signals',userData.id], getSignalsTest)
+
+
+    /*useEffect(() => {
+        getSignalsTest().then(res =>{
+            console.log("__---__--_____-")
+                console.log(res)
+                console.log("__---__--_____-")
+        }
+
+        ).catch(err => console.log(err))
+    }, []);*/
+
 
 
     const viewEducator = (details: {}) => {

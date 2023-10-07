@@ -18,8 +18,9 @@ import {fontPixel, heightPixel, pixelSizeHorizontal} from "../../helpers/normali
 import Colors from "../../constants/Colors";
 import {Fonts} from "../../constants/Fonts";
 import {useQuery} from "@tanstack/react-query";
-import {getSignals} from "../../api/finix-api";
+import {getSignals, getSignalsTest} from "../../api/finix-api";
 import {wait} from "../../helpers";
+import {useAppSelector} from "../../app/hooks";
 
 
 interface Props {
@@ -160,8 +161,10 @@ const ItemSignal = ({item, viewSignal,viewSignalImage}: Props) => {
 
 const SignalSummary = ({navigation}: SignalStackScreenProps<'SignalSummary'>) => {
 
+    const user = useAppSelector(state => state.user)
+    const {User_Details,userData} = user
+    const {data, isLoading, refetch} = useQuery(['get-user-Signals',userData.id], getSignalsTest)
 
-    const {data, isLoading, refetch} = useQuery(['getSignals'], getSignals)
     const [refreshing, setRefreshing] = useState(false);
     const keyExtractor = useCallback((item: { id: any; }) => item.id, [],)
 

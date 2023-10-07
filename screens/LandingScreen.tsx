@@ -9,7 +9,7 @@ import {
     Image,
     ActivityIndicator,
     Dimensions,
-    Platform, ImageBackground, Pressable
+    Platform, ImageBackground, Pressable, RefreshControl
 } from 'react-native';
 import {RootStackScreenProps} from "../types";
 import {SafeAreaView} from "react-native-safe-area-context";
@@ -25,11 +25,12 @@ import {useAppDispatch, useAppSelector} from "../app/hooks";
 import FastImage from "react-native-fast-image";
 import {useQuery} from "@tanstack/react-query";
 import {activeStrategy, binanceTicker, checkUserPlan, getAsset, getUser, quantitativeStrategies} from "../api";
-import {currencyFormatter, invertNumber, useRefreshOnFocus} from "../helpers";
+import {currencyFormatter, invertNumber, useRefreshOnFocus, wait} from "../helpers";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {addNotificationItem} from "../app/slices/dataSlice";
 import ToastAnimated from "../components/toast";
-import {getSignals} from "../api/finix-api";
+import {getSignals, getSignalsTest, getUserInfo} from "../api/finix-api";
+import {updateUserInfo} from "../app/slices/userSlice";
 
 
 const {width} = Dimensions.get('screen');
@@ -90,10 +91,13 @@ const Item = ({item, tickers}: itemProps) => {
 const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
     const user = useAppSelector(state => state.user)
     const {User_Details,userData} = user
-    const {data: signals, isLoading: loadingSignals, refetch: refetchSignals} = useQuery(['getSignals'], getSignals)
+    const {data: signals, isLoading: loadingSignals, refetch: refetchSignals} = useQuery(['get-user-Signals',userData.id], getSignalsTest)
+
+
+    const [refreshing, setRefreshing] = useState(false);
 
     const [greeting, setGreeting] = useState('');
-
+    const {data:userInfoData, refetch:refetchUserInfo,isLoading} = useQuery(['user-info-data'], getUserInfo,)
 const dispatch = useAppDispatch()
     const {
         data: Asset,
@@ -103,7 +107,7 @@ const dispatch = useAppDispatch()
 
     //const {} =  useQuery(['checkUserPlan',User_Details.id],()=>checkUserPlan(User_Details.id))
 
-    const {data, refetch, isLoading} = useQuery(['user-data'], () => getUser(User_Details.id))
+
     const {
         data: tickers,
         refetch: fetchTickers,
@@ -133,17 +137,7 @@ const dispatch = useAppDispatch()
         }, [])
     );
 
-    const CyborgHome = () => {
-        if(userData.cyborg) {
-            navigation.navigate('CyborgBottomTab')
-        }else {
-            dispatch(addNotificationItem({
-                id: Math.random(),
-                type: 'error',
-                body: "You cannot access Delta Cyborg with your current plan. Please upgrade your plan to be able to access Delta Cyborg",
-            }))
-        }
-    }
+
     const StarfoxHome = () => {
 
     }
@@ -154,6 +148,27 @@ const dispatch = useAppDispatch()
 
     }
 
+    useEffect(() => {
+if(!isLoading && userInfoData) {
+
+
+    dispatch((updateUserInfo({...userInfoData?.data})))
+}
+
+    }, [userInfoData]);
+
+
+    const CyborgHome = () => {
+        if(userData?.cyborg) {
+            navigation.navigate('CyborgBottomTab')
+        }else {
+            dispatch(addNotificationItem({
+                id: Math.random(),
+                type: 'error',
+                body: "You cannot access Delta Cyborg with your current plan. Please upgrade your plan to be able to access Delta Cyborg",
+            }))
+        }
+    }
 
     const cards = [
         {
@@ -210,6 +225,9 @@ const dispatch = useAppDispatch()
         refetch: fetchStrategy,
         isLoading: loadingStrategy
     } = useQuery(['activeStrategy'], () => activeStrategy(User_Details.id))
+
+
+
 
     const {
         data: strategies,
@@ -359,7 +377,17 @@ const dispatch = useAppDispatch()
     }
 
     useRefreshOnFocus(fetchStrategies)
-    useRefreshOnFocus(refetch)
+    useRefreshOnFocus(fetchAsset)
+    useRefreshOnFocus(refetchUserInfo)
+
+
+    const refresh = () => {
+        setRefreshing(true)
+        fetchStrategies()
+        refetchUserInfo()
+        fetchAsset()
+        wait(2000).then(() => setRefreshing(false));
+    }
 
     const scrollViewRef = useRef(null);
 
@@ -382,14 +410,14 @@ const dispatch = useAppDispatch()
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            {
+        {/*    {
 
                 loading &&
                 <View style={styles.loading}>
                     <ActivityIndicator size='large' color={Colors.primary}/>
                 </View>
 
-            }
+            }*/}
 
             {/*    <LinearGradient style={styles.background}
                             colors={['#4E044B', '#141621',]}
@@ -435,7 +463,11 @@ const dispatch = useAppDispatch()
 
 
                 <ScrollView style={{width: '100%',}} contentContainerStyle={styles.scrollView} scrollEnabled
-                            showsVerticalScrollIndicator={false}>
+                            showsVerticalScrollIndicator={false}
+
+
+                            refreshControl={<RefreshControl tintColor={Colors.primary} refreshing={refreshing}
+                                                            onRefresh={refresh}/>}>
                     <View style={styles.introTextWrap}>
                         <Image source={require('../assets/images/logos/deltadigitallogo2.png')}
                                style={styles.deltadigitallogo2}/>
@@ -461,7 +493,7 @@ const dispatch = useAppDispatch()
 
 
                     {
-                        !isLoading && !loading &&
+
 
                         <Animated.ScrollView
                             ref={scrollViewRef}

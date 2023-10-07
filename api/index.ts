@@ -85,6 +85,7 @@ export const getUser = async (userId: string) => {
 
 }
 
+
 export const getRewardDetails = async (userId: string) => {
     let Token = await SecureStore.getItemAsync('delta-signal-token');
     const myHeaders = {

@@ -15,11 +15,15 @@ export const getSignals = async () => {
     }
     let timeoutId: NodeJS.Timeout
 
-    const requestOptions = {
+
+
+    var requestOptions = {
         method: 'GET',
-        headers: myHeaders
+        headers: myHeaders,
 
     };
+
+
 
     return Promise.race([
         fetch(`${BASE_ULR_NEW}/signals`, requestOptions)
@@ -33,6 +37,38 @@ export const getSignals = async () => {
         })
 
     ])
+
+}
+
+export const getSignalsTest = async () => {
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+    var myHeaders = new Headers();
+    myHeaders.append("Accept", "application/json");
+    myHeaders.append("Authorization", `Bearer ${Token}`);
+
+    var requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        redirect: 'follow'
+    };
+
+    return fetch(`${BASE_ULR_NEW}/signals`, requestOptions)
+        .then(response => response.json())
+
+
+
+   /* return Promise.race([
+        fetch(`${BASE_ULR_NEW}/signals`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])*/
 
 }
 export const viewSignal = async (id:string) => {
@@ -257,8 +293,30 @@ export const getAlMessage ={
 
     }
 }
+export const getUserInfo = async () => {
+
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+    const myHeaders = {
+        "Authorization": `Bearer ${Token}`,
+    }
+    let timeoutId: NodeJS.Timeout
+    //  "TOKEN", "2|KOg6Xv9IHSqMTPoZyyXKyTd7R99QAwKcthWTf5pl"
 
 
+    const requestOptions = {
+        method: 'GET',
+        headers: myHeaders
+
+    };
+
+
+      return   fetch(`${BASE_ULR_NEW}/profile`, requestOptions)
+            .then(response => response.json())
+
+
+
+
+}
 
 export const followEducator = async (body: {}) => {
 
