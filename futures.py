@@ -354,12 +354,6 @@ def bot():
                         )
                         order_id = order["id"]
                         time.sleep(3)
-                        auto_margin = exchange.futuresPrivate_post_position_margin_auto_deposit_status(
-                            {
-                                "symbol": market,
-                                "status": 1,
-                            }
-                        )
                         getorder = exchange.fetch_order(order_id, market)
                         qty = getorder["filled"]
                         order_price = getorder["price"]
@@ -380,6 +374,7 @@ def bot():
                     tgmessage = "First buy order succesfully filled. "
 
                     balance = GetBalance(exchange, platform)
+                    
 
                     Posttrade(
                         setid=setid,
@@ -441,12 +436,6 @@ def bot():
                         )
                         order_id = order["id"]
                         time.sleep(3)
-                        auto_margin = exchange.futuresPrivate_post_position_margin_auto_deposit_status(
-                            {
-                                "symbol": market,
-                                "status": 1,
-                            }
-                        )
                         getorder = exchange.fetch_order(order_id, market)
                         qty = getorder["filled"]
                         order_price = getorder["price"]
@@ -524,12 +513,6 @@ def bot():
                     qty = positions[0]["contracts"]
                     position_amount = positions[0]["initialMargin"]
                     quantity = qty
-                    auto_margin = exchange.futuresPrivate_post_position_margin_auto_deposit_status(
-                        {
-                            "symbol": market,
-                            "status": 1,
-                        }
-                    )
                     current_profit = positions[0]["unrealizedPnl"]
 
                 current_profit = float(current_profit)
@@ -551,6 +534,7 @@ def bot():
                         first_price=0,
                         position_amount=0,
                         balance=balance,
+                        current_profit=current_profit
                     )
                     return jsonify({"Status": "SUCCESS"})
 
@@ -567,10 +551,11 @@ def bot():
                         first_price=0,
                         position_amount=0,
                         balance=balance,
+                        current_profit=current_profit
                     )
                     
                     return jsonify({"Status": "SUCCESS"})
-
+                
                 # capture all data and save again
                 UpdateProfit(
                     setid=setid,
@@ -767,6 +752,7 @@ def bot():
                             first_price=first_price,
                             balance=balance,
                             tgmessage=details,
+                            current_profit=profit
                         )
 
                     if profit >= 0.00001:
@@ -1001,6 +987,7 @@ def bot():
                             first_price=first_price,
                             balance=balance,
                             tgmessage=details,
+                            current_profit=profit
                         )
 
                     if profit >= 0.00001:
@@ -1013,7 +1000,7 @@ def bot():
                             in_position=in_position,
                             profit=profit,
                             trade_price=trade_price,
-                            tgmessage="",
+                            tgmessage="Take profit filled",
                             first_buy=entry_call,
                             position_amount=qtyusdt,
                             balance=balance,
@@ -1030,13 +1017,13 @@ def bot():
                             in_position=in_position,
                             profit=profit,
                             trade_price=trade_price,
-                            tgmessage="",
+                            tgmessage="Take profit filled",
                             first_buy=entry_call,
                             position_amount=qtyusdt,
                             balance=balance,
                             percent=percent,
                         )
-
+                    
                     Posttrade(
                         setid=setid,
                         user_id=user_id,
@@ -1261,12 +1248,6 @@ def bot():
                         qty = getorder["filled"]
                         order_price = getorder["price"]
                         qtyusdt = getorder["cost"] / leverage
-                        auto_margin = exchange.futuresPrivate_post_position_margin_auto_deposit_status(
-                            {
-                                "symbol": market,
-                                "status": 1,
-                            }
-                        )
                         qty = float(qty)
 
                     profit = float(profit)
@@ -1389,6 +1370,7 @@ def bot():
                                 first_price=first_price,
                                 balance=balance,
                                 tgmessage=details,
+                                current_profit=current_profit
                             )
 
                             return jsonify({"Status": "SUCCESS"})
@@ -1433,12 +1415,12 @@ def bot():
                             order_price = getorder["price"]
                             qtyusdt = getorder["cost"]
                             qty = float(qty) + float(quantity)
-                            auto_margin = exchange.futuresPrivate_post_position_margin_auto_deposit_status(
-                                {
-                                    "symbol": market,
-                                    "status": 1,
-                                }
-                            )
+                            # auto_margin = exchange.futuresPrivate_post_position_margin_auto_deposit_status(
+                            #     {
+                            #         "symbol": market,
+                            #         "status": 1,
+                            #     }
+                            # )
                             position_amount = float(position_amount) + float(qtyusdt)
                             positions = exchange.fetch_positions([market])
                             avg_price = positions[0]["info"]["avgEntryPrice"]
@@ -1489,6 +1471,7 @@ def bot():
                             * float(m_ratio[entry_call])
                             / float(trade_price)
                         )
+                    
                         tradec = float(first_amount) * float(m_ratio[entry_call])
                         qty = round(qty, 5)
 
@@ -1512,6 +1495,7 @@ def bot():
                                 position_amount=position_amount,
                                 first_price=first_price,
                                 balance=balance,
+                                current_profit=current_profit,
                             )
                             return jsonify({"Status": "SUCCESS"})
 
@@ -1555,12 +1539,12 @@ def bot():
                             order_price = getorder["price"]
                             qtyusdt = getorder["cost"]
                             qty = float(qty) + float(quantity)
-                            auto_margin = exchange.futuresPrivate_post_position_margin_auto_deposit_status(
-                                {
-                                    "symbol": market,
-                                    "status": 1,
-                                }
-                            )
+                            # auto_margin = exchange.futuresPrivate_post_position_margin_auto_deposit_status(
+                            #     {
+                            #         "symbol": market,
+                            #         "status": 1,
+                            #     }
+                            # )
                             balance = exchange.fetch_balance()
                             balance = balance["free"]["USDT"]
                             position_amount = float(position_amount) + float(qtyusdt)
@@ -1577,18 +1561,21 @@ def bot():
                         tgmessage = (
                             f"No {entry_call} martingale short succesfully filled."
                         )
+                        
+                        balance = GetBalance(exchange, platform)
 
                         Posttrade(
                             setid=setid,
                             user_id=user_id,
                             platform=platform,
-                            qty=qty,
                             tgmessage=tgmessage,
                             in_position=in_position,
-                            trade_price=trade_price,
-                            first_buy=entry_call,
+                            current_profit=profit,
+                            qty=qty,
                             position_amount=position_amount,
+                            first_buy=entry_call,
                             first_price=first_price,
+                            trade_price=trade_price,
                             balance=balance,
                         )
 
@@ -1608,6 +1595,7 @@ def bot():
                     position_amount=position_amount,
                     first_price=first_price,
                     balance=balance,
+                    current_profit=current_profit
                 )
 
                 return jsonify({"Status": "SUCCESS"})
@@ -1781,8 +1769,7 @@ def bot():
             return jsonify({"Status": "Falied", "ERROR": details})
             # return jsonify({"Status": " EROR"})
 
-
 if __name__ == "__main__":
-    # app.run(host="0.0.0.0", port=5236, debug=True)
-    serve(app, port=5231)
+    app.run(host="0.0.0.0", port=5236, debug=True)
+    # serve(app, port=5231)
     bot()

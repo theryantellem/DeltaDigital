@@ -53,23 +53,22 @@ CORS(app)
 @app.route("/botapi", methods=["POST", "GET"])
 def bot():
     coin = "HBAR"
-    api_key="bcSY6cq2k7JAfLrK5MsnRgcrBjmKEIT7l1BitZZwCKJ8sCeekamCLwRi8Qic8dbK"
-    api_secret="aq9VU0o5bIEtplFPqexB3QHpWpTWatjuG6ITp9mCsOCbMJTblipaMApBSuifjNxo"
+    api_key=""
+    api_secret=""
+    api_passphrase=""
     
-    market = coin + "USDT"
-    exchange_name = "binance"
-    
+    market = coin + "USDTM"
+    exchange_name = "kucoinfutures"
     values = {
         "exchange_name": exchange_name,
         "api_key": Decrypt_(api_key),
         "secret_key": Decrypt_(api_secret),
-        "default_type": "future",
+        "password": api_passphrase,
         "market_name": exchange_name,
         }
-    
     exchange = Exchange_(values)
     
-    balance = GetBalance(exchange, 1)
+    balance = GetBalance(exchange, 2)
     
     return jsonify(balance)
     
