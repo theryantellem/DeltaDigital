@@ -1770,6 +1770,6 @@ def bot():
             # return jsonify({"Status": " EROR"})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5236, debug=True)
-    # serve(app, port=5231)
+    # app.run(host="0.0.0.0", port=5236, debug=True)
+    serve(app, port=5231)
     bot()
