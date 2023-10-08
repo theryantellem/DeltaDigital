@@ -68,4 +68,28 @@ class AcademyEnrolController extends ApiController
 
         return $this->sendResponse([], "Enrolment deleted successfully.", Response::HTTP_OK);
     }
+
+    public function watchTime(Request $request, AcademyModule $module)
+    {
+        $validator = Validator::make($request->all(), [
+            'watch_time' => ['required', 'numeric'], // Watch time should be in seconds
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError("Validations failed.", ['errors' => $validator->errors()], 400);
+        }
+
+        $user = $request->user();
+        $user = User::find($user->id ?? 1);
+
+        $enrolment = AcademyEnrolment::where('academy_module_id', $module->id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if ($enrolment) {
+            $enrolment->increment('watch_time', $request->watch_time);
+        }
+
+        return $this->sendResponse([], "Watch time updated successfully.", Response::HTTP_OK);
+    }
 }

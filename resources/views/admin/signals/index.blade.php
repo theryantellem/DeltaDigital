@@ -66,7 +66,7 @@
                                             <select class="default-select status-select"
                                                 @change="updateMarketStatus($event,signal.id)">
                                                 <option v-for="(status,index) in marketStatus" :value="index"
-                                                    :selected="index === signal?.market_status">
+                                                    :selected="index === signal?.status">
                                                     @{{ status }}</option>
                                             </select>
                                         </td>
@@ -84,7 +84,7 @@
                                         <td>
                                             <select class="default-select status-select" disabled>
                                                 <option v-for="(status,index) in marketStatus" :value="index"
-                                                    :selected="index === signal?.market_status">
+                                                    :selected="index === signal?.status">
                                                     @{{ status }}</option>
                                             </select>
                                         </td>

@@ -16,8 +16,10 @@
                             <div class="people-list dz-scroll">
                                 <div class="chat-p style-1" v-for="(follower, index) in followers" :key="index">
                                     <div class="d-flex">
-                                        <img :src="follower?.user?.profile_picture" class="avatar avatar-lg  rounded-circle"
-                                            alt="">
+                                    <img :src="follower?.user?.profile_picture || '{{ asset('assets/images/ultimate_avatar.webp') }}'"
+                              class="avatar avatar-lg rounded-circle"
+                              alt=""
+                            />
                                         <div class="ms-2">
                                             <h6 class="mb-0">@{{ follower?.user?.name }}</h6>
                                             {{-- <span>@{{ follower?.user?.email }}</span> --}}
@@ -125,7 +127,7 @@
                                 <div class="type-massage style-1">
                                     <div class="input-group">
                                         <textarea rows="1" v-model="message" @keyup.enter="sendMessage" class="form-control"
-                                            placeholder="Hello Hanuman..."></textarea>
+                                            placeholder="Enter Text Here ..."></textarea>
                                     </div>
                                 </div>
                                 <div class="right-content">

@@ -239,7 +239,7 @@ class SignalController extends Controller
             }
 
             // $imageUrl = $signal->photo;
-            $chartUrl = $signal->chat_photo;
+            $chartUrl = $signal->chart_photo;
 
             if ($request->hasFile('photo')) {
                 $chartUrl = uploadFile($request->file('photo'), "signals");
