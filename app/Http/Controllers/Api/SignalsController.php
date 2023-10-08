@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SignalResource;
-use App\Models\Admin;
 use App\Models\Signal;
 use App\Models\UserFollower;
 use Illuminate\Http\Request;
@@ -18,7 +17,7 @@ class SignalsController extends ApiController
             // get list of eductors user is following
             $educators = UserFollower::where('user_id', auth()->user()->id)->pluck('admin_id')->toArray();
 
-            $signals = Signal::whereIn('admin_id', $educators)->get();
+            $signals = Signal::whereIn('admin_id', $educators)->latest()->paginate(30);
 
             $signals = SignalResource::collection($signals);
 

@@ -131,7 +131,7 @@ class EducatorController extends ApiController
                 return $this->sendError("Educator not found.", [], 400);
             }
 
-            $signals = Signal::where('admin_id', $educator->id)->get();
+            $signals = Signal::where('admin_id', $educator->id)->latest()->paginate(30);
 
             $signals = SignalResource::collection($signals);
 
