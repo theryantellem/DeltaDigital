@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class AcademyModule extends Model
+class Academy extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -17,19 +17,18 @@ class AcademyModule extends Model
         return 'uuid';
     }
 
-    public function academy()
-    {
-        return $this->belongsTo(Academy::class);
-    }
-
     public function admin()
     {
         return $this->belongsTo(Admin::class);
     }
 
-    public function videos()
+    public function academyModules()
     {
-        return $this->hasMany(AcademyVideo::class);
+        return $this->hasMany(AcademyModule::class);
     }
 
+    public function ratings()
+    {
+        return $this->hasMany(AcademyRating::class);
+    }
 }

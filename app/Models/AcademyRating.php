@@ -24,6 +24,6 @@ class AcademyRating extends Model
 
     public function module()
     {
-        return $this->belongsTo(AcademyModule::class, 'academy_module_id');
+        return $this->belongsTo(AcademyModule::class, 'academy_id');
     }
 }

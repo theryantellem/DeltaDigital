@@ -20,11 +20,9 @@ class ModulesResource extends JsonResource
         return [
             'uuid' => $this->uuid,
             'name' => $this->name,
-            'thumbnail' => $this->thumbnail ? url($this->thumbnail) : null,
             'description' => $this->description,
-            'category_info' => new CategoryResource($this->category),
+            'academy_info' => new AcademyResource($this->academy),
             'total_videos' => count($this->videos),
-            'rating' => $this->ratings->avg('stars') ?? 0,
             'completed' => $this->completed($this->videos->sum('length'), $this->id),
         ];
     }

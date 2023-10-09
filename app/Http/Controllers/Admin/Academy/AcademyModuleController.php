@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Academy\CategorizedModule;
 use App\Http\Resources\Academy\ModulesResource;
 use App\Http\Resources\Academy\ModuleWithVideosResource;
+use App\Models\Academy;
 use App\Models\AcademyModule;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -26,7 +27,7 @@ class AcademyModuleController extends Controller
     public function categoryModule($category)
     {
         $admin_id = Auth::guard('admin')->user()->id;
-        $data = Category::where('uuid', $category)
+        $data = Academy::where('uuid', $category)
             ->with(['academyModules' => function ($query) use ($admin_id) {
                 $query->where('admin_id', $admin_id);
             }])->whereHas('academyModules', function ($query) use ($admin_id) {
@@ -42,21 +43,18 @@ class AcademyModuleController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:200'],
-            'category_uuid' => ['required', 'exists:categories,uuid'],
-            'thumbnail' => ['required', 'mimes:jpg,png', 'max:30'],
+            'academy_uuid' => ['required', 'exists:academies,uuid'],
             'description' => ['nullable', 'max:10000'],
         ]);
 
-        $category = Category::where('uuid', $request->category_uuid)->first();
-        $thumbnail = $request->file('thumbnail')->store('academy/module_thumbnails', 'public_uploads');
+        $academy = Academy::where('uuid', $request->academy_uuid)->first();
         $admin_id = Auth::guard('admin')->user()->id;
 
         AcademyModule::create([
             'uuid' => Str::orderedUuid(),
             'admin_id' =>  $admin_id,
             'name' => $request->name,
-            'thumbnail' => $thumbnail,
-            'category_id' => $category->id,
+            'academy_id' => $academy->id,
             'description' => $request->description,
         ]);
 

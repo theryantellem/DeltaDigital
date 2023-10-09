@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\Academy\AcademyController;
 use App\Http\Controllers\Admin\Academy\AcademyModuleController;
 use App\Http\Controllers\Admin\Academy\AcademyVideoController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -112,6 +113,14 @@ Route::middleware(['auth:admin'])->group(function () {
         Route::post('update/{id}', 'update')->name('update');
     }));
 
+    Route::controller(AcademyController::class)->prefix('academy')->name('academy.')->group((function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('store', 'store')->name('store');
+        Route::get('show/{academy}', 'show')->name('show');
+        Route::put('update/{academy}', 'update')->name('update');
+        Route::delete('delete/{academy}', 'delete')->name('delete');
+    }));
+    
     Route::controller(AcademyModuleController::class)->prefix('academy/modules')->name('academy.modules.')->group((function () {
         Route::get('/', 'index')->name('index');
         Route::get('/{category}', 'categoryModule')->name('categoryModule'); // This endpoint list all module under a category

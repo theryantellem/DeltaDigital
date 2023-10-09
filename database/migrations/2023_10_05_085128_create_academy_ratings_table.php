@@ -16,8 +16,9 @@ return new class extends Migration
             $table->string('uuid');
             $table->string('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');;
-            $table->foreignId('academy_module_id')->references('id')->on('academy_modules')->onDelete('cascade');
+            $table->foreignId('academy_id')->references('id')->on('academies')->onDelete('cascade');
             $table->integer('stars');
+            $table->string('comment');
             $table->softDeletes();
             $table->timestamps();
         });

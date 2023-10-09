@@ -11,9 +11,4 @@ class Category extends Model
     use HasFactory, GeneratesUuid;
 
     protected $guarded = [];
-
-    public function academyModules()
-    {
-        return $this->hasMany(AcademyModule::class);
-    }
 }

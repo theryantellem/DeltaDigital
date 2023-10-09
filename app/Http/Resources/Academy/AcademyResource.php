@@ -5,7 +5,7 @@ namespace App\Http\Resources\Academy;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CategorizedModule extends JsonResource
+class AcademyResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -19,7 +19,7 @@ class CategorizedModule extends JsonResource
             'name' => ucfirst($this->name),
             'thumbnail' => $this->thumbnail ? url($this->thumbnail) : null,
             'description' => $this->description,
-            'modules' => ModulesResource::collection($this->academyModules),
+            'completed' => '0%'
         ];
     }
 }

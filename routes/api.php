@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Academy\AcademyController;
 use App\Http\Controllers\Api\Academy\AcademyEnrolController;
 use App\Http\Controllers\Api\Academy\AcademyModuleController;
 use App\Http\Controllers\Api\Academy\AcademyVideoController;
@@ -87,8 +88,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('banners', [BannerController::class, 'banners']);
 
     Route::group(['prefix' => 'academy'], function () {
+        Route::get('/', [AcademyController::class, 'index']);
         Route::get('modules', [AcademyModuleController::class, 'index']);
-        Route::get('modules/{category}', [AcademyModuleController::class, 'categoryModule']); // This endpoint list all module under a category
+        Route::get('{academy}', [AcademyModuleController::class, 'categoryModule']); // This endpoint list all module under a category
         Route::get('modules/show/{module}', [AcademyModuleController::class, 'show']); // This endpoint list all video under a module
         Route::get('video/{video}', [AcademyVideoController::class, 'index']);
         Route::post('enrolments', [AcademyEnrolController::class, 'store']);
@@ -96,6 +98,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('enrolments/{enrolment}', [AcademyEnrolController::class, 'show']);
         Route::delete('enrolments/{enrolment}', [AcademyEnrolController::class, 'delete']);
         Route::post('rating', [AcademyModuleController::class, 'rating']);
+        Route::get('rating/{academy}', [AcademyModuleController::class, 'getRating']);
         Route::patch('watch-time/{module}', [AcademyEnrolController::class, 'watchTime']);
     });
     

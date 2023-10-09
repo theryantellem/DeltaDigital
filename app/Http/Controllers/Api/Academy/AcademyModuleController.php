@@ -11,6 +11,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Controllers\ApiController;
+use App\Http\Resources\Academy\AcademyRating as AcademyAcademyRating;
+use App\Http\Resources\Academy\AcademyResource;
+use App\Models\Academy;
 use App\Models\AcademyRating;
 use App\Models\User;
 use Illuminate\Support\Str;
@@ -25,9 +28,9 @@ class AcademyModuleController extends ApiController
         return $this->sendResponse($resource, "Academy modules fetched successfully.", Response::HTTP_OK);
     }
 
-    public function categoryModule($category)
+    public function categoryModule($academy)
     {
-        $data = Category::where('uuid', $category)->with('academyModules')->get();
+        $data = Academy::where('uuid', $academy)->with('academyModules')->get();
         $resource = CategorizedModule::collection($data);
 
         return $this->sendResponse($resource, "Academy modules fetched successfully.", Response::HTTP_OK);
@@ -43,8 +46,9 @@ class AcademyModuleController extends ApiController
     public function rating(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'module_uuid' => ['required', 'exists:academy_modules,uuid'],
+            'academy_uuid' => ['required', 'exists:academies,uuid'],
             'stars' => ['required', 'integer', 'in:1,2,3,4,5'],
+            'comment' => ['required', 'string', 'max:200'],
         ]);
 
         if ($validator->fails()) {
@@ -53,23 +57,36 @@ class AcademyModuleController extends ApiController
 
         $user = $request->user();
         $user = User::find($user->id ?? 1);
-        $module = AcademyModule::where('uuid', $request->module_uuid)->first();
+        $academy = Academy::where('uuid', $request->academy_uuid)->first();
 
-        $rating = AcademyRating::where('academy_module_id', $module->id)
+        $rating = AcademyRating::where('academy_id', $academy->id)
             ->where('user_id', $user->id)
             ->first();
 
         if ($rating) {
-            $rating->update(['stars' => $request->stars]);
+            $rating->update([
+                'stars' => $request->stars,
+                'comment' => $request->comment
+            ]);
         } else {
             AcademyRating::create([
                 'uuid' => Str::orderedUuid(),
                 'user_id' => $user->id,
-                'academy_module_id' => $module->id,
-                'stars' => $request->stars
+                'academy_id' => $academy->id,
+                'stars' => $request->stars,
+                'comment' => $request->comment
             ]);
         }
 
-        return $this->sendResponse([], "Module rated successfully.", Response::HTTP_OK);
+        return $this->sendResponse(new AcademyAcademyRating($rating), "Academy rated successfully.", Response::HTTP_OK);
+    }
+
+    public function getRating(Academy $academy)
+    {
+        $rating = AcademyRating::where('academy_id', $academy->id)->get();
+
+        $resource = AcademyAcademyRating::collection($rating);
+
+        return $this->sendResponse($resource, "Academy rated successfully.", Response::HTTP_OK);
     }
 }
