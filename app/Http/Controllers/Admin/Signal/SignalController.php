@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Notifications\SendPushNotification;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
 class SignalController extends Controller
@@ -24,6 +25,7 @@ class SignalController extends Controller
      */
     public function index()
     {
+        Log::info();
         return view('admin.signals.index');
     }
 
