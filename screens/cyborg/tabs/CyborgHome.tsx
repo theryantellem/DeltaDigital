@@ -70,7 +70,7 @@ const ChartData = [
 interface props {
     Exchanges: [],
     tickers: [],
-    seeLogs: (exchange: string, Market: string, id: string,trade_type:string) => void
+    seeLogs: (exchange: string, Market: string, id: string,trade_type:string,finalvalue:number,profit:number ) => void
     item: {
         [x: string]: any;
         id: string;
@@ -100,7 +100,7 @@ const HomeTradeCard = ({item, seeLogs, Exchanges, tickers}: props) => {
         <Animated.View key={item.id} layout={Layout.easing(Easing.bounce).delay(100)}
                        entering={FadeInDown.springify()}
                        exiting={FadeOutDown}>
-            <Pressable onPress={() => seeLogs(item.exchange, item.Market, item.id, item.trade_type)}
+            <Pressable onPress={() => seeLogs(item.exchange, item.Market, item.id, item.trade_type,finalvalue,item.profit)}
                        style={styles.AssetCard}>
 
                 <View style={styles.assetIcon}>
@@ -190,7 +190,7 @@ const HomeTradeCard = ({item, seeLogs, Exchanges, tickers}: props) => {
                         {finalvalue ? invertNumber(parseFloat(finalvalue)) : '0.00'}%
                     </Text>
                     <Text style={styles.coinNameText}>
-                        {item.Positionamount ? parseFloat(item.Positionamount).toFixed(2) : '0.00'}%
+                        {item.Positionamount ? parseFloat(item.Positionamount).toFixed(2) : '0.00'}
 
                     </Text>
                 </View>
@@ -250,7 +250,7 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
         })
     }
 
-    const seeLogs = (exchange: string, market: string, id: string, trade_type:string) => {
+    const seeLogs = (exchange: string, market: string, id: string, trade_type:string,finalvalue:number,profit:number) => {
 
         navigation.navigate('CyborgBottomTab',{
             screen:'LogScreen', params:{
@@ -258,6 +258,8 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
                 trade_type,
                 exchange,
                 market,
+                finalvalue,
+                profit,
                 screenFrom:'CyborgHome'
             }
         })

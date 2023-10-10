@@ -285,6 +285,12 @@ navigation.replace('SignalBottomTab')
     const [filterCategory, setFilterCategory] = useState(!loadingEducator && educatorDetails?.data?.categories[0].category.name);
    // console.log(educatorDetails?.data?.categories)
 
+    useEffect(()=>{
+        if(!loadingEducator){
+            setFilterCategory(educatorDetails?.data?.categories[0].category.name)
+        }
+
+    },[educatorDetails])
     const viewSignalImage = (details)=>{
         navigation.navigate('MainSignalNav', {
             screen: 'SignalImageDetails', params: {details}
@@ -570,6 +576,7 @@ navigation.replace('SignalBottomTab')
                                 decelerationRate={"fast"}
                                 showsHorizontalScrollIndicator={false}
                                 renderItem={renderItemSignal}
+
                             />
                         }
                     </ImageBackground>

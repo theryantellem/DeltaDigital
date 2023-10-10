@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {SetStateAction, useCallback, useState} from 'react';
 
 import {
     Text,
@@ -8,7 +8,7 @@ import {
     ScrollView,
     TouchableOpacity,
     Image,
-    ActivityIndicator, RefreshControl
+    ActivityIndicator, RefreshControl, Platform
 } from 'react-native';
 import {SafeAreaView} from "react-native-safe-area-context";
 import HeaderWithTitle from "../../components/cyborg/header/HeaderWithTitle";
@@ -16,7 +16,7 @@ import FastImage from "react-native-fast-image";
 import {Fonts} from "../../constants/Fonts";
 import {SimpleLineIcons} from "@expo/vector-icons";
 import Colors from "../../constants/Colors";
-import {fontPixel, heightPixel, widthPixel} from "../../helpers/normalize";
+import {fontPixel, heightPixel, pixelSizeVertical, widthPixel} from "../../helpers/normalize";
 import {IF} from "../../helpers/ConditionJsx";
 import {FlashList} from "@shopify/flash-list";
 import {wait} from "../../helpers";
@@ -30,6 +30,8 @@ import {useDispatch} from "react-redux";
 import {useAppDispatch} from "../../app/hooks";
 import ToastAnimated from "../../components/toast";
 import SearchInput from "../../components/inputs/SearchInput";
+import GradientSegmentControl from "../../components/segment-control/GradientSegmentControl";
+import SegmentedControl from "../../components/segment-control/SegmentContol";
 
 
 interface props {
@@ -151,6 +153,14 @@ const EducatorItem = ({item, selected, followEducator, unFollowEducator, followi
 
 const StreamersList = ({navigation}: SignalStackScreenProps<'StreamersList'>) => {
 
+
+    const [tabIndex, setTabIndex] = useState(0);
+    const handleTabsChange = (index: SetStateAction<number>) => {
+        setTabIndex(index);
+        //  setScreen(index === 0 ? 'Banks' : 'Wallets')
+    };
+
+
     const [searchValue, setSearchValue] = useState('');
     const queryClient = useQueryClient()
     const dispatch = useAppDispatch()
@@ -194,7 +204,7 @@ const StreamersList = ({navigation}: SignalStackScreenProps<'StreamersList'>) =>
 
         },
         onError: (error, variables, context) => {
-          //  console.log(error)
+            //  console.log(error)
         },
         onSettled: () => {
             queryClient.invalidateQueries(['followEducator']);
@@ -254,11 +264,27 @@ const StreamersList = ({navigation}: SignalStackScreenProps<'StreamersList'>) =>
     const renderItem = useCallback(
         ({item}) => <EducatorItem selected={selected} unFollowing={unFollowing} following={following} item={item}
                                   followEducator={followEducatorNow} unFollowEducator={unFollowEducatorNow}/>,
-        [following, unFollowing,selected],
+        [following, unFollowing, selected],
     );
 
 
     const keyExtractor = useCallback((item: { id: any; }) => item.id, [],);
+
+    const renderHeader = useCallback(
+        () =>
+            <SearchInput
+
+                placeholder="Search educator"
+                keyboardType={"default"}
+
+                onChangeText={(e) => {
+                    setSearchValue(e);
+
+                }}
+                value={searchValue}
+            />,
+        [tabIndex],
+    );
 
 
     const refresh = () => {
@@ -270,9 +296,8 @@ const StreamersList = ({navigation}: SignalStackScreenProps<'StreamersList'>) =>
 
     let filterUsers: readonly any[] | null | undefined = []
     if (!isLoading && data && data?.data) {
-        filterUsers = newArray?.filter((educators: {  first_name:string  }) =>
-                educators.first_name.includes(searchValue.trim())
-
+        filterUsers = newArray?.filter((educators: { first_name: string }) =>
+            educators.first_name.includes(searchValue.trim())
         )
     }
 
@@ -290,45 +315,99 @@ const StreamersList = ({navigation}: SignalStackScreenProps<'StreamersList'>) =>
                     }
 
                     {
+                        Platform.OS === 'ios' ?
+
+                            <GradientSegmentControl tabs={["Educators", "Following"]}
+                                                    currentIndex={tabIndex}
+                                                    onChange={handleTabsChange}
+                                                    segmentedControlBackgroundColor={'#7676801F'}
+                                                    activeSegmentBackgroundColor={"#fff"}
+
+                                                    textColor={"#fff"}
+                                                    paddingVertical={pixelSizeVertical(12)}/>
+                            :
+
+                            <SegmentedControl tabs={["Educators", "Following"]}
+                                              currentIndex={tabIndex}
+                                              onChange={handleTabsChange}
+                                              segmentedControlBackgroundColor={Colors.tintPrimary}
+                                              activeSegmentBackgroundColor={Colors.primary}
+                                              activeTextColor={Colors.text}
+                                              textColor={"#CDD4D7"}
+                                              paddingVertical={pixelSizeVertical(16)}/>
+                    }
+
+                    <SearchInput
+
+                        placeholder="Search educator"
+                        keyboardType={"default"}
+
+                        onChangeText={(e) => {
+                            setSearchValue(e);
+
+                        }}
+                        value={searchValue}
+                    />
+
+                    {
                         !isLoading && data &&
-                        
-                        <>
 
-                            <SearchInput
+                        <IF condition={tabIndex === 0}>
 
-                                placeholder="Search educator"
-                                keyboardType={"default"}
 
-                                onChangeText={(e) => {
-                                    setSearchValue(e);
+                            <FlashList
+                                estimatedItemSize={200}
+                                refreshing={isLoading}
+                                //ListHeaderComponent={renderHeader}
 
-                                }}
-                                value={searchValue}
+                                scrollEnabled
+                                showsVerticalScrollIndicator={false}
+                                data={filterUsers}
+                                renderItem={renderItem}
+                                keyExtractor={keyExtractor}
+                                onEndReachedThreshold={0.3}
+                                refreshControl={
+                                    <RefreshControl
+                                        tintColor={Colors.text}
+                                        refreshing={refreshing}
+                                        onRefresh={refresh}
+                                    />
+                                }
+
+
                             />
-                        
-                    
-                        <FlashList
-                            estimatedItemSize={200}
-                            refreshing={isLoading}
+                        </IF>
+                    }
 
 
-                            scrollEnabled
-                            showsVerticalScrollIndicator={false}
-                            data={filterUsers}
-                            renderItem={renderItem}
-                            keyExtractor={keyExtractor}
-                            onEndReachedThreshold={0.3}
-                            refreshControl={
-                                <RefreshControl
-                                    tintColor={Colors.text}
-                                    refreshing={refreshing}
-                                    onRefresh={refresh}
-                                />
-                            }
+                    {
+                        !isLoading && data &&
+
+                        <IF condition={tabIndex === 1}>
 
 
-                        />
-                        </>
+                            <FlashList
+                                estimatedItemSize={200}
+                                refreshing={isLoading}
+
+                                // ListHeaderComponent={renderHeader}
+                                scrollEnabled
+                                showsVerticalScrollIndicator={false}
+                                data={filterUsers?.filter(users => users.following == true)}
+                                renderItem={renderItem}
+                                keyExtractor={keyExtractor}
+                                onEndReachedThreshold={0.3}
+                                refreshControl={
+                                    <RefreshControl
+                                        tintColor={Colors.text}
+                                        refreshing={refreshing}
+                                        onRefresh={refresh}
+                                    />
+                                }
+
+
+                            />
+                        </IF>
                     }
 
                 </View>

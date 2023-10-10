@@ -323,7 +323,7 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
                                             logo={require('../../../assets/images/logos/cyborlogo.png')}
                                             logoSize={35}
                                             size={120}
-                                            value={User_Details['referral left link']}
+                                            value={User_Details['referral right link']}
                                             color={Colors.text}
 
                                             backgroundColor={Colors.secondary}

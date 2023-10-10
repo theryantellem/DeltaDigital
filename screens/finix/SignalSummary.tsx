@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 
 import {
     Text,
@@ -13,20 +13,20 @@ import {
 import HeaderWithTitle from "../../components/cyborg/header/HeaderWithTitle";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {SignalRootTabScreenProps, SignalStackScreenProps} from "../../types";
-import {Feather, Ionicons} from "@expo/vector-icons";
-import {fontPixel, heightPixel, pixelSizeHorizontal} from "../../helpers/normalize";
+import {Entypo, Feather, Ionicons} from "@expo/vector-icons";
+import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../helpers/normalize";
 import Colors from "../../constants/Colors";
 import {Fonts} from "../../constants/Fonts";
-import {useQuery} from "@tanstack/react-query";
+import {useInfiniteQuery, useQuery} from "@tanstack/react-query";
 import {getSignals, getSignalsTest} from "../../api/finix-api";
-import {wait} from "../../helpers";
+import {useRefreshOnFocus, wait} from "../../helpers";
 import {useAppSelector} from "../../app/hooks";
 
 
 interface Props {
 
     viewSignal: (signal: {}) => void
-    viewSignalImage:(item:{})=>void
+    viewSignalImage: (item: {}) => void
     item: {
         "id": string,
         "educator": {
@@ -61,15 +61,15 @@ interface Props {
 }
 
 
-const ItemSignal = ({item, viewSignal,viewSignalImage}: Props) => {
+const ItemSignal = ({item, viewSignal, viewSignalImage}: Props) => {
 
 
     const viewItemSignal = (signal) => {
-        if(item.category.type == 'news' ) {
+        if (item.category.type == 'news') {
             viewSignalImage(signal)
 
-        }else{
-           viewSignal(signal)
+        } else {
+            viewSignal(signal)
         }
     }
 
@@ -117,8 +117,8 @@ const ItemSignal = ({item, viewSignal,viewSignalImage}: Props) => {
                 <>
 
                     <View style={styles.signalCardValueWrap}>
-                        <Text style={[styles.signalCardValue,{
-                            textTransform:'capitalize'
+                        <Text style={[styles.signalCardValue, {
+                            textTransform: 'capitalize'
                         }]}>
                             {item.category.type}
                         </Text>
@@ -130,12 +130,12 @@ const ItemSignal = ({item, viewSignal,viewSignalImage}: Props) => {
                     </View>
 
                     <View style={styles.signalCardValueWrap}>
-                     {/*   <Text style={styles.signalCardValue}>
+                        {/*   <Text style={styles.signalCardValue}>
                             {item.status}
                         </Text>*/}
                     </View>
                     <View style={styles.signalCardValueWrap}>
-                      {/*  <Text style={styles.signalCardValue}>
+                        {/*  <Text style={styles.signalCardValue}>
                             {item.percentage}
                         </Text>*/}
                     </View>
@@ -162,8 +162,10 @@ const ItemSignal = ({item, viewSignal,viewSignalImage}: Props) => {
 const SignalSummary = ({navigation}: SignalStackScreenProps<'SignalSummary'>) => {
 
     const user = useAppSelector(state => state.user)
-    const {User_Details,userData} = user
-    const {data, isLoading, refetch} = useQuery(['get-user-Signals',userData.id], getSignalsTest)
+    const {User_Details, userData} = user
+    const [page, setPage] = useState(1);
+    const {data, isLoading, refetch, isRefetching} = useInfiniteQuery(['get-all-user-Signals'],
+        ({pageParam = 1}) => getSignalsTest.signals({page: page}), {})
 
     const [refreshing, setRefreshing] = useState(false);
     const keyExtractor = useCallback((item: { id: any; }) => item.id, [],)
@@ -203,7 +205,7 @@ const SignalSummary = ({navigation}: SignalStackScreenProps<'SignalSummary'>) =>
     }
 
 
-    const viewSignalImage = (details)=>{
+    const viewSignalImage = (details) => {
         navigation.navigate('MainSignalNav', {
             screen: 'SignalImageDetails', params: {details}
 
@@ -224,6 +226,24 @@ const SignalSummary = ({navigation}: SignalStackScreenProps<'SignalSummary'>) =>
         refetch()
         wait(2000).then(() => setRefreshing(false));
     }
+
+    useRefreshOnFocus(refetch)
+
+    const nextPage = () => {
+
+        setPage(page + 1)
+
+    }
+
+    const prevPage = () => {
+
+        setPage(page - 1)
+
+    }
+    useEffect(() => {
+        refresh()
+    }, [page]);
+
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -290,14 +310,32 @@ const SignalSummary = ({navigation}: SignalStackScreenProps<'SignalSummary'>) =>
                         </View>
                     </View>
 
+                    {!isLoading && data && data?.pages[0]?.data?.length < 1 &&
+                        <View style={styles.messageWrap}>
 
+
+                            <View style={styles.imageWrap}>
+
+                                <Image source={require('../../assets/images/EmptyBox/empty_state.png')}
+                                       style={styles.fileBroken}/>
+
+
+                            </View>
+
+
+                            <Text style={styles.message}>
+                                Signal list is empty
+
+                            </Text>
+                        </View>
+                    }
                     {
                         isLoading && <ActivityIndicator color={Colors.primary} size='small'/>
                     }
                     {
-                        !isLoading && data && data?.data?.length > 0 &&
+                        !isLoading && data && data?.pages[0]?.data?.length > 0 &&
                         <FlatList
-                            data={data?.data}
+                            data={data?.pages[0].data}
                             keyExtractor={keyExtractor}
                             pagingEnabled
                             scrollEnabled
@@ -317,6 +355,25 @@ const SignalSummary = ({navigation}: SignalStackScreenProps<'SignalSummary'>) =>
                     }
 
 
+                    <View style={styles.paginationContainer}>
+                        <TouchableOpacity onPress={prevPage} disabled={page == 1} activeOpacity={0.7}
+                                          style={[styles.pagingButton,
+                                              page == 1 && {
+                                                  backgroundColor: Colors.borderColor
+                                              }]}>
+                            <Entypo name="chevron-left" size={24} color="black"/>
+                        </TouchableOpacity>
+
+
+                        <TouchableOpacity disabled={data?.pages[0]?.data.length < 1} onPress={nextPage}
+                                          activeOpacity={0.7} style={[styles.pagingButton,
+                            data?.pages[0]?.data.length < 1 && {
+                                backgroundColor: Colors.borderColor
+                            }]}>
+                            <Entypo name="chevron-right" size={24} color="black"/>
+                        </TouchableOpacity>
+
+                    </View>
                 </ImageBackground>
 
 
@@ -445,6 +502,51 @@ const styles = StyleSheet.create({
         fontSize: fontPixel(12),
 
         fontFamily: Fonts.faktumRegular
+    },
+    paginationContainer: {
+        position: 'absolute',
+        bottom: 1,
+        width: '100%',
+        height: heightPixel(50),
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row'
+    },
+    pagingButton: {
+        width: widthPixel(55),
+        height: 35,
+        borderRadius: 5,
+        backgroundColor: "#fff",
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginHorizontal: pixelSizeHorizontal(10),
+    },
+    messageWrap: {
+        height: heightPixel(300),
+        marginTop: 15,
+        width: '100%',
+        justifyContent: 'center',
+        flexDirection: 'column',
+        alignItems: 'center'
+    },
+    message: {
+        textAlign: 'center',
+        marginLeft: 8,
+        lineHeight: heightPixel(25),
+        color: "#fff",
+        fontSize: fontPixel(16),
+        fontFamily: Fonts.faktumBold
+    },
+    imageWrap: {
+        maxHeight: heightPixel(140),
+        width: heightPixel(100),
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    fileBroken: {
+        height: "80%",
+        width: "100%",
+        resizeMode: 'contain'
     },
 
 

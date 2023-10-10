@@ -558,7 +558,10 @@ export const getNewstrategy = async ({body, userId}: { userId: string, body: any
         body
     };
 
-    return Promise.race([
+    return fetch(`${LIVE_PROD_URL}/newstrategyget?userId=${userId}`, requestOptions)
+        .then(response => response.json())
+
+    /*return Promise.race([
         fetch(`${LIVE_PROD_URL}/newstrategyget?userId=${userId}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
@@ -569,7 +572,7 @@ export const getNewstrategy = async ({body, userId}: { userId: string, body: any
             clearTimeout(timeoutId)
         })
 
-    ])
+    ])*/
 
 }
 

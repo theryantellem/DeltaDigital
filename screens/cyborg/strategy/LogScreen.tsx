@@ -56,7 +56,7 @@ const LogScreen = ({navigation, route}: CyborgStackScreenProps<'LogScreen'>) => 
     const dispatch = useAppDispatch()
 
     const [refreshing, setRefreshing] = useState(false);
-    const {exchange, market, id, trade_type, screenFrom} = route.params
+    const {exchange, market, id, trade_type, screenFrom,finalvalue,profit} = route.params
     const user = useAppSelector(state => state.user)
     const {User_Details} = user
 
@@ -111,7 +111,7 @@ const LogScreen = ({navigation, route}: CyborgStackScreenProps<'LogScreen'>) => 
         data: newStrategy,
         refetch: fetchNewStrategy,
         isLoading
-    } = useQuery([`get-new-strategy-${id}`, User_Details.id],
+    } = useQuery([`get-new-strategy`, User_Details.id],
         () => getNewstrategy({body: formdata, userId: User_Details.id}))
 
     const [switchToggle, setSwitchToggle] = useState(1);
@@ -130,7 +130,7 @@ const LogScreen = ({navigation, route}: CyborgStackScreenProps<'LogScreen'>) => 
     let val = newStrategy?.data['Operation Strategy'][0]['Positionamount']  > 0  ?  (Number(newStrategy?.data['Operation Strategy'][0]['Positionamount']) - (p2)) / Number(newStrategy?.data['Operation Strategy'][0]['Positionamount']) : 0;
 
 
-    let finalvalue = val * 100;
+  //  let finalvalue = val * 100;
 
 //console.log({id:User_Details.id})
     /*   if(finalvalue >= 0){
@@ -236,6 +236,7 @@ const LogScreen = ({navigation, route}: CyborgStackScreenProps<'LogScreen'>) => 
         })
 
     useRefreshOnFocus(fetchNewStrategy)
+    useRefreshOnFocus(fetchTickers)
 
     const stopBot = () => {
 
@@ -278,6 +279,7 @@ const LogScreen = ({navigation, route}: CyborgStackScreenProps<'LogScreen'>) => 
     const refresh = () => {
         setRefreshing(true)
         fetchNewStrategy()
+        fetchTickers()
         wait(2000).then(() => setRefreshing(false));
     }
 
@@ -607,8 +609,10 @@ const LogScreen = ({navigation, route}: CyborgStackScreenProps<'LogScreen'>) => 
                                                 <Text style={[styles.logBalance, {
                                                     color: newStrategy?.data['Operation Strategy'][0].profit ? newStrategy?.data['Operation Strategy'][0].profit < 0 ? Colors.errorRed : Colors.successChart : Colors.successChart
                                                 }]}>
+                                                    {profit ? parseFloat(profit).toFixed(2) : '0.00'}
+                                                    {/*{
+                                                        newStrategy?.data['Operation Strategy'][0].profit ? parseFloat(newStrategy?.data['Operation Strategy'][0].profit).toFixed(2) : '0.00'}%*/}
 
-                                                    {newStrategy?.data['Operation Strategy'][0].profit ? parseFloat(newStrategy?.data['Operation Strategy'][0].profit).toFixed(2) : '0.00'}%
                                                 </Text>
 
 

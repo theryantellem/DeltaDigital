@@ -64,18 +64,7 @@ const RewardItem = ({item}: RewardItem) => {
                 <Text style={styles.transactionTitle}>
                     {item.market}
                 </Text>
-                <View style={styles.tagWrap}>
 
-                    {
-                        item.market_type == '1' ?<Text style={styles.tagText}>
-                                Futures
-                            </Text>
-                            :
-                            <Text style={styles.tagText}>
-                                Spot
-                            </Text>
-                    }
-                </View>
                 </View>
 
                 <Text style={styles.transactionDate}>
@@ -106,26 +95,36 @@ const RewardItemIncome = ({item}: RewardItem) => {
         <Animated.View id={item.Market} layout={Layout.easing(Easing.bounce).delay(10)}
               entering={FadeInDown.springify()} exiting={FadeOutDown}  style={[styles.transactionCard,{
             marginVertical: pixelSizeVertical(5),
-            height: heightPixel(50),
+
         }]}>
 
 
 
-
             <View style={styles.bodyLeft}>
-                <Text style={styles.transactionTitle}>
-                    {item.Market}
-                </Text>
 
+                <View style={styles.leftWrap}>
+                    <Text style={styles.transactionTitle}>
+                        {item.market}
+
+                    </Text>
+
+                </View>
+                <Text style={styles.transactionDate}>
+
+                    { item.Date ? dayjs.unix(item.Date).format('ddd, DD MMM YYYY hh:m A' ) : 'N/A'}
+                </Text>
             </View>
 
             <View style={styles.bodyRight}>
                 <Text style={[styles.transactionTitle,{
                     color: Colors.success
                 }]}>
-                    +{currencyFormatter('en-US','USD').format(item.profit)}
+                    +{item.profit ? currencyFormatter('en-US','USD').format(item.profit) : '$0.00'}
                 </Text>
+                <Text style={styles.transactionDate}>
 
+                    {item.price}
+                </Text>
             </View>
 
         </Animated.View>
@@ -174,7 +173,7 @@ const AllRevenue = () => {
 
 
     const keyExtractor = useCallback((item) => item.id, [],);
-    const keyExtractorIncome = useCallback((item: {  profit: string },index) => item.profit + index, [],);
+    const keyExtractorIncome = useCallback((item: {  id: string }) => item.id , [],);
 
 
 
@@ -204,7 +203,7 @@ const AllRevenue = () => {
                    {
                        Platform.OS === 'ios' ?
 
-                           <IOSSegmentContol tabs={["History Record", "Income Distribution"]}
+                           <IOSSegmentContol tabs={["History Record", "Futures History"]}
                                              currentIndex={tabIndex}
                                              onChange={handleTabsChange}
                                              segmentedControlBackgroundColor={'#7676801F'}
@@ -214,7 +213,7 @@ const AllRevenue = () => {
                                              paddingVertical={pixelSizeVertical(12)}/>
                            :
 
-                           <SegmentedControl tabs={["History Record", "Income Distribution"]}
+                           <SegmentedControl tabs={["History Record", "Futures History"]}
                                              currentIndex={tabIndex}
                                              onChange={handleTabsChange}
                                              segmentedControlBackgroundColor={Colors.tintPrimary}
@@ -266,6 +265,42 @@ const AllRevenue = () => {
 
                     {
                         !isLoading && data &&
+                        data?.data['futures_history'] !== null &&
+                        <FlashList
+                            estimatedItemSize={200}
+
+                            refreshing={isLoading}
+                            onRefresh={refetch}
+                            scrollEnabled
+                            showsVerticalScrollIndicator={false}
+                            data={data?.data['futures_history']}
+                            renderItem={renderItemIncome}
+                            keyExtractor={keyExtractorIncome}
+                            estimatedListSize={{height: 70, width: 320}}
+                            refreshControl={
+                                <RefreshControl
+                                    tintColor={Colors.text}
+                                    refreshing={refreshing}
+                                    onRefresh={refresh}
+                                />
+                            }
+
+
+                        />
+                    }
+
+
+                </View>
+
+                </IF>
+
+
+
+                {/* <IF condition={tabIndex == 1}>
+                <View style={styles.content}>
+
+                    {
+                        !isLoading && data &&
                         data?.data['Income distribution'] !== null &&
                         <FlashList
                             estimatedItemSize={200}
@@ -293,7 +328,7 @@ const AllRevenue = () => {
 
                 </View>
 
-                </IF>
+                </IF>*/}
 
             </LinearGradient>
         </SafeAreaView>

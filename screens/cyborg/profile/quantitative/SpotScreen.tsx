@@ -67,7 +67,7 @@ interface itemProps {
 
 interface props {
     tickers: [],
-    continueAsset: (exchange: string, id: string, market: string,trade_type:string) => void,
+    continueAsset: (exchange: string, id: string, market: string,trade_type:string,finalvalue:number) => void,
     item: {
         id: string,
         exchange: string,
@@ -114,7 +114,7 @@ const QuantitativeItem = ({item, tickers, continueAsset}: props) => {
     let val =  item['Positionamount'] > 0 ?(Number(item['Positionamount']) - (p2)) / Number(item['Positionamount']) : 0;
     let finalvalue = val * 100;
     return (
-        <Pressable onPress={() => continueAsset(item.exchange, item.id, item.Market,item.trade_type)} style={styles.quantitativeCard}>
+        <Pressable onPress={() => continueAsset(item.exchange, item.id, item.Market,item.trade_type,finalvalue)} style={styles.quantitativeCard}>
 
             <View style={styles.leftInfo}>
 
@@ -259,12 +259,13 @@ const SpotScreenQuantitative = ({}) => {
         <SelectValue selected={tabExchange} item={item} action={switchItem}/>
     ), [tabExchange]);
 
-    const seeLogs = (exchange: string, id: string, market: string,trade_type:string) => {
+    const seeLogs = (exchange: string, id: string, market: string,trade_type:string,finalvalue:number) => {
         navigate.navigate('LogScreen', {
             id,
             trade_type,
             market,
             exchange,
+            finalvalue,
             screenFrom:'Auto'
         })
     }

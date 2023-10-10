@@ -59,7 +59,7 @@ const RevenueScreen = ({navigation}:CyborgStackScreenProps<'RevenueScreen'>) => 
 
 //console.log(data)
 
-    useRefreshOnFocus(refetch)
+
 
 
 //console.log(data?.data['History Records'])
@@ -85,7 +85,9 @@ const seeAll = () => {
     }
 
 
+    useRefreshOnFocus(refetch)
 
+//console.log(data?.data['futures_history'].slice(0,1))
     return (
         <SafeAreaView style={styles.safeArea}>
             <LinearGradient style={styles.background}
@@ -204,7 +206,7 @@ const seeAll = () => {
                    {
                        Platform.OS === 'ios' ?
 
-                           <IOSSegmentContol tabs={["History Record", "Income Distribution"]}
+                           <IOSSegmentContol tabs={["History Record", "Futures Record"]}
                                              currentIndex={tabIndex}
                                              onChange={handleTabsChange}
                                              segmentedControlBackgroundColor={'#7676801F'}
@@ -214,7 +216,7 @@ const seeAll = () => {
                                              paddingVertical={pixelSizeVertical(12)}/>
                            :
 
-                           <SegmentedControl tabs={["History Record", "Income Distribution"]}
+                           <SegmentedControl tabs={["History Record", "Futures Record"]}
                                              currentIndex={tabIndex}
                                              onChange={handleTabsChange}
                                              segmentedControlBackgroundColor={Colors.tintPrimary}
@@ -248,18 +250,7 @@ const seeAll = () => {
                                         {item.market}
 
                                     </Text>
-                                    <View style={styles.tagWrap}>
 
-                                        {
-                                            item.market_type == '1' ?<Text style={styles.tagText}>
-                                            Futures
-                                        </Text>
-                                                :
-                                                <Text style={styles.tagText}>
-                                                    Spot
-                                                </Text>
-                                        }
-                                    </View>
                                     </View>
                                     <Text style={styles.transactionDate}>
 
@@ -286,7 +277,7 @@ const seeAll = () => {
 
                     </IF>
 
-                    <IF condition={tabIndex == 1}>
+              {/*      <IF condition={tabIndex == 1}>
 
 
                     {  data?.data['Income distribution'] !== null &&
@@ -314,6 +305,52 @@ const seeAll = () => {
                                         +{currencyFormatter('en-US','USD').format(item.profit)}
                                     </Text>
 
+                                </View>
+
+                            </Animated.View>
+                        ))
+                    }
+
+                    </IF>*/}
+                    <IF condition={tabIndex == 1}>
+
+
+                    {  data?.data['futures_history'] !== null &&
+                        data?.data['futures_history']?.slice(0,30).map((item,index)=>(
+                            <Animated.View layout={Layout.easing(Easing.bounce).delay(10)}
+                                  entering={FadeInDown.springify()} exiting={FadeOutDown} key={item.id} style={[styles.transactionCard,{
+                                marginVertical: pixelSizeVertical(5),
+
+                            }]}>
+
+
+
+
+                                <View style={styles.bodyLeft}>
+
+                                    <View style={styles.leftWrap}>
+                                        <Text style={styles.transactionTitle}>
+                                            {item.market}
+
+                                        </Text>
+
+                                    </View>
+                                    <Text style={styles.transactionDate}>
+
+                                        { item.Date ? dayjs.unix(item.Date).format('ddd, DD MMM YYYY hh:m A' ) : 'N/A'}
+                                    </Text>
+                                </View>
+
+                                <View style={styles.bodyRight}>
+                                    <Text style={[styles.transactionTitle,{
+                                        color: Colors.success
+                                    }]}>
+                                        +{item.profit ? currencyFormatter('en-US','USD').format(item.profit) : '$0.00'}
+                                    </Text>
+                                    <Text style={styles.transactionDate}>
+
+                                        {item.price}
+                                    </Text>
                                 </View>
 
                             </Animated.View>

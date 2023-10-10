@@ -29,7 +29,7 @@ import {
     BottomSheetModalProvider,
     BottomSheetScrollView
 } from "@gorhom/bottom-sheet";
-import QRCode from "react-native-qrcode-svg";
+import Autolink from 'react-native-autolink';
 import {
     BottomSheetDefaultBackdropProps
 } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
@@ -327,7 +327,30 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
                                 </View>
                                 <View style={styles.note}>
                                     <Text style={styles.noteText}>
-                                        <Text style={{fontFamily: Fonts.faktumBold}}>Note -</Text> {details.comment}
+                                        <Text style={{fontFamily: Fonts.faktumBold}}>Note -</Text>
+                                        <Autolink
+
+                                            linkStyle={{
+                                                fontFamily:Fonts.faktumMedium,
+                                                color:'blue',
+                                                textDecorationLine:'underline'
+                                            }}
+                                            // Required: the text to parse for links
+                                            text={details.comment}
+                                            // Optional: enable email linking
+                                            email
+                                            // Optional: enable hashtag linking to instagram
+                                            hashtag="instagram"
+                                            // Optional: enable @username linking to twitter
+                                            mention="twitter"
+                                            // Optional: enable phone linking
+                                            phone="sms"
+                                            // Optional: enable URL linking
+                                            url
+                                            // Optional: custom linking matchers
+                                            //   matchers={[MyCustomTextMatcher]}
+                                        />
+
                                     </Text>
                                 </View>
                             </View>

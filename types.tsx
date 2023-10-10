@@ -154,7 +154,9 @@ export type CyborgStackParamList = {
         trade_type: string,
         market: string,
         exchange: string,
-        screenFrom: string
+        screenFrom: string,
+        finalvalue?: number,
+        profit?: number,
     };
     SuccessScreen: {
         title: string,
@@ -288,6 +290,8 @@ export type SignalStackParamList = {
         }
     };
     SignalSummary: undefined;
+    LiveStream: undefined;
+    ViewAcademy: undefined;
     //END CYBORG
 
 
