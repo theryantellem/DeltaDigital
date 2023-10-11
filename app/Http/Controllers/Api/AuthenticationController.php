@@ -34,10 +34,7 @@ class AuthenticationController extends ApiController
 
             $data = $response['data'];
 
-
             // dd($data);
-
-
             if (empty($data)) {
                 return $this->sendError("Service Unavailable", [], Response::HTTP_SERVICE_UNAVAILABLE);
             }
@@ -67,6 +64,15 @@ class AuthenticationController extends ApiController
             $level3 = !empty($data['sponsor_levels']['level_3']) ? $data['sponsor_levels']['level_3'] : null;
 
             $user = User::where('id', $data['uid'])->where('username', $request->username)->first();
+
+            if (!$data['iseligible']) {
+                if ($user) {
+                    $user->update([
+                        'iseligible' => 0
+                    ]);
+                }
+                return $this->sendError("Your account is not eligible, update your subscription.", [], Response::HTTP_UNAUTHORIZED);
+            }
 
             if (!$user) {
                 $user = User::create([
@@ -114,8 +120,6 @@ class AuthenticationController extends ApiController
             if (in_array($user->plan, cyborgPlans())) {
                 dispatch(new \App\Jobs\SetupCyborgUserJob($user));
             }
-
-
 
             return $this->sendResponse($responseData, "Successful login.", Response::HTTP_OK);
         } catch (\Throwable $e) {

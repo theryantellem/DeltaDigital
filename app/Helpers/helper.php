@@ -92,7 +92,7 @@ if (!function_exists('cyborgPlans')) { /* Check_for "plans allowed for cyborg" *
 if (!function_exists('signalPlans')) { /* Check_for "plans allowed for signal" */
     function signalPlans()
     {
-        return  ["Delta Digital Plus", "Delta Digital Plus Renewal", "Delta Digital Plus Upgrade", "Delta Digital Pro Renewal", "Delta Digital Pro Upgrade", "Delta Digital Pro","Delta Digital Standard Renewal"];
+        return  ["Delta Digital Plus", "Delta Digital Plus Renewal", "Delta Digital Plus Upgrade", "Delta Digital Pro Renewal", "Delta Digital Pro Upgrade", "Delta Digital Pro", "Delta Digital Standard Renewal"];
     }
 }
 
@@ -104,7 +104,7 @@ if (!function_exists('sendToLog')) { /* send to log" */
 }
 
 
-if (!function_exists('followers')) { /* send to log" */
+if (!function_exists('followers')) {
     function followers($educator)
     {
         $followers = \App\Models\UserFollower::where('admin_id', $educator)->get();
@@ -113,14 +113,12 @@ if (!function_exists('followers')) { /* send to log" */
     }
 }
 
-
-if (!function_exists('followersPushTokens')) { /* send to log" */
+if (!function_exists('followersPushTokens')) {
     function followersPushTokens($educator)
     {
         $followers = \App\Models\UserFollower::with('user')->where('admin_id', $educator)
             ->whereHas('user', function ($query) {
-                $query->whereNotNull('fcm_token')
-                    ->select('fcm_token');
+                $query->whereNotNull('fcm_token')->where('iseligible', 1)->select('fcm_token');
             })
             ->get();
 
