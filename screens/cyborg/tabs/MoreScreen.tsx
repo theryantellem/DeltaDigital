@@ -33,7 +33,7 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
 
 
     const user = useAppSelector(state => state.user)
-    const {User_Details} = user
+    const {User_Details,userData} = user
 
 
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -75,7 +75,7 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
 
 
     const copyLeftLink = async () => {
-        await Clipboard.setStringAsync(`${User_Details['referral left link']}`);
+        await Clipboard.setStringAsync(`${userData.referallinks.left_link}`);
         dispatch(addNotificationItem({
             id: Math.random(),
             type: 'info',
@@ -85,7 +85,7 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
     };
 
     const copyRightLink = async () => {
-        await Clipboard.setStringAsync(`${User_Details['referral right link']}`);
+        await Clipboard.setStringAsync(`${userData.referallinks.right_link}`);
         dispatch(addNotificationItem({
             id: Math.random(),
             type: 'info',
@@ -285,7 +285,7 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
                                             logo={require('../../../assets/images/logos/cyborlogo.png')}
                                             logoSize={35}
                                             size={120}
-                                            value={User_Details['referral left link']}
+                                            value={userData.referallinks.right_link }
                                             color={Colors.text}
 
                                             backgroundColor={Colors.secondary}
@@ -323,7 +323,7 @@ const MoreScreen = ({navigation}: RootTabScreenProps<'MoreScreen'>) => {
                                             logo={require('../../../assets/images/logos/cyborlogo.png')}
                                             logoSize={35}
                                             size={120}
-                                            value={User_Details['referral right link']}
+                                            value={userData.referallinks.left_link}
                                             color={Colors.text}
 
                                             backgroundColor={Colors.secondary}

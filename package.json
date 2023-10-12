@@ -46,6 +46,7 @@
     "pusher-js": "^8.3.0",
     "react": "18.2.0",
     "react-native": "0.71.8",
+    "react-native-accordion-list-view": "^2.0.2",
     "react-native-autolink": "^4.1.0",
     "react-native-config": "^1.5.1",
     "react-native-dotenv": "^3.4.9",

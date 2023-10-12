@@ -61,6 +61,7 @@ const SignalDetails = ({navigation, route}: SignalStackScreenProps<'SignalDetail
 
     const handleClose = useCallback(() => {
         bottomSheetModalRef.current?.close();
+        bottomSheetModalRef.current?.snapToIndex(0);
     }, []);
 
 
