@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 if (!function_exists('generateReference')) { /* Check_for "generateReference" */
@@ -129,12 +130,22 @@ if (!function_exists('followersPushTokens')) {
 }
 
 if (!function_exists('uploadFile')) { /* send to log" */
-    function uploadFile($file, $folder)
+    function uploadFile($file, $folder, $driver = "")
     {
-        $file_name = time() . '.' . $file->getClientOriginalExtension();
-        $file->move(public_path("images/{$folder}"), $file_name);
 
-        $fileUrl = url("/images/{$folder}/" . $file_name);
+        if (str_contains("b2", $driver)) {
+            $fileUrl = env('B2_BUCKET_URL') . '/' . Storage::disk('b2')->put("{$folder}", $file);
+        } else if (str_contains("s3", $driver)) {
+            $fileName = $file->getClientOriginalName();
+            $filePath = "{$folder}/" . $fileName;
+            $path = Storage::disk('s3')->put($filePath, file_get_contents($file));
+            $fileUrl = Storage::disk('s3')->url($path);
+        } else {
+            $file_name = time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path("{$folder}"), $file_name);
+
+            $fileUrl = url("{$folder}/" . $file_name);
+        }
 
         return $fileUrl;
     }

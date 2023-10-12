@@ -17,12 +17,12 @@ class ScheduleResources extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'uuid' => $this->uuid,
+            'id' => $this->uuid,
             'name' => $this->name,
             'day' => $this->schedule_day,
             'time' => $this->schedule_time,
             'educator' => new EducatorResource($this->admin),
-            'category' => new CategoryResource($this->category),
+            'category' => new CategoryResource($this->category)
         ];
     }
 }

@@ -15,9 +15,9 @@ class VideoResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'uuid' => $this->uuid,
+            'id' => $this->uuid,
             'title' => $this->title,
-            'type' => $this->type,
+            'is_favourite' => $this->type,
             'file' => $this->video_file,
             'created_at' => $this->created_at,
         ];

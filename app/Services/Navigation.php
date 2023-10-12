@@ -21,12 +21,6 @@ class Navigation
                     'icon'  => 'bi bi-house-fill fs-3',
                     'hasPermission' => auth()->user()->hasRole('educator')
                 ],
-                // (object) [
-                //     'name'  => 'User Management',
-                //     'route' => 'admin.users.index',
-                //     'icon'  => 'bi bi-house-fill fs-3',
-                //     'hasPermission' => true
-                // ],
                 (object) [
                     'name'  => 'Administrators',
                     'route' => 'admin.administrative.index',
@@ -74,6 +68,12 @@ class Navigation
                     'route' => 'admin.category.index',
                     'icon'  => 'bi bi-house-fill fs-3',
                     'hasPermission' => auth()->user()->can('manage_categories'),
+                ],
+                (object) [
+                    'name'  => 'Schedules',
+                    'route' => 'admin.schedule.index',
+                    'icon'  => 'bi bi-house-fill fs-3',
+                    'hasPermission' => auth()->user()->can('manage_schedules')
                 ],
                 (object) [
                     'name'  => 'Manage Assets',

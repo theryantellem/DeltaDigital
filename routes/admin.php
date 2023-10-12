@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\NewsManagement;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\RolesPermissions;
+use App\Http\Controllers\Admin\ScheduleController;
 use App\Http\Controllers\Admin\Signal\SignalController;
 use App\Http\Controllers\Admin\SupportTicket;
 use App\Http\Controllers\Admin\UserManagementController;
@@ -113,6 +114,17 @@ Route::middleware(['auth:admin'])->group(function () {
         Route::post('update/{id}', 'update')->name('update');
     }));
 
+    Route::controller(ScheduleController::class)->prefix('schedule')->name('schedule.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/all', 'schedules')->name('all');
+        Route::get('/videos/{schedule}', 'getVideos')->name('videos');
+        Route::post('store', 'store')->name('store');
+        Route::get('show/{schedule}', 'show')->name('show');
+        Route::post('upload', 'uploadVideo')->name('upload');
+        Route::put('update/{schedule}', 'update')->name('update');
+        Route::delete('delete/{schedule}', 'destroy')->name('delete');
+    });
+
     Route::controller(AcademyController::class)->prefix('academy')->name('academy.')->group((function () {
         Route::get('/', 'index')->name('index');
         Route::post('store', 'store')->name('store');
@@ -120,7 +132,7 @@ Route::middleware(['auth:admin'])->group(function () {
         Route::put('update/{academy}', 'update')->name('update');
         Route::delete('delete/{academy}', 'delete')->name('delete');
     }));
-    
+
     Route::controller(AcademyModuleController::class)->prefix('academy/modules')->name('academy.modules.')->group((function () {
         Route::get('/', 'index')->name('index');
         Route::get('/{category}', 'categoryModule')->name('categoryModule'); // This endpoint list all module under a category
