@@ -242,8 +242,7 @@
                 });
             },
             async getMessages() {
-                await axios.get('{{ route('
-                    admin.inbox.messages ') }}').then(
+                await axios.get('{{ route("admin.inbox.messages") }}').then(
                     response => {
                         const data = response.data
                         // console.log(data)
@@ -265,8 +264,7 @@
                 this.currentDate = `${day}/${month}/${year}`;
             },
             async getFollowers() {
-                await axios.get('{{ route('
-                    admin.inbox.followers ') }}').then(response => {
+                await axios.get('{{ route("admin.inbox.followers") }}').then(response => {
                     const data = response.data
                     if (data.success) {
                         this.followers = data.followers
@@ -310,8 +308,7 @@
 
                 this.loading = true
 
-                await axios.post('{{ route('
-                    admin.inbox.messages.send ') }}', formData, {
+                await axios.post('{{ route("admin.inbox.messages.send") }}', formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
                         }

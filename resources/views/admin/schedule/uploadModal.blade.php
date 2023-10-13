@@ -1,4 +1,4 @@
-<div class="offcanvas offcanvas-end customeoff" tabindex="-1" id="offcanvasSignal">
+<div class="offcanvas offcanvas-end customeoff" tabindex="-1" id="offcanvasUpload">
     <div class="offcanvas-header">
         <h5 class="modal-title" id="#gridSystemModal">Upload Video</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"
@@ -11,7 +11,7 @@
             <form>
                 <div class="mb-3">
                     <label>Title</label>
-                    <input class="form-control form-control-sm" type="text">
+                    <input class="form-control form-control-sm" v-model="title" type="text">
                     <span v-if="errors?.title" class="text-danger">@{{ errors?.title[0] }}</span>
                 </div>
                 <div class="mb-3">
@@ -26,6 +26,10 @@
                             aria-hidden="true"></span> --}}
                         <span>Submit</span>
                     </button>
+                </div>
+                <div v-if="progress > 0">
+                    <progress :value="progress" class="custom-progress" max="100"></progress>
+                    @{{ progress }}%
                 </div>
             </form>
         </div>

@@ -122,6 +122,9 @@ Route::middleware(['auth:admin'])->group(function () {
         Route::get('show/{schedule}', 'show')->name('show');
         Route::post('upload', 'uploadVideo')->name('upload');
         Route::put('update/{schedule}', 'update')->name('update');
+        Route::post('live/start/{schedule}', 'startLive')->name('live.start');
+        Route::post('live/stop/{schedule}', 'stopLive')->name('live.stop');
+        Route::get('live/views/{schedule}', 'stopLive')->name('live.views');
         Route::delete('delete/{schedule}', 'destroy')->name('delete');
     });
 

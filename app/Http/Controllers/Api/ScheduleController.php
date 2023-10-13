@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\JoinedStream;
 use App\Http\Controllers\ApiController;
 use App\Http\Resources\ScheduleResources;
 use App\Http\Resources\VideoResource;
 use App\Models\Admin;
+use App\Models\LiveAttendants;
 use App\Models\Schedule;
 use App\Models\Video;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class ScheduleController extends ApiController
@@ -36,9 +39,9 @@ class ScheduleController extends ApiController
         $schedule = Schedule::where('uuid', $schedule)->firstOrFail();
         $videos = Video::where('schedule_id', $schedule->id);
 
-        if ($request->has('type')) {
-            $videos = $videos->where('type', $request->type);
-        }
+        // if ($request->has('type')) {
+        //     $videos = $videos->where('type', $request->type);
+        // }
 
         $resources = [
             "schedule" => new ScheduleResources($schedule),
@@ -46,5 +49,33 @@ class ScheduleController extends ApiController
         ];
 
         return $this->sendResponse($resources, "Schedules retrieved successfully.", Response::HTTP_OK);
+    }
+
+    function setViewers($id)
+    {
+        $schdule = Schedule::whereUuid($id)->first();
+
+        if (!$schdule) {
+            return response()->json(['success' => false, 'message' => 'Schedule not found.'], 404);
+        }
+
+        $user = LiveAttendants::where('user_id', Auth::user()->id)->where('schedule_id', $id)->where('date', date("Y-m-d"))->first();
+
+        if (!$user) {
+
+            $schdule->viewers = $schdule->viewers + 1;
+
+            $schdule->save();
+
+            LiveAttendants::create([
+                'user_id' => Auth::user()->id,
+                'schedule_id' => $schdule->id,
+                'date' => date("Y-m-d")
+            ]);
+
+            broadcast(new JoinedStream($schdule));
+        }
+
+        return response()->json(['message' => 'updated successfully', 'viewers' => $schdule->viewers]);
     }
 }

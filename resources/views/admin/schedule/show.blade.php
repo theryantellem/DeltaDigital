@@ -25,51 +25,29 @@
                             </p>
                         </div>
                         <div class="ms-auto">
-                            <button class="btn btn-success">Go Live</button>
-                            <button class="btn btn-primary">Upload Video</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-4">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="post-img">
-                            <img src="images/post/post1.jpg" height="200px">
-                        </div>
-                        <div class="post-see d-flex align-items-center mt-3">
-                            <div class="d-flex justify-content-between">
-                                <h6 class="mb-0">people see this post</h6>
+                            <div v-if="is_live">
+                                <button class="btn btn-danger" @click="stopLive">Stop Live</button>
+                            </div>
+                            <div v-else>
+                                <button class="btn btn-success" @click="goLive">Go Live</button>
+                                <button class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasUpload"
+                                    role="button">Upload Video</button>
                             </div>
                         </div>
-                        <div class="mt-3">
-                            <span>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</span>
-                        </div>
-                        <ul class="post-comment d-flex mt-3">
-                            <li>
-                                <label class="me-3">
-                                    <a href="javascript:void(0)"><i class="fa-regular fa-heart me-2"></i>Favourite</a>
-                                </label>
-                            </li>
-                            <li>
-                                <label class="me-3"><a href="javascript:void(0)">
-                                        <i class="fa fa-pencil me-2 text-primary"></i>Edit</a>
-                                </label>
-                            </li>
-                            <li>
-                                <label class="me-3">
-                                    <a href="javascript:void(0)">
-                                        <i class="fa fa-trash me-2 text-danger"></i>Delete
-                                    </a>
-                                </label>
-                            </li>
-                        </ul>
                     </div>
                 </div>
             </div>
         </div>
+        <div v-if="is_live">
+            <div class="d-flex flex-column justify-content-center align-items-center">
+                <img src="{{ asset('images/live.png') }}" width="250px" height="250px" alt="">
+                <h3 class="text-uppercase">You are live</h3>
+            </div>
+        </div>
+        <div v-else class="row">
+            @include('admin.schedule.videoList')
+        </div>
+        @include('admin.schedule.uploadModal')
     </div>
 @endsection
 @push('scripts')
@@ -85,14 +63,32 @@
                     videos: [],
                     file_preview: null,
                     loading: false,
+                    errors: {},
+                    is_live: false
                 }
             },
             created() {
+                this.is_live = "{{ Auth::user()->is_live ? true : false }}";
+
                 this.getVideos();
             },
             methods: {
+                async goLive() {
+                    await axios.post(`/admin/schedule/live/start/${this.schedule}`).then(response => {
+                        this.is_live = true
+                    }).then(error => {
+                        console.log(error);
+                    })
+                },
+                async stopLive() {
+                    await axios.post(`/admin/schedule/live/stop/${this.schedule}`).then(response => {
+                        this.is_live = false
+                    }).then(error => {
+                        console.log(error);
+                    })
+                },
                 async getVideos() {
-                    await axios.get(`/admin/schedule/${this.schedule}`).then(response => {
+                    await axios.get(`/admin/schedule/videos/${this.schedule}`).then(response => {
                         const data = response.data
 
                         this.videos = data.videos
@@ -121,25 +117,45 @@
                     this.file_preview = null;
                     this.$refs.fileInput.value = null;
                 },
-                uploadFile() {
+                async uploadFile() {
+
+                    this.loading = true
+
                     let formData = new FormData();
                     formData.append('file', this.file);
+                    formData.append('schedule', this.schedule);
                     formData.append('title', this.title);
 
-                    axios.post("{{ route('admin.schedule.upload') }}", formData, {
+                    await axios.post("{{ route('admin.schedule.upload') }}", formData, {
                             headers: {
                                 'Content-Type': 'multipart/form-data'
                             },
                             onUploadProgress: progressEvent => {
-                                this.progress = Math.round((progressEvent.loaded / progressEvent.total) *
-                                    100);
+                                if (!this.errors) {
+                                    this.progress = Math.round((progressEvent.loaded / progressEvent
+                                        .total) * 100);
+                                }
                             }
                         })
                         .then(response => {
-                            console.log('File uploaded:', response.data);
+
+                            this.clearForm();
+
+                            Notiflix.Notify.Success(response.data.message);
+
                         })
                         .catch(error => {
-                            console.error('Error uploading file:', error);
+                            if (error.response && error.response.data && error.response.data.errors) {
+                                // Set validation errors from the backend response
+                                this.errors = error.response.data.errors;
+                            } else {
+                                // console.log(error.response)
+                                Notiflix.Notify.Failure("Service unavailable");
+                                // Handle other types of errors, if needed
+                            }
+
+                        }).finally(() => {
+                            this.loading = false
                         });
                 },
             }

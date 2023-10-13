@@ -101,12 +101,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('rating/{academy}', [AcademyModuleController::class, 'getRating']);
         Route::patch('watch-time/{module}', [AcademyEnrolController::class, 'watchTime']);
     });
-    
 });
 
 Route::controller(ScheduleController::class)->prefix('schedules')->group(function () {
     Route::get('', 'index');
     Route::get('/{schedule}', 'show');
+    Route::get('/join-live/{schedule}', 'setViewers');
     Route::get('{educator}/educator-schedules', 'educatorSchedules');
 });
 

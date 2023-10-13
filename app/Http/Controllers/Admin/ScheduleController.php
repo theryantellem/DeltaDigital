@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\LiveStarted;
+use App\Events\StopLive;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ScheduleResources;
 use App\Http\Resources\VideoResource;
 use App\Models\Admin;
 use App\Models\Category;
+use App\Models\LiveAttendants;
+use App\Models\LiveSessions;
 use App\Models\Schedule;
 use App\Models\Video;
 use Illuminate\Http\Request;
@@ -68,7 +72,6 @@ class ScheduleController extends Controller
 
         $schdedules = ScheduleResources::collection($schdedules);
 
-
         return response()->json(['success' => true, 'schedules' => $schdedules]);
     }
 
@@ -112,6 +115,54 @@ class ScheduleController extends Controller
 
             return response()->json(['success' => false, 'message' => 'Ops Somthing went wrong. try again later.'], 500);
         }
+    }
+
+    function startLive($id)
+    {
+        $schdule = Schedule::whereUuid($id)->first();
+
+        if (!$schdule) {
+            return response()->json(['success' => false, 'message' => 'Schedule not found.'], 404);
+        }
+
+        $user = Auth::guard('admin')->user();
+
+        $user->update([
+            'is_live' => true
+        ]);
+
+        $schdule->update(['viewers' => 0]);
+
+        broadcast(new LiveStarted($schdule))->toOthers();
+
+        return response()->json(['success' => true, 'message' => 'your are now live ']);
+    }
+
+    function stopLive($id)
+    {
+        $schdule = Schedule::whereUuid($id)->first();
+
+        if (!$schdule) {
+            return response()->json(['success' => false, 'message' => 'Schedule not found.'], 404);
+        }
+
+        LiveSessions::create([
+            'schedule_id' => $id,
+            'viewers' => $schdule->viewers
+        ]);
+
+        $user = Auth::guard('admin')->user();
+
+        $user->update([
+            'is_live' => false
+        ]);
+
+        $schdule->update(['viewers' => 0]);
+
+        broadcast(new StopLive($schdule))->toOthers();
+
+        return response()->json(['success' => true, 'message' => 'live session have ended']);
+        // return redirect()->route('dashboard.educator.schedule.show',$id);
     }
 
     function store(Request $request)
@@ -159,7 +210,6 @@ class ScheduleController extends Controller
         }
     }
 
-
     function update(Request $request, $id)
     {
         try {
@@ -188,7 +238,7 @@ class ScheduleController extends Controller
 
             $schdedule->update([
                 'category_id' => $category->id,
-                'schedule_time' => $request->schedule_time,
+                'schedule_time' => date("H:i a", strtotime($request->schedule_time)),
                 'schedule_day' => $request->schedule_day,
                 'name' => $request->schedule_name
             ]);
@@ -203,6 +253,13 @@ class ScheduleController extends Controller
 
             return response()->json(['success' => false, 'message' => 'Ops Somthing went wrong. try again later.'], 500);
         }
+    }
+
+    function getViewers($id)
+    {
+        $schdule = Schedule::findOrFail($id);
+
+        return response()->json(['data' => $schdule->viewers]);
     }
 
     function destroy($id)

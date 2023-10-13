@@ -54037,3 +54037,8 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
     height: calc(100% - 56px);
     /* Adjust the value based on the modal-header height */
 }
+
+.custom-progress {
+  width: 100%; /* Adjust the width as needed */
+  height: 30px; /* Adjust the height as needed */
+}
