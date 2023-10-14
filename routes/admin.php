@@ -142,8 +142,10 @@ Route::middleware(['auth:admin'])->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/{category}', 'categoryModule')->name('categoryModule'); // This endpoint list all module under a category
         Route::post('store', 'store')->name('store');
+        Route::get('details/{module}', 'details')->name('details');
         Route::get('show/{module}', 'show')->name('show'); // This endpoint list all video under a module
         Route::put('update/{module}', 'update')->name('update');
+        Route::put('make-video-favourite/{module}', 'makeFavourite')->name('makeFavourite');
         Route::delete('delete/{module}', 'delete')->name('delete');
     }));
 

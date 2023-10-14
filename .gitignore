@@ -4,6 +4,8 @@ public/build
 public/hot
 public/storage
 public/media
+public/videos
+public/thumbnails
 public/images
 /storage/*.key
 vendor

@@ -40,6 +40,11 @@ class AcademyModuleController extends Controller
         return response()->json(['success' => true, 'data' => $resource]);
     }
 
+    public function details(AcademyModule $module)
+    {
+        return view('admin.academy.module-details', ['module' => $module]);
+    }
+
     public function store(Request $request)
     {
         $request->validate([

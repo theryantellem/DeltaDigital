@@ -30,8 +30,11 @@
                         <div class="tbl-caption">
                             <div class="d-flex justify-content-between">
                                 <h4 class="heading mb-0">Modules</h4>
-                                <a class="btn btn-primary btn-sm me-2" data-bs-toggle="offcanvas" href="#offcanvasSignal"
-                                    role="button" aria-controls="offcanvasSignal"> + Create Module</a>
+                                @if (auth()->user()->hasRole('educator'))
+                                    <a class="btn btn-primary btn-sm me-2" data-bs-toggle="offcanvas"
+                                        href="#offcanvasSignal" role="button" aria-controls="offcanvasSignal"> + Create
+                                        Module</a>
+                                @endif
                             </div>
                         </div>
                         <div id="empoloyees-tbl3_wrapper" class="dataTables_wrapper no-footer">

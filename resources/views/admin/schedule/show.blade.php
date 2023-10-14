@@ -64,7 +64,8 @@
                     file_preview: null,
                     loading: false,
                     errors: {},
-                    is_live: false
+                    is_live: false,
+                    duration: 0
                 }
             },
             created() {
@@ -100,14 +101,31 @@
                 handleFileChange(event) {
                     this.file = event.target.files[0];
 
-                    // if (this.file) {
-                    //     const reader = new FileReader();
-                    //     reader.onload = (e) => {
-                    //         this.file_preview = e.target.result; // Set the preview URL
-                    //     };
-                    //     reader.readAsDataURL(this.file);
+                    if (this.file) {
+                        // Check if the file is a video
+                        if (this.file.type.startsWith('video')) {
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                this.file_preview = e.target.result; // Set the preview URL
 
-                    // }
+                                // Create a video element to get the video duration
+                                const videoElement = document.createElement('video');
+                                videoElement.src = this.file_preview;
+
+                                // Ensure metadata is loaded to get the duration
+                                videoElement.addEventListener('loadedmetadata', () => {
+                                    const duration = videoElement
+                                        .duration; // Get the duration in seconds
+                                    // console.log('Video duration:', duration);
+                                    this.duration = duration
+                                });
+
+                            };
+                            reader.readAsDataURL(this.file);
+                        } else {
+                            Notiflix.Notify.Failure("The selected file is not a video.");
+                        }
+                    }
                 },
                 handleCloseModal() {
                     this.clearForm()

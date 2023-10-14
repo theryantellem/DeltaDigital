@@ -4,6 +4,7 @@ namespace App\Http\Resources\Academy;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Str;
 
 class VideosResource extends JsonResource
 {
@@ -15,9 +16,10 @@ class VideosResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'uuid' => $this->uuid,
+            'id' => $this->uuid,
             'name' => $this->name,
             'description' => $this->description,
+            'caption' => Str::limit(strip_tags($this->description), 30, '...'),
             'video_file' => url($this->video_file),
             'length' => $this->length,
             'module_info' => new ModulesResource($this->module)

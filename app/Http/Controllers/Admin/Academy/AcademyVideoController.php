@@ -31,15 +31,16 @@ class AcademyVideoController extends Controller
         $module = AcademyModule::where('uuid', $request->module_uuid)->first();
         $video = $request->file('video_file')->store('academy/videos', 'public_uploads');
 
-        $module->videos()->create([
-            'uuid' => Str::orderedUuid(),
+        $uploaded = $module->videos()->create([
             'name' => $request->name,
             'video_file' => $video,
             'length' => $request->length,
             'description' => $request->description,
         ]);
 
-        return response()->json(['success' => true, 'message' => 'New video created successfully.']);
+        $video = new VideosResource($uploaded);
+
+        return response()->json(['success' => true, 'message' => 'New video created successfully.', 'video' => $video]);
     }
 
     public function update(Request $request, AcademyVideo $video)

@@ -93,7 +93,8 @@ class ScheduleController extends Controller
             $videoUrl = null;
 
             if ($request->hasFile('file')) {
-                $videoUrl = uploadFile($request->file('file'), "recorded", 'b2');
+                $videoUrl = $request->file('video_file')->store('recorded', 'public_uploads');
+                // $videoUrl = uploadFile($request->file('file'), "recorded", 'b2');
             }
 
             $schdedule = Schedule::where('uuid', $request->schedule)->first();
@@ -102,7 +103,6 @@ class ScheduleController extends Controller
                 'schedule_id' => $schdedule->id,
                 'title' => $request->title,
                 'video_file' => $videoUrl,
-                'is_favourite' => $request->favourite === "on" ? true : false
             ]);
 
             $record = new VideoResource($record);
@@ -260,6 +260,15 @@ class ScheduleController extends Controller
         $schdule = Schedule::findOrFail($id);
 
         return response()->json(['data' => $schdule->viewers]);
+    }
+
+    function makeFavourite(Request $request, $id)
+    {
+        Video::where('uuid', $id)->update([
+            'is_favourite' => $request->is_favourite === "on" ? true : false
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Successfull.']);
     }
 
     function destroy($id)
