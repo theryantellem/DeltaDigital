@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\GeneratesUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Academy extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, GeneratesUuid;
 
     protected $guarded = [];
 
@@ -17,14 +18,14 @@ class Academy extends Model
         return 'uuid';
     }
 
-    public function admin()
+    public function educator()
     {
-        return $this->belongsTo(Admin::class);
+        return $this->belongsTo(Admin::class,'admin_id');
     }
 
     public function academyModules()
     {
-        return $this->hasMany(AcademyModule::class);
+        return $this->hasMany(AcademyModule::class,'academy_id');
     }
 
     public function ratings()

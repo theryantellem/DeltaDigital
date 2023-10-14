@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\BlackblazeService;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -37,6 +38,17 @@ if (!function_exists('createCaption')) {
         }
 
         return $caption;
+    }
+}
+
+if (!function_exists('settings')) {
+    function settings()
+    {
+        return (Object)[
+            'storage' => [
+                'driver' => 'b2'
+            ]
+        ];
     }
 }
 
@@ -132,9 +144,14 @@ if (!function_exists('followersPushTokens')) {
 if (!function_exists('uploadFile')) { /* send to log" */
     function uploadFile($file, $folder, $driver = "")
     {
-
         if (str_contains("b2", $driver)) {
-            $fileUrl = env('B2_BUCKET_URL') . '/' . Storage::disk('b2')->put("{$folder}", $file);
+
+            // $fileUrl = env('B2_BUCKET_URL') . '/' . Storage::disk('b2')->put("{$folder}", $file);
+            $backblaze = new BlackblazeService();
+            $fileName = $file->getClientOriginalName();
+            // $filePath = "{$folder}/" . $fileName;
+            $fileUrl = $backblaze->upload($fileName, $file);
+            return $fileUrl;
         } else if (str_contains("s3", $driver)) {
             $fileName = $file->getClientOriginalName();
             $filePath = "{$folder}/" . $fileName;

@@ -27,6 +27,7 @@ class AcademyModuleController extends Controller
     public function categoryModule($category)
     {
         $admin_id = Auth::guard('admin')->user()->id;
+
         $data = Academy::where('uuid', $category)
             ->with(['academyModules' => function ($query) use ($admin_id) {
                 $query->where('admin_id', $admin_id);
@@ -48,17 +49,19 @@ class AcademyModuleController extends Controller
         ]);
 
         $academy = Academy::where('uuid', $request->academy_uuid)->first();
+
         $admin_id = Auth::guard('admin')->user()->id;
 
-        AcademyModule::create([
-            'uuid' => Str::orderedUuid(),
+        $module = AcademyModule::create([
             'admin_id' =>  $admin_id,
             'name' => $request->name,
             'academy_id' => $academy->id,
             'description' => $request->description,
         ]);
 
-        return response()->json(['success' => true, 'message' => 'New Module created successfully.']);
+        $module = new ModulesResource($module);
+
+        return response()->json(['success' => true, 'message' => 'New Module created successfully.', 'module' => $module]);
     }
 
     public function show(AcademyModule $module)

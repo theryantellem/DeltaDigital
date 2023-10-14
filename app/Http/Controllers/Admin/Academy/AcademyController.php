@@ -13,6 +13,16 @@ class AcademyController extends Controller
 {
     public function index()
     {
+        return view('admin.academy.index');
+    }
+
+    public function details(Academy $academy)
+    {
+        return view('admin.academy.show',['academy' => $academy]);
+    }
+
+    public function all()
+    {
         $admin_id = Auth::guard('admin')->user()->id;
         $data = Academy::where('admin_id', $admin_id)->orderBy('id', 'desc')->get();
         $resource = AcademyResource::collection($data);
@@ -29,10 +39,10 @@ class AcademyController extends Controller
         ]);
 
         $thumbnail = $request->file('thumbnail')->store('academy/thumbnails', 'public_uploads');
+
         $admin_id = Auth::guard('admin')->user()->id;
 
         Academy::create([
-            'uuid' => Str::orderedUuid(),
             'admin_id' =>  $admin_id,
             'name' => $request->name,
             'thumbnail' => $thumbnail,
@@ -53,12 +63,20 @@ class AcademyController extends Controller
     {
         $request->validate([
             'name' => ['nullable', 'string', 'max:200'],
-            'description' => ['nullable', 'string', 'max:10000'],
+            'thumbnail' => ['nullable', 'mimes:jpg,png', 'max:30'],
+            'description' => ['nullable', 'string', 'max:10000']
         ]);
+
+        $thumbnail = $academy->thumbnail;
+
+        if ($request->hasFile('thumbnail')) {
+            $thumbnail = $request->file('thumbnail')->store('academy/thumbnails', 'public_uploads');
+        }
 
         $academy->update([
             'name' => $request->name ?? $academy->name,
             'description' => $request->description ?? $academy->description,
+            'thumbnail' => $thumbnail,
         ]);
 
         return response()->json(['success' => true, 'message' => 'Academy updated successfully.']);

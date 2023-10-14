@@ -2,8 +2,10 @@
 
 namespace App\Http\Resources\Academy;
 
+use App\Http\Resources\EducatorResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Str;
 
 class AcademyResource extends JsonResource
 {
@@ -15,11 +17,13 @@ class AcademyResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'uuid' => $this->uuid,
+            'id' => $this->uuid,
             'name' => ucfirst($this->name),
             'thumbnail' => $this->thumbnail ? url($this->thumbnail) : null,
             'description' => $this->description,
-            'completed' => '0%'
+            'caption' => Str::limit(strip_tags($this->description), 30, '...'),
+            'completed' => '0%',
+            'educator'=> new EducatorResource($this->educator)
         ];
     }
 }

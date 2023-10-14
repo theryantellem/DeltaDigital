@@ -7,6 +7,7 @@ use App\Models\AcademyEnrolment;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class ModulesResource extends JsonResource
 {
@@ -18,10 +19,11 @@ class ModulesResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'uuid' => $this->uuid,
+            'id' => $this->uuid,
             'name' => $this->name,
             'description' => $this->description,
             'academy_info' => new AcademyResource($this->academy),
+            'caption' => Str::limit(strip_tags($this->description), 30, '...'),
             'total_videos' => count($this->videos),
             'completed' => $this->completed($this->videos->sum('length'), $this->id),
         ];

@@ -76,6 +76,12 @@ class Navigation
                     'hasPermission' => auth()->user()->can('manage_schedules')
                 ],
                 (object) [
+                    'name'  => 'Academy',
+                    'route' => 'admin.academy.index',
+                    'icon'  => 'bi bi-house-fill fs-3',
+                    'hasPermission' => auth()->user()->can('manage_schedules')
+                ],
+                (object) [
                     'name'  => 'Manage Assets',
                     'route' => 'admin.assets.index',
                     'icon'  => 'bi bi-house-fill fs-3',
