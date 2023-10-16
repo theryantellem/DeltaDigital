@@ -22,7 +22,6 @@ class VideosResource extends JsonResource
             'caption' => Str::limit(strip_tags($this->description), 30, '...'),
             'video_file' => url($this->video_file),
             'length' => $this->length,
-            'module_info' => new ModulesResource($this->module)
         ];
     }
 }

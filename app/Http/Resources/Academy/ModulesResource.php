@@ -22,8 +22,9 @@ class ModulesResource extends JsonResource
             'id' => $this->uuid,
             'name' => $this->name,
             'description' => $this->description,
-            'academy_info' => new AcademyResource($this->academy),
+            // 'academy_info' => new AcademyResource($this->academy),
             'caption' => Str::limit(strip_tags($this->description), 30, '...'),
+            'videos' => VideosResource::collection($this->videos),
             'total_videos' => count($this->videos),
             'completed' => $this->completed($this->videos->sum('length'), $this->id),
         ];

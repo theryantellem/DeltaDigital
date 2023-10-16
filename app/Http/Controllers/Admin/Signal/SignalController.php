@@ -25,7 +25,6 @@ class SignalController extends Controller
      */
     public function index()
     {
-        Log::info();
         return view('admin.signals.index');
     }
 
