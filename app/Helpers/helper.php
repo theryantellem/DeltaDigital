@@ -44,7 +44,7 @@ if (!function_exists('createCaption')) {
 if (!function_exists('settings')) {
     function settings()
     {
-        return (Object)[
+        return (object)[
             'storage' => [
                 'driver' => 'b2'
             ]
@@ -144,25 +144,24 @@ if (!function_exists('followersPushTokens')) {
 if (!function_exists('uploadFile')) { /* send to log" */
     function uploadFile($file, $folder, $driver = "")
     {
-        if (str_contains("b2", $driver)) {
+        // if (str_contains("b2", $driver)) {
+        //     // $fileUrl = env('B2_BUCKET_URL') . '/' . Storage::disk('b2')->put("{$folder}", $file);
+        //     $backblaze = new BlackblazeService();
+        //     $fileName = $file->getClientOriginalName();
+        //     // $filePath = "{$folder}/" . $fileName;
+        //     $fileUrl = $backblaze->upload($fileName, $file);
+        //     return $fileUrl;
+        // } else if (str_contains("s3", $driver)) {
+        //     $fileName = $file->getClientOriginalName();
+        //     $filePath = "{$folder}/" . $fileName;
+        //     $path = Storage::disk('s3')->put($filePath, file_get_contents($file));
+        //     $fileUrl = Storage::disk('s3')->url($path);
+        // } else {
+        $file_name = time() . '.' . $file->getClientOriginalExtension();
+        $file->move(public_path("{$folder}"), $file_name);
 
-            // $fileUrl = env('B2_BUCKET_URL') . '/' . Storage::disk('b2')->put("{$folder}", $file);
-            $backblaze = new BlackblazeService();
-            $fileName = $file->getClientOriginalName();
-            // $filePath = "{$folder}/" . $fileName;
-            $fileUrl = $backblaze->upload($fileName, $file);
-            return $fileUrl;
-        } else if (str_contains("s3", $driver)) {
-            $fileName = $file->getClientOriginalName();
-            $filePath = "{$folder}/" . $fileName;
-            $path = Storage::disk('s3')->put($filePath, file_get_contents($file));
-            $fileUrl = Storage::disk('s3')->url($path);
-        } else {
-            $file_name = time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path("{$folder}"), $file_name);
-
-            $fileUrl = url("{$folder}/" . $file_name);
-        }
+        $fileUrl = url("{$folder}/" . $file_name);
+        // }
 
         return $fileUrl;
     }
