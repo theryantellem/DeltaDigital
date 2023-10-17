@@ -10,6 +10,7 @@ public/images
 /storage/*.key
 vendor
 .env
+package.json
 .env.backup
 .env.production
 .phpunit.result.cache
