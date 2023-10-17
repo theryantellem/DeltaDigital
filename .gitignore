@@ -2,10 +2,8 @@
 node_modules
 public/build
 public/hot
-public/storage
 public/media
-public/videos
-public/thumbnails
+public/academy/*
 public/images
 /storage/*.key
 vendor
