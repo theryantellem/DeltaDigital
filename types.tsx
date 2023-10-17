@@ -12,6 +12,9 @@ import ViewEducator from "./screens/finix/ViewEducator";
 import StreamersList from "./screens/finix/StreamersList";
 import SignalSummary from "./screens/finix/SignalSummary";
 import MessageScreen from "./screens/finix/message/MessageScreen";
+import VideoScreen from "./screens/finix/academy/VideoScreen";
+import AllAcademy from "./screens/finix/academy/AllAcademy";
+import LeaveReview from "./screens/finix/academy/LeaveReview";
 
 
 declare global {
@@ -291,7 +294,18 @@ export type SignalStackParamList = {
     };
     SignalSummary: undefined;
     LiveStream: undefined;
-    ViewAcademy: undefined;
+    ViewAcademy: {
+        id:string
+    };
+    VideoScreen: {
+        id:string,
+        videoUrl:string,
+        videoTitle:string
+    };
+    AllAcademy:undefined;
+    LeaveReview: {
+        academy_uuid:string
+    };
     //END CYBORG
 
 

@@ -32,6 +32,7 @@ interface Props extends TextInputProps {
     action?: () => void;
     passState?: boolean
     labelColor?: boolean
+    inputTextColor?: string
 }
 
 
@@ -57,7 +58,8 @@ const BottomSheetInput: FC<Props> = ({
                                          action,
                                          passState,
                                          labelColor,
-    imageUri,
+                                         imageUri,
+                                         inputTextColor,
                                          ...props
                                      }) => {
 
@@ -65,7 +67,7 @@ const BottomSheetInput: FC<Props> = ({
     let validationColor, validationLabelColor;
 
     validationColor = !touched ? Colors.borderColor : focus ? "#fff" : error ? Colors.errorRed : Colors.borderColor
-    validationLabelColor = !touched ? Colors.textDark : focus ? Colors.textDark : error ? Colors.errorRed :"#fff"
+    validationLabelColor = !touched ? Colors.textDark : focus ? Colors.textDark : error ? Colors.errorRed : "#fff"
 
     return (
         <View style={[styles.inputWrap, {
@@ -82,7 +84,7 @@ const BottomSheetInput: FC<Props> = ({
                     {
                         rightText && <Text onPress={rightAction} style={[
                             {
-                                color:"#fff",
+                                color: "#fff",
                             },
                             styles.label]}>
                             {rightBtnText}
@@ -115,7 +117,7 @@ const BottomSheetInput: FC<Props> = ({
                     <View style={styles.leftIcon}>
 
                         <View style={styles.Icon}>
-                            <Image source={{uri:imageUri}} style={styles.logo}/>
+                            <Image source={{uri: imageUri}} style={styles.logo}/>
                         </View>
                     </View>
                 }
@@ -123,11 +125,11 @@ const BottomSheetInput: FC<Props> = ({
 
                     {...props}
                     placeholder={placeholder}
-keyboardAppearance='dark'
+                    keyboardAppearance='dark'
                     placeholderTextColor={"#9CA3AF"}
                     style={[styles.input, {
                         width: password || leftIcon || rightIcon || icon ? '88%' : '100%',
-                        color: '#fff',
+                        color:inputTextColor ? inputTextColor : '#fff',
 
                     }]}/>
 
@@ -231,7 +233,7 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
         justifyContent: "center"
     },
-    Icon:{
+    Icon: {
         borderRadius: 40,
         width: 20,
         height: 20,

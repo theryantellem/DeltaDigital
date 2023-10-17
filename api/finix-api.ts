@@ -7,61 +7,136 @@ import {BASE_ULR_NEW, LIVE_PROD_URL} from "@env";
 
 export const getSignals = async () => {
 
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+    var myHeaders = new Headers();
+    myHeaders.append("Accept", "application/json");
+    myHeaders.append("Authorization", `Bearer ${Token}`);
+    console.log(Token)
+    var requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        redirect: 'follow'
+    };
+
+    return fetch("https://deltacyborg.pro/api/signals", requestOptions)
+        .then(response => response.json())
+
+
+}
+
+
+export const listAcademy = async () => {
 
     let Token = await SecureStore.getItemAsync('delta-signal-token');
-    const myHeaders = {
-        "Authorization": `Bearer ${Token}`,
-
-    }
-    let timeoutId: NodeJS.Timeout
-
+    var myHeaders = new Headers();
+    myHeaders.append("Accept", "application/json");
+    myHeaders.append("Authorization", `Bearer ${Token}`);
 
     var requestOptions = {
         method: 'GET',
         headers: myHeaders,
-
+        redirect: 'follow'
     };
 
-
-
-    return fetch(`${BASE_ULR_NEW}/signals`, requestOptions)
+    return fetch("https://deltacyborg.pro/api/academy", requestOptions)
         .then(response => response.json())
+
+
+}
+
+
+export const listAcademyDetails = async (id: string) => {
+
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+    var myHeaders = new Headers();
+    myHeaders.append("Accept", "application/json");
+    myHeaders.append("Authorization", `Bearer ${Token}`);
+
+    var requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        redirect: 'follow'
+    };
+
+    return fetch(`https://deltacyborg.pro/api/academy/${id}`, requestOptions)
+        .then(response => response.json())
+
+
+}
+
+
+export const listAcademyModules = async (id: string) => {
+
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+    var myHeaders = new Headers();
+    myHeaders.append("Accept", "application/json");
+    myHeaders.append("Authorization", `Bearer ${Token}`);
+
+    var requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        redirect: 'follow'
+    };
+
+    return fetch(`https://deltacyborg.pro/api/modules/show/${id}`, requestOptions)
+        .then(response => response.json())
+
+
+}
+
+
+export const listAcademyRating = async (id: string) => {
+
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+    var myHeaders = new Headers();
+    myHeaders.append("Accept", "application/json");
+    myHeaders.append("Authorization", `Bearer ${Token}`);
+
+    var requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        redirect: 'follow'
+    };
+
+    return fetch(`https://deltacyborg.pro/api/academy/rating/${id}`, requestOptions)
+        .then(response => response.json())
+
 
 }
 
 export const getSignalsTest = {
 
-        signals: async ({page}:{page:number}) => {
-            let Token = await SecureStore.getItemAsync('delta-signal-token');
-            var myHeaders = new Headers();
-            myHeaders.append("Accept", "application/json");
-            myHeaders.append("Authorization", `Bearer ${Token}`);
+    signals: async ({page}: { page: number }) => {
+        let Token = await SecureStore.getItemAsync('delta-signal-token');
+        var myHeaders = new Headers();
+        myHeaders.append("Accept", "application/json");
+        myHeaders.append("Authorization", `Bearer ${Token}`);
 
-            var requestOptions = {
-                method: 'GET',
-                headers: myHeaders,
-                redirect: 'follow'
-            };
+        var requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+            redirect: 'follow'
+        };
 
-            return fetch(`${BASE_ULR_NEW}/signals?page=${page}`, requestOptions)
-                .then(response => response.json())
+        return fetch(`${BASE_ULR_NEW}/signals?page=${page}`, requestOptions)
+            .then(response => response.json())
 
 
-            /* return Promise.race([
-                 fetch(`${BASE_ULR_NEW}/signals`, requestOptions)
-                     .then(response => response.json()),
-                 new Promise((resolve, reject) => {
-                     timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+        /* return Promise.race([
+             fetch(`${BASE_ULR_NEW}/signals`, requestOptions)
+                 .then(response => response.json()),
+             new Promise((resolve, reject) => {
+                 timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
 
-                     //  clearTimeout(timeoutId)
-                 }).then(() => {
-                     clearTimeout(timeoutId)
-                 })
+                 //  clearTimeout(timeoutId)
+             }).then(() => {
+                 clearTimeout(timeoutId)
+             })
 
-             ])*/
+         ])*/
 
-        }
     }
+}
 export const viewSignal = async (id: string) => {
 
 
@@ -305,6 +380,39 @@ export const getUserInfo = async () => {
 
 
 }
+
+export const postAReview = async (body: {}) => {
+
+
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+    const myHeaders = {
+        "Authorization": `Bearer ${Token}`,
+        "Content-Type": "application/json",
+    }
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body
+    };
+
+    return Promise.race([
+        fetch(`${BASE_ULR_NEW}/academy/rating`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 25000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])
+
+}
+
+
 
 export const followEducator = async (body: {}) => {
 
