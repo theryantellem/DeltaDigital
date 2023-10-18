@@ -192,7 +192,7 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
     const {id} = route.params
 
     const {data, isLoading, refetch} = useQuery(['listAcademyDetails', id], () => listAcademyDetails(id))
-    const {data: ratings, isLoading: loadingRating} = useQuery(['listAcademyRating', id], () => listAcademyRating(id))
+    const {data: ratings, isLoading: loadingRating,refetch:fetchReviews} = useQuery(['listAcademyRating', id], () => listAcademyRating(id))
 
 
     // variables
@@ -318,6 +318,7 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
     }
 
     useRefreshOnFocus(refetch)
+    useRefreshOnFocus(fetchReviews)
 
     return (
         <>

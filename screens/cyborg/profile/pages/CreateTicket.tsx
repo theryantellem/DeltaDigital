@@ -25,6 +25,7 @@ import * as ImagePicker from "expo-image-picker";
 
 import * as FileSystem from "expo-file-system";
 import {isLessThanTheMB} from "../../../../helpers";
+import ToastAnimated from "../../../../components/toast";
 
 
 
@@ -48,16 +49,17 @@ const formSchema = yup.object().shape({
     subject: yup.string().required('Ticket subject is required'),
     message: yup.string().required('Please tell us more'),
     // priority: yup.string().required('Ticket priority is required'),
-    category: yup.string().required('category is required')
+    image_paper: yup.string().required('Image is required')
 })
 const CreateTicket = ({navigation}:CyborgStackScreenProps<'CreateTicket'>) => {
 
     const dispatch = useAppDispatch()
     const queryClient = useQueryClient()
     const [image_id, setImage_id] = useState('');
+    const [imageUri, setImageUri] = useState('');
     const dataSlice = useAppSelector(state => state.data)
     const user = useAppSelector(state => state.user)
-    const {responseMessage, responseState, responseType} = user
+    const {responseMessage, responseState, responseType,User_Details} = user
     const [value, setValue] = useState(null);
     const [isFocus, setIsFocus] = useState(false);
 
@@ -124,7 +126,7 @@ const CreateTicket = ({navigation}:CyborgStackScreenProps<'CreateTicket'>) => {
             } else {
 
                 setImage_id("data:image/jpeg;base64," + result?.assets[0].base64);
-                //setImage(res?.assets[0]?.uri);
+                setImageUri(result?.assets[0].uri);
                 setFieldValue('image_paper',result?.assets[0].uri);
 
             }
@@ -140,13 +142,14 @@ const CreateTicket = ({navigation}:CyborgStackScreenProps<'CreateTicket'>) => {
 
             onSuccess: async (data) => {
                 // alert(message)
-
+console.log(data)
                 if (data.status == 1) {
 
                     navigation.navigate('SuccessScreen', {
                         title: 'Successful',
                         message: `Feedback sent`,
-                        type: 'success'
+                        type: 'success',
+
                     })
 
 
@@ -189,13 +192,15 @@ const CreateTicket = ({navigation}:CyborgStackScreenProps<'CreateTicket'>) => {
 
         },
         onSubmit: (values) => {
-            const {subject,message} = values
-
+            const {subject,message,image_paper} = values
+            let type =  imageUri?.substring(image_id.lastIndexOf(".") + 1);
+            let fileName = imageUri.split('/').pop()
 
             const formdata = new FormData()
-            formdata.append('message', message)
-            formdata.append('subject', subject)
-
+            formdata.append('content', message)
+            formdata.append('title', subject)
+            formdata.append('upload', {uri: imageUri, name: fileName, type: `image/${type}`} as any)
+            mutate({body:formdata,userId:User_Details.id})
 
         }
     });
@@ -312,7 +317,7 @@ const CreateTicket = ({navigation}:CyborgStackScreenProps<'CreateTicket'>) => {
 
 
                     </View>
-
+<ToastAnimated/>
                 </KeyboardAwareScrollView>
 
                 <MyButton onPress={() => handleSubmit()} disabled={!isValid} style={[styles.button, {

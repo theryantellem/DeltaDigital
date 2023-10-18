@@ -621,7 +621,7 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
                         }
                     </ImageBackground>
 
-                    {/*   <View style={styles.liveStreamingSection}>
+                       <View style={styles.liveStreamingSection}>
                         <View style={styles.sectionTitle}>
                             <Text style={styles.sectionTitleText}>
                                 Live Streaming
@@ -645,7 +645,7 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
                         </View>
 
 
-                    </View>*/}
+                    </View>
 
                     <View style={styles.academySection}>
                         <View style={styles.sectionTitle}>
