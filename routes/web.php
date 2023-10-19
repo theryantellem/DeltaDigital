@@ -17,8 +17,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('test-route',function(){
-    dD("hello");
-});
-
 

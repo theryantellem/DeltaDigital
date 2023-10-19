@@ -36,6 +36,14 @@ class AuthenticationController extends Controller
             return redirect()->back()->with('error', 'Invalid Credentials');
         }
 
+        $user = auth()->user();
+
+        if (empty($user->stream_key)) {
+            $user->update([
+                'stream_key' => generateReference()
+            ]);
+        }
+
         return redirect()->route('admin.dashboard');
     }
 

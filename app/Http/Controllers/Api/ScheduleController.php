@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Events\JoinedStream;
 use App\Http\Controllers\ApiController;
 use App\Http\Resources\ScheduleResources;
+use App\Http\Resources\UserResource;
 use App\Http\Resources\VideoResource;
 use App\Models\Admin;
 use App\Models\LiveAttendants;
 use App\Models\Schedule;
+use App\Models\UserFollower;
 use App\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -77,5 +79,25 @@ class ScheduleController extends ApiController
         }
 
         return response()->json(['message' => 'updated successfully', 'viewers' => $schdule->viewers]);
+    }
+
+    function educatorsOnLive()
+    {
+        try {
+            // get list of eductors user is following
+            $educators = UserFollower::where('user_id', auth()->user()->id)
+                ->whereHas('educator', function ($query) {
+                    $query->where('is_live', true);
+                })
+                ->get();
+
+            $educators = UserResource::collection($educators);
+
+            return $this->sendResponse($educators);
+        } catch (\Exception $e) {
+            sendToLog($e);
+
+            return $this->sendError("Unable to complete your request at the moment.", [], 500);
+        }
     }
 }

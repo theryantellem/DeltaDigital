@@ -108,6 +108,7 @@ Route::controller(ScheduleController::class)->prefix('schedules')->group(functio
     Route::get('/{schedule}', 'show');
     Route::get('/join-live/{schedule}', 'setViewers');
     Route::get('{educator}/educator-schedules', 'educatorSchedules');
+    Route::get('/live/educators', 'educatorsOnLive');
 });
 
 Route::get('categories', [CategoryController::class, 'index']);

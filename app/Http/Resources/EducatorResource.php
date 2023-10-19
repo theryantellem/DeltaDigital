@@ -21,7 +21,9 @@ class EducatorResource extends JsonResource
             'email' => $this->email,
             'photo' => !empty($this->photo) ? $this->photo : url('/') . "/images/educator/default.png",
             'total_followers' => $this->followers->count(),
-            'categories' =>  EducatorCategoryResource::collection($this->categories)
+            'categories' =>  EducatorCategoryResource::collection($this->categories),
+            'is_live' => $this->is_live ?  1 : 0,
+            'stream_url' => $this->is_live ?  env('LIVE_URL') . "/{$this->stream_key}.m3u8" : null
         ];
     }
 }

@@ -131,6 +131,21 @@ class ScheduleController extends Controller
             'is_live' => true
         ]);
 
+        $fcmTokens =  followersPushTokens($user->id);
+
+        if (!empty($fcmTokens)) {
+
+            $name = ucfirst($user->first_name) . ' ' . ucfirst($user->last_name);
+
+            $data = [
+                'push_tokens' =>  $fcmTokens,
+                'title' => "{$name} is live.",
+                'stream_url' => env('LIVE_URL ') . "/{$user->stream_key}.m3u8"
+            ];
+
+            dispatch(new \App\Jobs\PushNotificationJob($data));
+        }
+
         $schdule->update(['viewers' => 0]);
 
         broadcast(new LiveStarted($schdule))->toOthers();
@@ -156,6 +171,23 @@ class ScheduleController extends Controller
         $user->update([
             'is_live' => false
         ]);
+
+        $schdule->update(['viewers' => 0]);
+
+        $fcmTokens =  followersPushTokens($user->id);
+
+        if (!empty($fcmTokens)) {
+
+            $name = ucfirst($user->first_name) . ' ' . ucfirst($user->last_name);
+
+            $data = [
+                'push_tokens' =>  $fcmTokens,
+                'title' => "{$name} is live has ended.",
+                'stream_url' => null
+            ];
+
+            dispatch(new \App\Jobs\PushNotificationJob($data));
+        }
 
         $schdule->update(['viewers' => 0]);
 
