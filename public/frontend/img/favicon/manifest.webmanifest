@@ -1,0 +1,11 @@
+{
+  "name": "Emeric - Coming Soon and Portfolio Template",
+  "short_name": "Emeric",
+  "icons": [
+    { "src": "/img/favicon/android-icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "/img/favicon/android-icon-512.png", "type": "image/png", "sizes": "512x512" }
+  ],
+  "theme_color": "#ededed",
+  "background_color": "#ededed ",
+  "display": "standalone"
+}
