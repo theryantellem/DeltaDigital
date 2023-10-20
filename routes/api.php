@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\EducatorController;
+use App\Http\Controllers\Api\LiveChatController;
 use App\Http\Controllers\Api\ScheduleController;
 use App\Http\Controllers\Api\SignalsController;
 use Illuminate\Support\Facades\Route;
@@ -109,6 +110,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('{educator}/educator-schedules', 'educatorSchedules');
         Route::get('/live/educators', 'educatorsOnLive');
     });
-});
 
-Route::get('categories', [CategoryController::class, 'index']);
+    Route::controller(LiveChatController::class)->prefix('live')->group(function () {
+        Route::get('messages/{educator}', 'messages');
+        Route::post('send/{educator}', 'sendMessage');
+    });
+
+    Route::get('categories', [CategoryController::class, 'index']);
+});

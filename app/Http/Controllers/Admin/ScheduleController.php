@@ -140,7 +140,9 @@ class ScheduleController extends Controller
             $data = [
                 'push_tokens' =>  $fcmTokens,
                 'title' => "{$name} is live.",
-                'stream_url' => env('LIVE_URL ') . "/{$user->stream_key}.m3u8"
+                'message' => [
+                    'stream_url' => env('LIVE_URL ') . "/{$user->stream_key}.m3u8"
+                ],
             ];
 
             dispatch(new \App\Jobs\PushNotificationJob($data));
@@ -182,8 +184,10 @@ class ScheduleController extends Controller
 
             $data = [
                 'push_tokens' =>  $fcmTokens,
-                'title' => "{$name} is live has ended.",
-                'stream_url' => null
+                'title' => "{$name} live has ended.",
+                'message' => [
+                    'stream_url' => null
+                ],
             ];
 
             dispatch(new \App\Jobs\PushNotificationJob($data));
