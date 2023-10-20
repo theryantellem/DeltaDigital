@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -36,7 +38,7 @@ class AuthenticationController extends Controller
             return redirect()->back()->with('error', 'Invalid Credentials');
         }
 
-        $user = auth()->user();
+        $user = Admin::where('email', $request->email)->first();
 
         if (empty($user->stream_key)) {
             $user->update([

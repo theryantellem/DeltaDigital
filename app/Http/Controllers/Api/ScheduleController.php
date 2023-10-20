@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Events\JoinedStream;
 use App\Http\Controllers\ApiController;
+use App\Http\Resources\EducatorResource;
 use App\Http\Resources\ScheduleResources;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\VideoResource;
@@ -84,14 +85,13 @@ class ScheduleController extends ApiController
     function educatorsOnLive()
     {
         try {
-            // get list of eductors user is following
-            $educators = UserFollower::where('user_id', auth()->user()->id)
-                ->whereHas('educator', function ($query) {
-                    $query->where('is_live', true);
-                })
-                ->get();
 
-            $educators = UserResource::collection($educators);
+            // get list of eductors user is following
+            $educators = UserFollower::where('user_id', auth()->user()->id)->pluck('admin_id')->toArray();
+
+            $educators = Admin::whereIn('id', $educators)->where('is_live', true)->get();
+
+            $educators = EducatorResource::collection($educators);
 
             return $this->sendResponse($educators);
         } catch (\Exception $e) {

@@ -23,10 +23,17 @@
                                     <strong>Time:</strong> {{ $schedule->schedule_time }}
                                 </span>
                             </p>
+                            <p>
+                                <span>
+                                    <strong>Stream Key:</strong> {{ auth()->user()->stream_key }}
+                                </span>
+                            </p>
                         </div>
                         <div class="ms-auto">
                             <div v-if="is_live">
-                                <button class="btn btn-danger" @click="stopLive">Stop Live</button>
+                                @if (!empty(auth()->user()->stream_key))
+                                    <button class="btn btn-danger" @click="stopLive">Stop Live</button>
+                                @endif
                             </div>
                             <div v-else>
                                 <button class="btn btn-success" @click="goLive">Go Live</button>
