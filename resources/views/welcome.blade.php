@@ -23,6 +23,7 @@
     <link rel="icon" href="{{ asset('frontend/img/favicon/fav.jpg') }}" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="{{ asset('frontend/img/favicon/fav.jpg') }}" />
     <link rel="manifest" href="{{ asset('frontend/img/favicon/fav.jpg') }}" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Template Favicon & Icons End -->
 
     <!-- Facebook Metadata Start -->

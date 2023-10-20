@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Events\ChatNotification;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 use App\Http\Resources\LiveChatResource;
 use App\Models\Admin;
 use App\Models\LiveChat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class LiveChatController extends Controller
+class LiveChatController extends ApiController
 {
 
     function messages($educator)
@@ -35,6 +36,11 @@ class LiveChatController extends Controller
         try {
 
             $educatorDetails = Admin::where('uuid', $educator)->firstOrFail();
+
+            if(!$educatorDetails)
+            {
+                return $this->sendError("Invalid educator");
+            }
 
             $validator = Validator::make($request->all(), [
                 'message' => 'required|string',
