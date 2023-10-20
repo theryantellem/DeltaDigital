@@ -9,6 +9,7 @@
     <meta name="robots" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 
     <!-- PAGE TITLE HERE -->
     <title>Deltadigital|@yield('title')</title>

@@ -12,6 +12,7 @@
     <meta name="description" content="Delta Digital LLC" />
     <meta name="keywords" content="Delta Digital" />
     <meta name="author" content="mix_design" />
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 
     <!-- Viewport Meta-->
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
