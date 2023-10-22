@@ -7,9 +7,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\EducatorResource;
 use App\Http\Resources\FollowResource;
 use App\Http\Resources\SignalResource;
+use App\Http\Resources\VideoResource;
 use App\Models\Admin;
 use App\Models\Signal;
 use App\Models\UserFollower;
+use App\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
@@ -136,6 +138,28 @@ class EducatorController extends ApiController
             $signals = SignalResource::collection($signals);
 
             return $this->sendResponse($signals);
+        } catch (\Exception $e) {
+            sendToLog($e);
+
+            return $this->sendError("Unable to complete your request at the moment.", [], 500);
+        }
+    }
+
+    function recordedVideos($educator)
+    {
+        try {
+            // get list of eductors user is following
+            $educator = Admin::where('uuid', $educator)->first();
+
+            if (!$educator) {
+                return $this->sendError("Educator not found.", [], 400);
+            }
+
+            $videos = Video::where('admin_id', $educator->id)->paginate(10);
+
+            $videos = VideoResource::collection($videos);
+
+            return $this->sendResponse($videos);
         } catch (\Exception $e) {
             sendToLog($e);
 

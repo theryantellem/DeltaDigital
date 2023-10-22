@@ -90,6 +90,8 @@ class ScheduleController extends Controller
                 return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
             }
 
+            $admin = auth()->guard('admin')->user();
+
             $videoUrl = null;
 
             if ($request->hasFile('file')) {
@@ -100,6 +102,7 @@ class ScheduleController extends Controller
             $schdedule = Schedule::where('uuid', $request->schedule)->first();
 
             $record = Video::create([
+                'admin_id' => $admin->id,
                 'schedule_id' => $schdedule->id,
                 'title' => $request->title,
                 'video_file' => $videoUrl,
