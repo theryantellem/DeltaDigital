@@ -20,4 +20,4 @@ jobs:
       - name: Deploy to the server
         run: |
           sudo apt-get install sshpass
-          sshpass -p ${{ secrets.FTP_PASSWORD }} ssh ${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }} "cd /var/www/html && git pull"
+          sshpass -p ${{ secrets.FTP_PASSWORD }} ssh -v ${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }} "cd /var/www/html && git pull"
