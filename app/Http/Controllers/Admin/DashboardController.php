@@ -15,8 +15,6 @@ class DashboardController extends Controller
 {
     function index()
     {
-        dd(auth()->user()->getRoleNames());
-
         $user = Auth::guard('admin')->user();
 
         if ($user->hasRole('super_admin')) {
