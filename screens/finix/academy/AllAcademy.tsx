@@ -20,7 +20,7 @@ import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPix
 import {Fonts} from "../../../constants/Fonts";
 import {useQuery} from "@tanstack/react-query";
 import {listAcademy} from "../../../api/finix-api";
-import {useRefreshOnFocus} from "../../../helpers";
+import {truncate, useRefreshOnFocus} from "../../../helpers";
 
 
 interface prosAcademy {
@@ -57,7 +57,7 @@ const AcademyItem = ({item,viewAcademy}:prosAcademy) =>{
                 </Text>
                 <View style={styles.description}>
                     <Text style={styles.descriptionText}>
-                        {item.description}
+                        {truncate(item.description,80)}
                     </Text>
                 </View>
 

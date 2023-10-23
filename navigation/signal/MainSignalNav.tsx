@@ -18,6 +18,7 @@ import ViewAcademy from "../../screens/finix/academy/ViewAcademy";
 import VideoScreen from "../../screens/finix/academy/VideoScreen";
 import AllAcademy from "../../screens/finix/academy/AllAcademy";
 import LeaveReview from "../../screens/finix/academy/LeaveReview";
+import AcademyVideo from "../../screens/finix/academy/AcademyVideo";
 
 
 const StackNav = createNativeStackNavigator<SignalStackParamList>();
@@ -50,6 +51,9 @@ export function MainSignalNav() {
             }}/>
             <StackNav.Screen name={"VideoScreen"} component={VideoScreen} options={{
                 animation: 'slide_from_left'
+            }}/>
+            <StackNav.Screen name={"AcademyVideo"} component={AcademyVideo} options={{
+                animation: 'slide_from_right'
             }}/>
 
 

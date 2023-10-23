@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef} from 'react';
+import React, {Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
 import {
     Text,
@@ -7,7 +7,7 @@ import {
     Platform,
     UIManager,
     TouchableOpacity,
-    Pressable, ActivityIndicator
+    Pressable, ActivityIndicator, ScrollView
 } from 'react-native';
 
 import {SafeAreaView} from "react-native-safe-area-context";
@@ -15,7 +15,7 @@ import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPix
 import {Fonts} from "../../../constants/Fonts";
 import {AccordionList} from 'react-native-accordion-list-view';
 import Colors from "../../../constants/Colors";
-import {Ionicons, Octicons} from "@expo/vector-icons";
+import {Entypo, Ionicons, Octicons} from "@expo/vector-icons";
 import {SignalStackScreenProps} from "../../../types";
 import {StatusBar} from "expo-status-bar";
 import {useQuery} from "@tanstack/react-query";
@@ -30,109 +30,94 @@ import {
 import {
     BottomSheetDefaultBackdropProps
 } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
-import Animated, {Easing, FadeInLeft, FadeOutLeft, Layout} from "react-native-reanimated";
+import Animated, {Easing, FadeInDown, FadeInLeft, FadeOutDown, FadeOutLeft, Layout} from "react-native-reanimated";
 import dayjs from "dayjs";
 import {useRefreshOnFocus} from "../../../helpers";
 
 
-const reviewData = [
-    {
-        "reviewer_info": {
-            "id": "nothing8",
-            "user_id": "1",
-            "name": "Lord Enki",
-            "email": "enki@sup.com",
-            "username": "enki",
-            "profile_picture": "",
-            "plan": null,
-            "expiry_time": null,
-            "referallinks": {
-                "left_link": null,
-                "right_link": null
-            },
-            "role": null,
-            "iseligible": false,
-            "cyborg": false,
-            "signal": false,
-            "push_token": null
-        },
-        "rating": 5,
-        "comment": "Nice Academy",
-        "created_at": "2023-10-09T15:26:08.000000Z"
+interface Interface {
+
+    completed:string,
+    viewVideoScreen: (id: string, videoUrl: string,
+                      videoTitle: string, description: string,caption:string,vid_length:string,completed:string) => void
+    index: number | null,
+    item: {
+        name: string,
+        id: string,
+        description: string,
+        caption: string,
+        videos: [],
     },
-    {
-        "reviewer_info": {
-            "id": "nothing4",
-            "user_id": "1",
-            "name": "Lord Enki",
-            "email": "enki@sup.com",
-            "username": "enki",
-            "profile_picture": "",
-            "plan": null,
-            "expiry_time": null,
-            "referallinks": {
-                "left_link": null,
-                "right_link": null
-            },
-            "role": null,
-            "iseligible": false,
-            "cyborg": false,
-            "signal": false,
-            "push_token": null
-        },
-        "rating": 5,
-        "comment": "Nice Academy",
-        "created_at": "2023-10-09T15:29:53.000000Z"
-    },
-    {
-        "reviewer_info": {
-            "id": "nothing2",
-            "user_id": "1",
-            "name": "Lord Enki",
-            "email": "enki@sup.com",
-            "username": "enki",
-            "profile_picture": "",
-            "plan": null,
-            "expiry_time": null,
-            "referallinks": {
-                "left_link": null,
-                "right_link": null
-            },
-            "role": null,
-            "iseligible": false,
-            "cyborg": false,
-            "signal": false,
-            "push_token": null
-        },
-        "rating": 5,
-        "comment": "Nice Academy",
-        "created_at": "2023-10-09T15:29:55.000000Z"
-    },
-    {
-        "reviewer_info": {
-            "id": "nothing1",
-            "user_id": "1",
-            "name": "Lord Enki",
-            "email": "enki@sup.com",
-            "username": "enki",
-            "profile_picture": "",
-            "plan": null,
-            "expiry_time": null,
-            "referallinks": {
-                "left_link": null,
-                "right_link": null
-            },
-            "role": null,
-            "iseligible": false,
-            "cyborg": false,
-            "signal": false,
-            "push_token": null
-        },
-        "rating": 5,
-        "comment": "Nice Academy",
-        "created_at": "2023-10-09T15:29:55.000000Z"
-    }
-]
+    setCurrentIndex: Dispatch<SetStateAction<null>>,
+    currentIndex: number | string | null
+}
+
+
+const RenderComponent = ({ viewVideoScreen, index, item, setCurrentIndex, currentIndex,completed}: Interface) => {
+
+    return (
+        <TouchableOpacity
+
+key={item.id}
+            onPress={() => {
+                setCurrentIndex(index === currentIndex ? null : index);
+            }}
+            style={styles.cardContainer}
+            activeOpacity={0.9}
+        >
+            <Animated.View  l  style={styles.card}>
+                <>
+
+                    <View style={styles.accordionHead}>
+                        <View style={styles.headLeft}>
+                            <Text style={styles.accordionTitle}>{item.name}:{item.caption}</Text>
+                            <Text style={styles.accordionSubTitle}>{item.description}</Text>
+                        </View>
+
+                        <View>
+
+                            {index === currentIndex && <Entypo name="chevron-down" size={24} color="#00B2FF"/>}
+                            {index !== currentIndex && <Entypo name="chevron-up" size={24} color="#00B2FF"/>}
+                        </View>
+
+
+                    </View>
+               {index === currentIndex && (
+                        <Animated.View  layout={Layout.easing(Easing.bounce).delay(50)}
+                                        entering={FadeInDown} exiting={FadeOutDown}  style={styles.accordionBody}>
+                            {item.videos.map((details: {
+                                "id": string,
+                                "name": string,
+                                "description": string,
+                                "caption": string,
+                                "video_file": string,
+                                "length": string
+                            }) => (
+                                <TouchableOpacity key={details.id + details.name}
+                                                  onPress={() => viewVideoScreen(details.id, details.video_file, details.name, details.description,
+                                                      details.caption, details.length, completed)}
+                                                  activeOpacity={0.7}
+                                                  style={[styles.accordionBodyButton, {}]}>
+                                    <View style={styles.playIcon}>
+                                        <Ionicons name="play" size={18} color="black"/>
+                                    </View>
+                                    <View style={styles.accordionBodyVideo}>
+                                        <Text style={styles.accordionVideoTitle}>{details.name}</Text>
+                                        <Text>{details.description}</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            ))}
+
+                        </Animated.View>
+                    )}
+                </>
+            </Animated.View>
+        </TouchableOpacity>
+
+
+    );
+}
+
 
 interface reviewProps {
     comment: string,
@@ -192,19 +177,33 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
     const {id} = route.params
 
     const {data, isLoading, refetch} = useQuery(['listAcademyDetails', id], () => listAcademyDetails(id))
-    const {data: ratings, isLoading: loadingRating,refetch:fetchReviews} = useQuery(['listAcademyRating', id], () => listAcademyRating(id))
+    const {
+        data: ratings,
+        isLoading: loadingRating,
+        refetch: fetchReviews
+    } = useQuery(['listAcademyRating', id], () => listAcademyRating(id))
 
-
+    const [currentIndex, setCurrentIndex] = useState(null);
     // variables
     const snapPoints = useMemo(() => ["1%", "65%"], []);
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+    const bottomSheetModalDescriptionRef = useRef<BottomSheetModal>(null);
 
     // variables
 
 
     // callbacks
-    const handlePresentModalPress = useCallback(() => {
+    const handlePresentModalDescriptionPress = useCallback(() => {
+        bottomSheetModalDescriptionRef.current?.present(1);
+    }, []);
+
+  const handlePresentModalPress = useCallback(() => {
         bottomSheetModalRef.current?.present(1);
+    }, []);
+
+    const handleCloseDescription = useCallback(() => {
+        bottomSheetModalDescriptionRef.current?.close();
     }, []);
 
     const handleClose = useCallback(() => {
@@ -223,11 +222,11 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
     );
     //console.log(ratings)
 
-    const {
-        data: modules,
-        isLoading: loadingModules
-    } = useQuery(['listAcademyModules', id], () => listAcademyModules(id))
-
+    /*   const {
+           data: modules,
+           isLoading: loadingModules
+       } = useQuery(['listAcademyModules', id], () => listAcademyModules(id))
+   */
 
     useEffect(() => {
         if (Platform.OS === 'android') {
@@ -238,83 +237,29 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
     }, []);
 
 
-    const AccordionTitle = ({item}: {
-        item: {
-            "id": string,
-            "name": string,
-            "description": string,
-            "caption": string,
-            "total_videos": 0,
-            "completed": "0%"
-        }
-    }) => {
-        return (
-            <View style={styles.accordionHead}>
-                <Text style={styles.accordionTitle}>{item.name}:{item.caption}</Text>
-                <Text style={styles.accordionSubTitle}>{item.description}</Text>
-            </View>
-        )
-    }
-
-
     const viewVideoScreen = (id: string, videoUrl: string,
-                             videoTitle: string) => {
+                             videoTitle: string, description: string,caption:string,vid_length:string,completed:string) => {
         navigation.navigate('VideoScreen', {
             id,
             videoUrl,
-            videoTitle
+            videoTitle,
+            description,
+            caption,
+            completed,
+            length:vid_length,
+            posterImage:data?.data[0]?.thumbnail,
         })
     }
 
-    const AccordionBody = ({item}: {
-        item: {
-            "id": string,
-            "name": string,
-            "description": string,
-            "caption": string,
-            "total_videos": 0,
-            "completed": "0%",
-            videos: []
-        }
-    }) => {
-
-
-        return (
-            <View style={styles.accordionBody}>
-                {item.videos.map((details: {
-                    "id": string,
-                    "name": string,
-                    "description": "This is introduction",
-                    "caption": "This is introduction",
-                    "video_file": string,
-                    "length": "125.016236"
-                }) => (
-                    <TouchableOpacity key={details.id}
-                                      onPress={() => viewVideoScreen(details.id, details.video_file, details.caption)}
-                                      activeOpacity={0.7}
-                                      style={[styles.accordionBodyButton, {}]}>
-                        <View style={styles.playIcon}>
-                            <Ionicons name="play" size={18} color="black"/>
-                        </View>
-                        <View style={styles.accordionBodyVideo}>
-                            <Text style={styles.accordionVideoTitle}>{details.caption}</Text>
-                            <Text>{details.description}</Text>
-                        </View>
-                    </TouchableOpacity>
-                ))}
-
-            </View>
-        )
-    }
 
     const goBack = () => {
         navigation.goBack()
     }
 
     const giveReview = () => {
-     navigation.navigate('LeaveReview',{
-         academy_uuid:id
-     })
+        navigation.navigate('LeaveReview', {
+            academy_uuid: id
+        })
     }
 
     useRefreshOnFocus(refetch)
@@ -356,7 +301,12 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
                 {
                     !isLoading && data &&
 
-                    <View style={styles.scrollView}>
+                    <ScrollView style={{
+                        width: '100%',
+                        marginBottom: 50,
+                    }} contentContainerStyle={styles.scrollView} scrollEnabled
+                                showsVerticalScrollIndicator={false}>
+
 
                         <View style={styles.frameImageWrap}>
                             <FastImage
@@ -364,6 +314,7 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
                                 style={styles.frameImage}
                                 source={{
                                     uri: data?.data[0]?.thumbnail,
+
                                     cache: FastImage.cacheControl.web,
                                     priority: FastImage.priority.normal,
 
@@ -413,58 +364,44 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
 
                         </View>
 
+                        {
+                            !isLoading && data &&
+                            <View style={styles.CategoriesContainer}>
 
-                        <AccordionList
-                            data={data?.data[0].modules}
-                            style={{
+                                {data?.data[0].modules.map((item: any, index: number) => (
 
-                                width: '100%',
+                                    <RenderComponent viewVideoScreen={viewVideoScreen} index={index}
+                                                     currentIndex={currentIndex}
+                                                     setCurrentIndex={setCurrentIndex}
+                                                     key={item.id} item={item} completed={item.completed} />
+                                ))}
 
-                            }}
-
-                            customTitle={(item) => <AccordionTitle item={item}/>}
-                            customBody={(item) => <AccordionBody item={item}/>}
-                            animationDuration={400}
-                            defaultOpenIndices={[0, 1]}
-                            expandMultiple={true}
-
-
-                            containerItemStyle={{
-                                borderRadius: 0,
-                                paddingHorizontal: pixelSizeHorizontal(10)
-                            }}
-                            pressableProps={{
-                                style: ({pressed}) => [
-                                    {
-
-                                        backgroundColor:
-                                            pressed && Platform.OS == 'ios'
-                                                ? 'rgb(210, 230, 255)'
-                                                : 'transparent',
-                                    },
-                                ],
-                                android_ripple: {
-                                    color: 'rgb(210, 230, 255)',
-                                },
-                            }}
-                        />
+                            </View>
+                        }
 
 
-                    </View>
+                        {/*
+
+                     ACCORDION HERE
+
+                     */}
+
+                    </ScrollView>
+
 
                 }
                 <View style={styles.bottomOptions}>
-                    <TouchableOpacity activeOpacity={0.7} style={styles.bottomButton}>
+                    <TouchableOpacity onPress={handlePresentModalDescriptionPress} activeOpacity={0.7} style={styles.bottomButton}>
                         <Text style={styles.bottomButtonText}>
                             Description
                         </Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity activeOpacity={0.7} style={styles.bottomButton}>
+                {/*    <TouchableOpacity activeOpacity={0.7} style={styles.bottomButton}>
                         <Text style={styles.bottomButtonText}>
                             Course Info
                         </Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity>*/}
 
                     <TouchableOpacity onPress={handlePresentModalPress} activeOpacity={0.7} style={styles.bottomButton}>
                         <Text style={styles.bottomButtonText}>
@@ -481,6 +418,8 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
                         </Text>
                     </TouchableOpacity>
                 </View>
+
+
             </SafeAreaView>
 
 
@@ -499,7 +438,7 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
                     backgroundStyle={{
                         backgroundColor: "#fff"
                     }}
-                    handleIndicatorStyle={{backgroundColor: Colors.purplePrimary}}
+                    handleIndicatorStyle={{backgroundColor: Colors.textDark}}
 
                 >
                     <BottomSheetScrollView style={styles.sheetScrollView} contentContainerStyle={{
@@ -528,14 +467,72 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
                         {loadingRating && <ActivityIndicator size='small' color={Colors.purplePrimary}/>}
 
                         {
-                           !loadingRating && ratings && ratings.data.map((({comment, reviewer_info, rating}) => (
-                                <ReviewCard reviewer_info={reviewer_info} comment={comment} id={reviewer_info.id}
+                            !loadingRating && ratings && ratings.data.map((({comment, reviewer_info, rating,created_at}) => (
+                                <ReviewCard reviewer_info={reviewer_info} comment={comment} key={created_at}
                                             rating={rating} name={reviewer_info.name}/>
                             )))
                         }
 
 
                     </BottomSheetScrollView>
+                </BottomSheetModal>
+            </BottomSheetModalProvider>
+
+
+
+            <BottomSheetModalProvider>
+
+
+                <BottomSheetModal
+                    ref={bottomSheetModalDescriptionRef}
+                    animateOnMount
+                    index={1}
+                    snapPoints={snapPoints}
+                    backdropComponent={renderBackdrop}
+                    style={{
+                        paddingHorizontal: pixelSizeHorizontal(20)
+                    }}
+                    backgroundStyle={{
+                        backgroundColor: "#fff"
+                    }}
+                    handleIndicatorStyle={{backgroundColor: Colors.textDark}}
+
+                >
+
+                    <BottomSheetScrollView style={styles.sheetScrollView} contentContainerStyle={{
+                        width: '100%',
+                        alignItems: 'center',
+                    }}>
+                        <View style={[styles.sheetHead, {
+                            height: 40,
+                        }]}>
+
+
+                            <Text style={[styles.sheetTitle, {
+                                fontSize: fontPixel(14),
+                                color: Colors.textDark
+                            }]}>
+                             Description
+                            </Text>
+                            <TouchableOpacity onPress={handleCloseDescription}
+                                              style={[styles.dismiss, {
+                                                  backgroundColor: "#11192E"
+                                              }]}>
+                                <Ionicons name="close-sharp" size={20} color={"#fff"}/>
+                            </TouchableOpacity>
+                        </View>
+
+                        <View style={styles.descriptionBox}>
+                            <Text style={styles.descriptionText}>
+
+                                {data?.data[0]?.description}
+                            </Text>
+                        </View>
+
+
+
+                    </BottomSheetScrollView>
+
                 </BottomSheetModal>
             </BottomSheetModalProvider>
 
@@ -665,7 +662,7 @@ const styles = StyleSheet.create({
         marginVertical: pixelSizeVertical(2),
         fontFamily: Fonts.faktumRegular,
         color: '#000',
-        fontSize: fontPixel(16),
+        fontSize: fontPixel(14),
     },
     chatBarInfoImage: {
         width: '100%',
@@ -680,8 +677,21 @@ const styles = StyleSheet.create({
         fontSize: fontPixel(16),
     },
     accordionHead: {
+        backgroundColor: '#fff',
+        width: '100%',
+        paddingHorizontal: pixelSizeHorizontal(20),
+        height: heightPixel(90),
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        alignItems: 'center'
+
+    },
+    headLeft: {
         width: '90%',
-        height: heightPixel(70),
+
+
+        height: '100%',
+        alignItems: 'flex-start',
         justifyContent: 'space-evenly',
 
     },
@@ -753,7 +763,7 @@ const styles = StyleSheet.create({
     bottomButtonText: {
         fontFamily: Fonts.faktumMedium,
         color: "#6C6C6C",
-        fontSize: fontPixel(12),
+        fontSize: fontPixel(14),
     },
     sheetScrollView: {
         width: '100%',
@@ -794,6 +804,7 @@ const styles = StyleSheet.create({
 
     },
     reviewTitle: {
+        textTransform:'capitalize',
         color: Colors.textDark,
         fontSize: fontPixel(14),
         fontFamily: Fonts.faktumMedium
@@ -833,7 +844,33 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.faktumRegular
     },
 
+    cardContainer: {
+        width: '100%',
 
+    },
+    card: {
+        width: '100%',
+
+        borderBottomColor: "#EBEBEB",
+        borderBottomWidth: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    CategoriesContainer: {
+        width: '100%',
+        alignItems: 'center',
+        backgroundColor: "#fff",
+    },
+    descriptionBox:{
+        width:'100%',
+        marginTop:30,
+    },
+    descriptionText: {
+        color: Colors.textDark,
+
+        fontSize: fontPixel(14),
+        fontFamily: Fonts.faktumRegular
+    },
 })
 
 export default ViewAcademy;

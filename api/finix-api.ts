@@ -11,7 +11,7 @@ export const getSignals = async () => {
     var myHeaders = new Headers();
     myHeaders.append("Accept", "application/json");
     myHeaders.append("Authorization", `Bearer ${Token}`);
-    console.log(Token)
+
     var requestOptions = {
         method: 'GET',
         headers: myHeaders,
@@ -45,6 +45,45 @@ export const listAcademy = async () => {
 }
 
 
+export const educatorsLive = async () => {
+
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${Token}`);
+
+    var requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        redirect: 'follow'
+    };
+
+   return  fetch(`${BASE_ULR_NEW}/schedules/live/educators`, requestOptions)
+        .then(response => response.json())
+
+
+}
+
+export const userJoinLive = async () => {
+
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${Token}`);
+
+    var requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        redirect: 'follow'
+    };
+
+   return  fetch(`${BASE_ULR_NEW}/schedules/join-live`, requestOptions)
+        .then(response => response.json())
+
+
+}
+
+
 export const listAcademyDetails = async (id: string) => {
 
     let Token = await SecureStore.getItemAsync('delta-signal-token');
@@ -59,6 +98,26 @@ export const listAcademyDetails = async (id: string) => {
     };
 
     return fetch(`https://deltacyborg.pro/api/academy/${id}`, requestOptions)
+        .then(response => response.json())
+
+
+}
+
+
+export const pastStreamerVideos = async (id: string) => {
+
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+    var myHeaders = new Headers();
+    myHeaders.append("Accept", "application/json");
+    myHeaders.append("Authorization", `Bearer ${Token}`);
+
+    var requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        redirect: 'follow'
+    };
+
+    return fetch(`https://deltacyborg.pro/api/educators/videos/${id}`, requestOptions)
         .then(response => response.json())
 
 
@@ -312,6 +371,36 @@ export const sendMessage = async ({body, id}: { body: any, id: string }) => {
 
     return Promise.race([
         fetch(`${BASE_ULR_NEW}/chat/send/${id}`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])
+
+}
+export const sendMessageLive = async ({body, id}: { body: any, id: string }) => {
+
+
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+    const myHeaders = {
+        "Authorization": `Bearer ${Token}`,
+        "Content-Type": "application/json",
+    }
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body
+    };
+
+    return Promise.race([
+        fetch(`${BASE_ULR_NEW}/live/send/${id}`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)

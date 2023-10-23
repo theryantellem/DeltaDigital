@@ -15,6 +15,7 @@ import MessageScreen from "./screens/finix/message/MessageScreen";
 import VideoScreen from "./screens/finix/academy/VideoScreen";
 import AllAcademy from "./screens/finix/academy/AllAcademy";
 import LeaveReview from "./screens/finix/academy/LeaveReview";
+import AcademyVideo from "./screens/finix/academy/AcademyVideo";
 
 
 declare global {
@@ -293,11 +294,27 @@ export type SignalStackParamList = {
         }
     };
     SignalSummary: undefined;
-    LiveStream: undefined;
+    LiveStream: {
+        "stream_url": string,
+        "last_name": string,
+        first_name: string,
+        "photo": string,
+        educatorId: string,
+    };
     ViewAcademy: {
         id:string
     };
     VideoScreen: {
+        id:string,
+        videoUrl:string,
+        videoTitle:string,
+        description:string,
+        completed:string,
+        length:string,
+        caption:string,
+        posterImage:string,
+    };
+    AcademyVideo: {
         id:string,
         videoUrl:string,
         videoTitle:string

@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import FastImage from "react-native-fast-image";
 import {SafeAreaView} from "react-native-safe-area-context";
-import {FontAwesome, Ionicons, SimpleLineIcons} from "@expo/vector-icons";
+import {Entypo, FontAwesome, Ionicons, SimpleLineIcons} from "@expo/vector-icons";
 import Colors from "../../constants/Colors";
 import {LinearGradient} from 'expo-linear-gradient';
 import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPixel} from "../../helpers/normalize";
@@ -20,16 +20,23 @@ import {Fonts} from "../../constants/Fonts";
 import {SignalRootTabScreenProps, SignalStackScreenProps} from "../../types";
 import {MyButton} from "../../components/MyButton";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {getEducator, getEducatorSignals, getSignals, unFollowEducator} from "../../api/finix-api";
+import {
+    educatorsLive,
+    getEducator,
+    getEducatorSignals,
+    getSignals,
+    listAcademy,
+    unFollowEducator
+} from "../../api/finix-api";
 import {addNotificationItem} from "../../app/slices/dataSlice";
-import {useAppDispatch} from "../../app/hooks";
+import {useAppDispatch, useAppSelector} from "../../app/hooks";
 import GradientSegmentControl from "../../components/segment-control/GradientSegmentControl";
 import SegmentedControl from "../../components/segment-control/SegmentContol";
 import NoItem from "../../components/NoItem";
 import {IF} from "../../helpers/ConditionJsx";
 import HorizontalScrollMenu from "../../components/HorizontalScrollMenu";
 
-import {useRefreshOnFocus} from "../../helpers";
+import {truncate, useRefreshOnFocus} from "../../helpers";
 
 
 const Courses = []
@@ -37,6 +44,27 @@ const Courses = []
 
 const width = Dimensions.get('window').width
 
+
+interface prosAcademy {
+    item: {
+        "id": string,
+        "name": string,
+        "thumbnail": string,
+        "description": string,
+        "caption": string,
+        "completed": string,
+        "educator": {
+            "id": string,
+            "first_name": string,
+            "last_name": string,
+            "email": string,
+            "photo": string,
+            "total_followers": number,
+            "categories": []
+        }
+    }
+    viewAcademy: (id: string) => void
+}
 interface Props {
     viewSignalImage: (item: {}) => void,
     viewSignal: (signal: {
@@ -97,6 +125,44 @@ interface Props {
         "status": string
     }
 }
+interface streamProps {
+    joinLiveStream: (educatorId:string,last_name:string,stream_url:string,photo: string,first_name:string) => void,
+    item: {
+        "id": string,
+        "first_name": string,
+        "last_name": string,
+        "photo": string
+        "is_live": number,
+        "stream_url": string
+    }
+}
+
+
+
+const ItemStreams = ({joinLiveStream,item}: streamProps) => {
+
+
+    return (
+
+        <TouchableOpacity onPress={()=>joinLiveStream(item.id,item.last_name,item.stream_url, item.photo,item.first_name)} activeOpacity={0.8} style={styles.streamCard}>
+            <View style={styles.streamLiveTag}>
+                <Entypo name="dot-single" size={24} color={"#fff"}/>
+                {
+                    item.is_live == 1 &&
+
+                    <Text style={[styles.liveText, {}]}>
+                        Live
+                    </Text>
+                }
+            </View>
+
+            <Image style={styles.streamImage}
+                   source={{uri:item.photo}}/>
+
+        </TouchableOpacity>
+    )
+}
+
 
 
 const ItemSignal = ({item, viewSignal, viewSignalImage}: Props) => {
@@ -203,11 +269,55 @@ const ItemSignal = ({item, viewSignal, viewSignalImage}: Props) => {
     )
 }
 
+
+const ItemAcademy = ({viewAcademy, item}: prosAcademy) => {
+
+
+    return (
+
+        <TouchableOpacity onPress={() => viewAcademy(item.id)} activeOpacity={0.8} style={styles.academyCard}>
+
+            <View style={styles.academyCardImageWrap}>
+
+                <FastImage
+
+                    style={styles.academyCardImage}
+                    source={{
+                        uri: item.thumbnail,
+
+                        cache: FastImage.cacheControl.web,
+                        priority: FastImage.priority.normal,
+
+                    }}
+                    resizeMode={FastImage.resizeMode.cover}
+                />
+            </View>
+            <View style={styles.academyCardBody}>
+                <Text style={styles.academyTitle}>
+                    {item.name}
+                </Text>
+                <View style={styles.description}>
+                    <Text style={styles.descriptionText}>
+                        {truncate(item.description,80)}
+                    </Text>
+                </View>
+
+                <Text style={styles.statusText}>
+                    Course Status - {item.completed} completed
+                </Text>
+            </View>
+
+
+        </TouchableOpacity>
+    )
+}
+
 const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'>) => {
 
     const {educator} = route.params
 
-
+const user = useAppSelector(state => state.user)
+    const {userData} = user
 
     const dispatch = useAppDispatch()
     const queryClient = useQueryClient()
@@ -281,6 +391,22 @@ navigation.replace('SignalBottomTab')
     } = useQuery(['get-educator-signals',educator.id], () => getEducatorSignals(educator.id))
 
 
+   const {
+        data: liveEducators,
+        isLoading:loadingLive,
+        refetch: fetchLive
+    } = useQuery([`educators-Live`], educatorsLive)
+
+
+
+    const {
+        data: academy,
+        isLoading: loadingAcademy,
+        refetch: refetchAcademy
+    } = useQuery(['list-Academy'], listAcademy)
+
+
+
     const [tabIndex, setTabIndex] = useState<string>(!loadingEducator && educatorDetails?.data?.categories[0].category.id);
     const [filterCategory, setFilterCategory] = useState(!loadingEducator && educatorDetails?.data?.categories[0].category.name);
    // console.log(educatorDetails?.data?.categories)
@@ -302,6 +428,11 @@ navigation.replace('SignalBottomTab')
         setTabIndex(educatorDetails?.data?.categories[0].category.id)
     }, [educatorDetails]);
 
+    const viewAcademy = (id: string) => {
+        navigation.navigate('ViewAcademy', {
+        id
+        })
+    }
 //console.log(educatorSignals)
 
     const keyExtractor = useCallback((item: { id: any; }) => item.id, [],)
@@ -310,9 +441,20 @@ navigation.replace('SignalBottomTab')
         ({item}) => <ItemSignal item={item} viewSignal={viewSignal} viewSignalImage={viewSignalImage}/>,
         [],
     );
+    const renderItemAcademy = useCallback(
+        ({item}) => <ItemAcademy item={item} viewAcademy={viewAcademy}/>,
+        [],
+    );
 
     const seeSignalSummary = () => {
         navigation.navigate('SignalSummary')
+    }
+    const joinLiveStream = (educatorId:string,last_name:string,stream_url:string,photo: string,first_name:string) => {
+        navigation.navigate('LiveStream', {
+
+                last_name,stream_url,photo,first_name,educatorId
+
+        })
     }
     const goBackNow = () => {
         navigation.goBack()
@@ -341,6 +483,7 @@ navigation.replace('SignalBottomTab')
     }
     useRefreshOnFocus(refetchEducator)
     useRefreshOnFocus(refetchSignals)
+    useRefreshOnFocus(refetchAcademy)
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -503,6 +646,27 @@ navigation.replace('SignalBottomTab')
                     </View>
                     }
 
+                    {
+                        !loadingLive && liveEducators &&  liveEducators?.data.find((educator: { id: any; }) => educator.id === educatorDetails?.data?.id)
+                    &&
+                    <TouchableOpacity
+                        //onPress={()=>joinLiveStream(item.id,item.last_name,item.stream_url, item.photo,item.first_name)}
+                        activeOpacity={0.8} style={styles.streamCard}>
+                        <View style={styles.streamLiveTag}>
+                            <Entypo name="dot-single" size={24} color={"#fff"}/>
+
+
+                                <Text style={[styles.liveText, {}]}>
+                                    Live
+                                </Text>
+
+                        </View>
+
+                        <Image style={styles.streamImage}
+                               source={require('../../assets/images/big_live_image.png')}/>
+
+                    </TouchableOpacity>
+                    }
                     <Pressable onPress={startMessage}>
                         <ImageBackground resizeMethod={"scale"}
                                          source={require('../../assets/images/signal/educator_BG.png')}
@@ -582,7 +746,7 @@ navigation.replace('SignalBottomTab')
                     </ImageBackground>
 
 
-                    <ImageBackground resizeMethod={"scale"}
+                {/*    <ImageBackground resizeMethod={"scale"}
                                      source={require('../../assets/images/signal/educator_BG.png')}
                                      style={[styles.segmentBody, {
                                          height: 150,
@@ -607,7 +771,7 @@ navigation.replace('SignalBottomTab')
 
                                 </Text>
                             </View>
-                            {/*
+
                             <Image source={require('../../assets/images/signal/cours_img.png')} style={{
                                 width:120,
                                 height:70,
@@ -617,15 +781,15 @@ navigation.replace('SignalBottomTab')
                                 width:120,
                                 height:70,
                                 resizeMode:"contain"
-                            }}/>*/}
+                            }}/>
 
                         </View>
 
 
-                    </ImageBackground>
+                    </ImageBackground>*/}
 
 
-                    <ImageBackground resizeMethod={"scale"}
+                   {/* <ImageBackground resizeMethod={"scale"}
                                      source={require('../../assets/images/signal/educator_BG.png')}
                                      style={[styles.segmentBody, {
                                          height: 150,
@@ -652,8 +816,65 @@ navigation.replace('SignalBottomTab')
                         </View>
 
 
-                    </ImageBackground>
+                    </ImageBackground>*/}
 
+
+                    <View style={styles.academySection}>
+                        <View style={styles.sectionTitle}>
+                            <Text style={styles.sectionTitleText}>
+                                Academy
+                            </Text>
+
+                         {/*   <TouchableOpacity  activeOpacity={0.7} style={styles.seeAll}>
+                                <FontAwesome name="plus-circle" size={24} color={Colors.purplePrimary}/>
+
+                            </TouchableOpacity>*/}
+                        </View>
+
+
+                        <View style={styles.academyCardSlide}>
+                            {!loadingAcademy && academy && academy?.data?.length < 1 &&
+                                <View style={styles.messageWrap}>
+
+
+                                    <View style={styles.imageWrap}>
+
+                                        <Image source={require('../../assets/images/EmptyBox/empty_state.png')}
+                                               style={styles.fileBroken}/>
+
+
+                                    </View>
+
+
+                                    <Text style={styles.message}>
+                         This streamer has no academy
+
+                                    </Text>
+                                </View>
+                            }
+                            {
+                                loadingAcademy && <ActivityIndicator color={Colors.primary} size='small'/>
+                            }
+                            {
+                                !loadingAcademy && academy &&
+
+                                <FlatList
+                                    data={academy?.data.filter(acade => acade.educator.id === educatorDetails?.data?.id)}
+                                    keyExtractor={keyExtractor}
+                                    horizontal
+                                    pagingEnabled
+                                    scrollEnabled
+                                    snapToAlignment="center"
+                                    scrollEventThrottle={16}
+                                    decelerationRate={"fast"}
+                                    showsHorizontalScrollIndicator={false}
+                                    renderItem={renderItemAcademy}
+                                />
+                            }
+                        </View>
+
+
+                    </View>
 
                     {/*    <IF condition={tabIndex == 1}>
                         <NoItem message={"No Forex Signal! "}/>
@@ -986,8 +1207,117 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'row'
     },
+    streamCard: {
+        marginHorizontal: 10,
+        width: '90%',
+        height: heightPixel(180),
+        borderRadius: 14,
+        alignItems: "center",
+        justifyContent: 'center',
+        overflow: 'hidden'
+    },
+    streamLiveTag: {
+        zIndex: 1,
+        position: 'absolute',
+        left: 15,
+        top: 5,
+        flexDirection: 'row',
+
+        paddingHorizontal: pixelSizeHorizontal(5),
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 5,
+        minHeight: 20,
+        backgroundColor: Colors.errorRed
+    },
+    streamImage: {
+        height: '100%',
+        width: '100%',
+        borderRadius: 14,
+
+        resizeMode: 'cover'
+    },
+    liveText: {
+        fontFamily: Fonts.faktumBold,
+        fontSize: fontPixel(12),
+        color: Colors.text
+    },
 
 
+    academySection: {
+        marginTop: 15,
+        width: '100%',
+        height: heightPixel(350),
+
+        alignItems: 'center',
+    },
+    sectionTitle: {
+        width: '90%',
+        height: 60,
+        flexDirection:'row',
+
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    sectionTitleText: {
+        color: Colors.textDark,
+        fontSize: fontPixel(14),
+        fontFamily: Fonts.faktumBold
+    },
+    academyCardSlide: {
+        width: '100%',
+        height: heightPixel(320),
+    },
+    academyCard: {
+        marginHorizontal: pixelSizeHorizontal(10),
+        width: widthPixel(230),
+        height: heightPixel(300),
+        borderRadius: 14,
+        backgroundColor: "#fff",
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        padding: 14,
+    },
+    academyCardImageWrap: {
+        width: '100%',
+        height: heightPixel(135),
+        borderRadius: 14,
+
+        resizeMode: 'cover'
+    },
+    academyCardImage: {
+        height: '100%',
+        width: '100%',
+        borderRadius: 14,
+
+        resizeMode: 'cover'
+    },
+    academyCardBody: {
+        marginTop: 8,
+        alignItems: 'flex-start',
+        width: '100%'
+    },
+    description: {
+        marginTop: 8,
+        alignItems: 'flex-start',
+        width: '100%',
+        minHeight: 60,
+    },
+    descriptionText: {
+        color: Colors.textDark,
+        fontSize: fontPixel(12),
+        fontFamily: Fonts.faktumRegular
+    },
+    statusText: {
+        color: Colors.lightColor,
+        fontSize: fontPixel(12),
+        fontFamily: Fonts.faktumRegular
+    },
+    academyTitle: {
+        color: Colors.textDark,
+        fontSize: fontPixel(14),
+        fontFamily: Fonts.faktumBold
+    }
 })
 
 export default ViewEducator;

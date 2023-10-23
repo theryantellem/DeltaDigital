@@ -91,7 +91,12 @@ const Item = ({item, tickers}: itemProps) => {
 const LandingScreen = ({navigation}: RootStackScreenProps<'LandingScreen'>) => {
     const user = useAppSelector(state => state.user)
     const {User_Details,userData} = user
-    const {data: signals, isLoading: loadingSignals, refetch: refetchSignals} = useQuery(['get-user-Signals'], getSignalsTest)
+
+    const {
+        data: signals,
+        isLoading: loadingSignals,
+        refetch: refetchSignals
+    } = useQuery(['user-Signals'], getSignals)
 
 
     const [refreshing, setRefreshing] = useState(false);
@@ -378,6 +383,7 @@ if(!isLoading && userInfoData) {
 
     useRefreshOnFocus(fetchStrategies)
     useRefreshOnFocus(fetchAsset)
+    useRefreshOnFocus(refetchSignals)
     useRefreshOnFocus(refetchUserInfo)
 
 

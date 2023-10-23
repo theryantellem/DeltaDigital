@@ -21,8 +21,15 @@ import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPix
 import SegmentedControl from "../../../components/segment-control/SegmentContol";
 import HomeSegmentedTabs from "../../../components/signal/HomeSegmentTabs";
 import {useInfiniteQuery, useQuery} from "@tanstack/react-query";
-import {getEducators, getEducatorsFollowing, getSignals, getSignalsTest, listAcademy} from "../../../api/finix-api";
-import {useRefreshOnFocus, wait} from "../../../helpers";
+import {
+    educatorsLive,
+    getEducators,
+    getEducatorsFollowing,
+    getSignals,
+    getSignalsTest,
+    listAcademy, pastStreamerVideos
+} from "../../../api/finix-api";
+import {truncate, useRefreshOnFocus, wait} from "../../../helpers";
 import {Fonts} from "../../../constants/Fonts";
 import {IF} from "../../../helpers/ConditionJsx";
 import {AntDesign, Entypo, FontAwesome, Ionicons} from "@expo/vector-icons";
@@ -129,7 +136,15 @@ interface PropsSignal {
 }
 
 interface streamProps {
-    joinLiveStream: () => void
+    joinLiveStream: (educatorId:string,last_name:string,stream_url:string,photo: string,first_name:string) => void,
+    item: {
+        "id": string,
+        "first_name": string,
+        "last_name": string,
+        "photo": string
+        "is_live": number,
+        "stream_url": string
+    }
 }
 
 interface prosAcademy {
@@ -273,21 +288,25 @@ const ItemSignal = ({item, viewSignal, viewSignalImage}: PropsSignal) => {
     )
 }
 
-const ItemStreams = ({joinLiveStream}: streamProps) => {
+const ItemStreams = ({joinLiveStream,item}: streamProps) => {
 
 
     return (
 
-        <TouchableOpacity onPress={joinLiveStream} activeOpacity={0.8} style={styles.streamCard}>
+        <TouchableOpacity onPress={()=>joinLiveStream(item.id,item.last_name,item.stream_url, item.photo,item.first_name)} activeOpacity={0.8} style={styles.streamCard}>
             <View style={styles.streamLiveTag}>
                 <Entypo name="dot-single" size={24} color={"#fff"}/>
+                {
+                    item.is_live == 1 &&
+
                 <Text style={[styles.liveText, {}]}>
                     Live
                 </Text>
+                }
             </View>
 
             <Image style={styles.streamImage}
-                   source={require('../../../assets/images/streamIMG.png')}/>
+                   source={{uri:item.photo}}/>
 
         </TouchableOpacity>
     )
@@ -302,8 +321,19 @@ const ItemAcademy = ({viewAcademy, item}: prosAcademy) => {
         <TouchableOpacity onPress={() => viewAcademy(item.id)} activeOpacity={0.8} style={styles.academyCard}>
 
             <View style={styles.academyCardImageWrap}>
-                <Image style={styles.academyCardImage}
-                       source={{uri: item.thumbnail}}/>
+
+                <FastImage
+
+                    style={styles.academyCardImage}
+                    source={{
+                        uri: item.thumbnail,
+
+                        cache: FastImage.cacheControl.web,
+                        priority: FastImage.priority.normal,
+
+                    }}
+                    resizeMode={FastImage.resizeMode.cover}
+                />
             </View>
             <View style={styles.academyCardBody}>
                 <Text style={styles.academyTitle}>
@@ -311,7 +341,7 @@ const ItemAcademy = ({viewAcademy, item}: prosAcademy) => {
                 </Text>
                 <View style={styles.description}>
                     <Text style={styles.descriptionText}>
-                        {item.description}
+                        {truncate(item.description,80)}
                     </Text>
                 </View>
 
@@ -379,6 +409,13 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
     } = useQuery([`getEducatorsFollowing`], getEducatorsFollowing)
 
 
+  const {
+        data: liveEducators,
+        isLoading:loadingLive,
+        refetch: fetchLive
+    } = useQuery([`educators-Live`], educatorsLive)
+
+
     const {
         data: signals,
         isLoading: loadingSignals,
@@ -391,7 +428,13 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
         refetch: refetchAcademy
     } = useQuery(['list-Academy'], listAcademy)
 
+    const {
+        data: pastStreams,
+        isLoading: loadingPastStreams,
+        refetch: refetchStreams
+    } = useQuery(['list-past-Streamer-Videos'], ()=>pastStreamerVideos(userData.id))
 
+//console.log(pastStreams)
     const viewEducator = (details: {}) => {
         navigation.navigate('MainSignalNav', {
             screen: 'ViewEducator', params: details
@@ -440,9 +483,11 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
         })
     }
 
-    const joinLiveStream = () => {
+    const joinLiveStream = (educatorId:string,last_name:string,stream_url:string,photo: string,first_name:string) => {
         navigation.navigate('MainSignalNav', {
-            screen: 'LiveStream'
+            screen: 'LiveStream',params:{
+                last_name,stream_url,photo,first_name,educatorId
+            }
         })
     }
     const viewAcademy = (id: string) => {
@@ -463,7 +508,7 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
         [],
     );
     const renderItemStreams = useCallback(
-        ({item}) => <ItemStreams joinLiveStream={joinLiveStream}/>,
+        ({item}) => <ItemStreams item={item} joinLiveStream={joinLiveStream}/>,
         [],
     );
     const renderItemAcademy = useCallback(
@@ -500,6 +545,7 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
 
     useRefreshOnFocus(fetchFollowing)
     useRefreshOnFocus(refetchSignals)
+    useRefreshOnFocus(fetchLive)
 
 
     return (
@@ -628,9 +674,38 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
                             </Text>
                         </View>
                         <View style={styles.liveStreaming}>
+                            {
+                                loadingLive && <ActivityIndicator color={Colors.primary} size='small'/>
+                            }
+
+
+                            {!loadingLive && liveEducators && liveEducators?.data?.length < 1 &&
+                                <View style={styles.messageWrap}>
+
+
+                                    <View style={styles.imageWrap}>
+
+                                        <Image source={require('../../../assets/images/EmptyBox/empty_state.png')}
+                                               style={styles.fileBroken}/>
+
+
+                                    </View>
+
+
+                                    <Text style={[styles.message,{
+                                        color: Colors.textDark
+                                    }]}>
+                                       No Streamer is live now
+
+                                    </Text>
+                                </View>
+                            }
+                            {
+                                !loadingLive && liveEducators &&
 
                             <FlatList
-                                data={FakeStreams}
+                                data={liveEducators?.data}
+
                                 keyExtractor={keyExtractor}
                                 horizontal
                                 pagingEnabled
@@ -641,6 +716,7 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
                                 showsHorizontalScrollIndicator={false}
                                 renderItem={renderItemStreams}
                             />
+                            }
 
                         </View>
 
@@ -658,6 +734,8 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
 
                             </TouchableOpacity>
                         </View>
+
+
                         <View style={styles.academyCardSlide}>
                             {!loadingAcademy && academy && academy?.data?.length < 1 &&
                                 <View style={styles.messageWrap}>
@@ -1100,7 +1178,7 @@ const styles = StyleSheet.create({
     },
     descriptionText: {
         color: Colors.textDark,
-        fontSize: fontPixel(14),
+        fontSize: fontPixel(12),
         fontFamily: Fonts.faktumRegular
     },
     statusText: {

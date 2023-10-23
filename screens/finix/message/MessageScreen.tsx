@@ -8,7 +8,7 @@ import {
     TextInput,
     TouchableOpacity,
     KeyboardAvoidingView,
-    Platform, Button, ActivityIndicator, Image, RefreshControl
+    Platform, Button, ActivityIndicator, Image, RefreshControl, Keyboard
 } from 'react-native';
 import {SafeAreaView} from "react-native-safe-area-context";
 import {SignalStackScreenProps} from "../../../types";
@@ -244,7 +244,7 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
 
         const me = channel.me;
         onChangeMembers([...channel.members.values()]);
-        console.log("Subscription Succeeded")
+      //  console.log("Subscription Succeeded")
         log(`Me: ${me}`);
     };
 
@@ -294,8 +294,9 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
 
     const {isLoading: isSending, mutate} = useMutation(['sendMessage'], sendMessage, {
         onSuccess: (data) => {
-
+console.log(data)
             if (data.success) {
+                Keyboard.dismiss()
                 setText('')
                 refetch()
             }

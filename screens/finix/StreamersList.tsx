@@ -1,4 +1,4 @@
-import React, {SetStateAction, useCallback, useState} from 'react';
+import React, {SetStateAction, useCallback, useMemo, useRef, useState} from 'react';
 
 import {
     Text,
@@ -8,15 +8,15 @@ import {
     ScrollView,
     TouchableOpacity,
     Image,
-    ActivityIndicator, RefreshControl, Platform
+    ActivityIndicator, RefreshControl, Platform, Pressable
 } from 'react-native';
 import {SafeAreaView} from "react-native-safe-area-context";
 import HeaderWithTitle from "../../components/cyborg/header/HeaderWithTitle";
 import FastImage from "react-native-fast-image";
 import {Fonts} from "../../constants/Fonts";
-import {SimpleLineIcons} from "@expo/vector-icons";
+import {Entypo, Ionicons, MaterialIcons, Octicons, SimpleLineIcons} from "@expo/vector-icons";
 import Colors from "../../constants/Colors";
-import {fontPixel, heightPixel, pixelSizeVertical, widthPixel} from "../../helpers/normalize";
+import {fontPixel, heightPixel, pixelSizeHorizontal, pixelSizeVertical, widthPixel} from "../../helpers/normalize";
 import {IF} from "../../helpers/ConditionJsx";
 import {FlashList} from "@shopify/flash-list";
 import {wait} from "../../helpers";
@@ -32,11 +32,49 @@ import ToastAnimated from "../../components/toast";
 import SearchInput from "../../components/inputs/SearchInput";
 import GradientSegmentControl from "../../components/segment-control/GradientSegmentControl";
 import SegmentedControl from "../../components/segment-control/SegmentContol";
+import BottomSheet, {BottomSheetBackdrop, BottomSheetFlatList} from "@gorhom/bottom-sheet";
+import {
+    BottomSheetDefaultBackdropProps
+} from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
 
+
+interface itemProps {
+    selected: string,
+    item: { "category": {
+        "id": number,
+            "name": string,
+            "photo": null, "type": string }, "id": number }
+
+}
+
+const SelectValue = ({selected, item,}: itemProps) => {
+
+
+    return (
+
+        <TouchableOpacity
+            style={[styles.selectBtn, {
+                borderBottomColor: Colors.borderColor,
+            }]}>
+
+            <View style={styles.item}>
+                <Ionicons name="ios-checkbox" size={14} color={Colors.primary}/>
+
+
+                <Text style={styles.itemText}>
+                    {item.category.name}
+                </Text>
+
+
+            </View>
+        </TouchableOpacity>
+    )
+}
 
 interface props {
 
     followEducator: (educatorId: string) => void
+    setStreamerCat: (categories: []) => void
     unFollowEducator: (educatorId: string) => void
     unFollowing: boolean,
     following: boolean,
@@ -50,12 +88,20 @@ interface props {
         "photo": string,
         "total_followers": number,
         "following": boolean,
-
+        categories: []
     }
 
 }
 
-const EducatorItem = ({item, selected, followEducator, unFollowEducator, following, unFollowing}: props) => {
+const EducatorItem = ({
+                          setStreamerCat,
+                          item,
+                          selected,
+                          followEducator,
+                          unFollowEducator,
+                          following,
+                          unFollowing
+                      }: props) => {
 
     return (
         <View style={styles.favList}>
@@ -88,10 +134,17 @@ const EducatorItem = ({item, selected, followEducator, unFollowEducator, followi
                     <Text style={styles.bodySubText}>
                         {item?.total_followers} <Text style={{fontFamily: Fonts.faktumRegular}}>followers </Text>
                     </Text>
-                    {/* <Octicons name="dot-fill" size={14} color="#D1D5DB"/>
-                    <Text style={styles.bodySubText}>
-                        $zainab
-                    </Text>*/}
+                    <Octicons name="dot-fill" size={12} color={"#737373"}/>
+                    <Pressable onPress={() => setStreamerCat(item.categories)} style={styles.seeCategories}>
+                        <Text style={[styles.bodySubText, {
+                            fontFamily: Fonts.faktumMedium
+                        }]}>
+                            Categories
+                        </Text>
+                        <Entypo name="chevron-right" size={14} color="#fff"/>
+                    </Pressable>
+
+
                 </View>
 
             </View>
@@ -160,11 +213,38 @@ const StreamersList = ({navigation}: SignalStackScreenProps<'StreamersList'>) =>
         //  setScreen(index === 0 ? 'Banks' : 'Wallets')
     };
 
+    const [streamerCategories, setStreamerCategories] = useState([]);
 
     const [searchValue, setSearchValue] = useState('');
     const queryClient = useQueryClient()
     const dispatch = useAppDispatch()
     const [refreshing, setRefreshing] = useState(false);
+
+
+    const snapPoints = useMemo(() => ["1%", "65%", "70%"], []);
+    const catSheetRef = useRef<BottomSheet>(null);
+
+    const handleSnapPress = useCallback((index: number) => {
+        catSheetRef.current?.snapToIndex(index);
+    }, []);
+    const handleClose = useCallback(() => {
+        catSheetRef.current?.close();
+    }, []);
+
+
+    const renderBackdrop = useCallback(
+        (props: JSX.IntrinsicAttributes & BottomSheetDefaultBackdropProps) => (
+            <BottomSheetBackdrop
+                style={{
+                    backgroundColor: 'rgba(25,25,25,0.34)'
+                }}
+                {...props}
+                disappearsOnIndex={0}
+                appearsOnIndex={1}
+            />
+        ),
+        []
+    );
 
     const {
         data: dataFollowing,
@@ -261,30 +341,24 @@ const StreamersList = ({navigation}: SignalStackScreenProps<'StreamersList'>) =>
         })
     }
 
+    const streamerCat = (Categories) => {
+        handleSnapPress(1)
+        setStreamerCategories(Categories)
+    }
+
     const renderItem = useCallback(
-        ({item}) => <EducatorItem selected={selected} unFollowing={unFollowing} following={following} item={item}
+        ({item}) => <EducatorItem setStreamerCat={streamerCat} selected={selected} unFollowing={unFollowing}
+                                  following={following} item={item}
                                   followEducator={followEducatorNow} unFollowEducator={unFollowEducatorNow}/>,
         [following, unFollowing, selected],
     );
 
 
+    const renderItemCat = useCallback(({item}: any) => (
+        <SelectValue selected={selected} item={item}/>
+    ), [selected]);
+
     const keyExtractor = useCallback((item: { id: any; }) => item.id, [],);
-
-    const renderHeader = useCallback(
-        () =>
-            <SearchInput
-
-                placeholder="Search educator"
-                keyboardType={"default"}
-
-                onChangeText={(e) => {
-                    setSearchValue(e);
-
-                }}
-                value={searchValue}
-            />,
-        [tabIndex],
-    );
 
 
     const refresh = () => {
@@ -301,123 +375,167 @@ const StreamersList = ({navigation}: SignalStackScreenProps<'StreamersList'>) =>
         )
     }
 
+    //  console.log(filterUsers[0].categories)
+
     return (
-        <SafeAreaView style={styles.safeArea}>
-            <ImageBackground source={require('../../assets/images/signal/streamer_BG.png')}
-                             resizeMode={'cover'}
-                             style={styles.dashboardImage}>
-                <HeaderWithTitle title="Streamers List"/>
+        <>
+
+            <SafeAreaView style={styles.safeArea}>
+                <ImageBackground source={require('../../assets/images/signal/streamer_BG.png')}
+                                 resizeMode={'cover'}
+                                 style={styles.dashboardImage}>
+                    <HeaderWithTitle title="Streamers List"/>
 
 
-                <View style={styles.flatList}>
-                    {
-                        isLoading && <ActivityIndicator size='small' color={Colors.primary}/>
-                    }
+                    <View style={styles.flatList}>
+                        {
+                            isLoading && <ActivityIndicator size='small' color={Colors.primary}/>
+                        }
 
-                    {
-                        Platform.OS === 'ios' ?
+                        {
+                            Platform.OS === 'ios' ?
 
-                            <GradientSegmentControl tabs={["Educators", "Following"]}
-                                                    currentIndex={tabIndex}
-                                                    onChange={handleTabsChange}
-                                                    segmentedControlBackgroundColor={'#7676801F'}
-                                                    activeSegmentBackgroundColor={"#fff"}
+                                <GradientSegmentControl tabs={["Educators", "Following"]}
+                                                        currentIndex={tabIndex}
+                                                        onChange={handleTabsChange}
+                                                        segmentedControlBackgroundColor={'#7676801F'}
+                                                        activeSegmentBackgroundColor={"#fff"}
 
-                                                    textColor={"#fff"}
-                                                    paddingVertical={pixelSizeVertical(12)}/>
-                            :
+                                                        textColor={"#fff"}
+                                                        paddingVertical={pixelSizeVertical(12)}/>
+                                :
 
-                            <SegmentedControl tabs={["Educators", "Following"]}
-                                              currentIndex={tabIndex}
-                                              onChange={handleTabsChange}
-                                              segmentedControlBackgroundColor={Colors.tintPrimary}
-                                              activeSegmentBackgroundColor={Colors.primary}
-                                              activeTextColor={Colors.text}
-                                              textColor={"#CDD4D7"}
-                                              paddingVertical={pixelSizeVertical(16)}/>
-                    }
+                                <SegmentedControl tabs={["Educators", "Following"]}
+                                                  currentIndex={tabIndex}
+                                                  onChange={handleTabsChange}
+                                                  segmentedControlBackgroundColor={Colors.tintPrimary}
+                                                  activeSegmentBackgroundColor={Colors.primary}
+                                                  activeTextColor={Colors.text}
+                                                  textColor={"#CDD4D7"}
+                                                  paddingVertical={pixelSizeVertical(16)}/>
+                        }
 
-                    <SearchInput
+                        <SearchInput
 
-                        placeholder="Search educator"
-                        keyboardType={"default"}
+                            placeholder="Search streamer"
+                            keyboardType={"default"}
 
-                        onChangeText={(e) => {
-                            setSearchValue(e);
+                            onChangeText={(e) => {
+                                setSearchValue(e);
 
-                        }}
-                        value={searchValue}
-                    />
+                            }}
+                            value={searchValue}
+                        />
 
-                    {
-                        !isLoading && data &&
+                        {
+                            !isLoading && data &&
 
-                        <IF condition={tabIndex === 0}>
-
-
-                            <FlashList
-                                estimatedItemSize={200}
-                                refreshing={isLoading}
-                                //ListHeaderComponent={renderHeader}
-
-                                scrollEnabled
-                                showsVerticalScrollIndicator={false}
-                                data={filterUsers}
-                                renderItem={renderItem}
-                                keyExtractor={keyExtractor}
-                                onEndReachedThreshold={0.3}
-                                refreshControl={
-                                    <RefreshControl
-                                        tintColor={Colors.text}
-                                        refreshing={refreshing}
-                                        onRefresh={refresh}
-                                    />
-                                }
+                            <IF condition={tabIndex === 0}>
 
 
-                            />
-                        </IF>
-                    }
+                                <FlashList
+                                    estimatedItemSize={200}
+                                    refreshing={isLoading}
+                                    //ListHeaderComponent={renderHeader}
+
+                                    scrollEnabled
+                                    showsVerticalScrollIndicator={false}
+                                    data={filterUsers}
+                                    renderItem={renderItem}
+                                    keyExtractor={keyExtractor}
+                                    onEndReachedThreshold={0.3}
+                                    refreshControl={
+                                        <RefreshControl
+                                            tintColor={Colors.text}
+                                            refreshing={refreshing}
+                                            onRefresh={refresh}
+                                        />
+                                    }
 
 
-                    {
-                        !isLoading && data &&
-
-                        <IF condition={tabIndex === 1}>
-
-
-                            <FlashList
-                                estimatedItemSize={200}
-                                refreshing={isLoading}
-
-                                // ListHeaderComponent={renderHeader}
-                                scrollEnabled
-                                showsVerticalScrollIndicator={false}
-                                data={filterUsers?.filter(users => users.following == true)}
-                                renderItem={renderItem}
-                                keyExtractor={keyExtractor}
-                                onEndReachedThreshold={0.3}
-                                refreshControl={
-                                    <RefreshControl
-                                        tintColor={Colors.text}
-                                        refreshing={refreshing}
-                                        onRefresh={refresh}
-                                    />
-                                }
+                                />
+                            </IF>
+                        }
 
 
-                            />
-                        </IF>
-                    }
+                        {
+                            !isLoading && data &&
+
+                            <IF condition={tabIndex === 1}>
+
+
+                                <FlashList
+                                    estimatedItemSize={200}
+                                    refreshing={isLoading}
+
+                                    // ListHeaderComponent={renderHeader}
+                                    scrollEnabled
+                                    showsVerticalScrollIndicator={false}
+                                    data={filterUsers?.filter(users => users.following == true)}
+                                    renderItem={renderItem}
+                                    keyExtractor={keyExtractor}
+                                    onEndReachedThreshold={0.3}
+                                    refreshControl={
+                                        <RefreshControl
+                                            tintColor={Colors.text}
+                                            refreshing={refreshing}
+                                            onRefresh={refresh}
+                                        />
+                                    }
+
+
+                                />
+                            </IF>
+                        }
+
+                    </View>
+
+
+                    <ToastAnimated/>
+
+
+                </ImageBackground>
+            </SafeAreaView>
+            <BottomSheet
+
+                index={0}
+                ref={catSheetRef}
+                snapPoints={snapPoints}
+                backdropComponent={renderBackdrop}
+                backgroundStyle={{
+                    backgroundColor: Colors.dark.background,
+                }}
+                handleIndicatorStyle={{backgroundColor: "#fff"}}
+            >
+                <View style={styles.sheetHead}>
+
+                    <View style={{
+                        width: '5%'
+                    }}/>
+
+                    <Text style={styles.sheetTitle}>
+                        Streamer category
+                    </Text>
+
+                    <TouchableOpacity onPress={handleClose} style={[styles.dismiss, {
+                        backgroundColor: Colors.textDark,
+
+
+                    }]}>
+                        <Ionicons name="close-sharp" size={20} color={Colors.text}/>
+                    </TouchableOpacity>
 
                 </View>
 
 
-                <ToastAnimated/>
+                <BottomSheetFlatList data={streamerCategories}
+                                     renderItem={renderItemCat}
+                                     keyExtractor={keyExtractor}
+                                     contentContainerStyle={styles.flatListCat}
+                                     showsVerticalScrollIndicator={false}/>
 
-
-            </ImageBackground>
-        </SafeAreaView>
+            </BottomSheet>
+        </>
     );
 };
 
@@ -519,8 +637,16 @@ const styles = StyleSheet.create({
     },
     bodySubText: {
         fontSize: fontPixel(12),
-        fontFamily: Fonts.faktumMedium,
+        fontFamily: Fonts.faktumRegular,
         color: Colors.tintText
+    },
+    seeCategories: {
+        marginLeft: 5,
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: 20,
+        width: widthPixel(140),
+
     },
     flagIcon: {
         width: widthPixel(15),
@@ -534,6 +660,71 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
     },
+
+    flatListCat: {
+        marginTop: 10,
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    sheetHead: {
+        paddingHorizontal: pixelSizeHorizontal(20),
+
+        height: 50,
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexDirection: 'row'
+    },
+    sheetTitle: {
+        width: '70%',
+        textAlign: 'center',
+        fontSize: fontPixel(14),
+        fontFamily: Fonts.faktumMedium,
+        color: Colors.tintText
+    },
+    dismiss: {
+
+        borderRadius: 30,
+        height: 30,
+        width: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.10,
+        shadowRadius: 7.22,
+
+        elevation: 3,
+    },
+    selectBtn: {
+        borderRadius: 5,
+        marginVertical: pixelSizeVertical(10),
+        width: '100%',
+        height: heightPixel(50),
+        justifyContent: 'space-evenly',
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderBottomWidth: 1,
+
+    },
+    itemText: {
+        marginLeft: 8,
+        fontSize: fontPixel(14),
+        textTransform: 'capitalize',
+        color: Colors.text,
+        fontFamily: Fonts.faktumMedium,
+    },
+    item: {
+        flexDirection: 'row',
+        width: '90%',
+        height: '90%',
+        alignItems: 'center',
+        justifyContent: 'flex-start'
+    },
+
 
 })
 

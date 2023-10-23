@@ -1,6 +1,16 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 
-import {Text, View, StyleSheet, TouchableOpacity, Pressable, ActivityIndicator, AppState} from 'react-native';
+import {
+    Text,
+    View,
+    StyleSheet,
+    TouchableOpacity,
+    Pressable,
+    ActivityIndicator,
+    AppState,
+    Button,
+    Dimensions, ScrollView
+} from 'react-native';
 import {StatusBar} from "expo-status-bar";
 import {Ionicons} from "@expo/vector-icons";
 import Colors from "../../../constants/Colors";
@@ -10,13 +20,21 @@ import {Fonts} from "../../../constants/Fonts";
 import VideoPlayer from "react-native-media-console";
 import {SignalStackScreenProps} from "../../../types";
 
-const VideoScreen = ({navigation,route}: SignalStackScreenProps<'VideoScreen'>) => {
-    const  {videoTitle,videoUrl} = route.params
+
+import {Video, ResizeMode,Audio} from 'expo-av';
+import {convertSecondsToTime} from "../../../helpers";
+
+
+const VideoScreen = ({navigation, route}: SignalStackScreenProps<'VideoScreen'>) => {
+    const {videoTitle, videoUrl, description, completed, length, caption, posterImage} = route.params
+
+    const [isVideoLoading, setIsVideoLoading] = useState(true)
     const [fullScreen, setFullScreen] = useState(false);
     const [paused, setPaused] = useState(true)
     const video = useRef(null);
+    const [status, setStatus] = React.useState({});
     const goBack = () => {
-    setPaused(true)
+        setPaused(true)
         navigation.goBack()
     }
 
@@ -31,8 +49,9 @@ const VideoScreen = ({navigation,route}: SignalStackScreenProps<'VideoScreen'>) 
     }, []);
 
 
-
-
+    // Set video dimension based on its width, so the video doesn't stretched on any devices.
+    // The video dimension ratio is 11 : 9 for width and height
+    let videoWidth = Dimensions.get('window').width;
 
 
     return (
@@ -66,30 +85,90 @@ const VideoScreen = ({navigation,route}: SignalStackScreenProps<'VideoScreen'>) 
                 </View>
             }
             */}
+            <ScrollView style={{
+                width: '100%',
+                marginBottom: 50,
+            }} contentContainerStyle={styles.scrollView} scrollEnabled
+                        showsVerticalScrollIndicator={false}>
+                <View style={[styles.videoContainer]}>
 
-            <View style={[styles.videoContainer]}>
-                <VideoPlayer
-//isFullscreen
+                    {
+                        isVideoLoading &&
+                        <View style={styles.videoLoader}>
+                            <ActivityIndicator color={Colors.primary} size={'small'}/>
 
-                    toggleResizeModeOnFullscreen
-                    onEnterFullscreen={() => setFullScreen(true)}
-                    fullscreen={fullScreen}
-                    fullscreenAutorotate
-                    fullscreenOrientation='all'
-                    playWhenInactive={false}
-                    playInBackground={false}
-                    paused={paused}
-                    pictureInPicture
-                    containerStyle={styles.video}
-                    videoRef={video}
-                    source={{uri: videoUrl}}
-                    navigator={navigation}
+                        </View>
+                    }
+                    <Video
+                        rate={1.0}
 
-                    showDuration
+                    //    playsInSilentLockedModeIOS={ true }
+                        onLoad={(status) => {
+                            // console.log(status)
+                            setIsVideoLoading(!status.isLoaded)
 
-                    seekColor={Colors.primary}
-                />
-            </View>
+                        }}
+                        ref={video}
+                        style={styles.video}
+                        source={{
+                            uri: videoUrl,
+                        }}
+
+                        // posterSource={{uri:posterImage}}
+                        // usePoster
+
+                        useNativeControls
+                        resizeMode={ResizeMode.CONTAIN}
+                        onPlaybackStatusUpdate={status => {
+                            setStatus(() => status)
+
+                        }}
+                    />
+
+                    <View style={styles.caption}>
+                        <Text style={styles.captionText}>
+                            {caption}
+                        </Text>
+                    </View>
+
+
+                </View>
+
+
+                <View style={styles.statsContainer}>
+                    <View style={styles.statBox}>
+                        <Text style={styles.statTitleText}>
+                            {completed}
+                        </Text>
+                        <Text style={styles.statBoxText}>
+                            completed
+                        </Text>
+                    </View>
+                    <View style={styles.statBox}>
+                        <Text style={[styles.statTitleText, {}]}>
+                            {convertSecondsToTime(length)}
+                        </Text>
+                        <Text style={styles.statBoxText}>
+                            Length
+                        </Text>
+                    </View>
+                </View>
+
+                <View style={styles.descriptionContainer}>
+                    <View style={styles.descriptionBox}>
+                        <Text style={styles.descriptionTitle}>
+                            Description
+                        </Text>
+                    </View>
+
+                    <View style={styles.descriptionTextWrap}>
+                        <Text style={styles.descriptionText}>
+                            {description}
+                        </Text>
+                    </View>
+
+                </View>
+            </ScrollView>
         </SafeAreaView>
 
     );
@@ -149,15 +228,100 @@ const styles = StyleSheet.create({
     video: {
         alignSelf: 'center',
         width: '100%',
-        maxHeight: '90%',
+        height: heightPixel(500),
         alignItems: 'center',
         justifyContent: 'center',
     },
     videoContainer: {
-        flex: 1,
+        height: heightPixel(500),
         width: '100%',
         alignItems: 'center',
     },
+    descriptionContainer: {
+        width: '100%',
+        alignItems: 'flex-start',
+
+    },
+    descriptionBox: {
+        height: heightPixel(60),
+        paddingHorizontal: pixelSizeHorizontal(20),
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        width: '100%',
+        borderBottomColor: Colors.border,
+        borderBottomWidth: 0.5,
+    },
+    descriptionTitle: {
+        color: Colors.textDark,
+        textTransform: 'capitalize',
+        fontSize: fontPixel(16),
+        fontFamily: Fonts.faktumSemiBold
+    },
+
+    descriptionTextWrap: {
+        paddingHorizontal: pixelSizeHorizontal(20),
+        width: '100%',
+        marginTop: 15,
+    },
+    descriptionText: {
+        color: Colors.textDark,
+        textTransform: 'capitalize',
+        fontSize: fontPixel(14),
+        fontFamily: Fonts.faktumRegular
+    },
+    statsContainer: {
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: "space-evenly",
+        flexDirection: 'row',
+        height: 80,
+        borderBottomColor: Colors.border,
+        borderBottomWidth: 0.5,
+        paddingHorizontal: pixelSizeHorizontal(20),
+    },
+    statBox: {
+
+        minWidth: 120,
+        height: 60,
+        alignItems: 'center',
+        justifyContent: 'center',
+
+    },
+    statTitleText: {
+        color: Colors.textDark,
+        fontSize: fontPixel(14),
+        fontFamily: Fonts.faktumBold
+    },
+    statBoxText: {
+        color: "#3f3f3f",
+        textTransform: 'capitalize',
+        fontSize: fontPixel(12),
+        fontFamily: Fonts.faktumMedium
+    },
+    caption: {
+        position: 'absolute',
+        width: '80%',
+        alignItems: 'center',
+        minHeight: 40,
+        justifyContent: 'center',
+
+    },
+    captionText: {
+        color: Colors.tintText,
+        textTransform: 'capitalize',
+        fontSize: fontPixel(12),
+        fontFamily: Fonts.faktumMedium
+    },
+    videoLoader:{
+        position: 'absolute',
+        width: '80%',
+        alignItems: 'center',
+
+        justifyContent: 'center',
+        top:100
+    }
+
+
 })
 
 export default VideoScreen;

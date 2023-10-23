@@ -20,7 +20,7 @@ import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 
 import {setResponse, unSetResponse} from "../../../app/slices/userSlice";
-import {Ionicons} from "@expo/vector-icons";
+import {FontAwesome, Ionicons} from "@expo/vector-icons";
 import {MyButton} from "../../../components/MyButton";
 import {postAReview} from "../../../api/finix-api";
 import {LinearGradient} from "expo-linear-gradient";
@@ -177,7 +177,8 @@ const LeaveReview = ({navigation, route}: SignalStackScreenProps<'LeaveReview'>)
                             starArray.map((val, idx) => (
                                 <Animated.View key={idx.toString()} entering={FadeInLeft} exiting={FadeOutLeft}
                                                layout={Layout.easing(Easing.bounce).delay(20)} style={styles.star}>
-                                    <SvgStarComponent/>
+
+                                    <FontAwesome name="star" size={64} color={Colors.pendingYellow} />
                                 </Animated.View>
                             ))
                         }
