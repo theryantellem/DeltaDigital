@@ -15,7 +15,7 @@ class DashboardController extends Controller
 {
     function index()
     {
-        dd(\Spatie\Permission\Models\Role::get());
+        dd(auth()->user()->getRoleNames());
 
         $user = Auth::guard('admin')->user();
 
