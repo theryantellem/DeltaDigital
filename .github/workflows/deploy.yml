@@ -20,4 +20,4 @@ jobs:
       - name: Deploy to the server
         run: |
           sudo apt-get install sshpass
-          sshpass -p ${{ secrets.FTP_PASSWORD }} ssh -v ${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }} "cd /var/www/html && git pull"
+          sshpass -p Delta2022Digital ssh -v root@159.65.227.152 "cd /var/www/html && git pull"
