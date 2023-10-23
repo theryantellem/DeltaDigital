@@ -1,0 +1,23 @@
+name: Deployment
+
+on:
+  push:
+    branches:
+      production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Composer dependencies
+        run: composer install
+
+      - name: Deploy to the server
+        run: |
+          sudo apt-get install sshpass
+          sshpass -p ${{ secrets.FTP_PASSWORD }} ssh ${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }} "cd /var/www/html && git pull"
