@@ -113,12 +113,8 @@
 
                     this.errors = {}
 
-                    if (!this.name) {
-                        this.errors.name = "Name is required.";
-                    }
-
-                    if (this.description.length > 10000) {
-                        this.errors.description = "Description is too long.";
+                    if (!this.title) {
+                        this.errors.title = "Name is required.";
                     }
 
                     if (!this.file) {

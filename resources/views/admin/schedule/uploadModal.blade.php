@@ -12,13 +12,13 @@
                 <div class="mb-3">
                     <label>Title</label>
                     <input class="form-control form-control-sm" v-model="title" type="text">
-                    <span v-if="errors?.title" class="text-danger">@{{ errors?.title[0] }}</span>
+                    <span v-if="errors?.title" class="text-danger">@{{ errors?.title }}</span>
                 </div>
                 <div class="mb-3">
                     <label>Video File</label>
                     <input class="form-control form-control-sm" ref="fileInput" @change="handleFileChange($event)"
                         id="formFileSm" type="file">
-                    <span v-if="errors?.file" class="text-danger">@{{ errors?.file[0] }}</span>
+                    <span v-if="errors?.file" class="text-danger">@{{ errors?.file }}</span>
                 </div>
                 <div>
                     <button :disabled="loading" @click.prevent="uploadFile" class="btn btn-primary me-1">
