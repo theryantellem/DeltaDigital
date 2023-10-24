@@ -50,7 +50,10 @@
                                         </div>
                                     </td>
                                     <td><span class="d-flex">@{{ signal?.category?.name }}</span></td>
-                                    <td><span class="d-flex ">@{{ signal?.order_type }}</span></td>
+                                    <td>
+                                        <span class="d-flex"
+                                            v-if="signal?.category?.type === 'trade'">@{{ signal?.order_type }}</span>
+                                    </td>
                                     <td><span class="d-flex justify-content-center">@{{ signal?.entry_price }}</span></td>
                                     <td>
                                         <span class="d-flex justify-content-center">@{{ signal?.stop_loss }}</span>
