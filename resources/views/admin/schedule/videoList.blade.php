@@ -6,11 +6,12 @@
     <div class="card">
         <div class="card-body">
             <div class="post-img">
-                <video></video>
+                <video width="330px" height="200px" :src="video?.video_file" autoplay loop muted>
+                </video>
             </div>
             <div class="post-see d-flex align-items-center mt-3">
                 <div class="d-flex justify-content-between">
-                    <h6 class="mb-0">@{{ video?.title }}/h6>
+                    <h6 class="mb-0">@{{ video?.title }}</h6>
                 </div>
             </div>
             {{-- <div class="mt-3">

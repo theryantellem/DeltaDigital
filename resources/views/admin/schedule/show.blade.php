@@ -196,6 +196,8 @@
 
                             this.clearForm();
 
+                            this.getVideos();
+
                             Notiflix.Notify.Success(response.data.message);
 
                         })
