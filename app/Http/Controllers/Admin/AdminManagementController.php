@@ -58,7 +58,7 @@ class AdminManagementController extends Controller
             $imageUrl = null;
 
             if ($request->hasFile('photo')) {
-                $imageUrl = uploadFile($request->file('photo'), "educator");
+                $imageUrl = uploadFile($request->file('photo'), "educator", "do_spaces");
             }
 
             $admin = Admin::create([
@@ -125,7 +125,7 @@ class AdminManagementController extends Controller
         $imageUrl = $admin->photo;
 
         if ($request->hasFile('photo')) {
-            $imageUrl = uploadFile($request->file('photo'), "educator");
+            $imageUrl = uploadFile($request->file('photo'), "educator", "do_spaces");
         }
 
         $admin->update([

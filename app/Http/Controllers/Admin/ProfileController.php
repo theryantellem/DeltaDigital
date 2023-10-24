@@ -65,12 +65,7 @@ class ProfileController extends Controller
         $user = $request->user();
 
         if ($request->hasFile('photo')) {
-            // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
-            $image = $request->file('photo');
-            $image_name = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('images/profile'), $image_name);
-
-            $photo = url('/images/profile/' . $image_name);
+            $photo = uploadFile($request->file('photo'), "images/profile/","do_spaces");
         } else {
             $photo = null;
         }

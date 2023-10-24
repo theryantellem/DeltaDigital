@@ -42,7 +42,7 @@ class CategoryController extends Controller
             $photo = null;
 
             if ($request->hasFile('photo')) {
-                $photo = uploadFile($request->file('photo'), "category");
+                $photo = uploadFile($request->file('photo'), "category", "do_spaces");
             }
 
             $category = Category::create([
@@ -98,7 +98,7 @@ class CategoryController extends Controller
             $photo = $category->photo;
 
             if ($request->hasFile('photo')) {
-                $photo = uploadFile($request->file('photo'), "category");
+                $photo = uploadFile($request->file('photo'), "category", "do_spaces");
             }
 
             $category->update([

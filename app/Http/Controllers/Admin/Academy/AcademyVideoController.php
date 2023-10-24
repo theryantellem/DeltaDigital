@@ -29,7 +29,12 @@ class AcademyVideoController extends Controller
         ]);
 
         $module = AcademyModule::where('uuid', $request->module_uuid)->first();
-        $video = $request->file('video_file')->store('academy/videos', 'public_uploads');
+
+        $video = NULL;
+
+        $video = uploadFile($request->file('video_file'), "academy/videos", "do_spaces");
+
+        // $video = $request->file('video_file')->store('academy/videos', 'public_uploads');
 
         $uploaded = $module->videos()->create([
             'name' => $request->name,

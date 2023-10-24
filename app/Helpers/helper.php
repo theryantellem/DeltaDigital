@@ -144,27 +144,14 @@ if (!function_exists('followersPushTokens')) {
 if (!function_exists('uploadFile')) { /* send to log" */
     function uploadFile($file, $folder, $driver = "")
     {
-        // if (str_contains("b2", $driver)) {
-        //     // $fileUrl = env('B2_BUCKET_URL') . '/' . Storage::disk('b2')->put("{$folder}", $file);
-        //     $backblaze = new BlackblazeService();
-        //     $fileName = $file->getClientOriginalName();
-        //     // $filePath = "{$folder}/" . $fileName;
-        //     $fileUrl = $backblaze->upload($fileName, $file);
-        //     return $fileUrl;
-        // } else if (str_contains("s3", $driver)) {
-        //     $fileName = $file->getClientOriginalName();
-        //     $filePath = "{$folder}/" . $fileName;
-        //     $path = Storage::disk('s3')->put($filePath, file_get_contents($file));
-        //     $fileUrl = Storage::disk('s3')->url($path);
-        // } else {
+        if ($driver === "do_spaces") {
+            $extension = $file->getClientOriginalExtension(); // Get the file extension (e.g., 'jpg', 'png', 'pdf')
+            // Generate a unique filename using a timestamp and a random string
+            $uniqueFileName = time() . '_' . uniqid() . '.' . $extension;
 
-        // }
+            $filePath = "{$folder}/" . $uniqueFileName;
 
-        if ("do_spaces" === $driver) {
-            $fileName = $file->getClientOriginalName();
-            $filePath = "{$folder}/" . $fileName;
-            logger($filePath);
-            $path = Storage::disk('do_spaces')->put($filePath, file_get_contents($file));
+            $path = Storage::disk('do_spaces')->put($filePath, $file, 'public');
             $fileUrl = Storage::disk('do_spaces')->url($path);
         } else {
             $file_name = time() . '.' . $file->getClientOriginalExtension();

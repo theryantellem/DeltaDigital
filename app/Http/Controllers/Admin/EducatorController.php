@@ -64,7 +64,7 @@ class EducatorController extends Controller
             $imageUrl = null;
 
             if ($request->hasFile('photo')) {
-                $imageUrl = uploadFile($request->file('photo'), "educator");
+                $imageUrl = uploadFile($request->file('photo'), "educator","do_spaces");
             }
 
             // $password = rand(000000, 999999);
@@ -158,7 +158,7 @@ class EducatorController extends Controller
         $imageUrl = $educator->photo;
 
         if ($request->hasFile('photo')) {
-            $imageUrl = uploadFile($request->file('photo'), "educator");
+            $imageUrl = uploadFile($request->file('photo'), "educator","do_spaces");
         }
 
         $educator->update([

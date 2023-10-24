@@ -80,7 +80,7 @@ class SignalController extends Controller
             $chartUrl = null;
 
             if ($request->hasFile('photo')) {
-                $chartUrl = uploadFile($request->file('photo'), "signals");
+                $chartUrl = uploadFile($request->file('photo'), "signals","do_spaces");
             }
 
             $signal = Signal::create([
@@ -243,7 +243,7 @@ class SignalController extends Controller
             $chartUrl = $signal->chart_photo;
 
             if ($request->hasFile('photo')) {
-                $chartUrl = uploadFile($request->file('photo'), "signals");
+                $chartUrl = uploadFile($request->file('photo'), "signals","do_spaces");
             }
 
             $signal->update([
