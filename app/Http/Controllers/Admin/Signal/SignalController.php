@@ -80,13 +80,13 @@ class SignalController extends Controller
             $chartUrl = null;
 
             if ($request->hasFile('photo')) {
-                $chartUrl = uploadFile($request->file('photo'), "signals","do_spaces");
+                $chartUrl = uploadFile($request->file('photo'), "signals", "do_spaces");
             }
 
             $signal = Signal::create([
                 'admin_id' => $user->id,
                 'asset_type' => $request->asset_type,
-                'order_type' => $request->order_type,
+                'order_type' => $request->order_type ? $request->order_type : 'buy',
                 'entry_price' => $request->entry_price,
                 'stop_loss' => $request->stop_loss,
                 'target_price' => $request->target_price,
@@ -243,7 +243,7 @@ class SignalController extends Controller
             $chartUrl = $signal->chart_photo;
 
             if ($request->hasFile('photo')) {
-                $chartUrl = uploadFile($request->file('photo'), "signals","do_spaces");
+                $chartUrl = uploadFile($request->file('photo'), "signals", "do_spaces");
             }
 
             $signal->update([
