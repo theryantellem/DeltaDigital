@@ -248,7 +248,7 @@ class SignalController extends Controller
 
             $signal->update([
                 'asset_type' => $request->asset_type,
-                'order_type' => $request->order_type,
+                'order_type' => $request->order_type ? $request->order_type : 'buy',
                 'entry_price' => $request->entry_price,
                 'stop_loss' => $request->stop_loss,
                 'target_price' => $request->target_price,
