@@ -86,7 +86,7 @@ class SignalController extends Controller
             $signal = Signal::create([
                 'admin_id' => $user->id,
                 'asset_type' => $request->asset_type,
-                'order_type' => !empty($request->order_type) ? $request->order_type : 'buy',
+                'order_type' => $request->order_type ?? 'buy',
                 'entry_price' => $request->entry_price,
                 'stop_loss' => $request->stop_loss,
                 'target_price' => $request->target_price,
@@ -248,7 +248,7 @@ class SignalController extends Controller
 
             $signal->update([
                 'asset_type' => $request->asset_type,
-                'order_type' => !empty($request->order_type) ? $request->order_type : 'buy',
+                'order_type' => $request->order_type ?? 'buy',
                 'entry_price' => $request->entry_price,
                 'stop_loss' => $request->stop_loss,
                 'target_price' => $request->target_price,
