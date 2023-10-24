@@ -146,8 +146,8 @@
 
                     this.errors = {}
 
-                    if (!this.name) {
-                        this.errors.name = "Name is required.";
+                    if (!this.title) {
+                        this.errors.title = "Name is required.";
                     }
 
                     if (!this.file) {
