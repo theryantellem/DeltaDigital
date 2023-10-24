@@ -95,8 +95,8 @@ class ScheduleController extends Controller
             $videoUrl = null;
 
             if ($request->hasFile('file')) {
-                $videoUrl = $request->file('video_file')->store('recorded', 'public_uploads');
-                // $videoUrl = uploadFile($request->file('file'), "recorded", 'b2');
+                // $videoUrl = $request->file('file')->store('recorded', 'do_spaces');
+                $videoUrl = uploadFile($request->file('file'), "recorded", 'do_spaces');
             }
 
             $schdedule = Schedule::where('uuid', $request->schedule)->first();

@@ -58,11 +58,7 @@ class AssetsController extends Controller
 
             if ($request->hasFile('photo')) {
                 // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
-                $image = $request->file('photo');
-                $image_name = time() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('images/assets'), $image_name);
-
-                $photo = url('/images/assets/' . $image_name);
+                $photo = uploadFile($request->file('photo'), "images/assets", "do_spaces");
             }
 
             $asset = Asset::create([
@@ -109,12 +105,7 @@ class AssetsController extends Controller
             $photo = $asset->image;
 
             if ($request->hasFile('photo')) {
-                // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
-                $image = $request->file('photo');
-                $image_name = time() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('images/assets'), $image_name);
-
-                $photo = url('/images/assets/' . $image_name);
+                $photo = uploadFile($request->file('photo'), "images/assets", "do_spaces");
             }
 
             $asset->update([

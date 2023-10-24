@@ -20,7 +20,7 @@
                     <div class="tbl-caption">
                         <h4 class="heading mb-0">Signals</h4>
                     </div>
-                    <div id="empoloyees-tbl3_wrapper" class="dataTables_wrapper no-footer">
+                    <div id="empoloyees-tbl3_wrapper" class="dataTables_wrapper no-footer table-responsive">
                         <table class="table dataTable no-footer" role="grid" aria-describedby="empoloyees-tbl3_info">
                             <thead>
                                 <tr role="row">

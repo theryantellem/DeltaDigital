@@ -38,7 +38,7 @@ class AcademyController extends Controller
             'description' => ['nullable', 'max:10000'],
         ]);
 
-        $thumbnail = $request->file('thumbnail')->store('academy/thumbnails', 'public_uploads');
+        $thumbnail = uploadFile($request->file('thumbnail'), "academy/thumbnails", "do_spaces");
 
         $admin_id = Auth::guard('admin')->user()->id;
 
@@ -72,7 +72,7 @@ class AcademyController extends Controller
         $thumbnail = $academy->thumbnail;
 
         if ($request->hasFile('thumbnail')) {
-            $thumbnail = $request->file('thumbnail')->store('academy/thumbnails', 'public_uploads');
+            $thumbnail = uploadFile($request->file('thumbnail'), "academy/thumbnails", "do_spaces");
         }
 
         $academy->update([

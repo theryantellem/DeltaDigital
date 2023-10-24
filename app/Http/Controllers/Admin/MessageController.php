@@ -60,11 +60,7 @@ class MessageController extends Controller
 
             if ($request->hasFile('media')) {
                 // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
-                $image = $request->file('media');
-                $image_name = time() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('media'), $image_name);
-
-                $message = url('media/' . $image_name);
+                $message = uploadFile($request->file('media'), "media", "do_spaces");
                 $type = "media";
             } else {
                 $message = $request->message;
