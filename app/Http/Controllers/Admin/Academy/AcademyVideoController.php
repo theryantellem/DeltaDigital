@@ -24,7 +24,7 @@ class AcademyVideoController extends Controller
             'name' => ['required', 'string', 'max:200'],
             'module_uuid' => ['required', 'exists:academy_modules,uuid'],
             'description' => ['nullable', 'max:10000'],
-            'video_file' => ['required', 'mimes:mp4,avi,flv,mov,wmvp', 'max:10000'],
+            'video_file' => ['required', 'mimes:mp4,avi,flv,mov,wmvp,mkv', 'max:512000'],
             'length' => ['required', 'numeric', 'min:5'],
         ]);
 
@@ -41,6 +41,19 @@ class AcademyVideoController extends Controller
         $video = new VideosResource($uploaded);
 
         return response()->json(['success' => true, 'message' => 'New video created successfully.', 'video' => $video]);
+    }
+
+    public function validateVideoFile(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:200'],
+            'module_uuid' => ['required', 'exists:academy_modules,uuid'],
+            'description' => ['nullable', 'max:10000'],
+            'video_file' => ['required', 'mimes:mp4,avi,flv,mov,wmvp', 'max:512000'],
+            'length' => ['required', 'numeric', 'min:5'],
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Validated successfully']);
     }
 
     public function update(Request $request, AcademyVideo $video)

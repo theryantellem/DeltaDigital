@@ -157,11 +157,21 @@ if (!function_exists('uploadFile')) { /* send to log" */
         //     $path = Storage::disk('s3')->put($filePath, file_get_contents($file));
         //     $fileUrl = Storage::disk('s3')->url($path);
         // } else {
-        $file_name = time() . '.' . $file->getClientOriginalExtension();
-        $file->move(public_path("{$folder}"), $file_name);
 
-        $fileUrl = url("{$folder}/" . $file_name);
         // }
+
+        if ("do_spaces" === $driver) {
+            $fileName = $file->getClientOriginalName();
+            $filePath = "{$folder}/" . $fileName;
+            logger($filePath);
+            $path = Storage::disk('do_spaces')->put($filePath, file_get_contents($file));
+            $fileUrl = Storage::disk('do_spaces')->url($path);
+        } else {
+            $file_name = time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path("{$folder}"), $file_name);
+
+            $fileUrl = url("{$folder}/" . $file_name);
+        }
 
         return $fileUrl;
     }

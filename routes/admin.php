@@ -151,6 +151,7 @@ Route::middleware(['auth:admin'])->group(function () {
 
     Route::controller(AcademyVideoController::class)->prefix('academy/videos')->name('academy.videos.')->group((function () {
         Route::get('/{video}', 'index')->name('index');
+        Route::post('validate', 'validateVideoFile')->name('validate');
         Route::post('store', 'store')->name('store');
         Route::put('update/{video}', 'update')->name('update');
         Route::delete('delete/{video}', 'delete')->name('delete');

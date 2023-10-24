@@ -48,7 +48,7 @@
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody v-if="modules.length > 0">
+                                <tbody v-if="modules?.length > 0">
                                     <tr role="row" class="odd" v-for="(module,index) in modules"
                                         :key="index" :id="'scheduleRow_' + module?.id">
                                         <td>
@@ -62,7 +62,7 @@
                                                 @click.prevent="details(module?.id)">
                                                 Details
                                             </a>
-                                            @if (auth()->user()->hasRole('module'))
+                                            @if (auth()->user()->hasRole('educator'))
                                                 <a href="#" class="btn btn-sm btn-primary me-1"
                                                     @click.prevent="show(module)">
                                                     Edit
@@ -77,8 +77,8 @@
                                 </tbody>
                                 <tbody v-else>
                                     <tr>
-                                        <td colspan="1">
-                                            <span class="text-warning">No Module Created</span>
+                                        <td colspan="3" class="text-center">
+                                            <span class="text-warning text-center">No Module Created</span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -150,7 +150,10 @@
 
                     await axios.post("{{ route('admin.academy.modules.store') }}", formData).then(response => {
                         const data = response.data
-                        this.modules.push(data.module)
+
+                        // this.modules.push(data.module)
+
+                        this.getModules()
 
                         this.clearForm();
 

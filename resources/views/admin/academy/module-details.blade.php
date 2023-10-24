@@ -51,6 +51,8 @@
                     file_preview: null,
                     loading: false,
                     duration: "",
+                    file_size: 0,
+                    file_type: "",
                     errors: {}
                 }
             },
@@ -84,10 +86,9 @@
 
                                 // Ensure metadata is loaded to get the duration
                                 videoElement.addEventListener('loadedmetadata', () => {
-                                    const duration = videoElement
+                                    this.duration = videoElement
                                         .duration; // Get the duration in seconds
-                                    console.log('Video duration:', duration);
-                                    this.duration = duration
+                                    // console.log('Video duration:', duration)
                                 });
 
                             };
@@ -109,6 +110,42 @@
                     this.$refs.fileInput.value = null;
                 },
                 async uploadFile() {
+
+                    this.errors = {}
+
+                    if (!this.name) {
+                        this.errors.name = "Name is required.";
+                    }
+
+                    if (this.description.length > 10000) {
+                        this.errors.description = "Description is too long.";
+                    }
+
+                    if (!this.file) {
+                        this.errors.file = "Video file is required.";
+                    }
+
+                    // Check file type
+                    const allowedTypes = ['video/mp4', 'video/x-matroska', 'video/avi', 'video/flv',
+                        'video/quicktime',
+                        'video/x-ms-wmv'
+                    ]; // Add more allowed types as needed
+                    if (this.file && !allowedTypes.includes(this.file.type)) {
+                        this.errors.file = "Invalid file type. Supported types are: " + allowedTypes.join(', ');
+                    }
+
+                    // Check file size (e.g., 10MB limit)
+                    // const maxSizeInBytes = 1 * 1024 * 1024 * 1024; // 1 GB
+                    const maxSizeInBytes = 500 * 1024 * 1024; // 500 MB
+
+                    if (this.file && this.file.size > maxSizeInBytes) {
+                        this.errors.file = "File size exceeds the allowed limit (500MB).";
+                    }
+
+
+                    if (Object.keys(this.errors).length > 0) {
+                        return false
+                    }
 
                     this.loading = true
 

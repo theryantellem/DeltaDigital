@@ -18,7 +18,7 @@ class AcademyController extends Controller
 
     public function details(Academy $academy)
     {
-        return view('admin.academy.show',['academy' => $academy]);
+        return view('admin.academy.show', ['academy' => $academy]);
     }
 
     public function all()
@@ -34,7 +34,7 @@ class AcademyController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:200'],
-            'thumbnail' => ['required', 'mimes:jpg,png', 'max:30'],
+            'thumbnail' => ['required', 'mimes:jpg,png', 'max:50'],
             'description' => ['nullable', 'max:10000'],
         ]);
 
@@ -42,14 +42,16 @@ class AcademyController extends Controller
 
         $admin_id = Auth::guard('admin')->user()->id;
 
-        Academy::create([
+        $academy = Academy::create([
             'admin_id' =>  $admin_id,
             'name' => $request->name,
             'thumbnail' => $thumbnail,
             'description' => $request->description,
         ]);
 
-        return response()->json(['success' => true, 'message' => 'New Academy created successfully.']);
+        $academy = new AcademyResource($academy);
+
+        return response()->json(['success' => true, 'message' => 'New Academy created successfully.', 'course' => $academy]);
     }
 
     public function show(Academy $academy)
