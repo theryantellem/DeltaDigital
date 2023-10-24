@@ -144,6 +144,38 @@
                 },
                 async uploadFile() {
 
+                    this.errors = {}
+
+                    if (!this.name) {
+                        this.errors.name = "Name is required.";
+                    }
+
+                    if (!this.file) {
+                        this.errors.file = "Video file is required.";
+                    }
+
+                    // Check file type
+                    const allowedTypes = ['video/mp4', 'video/x-matroska', 'video/avi', 'video/flv',
+                        'video/quicktime',
+                        'video/x-ms-wmv'
+                    ]; // Add more allowed types as needed
+                    if (this.file && !allowedTypes.includes(this.file.type)) {
+                        this.errors.file = "Invalid file type. Supported types are: " + allowedTypes.join(', ');
+                    }
+
+                    // Check file size (e.g., 10MB limit)
+                    // const maxSizeInBytes = 1 * 1024 * 1024 * 1024; // 1 GB
+                    const maxSizeInBytes = 500 * 1024 * 1024; // 500 MB
+
+                    if (this.file && this.file.size > maxSizeInBytes) {
+                        this.errors.file = "File size exceeds the allowed limit (500MB).";
+                    }
+
+
+                    if (Object.keys(this.errors).length > 0) {
+                        return false
+                    }
+
                     this.loading = true
 
                     let formData = new FormData();
@@ -156,10 +188,8 @@
                                 'Content-Type': 'multipart/form-data'
                             },
                             onUploadProgress: progressEvent => {
-                                if (!this.errors) {
-                                    this.progress = Math.round((progressEvent.loaded / progressEvent
-                                        .total) * 100);
-                                }
+                                this.progress = Math.round((progressEvent.loaded / progressEvent
+                                    .total) * 100);
                             }
                         })
                         .then(response => {

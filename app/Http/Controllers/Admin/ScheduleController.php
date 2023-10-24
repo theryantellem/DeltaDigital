@@ -82,7 +82,7 @@ class ScheduleController extends Controller
             $validator = Validator::make($request->all(), [
                 'schedule' => 'required|exists:schedules,uuid',
                 'title' => 'required|string',
-                'file' => 'required|mimes:mp4,ogx,oga,ogv,ogg,webm|max:500000',
+                'file' => ['required', 'mimes:mp4,avi,flv,mov,wmvp', 'max:512000'],
             ]);
 
             // Handle validation errors
