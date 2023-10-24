@@ -285,6 +285,7 @@ class SignalController extends Controller
         } catch (\Throwable $th) {
             sendToLog($th);
 
+            Log::error('Error From updating signal',[$th]);
             return response()->json(['success' => false, 'message' => 'Ops Somthing went wrong. try again later.'], 500);
         }
     }
