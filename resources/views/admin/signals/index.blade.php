@@ -319,6 +319,7 @@
                     formData.append('category', this.category);
                     formData.append('percentage', this.percentage);
                     formData.append('photo', this.chart_photo);
+                    formData.append('description', this.description);
                     formData.append('_method', 'put')
 
                     await axios.post(`/admin/signals/${signalId}`, formData, {
