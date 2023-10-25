@@ -16,6 +16,7 @@ package.json
 Homestead.json
 Homestead.yaml
 auth.json
+php.ini
 npm-debug.log
 yarn-error.log
 public/images/*
