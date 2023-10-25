@@ -52,7 +52,7 @@
                     file_preview: null,
                     loading: false,
                     duration: "",
-                    video:"",
+                    video: "",
                     file_size: 0,
                     file_type: "",
                     errors: {}
@@ -102,6 +102,15 @@
                 },
                 handleCloseModal() {
                     this.clearForm()
+                },
+                handleClose() {
+                    // Access the video element using the ref
+                    const videoElement = this.$refs.videoPlayer;
+
+                    // Pause the video
+                    if (videoElement) {
+                        videoElement.pause();
+                    }
                 },
                 clearForm() {
                     this.file = null;

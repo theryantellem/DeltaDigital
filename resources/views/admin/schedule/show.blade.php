@@ -144,6 +144,15 @@
                 handleCloseModal() {
                     this.clearForm()
                 },
+                handleClose() {
+                    // Access the video element using the ref
+                    const videoElement = this.$refs.videoPlayer;
+
+                    // Pause the video
+                    if (videoElement) {
+                        videoElement.pause();
+                    }
+                },
                 clearForm() {
                     this.title = ""
                     this.file = "";
