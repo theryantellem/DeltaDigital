@@ -8,7 +8,7 @@
     </div>
     <div class="offcanvas-body">
         <div class="container-fluid">
-            <video width="700px" :src="video?.file" controls controlsList="nodownload"></video>
+            <video width="700px" :src="video?.file" height="400px" controls controlsList="nodownload"></video>
         </div>
     </div>
 </div>
