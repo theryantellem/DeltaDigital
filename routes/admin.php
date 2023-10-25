@@ -118,6 +118,8 @@ Route::middleware(['auth:admin'])->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/all', 'schedules')->name('all');
         Route::get('/videos/{schedule}', 'getVideos')->name('videos');
+        Route::post('/videos/favourite/{video}', 'makeFavourite')->name('videos.favourite');
+        Route::delete('/videos/delete/{video}', 'deleteVideo')->name('videos.delete');
         Route::post('store', 'store')->name('store');
         Route::get('show/{schedule}', 'show')->name('show');
         Route::post('upload', 'uploadVideo')->name('upload');
@@ -130,8 +132,8 @@ Route::middleware(['auth:admin'])->group(function () {
 
     Route::controller(AcademyController::class)->prefix('academy')->name('academy.')->group((function () {
         Route::get('/', 'index')->name('index');
-        Route::get('/details/{academy}','details')->name('details');
-        Route::get('/all','all')->name('all');
+        Route::get('/details/{academy}', 'details')->name('details');
+        Route::get('/all', 'all')->name('all');
         Route::post('store', 'store')->name('store');
         Route::get('show/{academy}', 'show')->name('show');
         Route::put('update/{academy}', 'update')->name('update');

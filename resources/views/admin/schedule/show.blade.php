@@ -55,6 +55,7 @@
             @include('admin.schedule.videoList')
         </div>
         @include('admin.schedule.uploadModal')
+        @include('admin.schedule.PlayVideo')
     </div>
 @endsection
 @push('scripts')
@@ -72,7 +73,8 @@
                     loading: false,
                     errors: {},
                     is_live: false,
-                    duration: 0
+                    duration: 0,
+                    video: ""
                 }
             },
             created() {
@@ -104,6 +106,11 @@
                     }).catch(error => {
                         console.log(error);
                     });
+                },
+                playVideo(video) {
+                    this.video = video
+
+                    offcanvasPlayVideo.show()
                 },
                 handleFileChange(event) {
                     this.file = event.target.files[0];
@@ -138,8 +145,10 @@
                     this.clearForm()
                 },
                 clearForm() {
-                    this.file = null;
-                    this.file_preview = null;
+                    this.title = ""
+                    this.file = "";
+                    this.file_preview = "";
+                    this.progress = 0;
                     this.$refs.fileInput.value = null;
                 },
                 async uploadFile() {
@@ -147,7 +156,7 @@
                     this.errors = {}
 
                     if (!this.title) {
-                        this.errors.title = "Name is required.";
+                        this.errors.title = "Title is required.";
                     }
 
                     if (!this.file) {
@@ -159,6 +168,7 @@
                         'video/quicktime',
                         'video/x-ms-wmv'
                     ]; // Add more allowed types as needed
+
                     if (this.file && !allowedTypes.includes(this.file.type)) {
                         this.errors.file = "Invalid file type. Supported types are: " + allowedTypes.join(', ');
                     }
@@ -170,7 +180,6 @@
                     if (this.file && this.file.size > maxSizeInBytes) {
                         this.errors.file = "File size exceeds the allowed limit (500MB).";
                     }
-
 
                     if (Object.keys(this.errors).length > 0) {
                         return false
@@ -215,7 +224,47 @@
                             this.loading = false
                         });
                 },
+                async toggleFavorite(video) {
+                    await axios.post(`/admin/schedule/videos/favourite/${video?.id}`).then(response => {
+                        this.getVideos();
+                        Notiflix.Notify.Success(response.data.message);
+                    }).catch((error) => {
+                        Notiflix.Notify.Failure(error.response.data.message);
+                    })
+                },
+                deleteVideo(video) {
+                    Notiflix.Confirm.Show(
+                        'Are you sure?',
+                        'you want Delete Video.',
+                        'Delete',
+                        'Cancle',
+                        function okCb() {
+                            axios.delete(`/admin/schedule/videos/delete/${video?.id}`)
+                                .then(function(response) {
+                                    if (response.data.success) {
+                                        Notiflix.Notify.Success(response.data.message);
+
+                                        // Remove the deleted schedule row from the table
+                                        const tableRow = document.getElementById(
+                                            `video_${video.id}`);
+                                        if (tableRow) {
+                                            tableRow.remove();
+                                        }
+                                    } else {
+                                        Notiflix.Notify.Failure("Could not find video");
+                                    }
+                                })
+                                .catch(error => {
+                                    console.log(error);
+                                    Notiflix.Notify.Failure(
+                                        "Error Occurred while trying to delete video.");
+                                })
+                        }
+                    );
+                }
             }
         })
+
+        const offcanvasPlayVideo = new bootstrap.Offcanvas(document.getElementById('offcanvasPlayVideo'));
     </script>
 @endpush

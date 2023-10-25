@@ -1,4 +1,4 @@
-<div class="offcanvas offcanvas-end customeoff" tabindex="-1" id="offcanvasSignal">
+<div class="offcanvas offcanvas-end customeoff" tabindex="-1" id="offcanvasSignal" data-bs-backdrop="static">
     <div class="offcanvas-header">
         <h5 class="modal-title" id="#gridSystemModal">
             <span v-if="!edit">Create</span><span v-else>Update</span> Module

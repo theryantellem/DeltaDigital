@@ -26,6 +26,13 @@
                 </li> --}}
                     <li>
                         <label class="me-3">
+                            <a href="javascript:void(0)" @click.prevent="playVideo(video)">
+                                <i class="fa fa-play me-2 text-primary"></i>Play
+                            </a>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="me-3">
                             <a href="#" @click.prevent="deleteVideo(video?.id)">
                                 <i class="fa fa-trash me-2 text-danger"></i>Delete
                             </a>

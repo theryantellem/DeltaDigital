@@ -60,19 +60,27 @@ class ScheduleController extends Controller
 
     function schedules()
     {
-        $admin = Auth::guard('admin')->user();
+        try {
+            $admin = Auth::guard('admin')->user();
 
-        // $timezones = Timezone::all();
+            // $timezones = Timezone::all();
 
-        if ($admin->hasRole('super_admin')) {
-            $schdedules = Schedule::get();
-        } else {
-            $schdedules = Schedule::where('admin_id', $admin->id)->get();
+            if ($admin->hasRole('super_admin')) {
+                $schdedules = Schedule::get();
+            } else {
+                $schdedules = Schedule::where('admin_id', $admin->id)->get();
+            }
+
+            $schdedules = ScheduleResources::collection($schdedules);
+
+            return response()->json(['success' => true, 'schedules' => $schdedules]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            sendToLog($th);
+
+            return response()->json(['success' => false, 'message' => 'Ops Somthing went wrong. try again later.'], 500);
         }
-
-        $schdedules = ScheduleResources::collection($schdedules);
-
-        return response()->json(['success' => true, 'schedules' => $schdedules]);
     }
 
     function uploadVideo(Request $request)
@@ -110,7 +118,7 @@ class ScheduleController extends Controller
 
             $record = new VideoResource($record);
 
-            return response()->json(['success' => true, 'record' => $record]);
+            return response()->json(['success' => true, 'record' => $record, 'message' => "Video uploaded successfully."]);
         } catch (\Throwable $th) {
             DB::rollBack();
 
@@ -122,84 +130,103 @@ class ScheduleController extends Controller
 
     function startLive($id)
     {
-        $schdule = Schedule::whereUuid($id)->first();
+        try {
 
-        if (!$schdule) {
-            return response()->json(['success' => false, 'message' => 'Schedule not found.'], 404);
+
+            $schdule = Schedule::whereUuid($id)->first();
+
+            if (!$schdule) {
+                return response()->json(['success' => false, 'message' => 'Schedule not found.'], 404);
+            }
+
+            $user = Auth::guard('admin')->user();
+
+            $user->update([
+                'is_live' => true
+            ]);
+
+            $fcmTokens =  followersPushTokens($user->id);
+
+            if (!empty($fcmTokens)) {
+
+                $name = ucfirst($user->first_name) . ' ' . ucfirst($user->last_name);
+
+                $data = [
+                    'push_tokens' =>  $fcmTokens,
+                    'title' => "Live started",
+                    'message' => "{$name} is live.",
+                    'stream_url' => env('LIVE_URL ') . "/{$user->stream_key}.m3u8"
+                ];
+
+                dispatch(new \App\Jobs\PushNotificationJob($data));
+            }
+
+            $schdule->update(['viewers' => 0]);
+
+            broadcast(new LiveStarted($schdule))->toOthers();
+
+            return response()->json(['success' => true, 'message' => 'your are now live ']);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            sendToLog($th);
+
+            return response()->json(['success' => false, 'message' => 'Ops Somthing went wrong. try again later.'], 500);
         }
-
-        $user = Auth::guard('admin')->user();
-
-        $user->update([
-            'is_live' => true
-        ]);
-
-        $fcmTokens =  followersPushTokens($user->id);
-
-        if (!empty($fcmTokens)) {
-
-            $name = ucfirst($user->first_name) . ' ' . ucfirst($user->last_name);
-
-            $data = [
-                'push_tokens' =>  $fcmTokens,
-                'title' => "Live started",
-                'message' => "{$name} is live.",
-                'stream_url' => env('LIVE_URL ') . "/{$user->stream_key}.m3u8"
-            ];
-
-            dispatch(new \App\Jobs\PushNotificationJob($data));
-        }
-
-        $schdule->update(['viewers' => 0]);
-
-        broadcast(new LiveStarted($schdule))->toOthers();
-
-        return response()->json(['success' => true, 'message' => 'your are now live ']);
     }
 
     function stopLive($id)
     {
-        $schdule = Schedule::whereUuid($id)->first();
+        try {
+            $schdule = Schedule::whereUuid($id)->first();
 
-        if (!$schdule) {
-            return response()->json(['success' => false, 'message' => 'Schedule not found.'], 404);
+            if (!$schdule) {
+                return response()->json(['success' => false, 'message' => 'Schedule not found.'], 404);
+            }
+
+            LiveSessions::create([
+                'schedule_id' => $id,
+                'viewers' => $schdule->viewers
+            ]);
+
+            $user = Auth::guard('admin')->user();
+
+            $user->update([
+                'is_live' => false
+            ]);
+
+            $schdule->update(['viewers' => 0]);
+
+            $fcmTokens =  followersPushTokens($user->id);
+
+            if (!empty($fcmTokens)) {
+
+                $name = ucfirst($user->first_name) . ' ' . ucfirst($user->last_name);
+
+                $data = [
+                    'push_tokens' =>  $fcmTokens,
+                    'title' => "Live ended",
+                    'message' => "{$name} live has ended.",
+                    'stream_url' => null
+                ];
+
+                dispatch(new \App\Jobs\PushNotificationJob($data));
+            }
+
+            $schdule->update(['viewers' => 0]);
+
+            broadcast(new StopLive($schdule))->toOthers();
+
+            return response()->json(['success' => true, 'message' => 'live session have ended']);
+            // return redirect()->route('dashboard.educator.schedule.show',$id);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            sendToLog($th);
+
+            return response()->json(['success' => false, 'message' => 'Ops Somthing went wrong. try again later.'], 500);
         }
-
-        LiveSessions::create([
-            'schedule_id' => $id,
-            'viewers' => $schdule->viewers
-        ]);
-
-        $user = Auth::guard('admin')->user();
-
-        $user->update([
-            'is_live' => false
-        ]);
-
-        $schdule->update(['viewers' => 0]);
-
-        $fcmTokens =  followersPushTokens($user->id);
-
-        if (!empty($fcmTokens)) {
-
-            $name = ucfirst($user->first_name) . ' ' . ucfirst($user->last_name);
-
-            $data = [
-                'push_tokens' =>  $fcmTokens,
-                'title' => "Live ended",
-                'message' => "{$name} live has ended.",
-                'stream_url' => null
-            ];
-
-            dispatch(new \App\Jobs\PushNotificationJob($data));
-        }
-
-        $schdule->update(['viewers' => 0]);
-
-        broadcast(new StopLive($schdule))->toOthers();
-
-        return response()->json(['success' => true, 'message' => 'live session have ended']);
-        // return redirect()->route('dashboard.educator.schedule.show',$id);
     }
 
     function store(Request $request)
@@ -301,23 +328,72 @@ class ScheduleController extends Controller
 
     function makeFavourite(Request $request, $id)
     {
-        Video::where('uuid', $id)->update([
-            'is_favourite' => $request->is_favourite === "on" ? true : false
-        ]);
+        try {
+            $video = Video::where('uuid', $id)->first();
 
-        return response()->json(['success' => true, 'message' => 'Successfull.']);
+            if (!$video) {
+                return response()->json(['success' => false, 'message' => 'Video not found.'], 404);
+            }
+
+            if ($video->is_favourite) {
+                $video->update([
+                    'is_favourite' => false
+                ]);
+            } else {
+                $video->update([
+                    'is_favourite' => true
+                ]);
+            }
+
+            return response()->json(['success' => true, 'message' => 'Successfull.']);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            sendToLog($th);
+
+            return response()->json(['success' => false, 'message' => 'Ops Somthing went wrong. try again later.'], 500);
+        }
+    }
+
+    function deleteVideo(Request $request, $id)
+    {
+        try {
+            $video = Video::where('uuid', $id)->first();
+
+            if (!$video) {
+                return response()->json(['success' => false, 'message' => 'Video not found.'], 404);
+            }
+
+            $video->delete();
+
+            return response()->json(['success' => true, 'message' => 'Deleted Successfull.']);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            sendToLog($th);
+
+            return response()->json(['success' => false, 'message' => 'Ops Somthing went wrong. try again later.'], 500);
+        }
     }
 
     function destroy($id)
     {
-        $schedule = Schedule::where('uuid', $id)->first();
+        try {
+            $schedule = Schedule::where('uuid', $id)->first();
 
-        if (!$schedule) {
-            return response()->json(['success' => false, 'message' => 'Schedule not found.'], 404);
+            if (!$schedule) {
+                return response()->json(['success' => false, 'message' => 'Schedule not found.'], 404);
+            }
+
+            $schedule->delete();
+
+            return response()->json(['success' => true, 'message' => 'Schedule deleted successfully.'], 201);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            sendToLog($th);
+
+            return response()->json(['success' => false, 'message' => 'Ops Somthing went wrong. try again later.'], 500);
         }
-
-        $schedule->delete();
-
-        return response()->json(['success' => true, 'message' => 'Schedule deleted successfully.'], 201);
     }
 }

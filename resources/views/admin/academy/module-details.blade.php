@@ -34,6 +34,7 @@
             @include('admin.academy.videoList')
         </div>
         @include('admin.academy.uploadModal')
+        @include('admin.academy.PlayVideo')
     </div>
 @endsection
 @push('scripts')
@@ -51,6 +52,7 @@
                     file_preview: null,
                     loading: false,
                     duration: "",
+                    video:"",
                     file_size: 0,
                     file_type: "",
                     errors: {}
@@ -108,6 +110,11 @@
                     this.file_preview = null;
                     this.progress = 0;
                     this.$refs.fileInput.value = null;
+                },
+                playVideo(video) {
+                    this.video = video
+
+                    offcanvasPlayVideo.show()
                 },
                 async uploadFile() {
 
@@ -220,5 +227,7 @@
                 }
             }
         })
+
+        const offcanvasPlayVideo = new bootstrap.Offcanvas(document.getElementById('offcanvasPlayVideo'));
     </script>
 @endpush

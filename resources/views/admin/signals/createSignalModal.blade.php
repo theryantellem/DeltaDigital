@@ -1,4 +1,4 @@
-<div class="offcanvas offcanvas-end customeoff" tabindex="-1" id="offcanvasSignal">
+<div class="offcanvas offcanvas-end customeoff" tabindex="-1" id="offcanvasSignal" data-bs-backdrop="static">
     <div class="offcanvas-header">
         <h5 class="modal-title" id="#gridSystemModal">Create Signal</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"

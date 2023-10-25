@@ -17,7 +17,7 @@ class VideoResource extends JsonResource
         return [
             'id' => $this->uuid,
             'title' => $this->title,
-            'is_favourite' => $this->type,
+            'is_favourite' => $this->is_favourite,
             'file' => $this->video_file,
             'created_at' => $this->created_at,
         ];
