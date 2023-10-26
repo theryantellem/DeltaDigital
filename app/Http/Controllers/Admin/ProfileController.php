@@ -19,28 +19,27 @@ class ProfileController extends Controller
     {
         $request->validate([
             'first_name' => 'required',
-            'last_name' => 'required|confirmed',
-            'phone_number'=> 'nullable'
+            'last_name' => 'required',
+            'phone_number' => 'nullable'
         ]);
 
 
         $user = $request->user();
 
         $user->update([
-            'first_name'=> $request->first_name,
-            'last_name'=> $request->last_name,
-            'phone_number'=> $request->phone_number
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'phone_number' => $request->phone_number
         ]);
 
-        return back()->with('success','Profile updated successfully.');
-
+        return back()->with('success', 'Profile updated successfully.');
     }
 
     function updatePassword(Request $request)
     {
         $request->validate([
             'current_password' => 'required',
-            'password' => 'required|confirmed',
+            'password' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         ]);
 
         $user = $request->user();
@@ -59,13 +58,13 @@ class ProfileController extends Controller
     function updateProfileImage(Request $request)
     {
         $request->validate([
-            'photo' => 'required|image|mimes:png,jpg',
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         ]);
 
         $user = $request->user();
 
         if ($request->hasFile('photo')) {
-            $photo = uploadFile($request->file('photo'), "images/profile/","do_spaces");
+            $photo = uploadFile($request->file('photo'), "images/profile", "do_spaces");
         } else {
             $photo = null;
         }
@@ -75,5 +74,26 @@ class ProfileController extends Controller
         ]);
 
         return back()->with('success', 'Profile photo updated successfully.');
+    }
+
+    function updateThumbnail(Request $request)
+    {
+        $request->validate([
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+        ]);
+
+        $user = $request->user();
+
+        if ($request->hasFile('photo')) {
+            $photo = uploadFile($request->file('photo'), "images/thumbnail", "do_spaces");
+        } else {
+            $photo = null;
+        }
+
+        $user->update([
+            'thumbnail' => $photo,
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Profile photo updated successfully.']);
     }
 }

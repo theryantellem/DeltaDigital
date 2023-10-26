@@ -88,7 +88,7 @@ class Navigation
                     'hasPermission' => auth()->user()->can('manage_assets'),
                 ],
                 (object) [
-                    'name'  => 'Manage Educators',
+                    'name'  => 'Manage Streamers',
                     'route' => 'admin.educators.index',
                     'icon'  => 'bi bi-house-fill fs-3',
                     'hasPermission' => auth()->user()->can('manage_educator'),

@@ -30,16 +30,24 @@
                             </p>
                         </div>
                         <div class="ms-auto">
-                            <div v-if="is_live">
-                                @if (!empty(auth()->user()->stream_key))
-                                    <button class="btn btn-danger" @click="stopLive">Stop Live</button>
-                                @endif
-                            </div>
-                            <div v-else>
-                                <button class="btn btn-success" @click="goLive">Go Live</button>
-                                <button class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasUpload"
-                                    role="button">Upload Video</button>
-                            </div>
+                            @if (auth()->user()->hasRole('educator'))
+                                <div class="d-flex gap-3">
+                                    <div>
+                                        <button class="btn btn-primary btn-sm" data-bs-toggle="offcanvas"
+                                            href="#offcanvasSignal">Thumbnail</button>
+                                    </div>
+                                    <div v-if="is_live">
+                                        @if (!empty(auth()->user()->stream_key))
+                                            <button class="btn btn-danger btn-sm" @click="stopLive">Stop Live</button>
+                                        @endif
+                                    </div>
+                                    <div v-else>
+                                        <button class="btn btn-success btn-sm" @click="goLive">Go Live</button>
+                                        <button class="btn btn-primary btn-sm" data-bs-toggle="offcanvas"
+                                            href="#offcanvasUpload" role="button">Upload Video</button>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -57,6 +65,7 @@
         @include('admin.schedule.uploadModal')
         @include('admin.schedule.PlayVideo')
     </div>
+    @include('admin.thumbnailModal')
 @endsection
 @push('scripts')
     <script>

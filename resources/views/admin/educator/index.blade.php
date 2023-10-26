@@ -5,10 +5,10 @@
 @section('content')
     <div id="educator">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="heading mb-0">Educators Management</h2>
+            <h2 class="heading mb-0">Streamer Management</h2>
             <div class="d-flex align-items-center">
                 <a class="btn btn-primary btn-sm me-2" data-bs-toggle="offcanvas" href="#offcanvasSignal" role="button"
-                    aria-controls="offcanvasSignal">+Add Educator</a>
+                    aria-controls="offcanvasSignal">+Add Streamer</a>
             </div>
         </div>
         <template>
@@ -16,7 +16,7 @@
                 <div class="card-body p-0">
                     <div class="active-projects task-table">
                         <div class="tbl-caption">
-                            <h4 class="heading mb-0">Educators</h4>
+                            <h4 class="heading mb-0">Streamers</h4>
                         </div>
                         <div id="empoloyees-tbl3_wrapper" class="dataTables_wrapper no-footer">
                             <table class="table dataTable no-footer" role="grid" aria-describedby="empoloyees-tbl3_info">
@@ -242,7 +242,7 @@
                     const strat = this.signals
                     Notiflix.Confirm.Show(
                         'Are you sure?',
-                        'you want Delete Educator.',
+                        'you want Delete Streamer.',
                         'Delete',
                         'Cancle',
                         function okCb() {
@@ -254,13 +254,13 @@
 
                                         location.reload();
                                     } else {
-                                        Notiflix.Notify.Failure("Could not find strategy");
+                                        Notiflix.Notify.Failure("Could not find streamer");
                                     }
                                 })
                                 .catch(error => {
                                     console.log(error);
                                     Notiflix.Notify.Failure(
-                                        "Error Occurred while trying to delete strategy.");
+                                        "Error Occurred while trying to delete streamer.");
                                 })
                         }
                     );

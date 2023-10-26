@@ -94,6 +94,7 @@ Route::middleware(['auth:admin'])->group(function () {
         Route::get('profile', 'index')->name('index');
         Route::post('update-password', 'updatePassword')->name('update.password');
         Route::post('update-photo', 'updateProfileImage')->name('update.photo');
+        Route::post('upload-thumbnail', 'updateThumbnail')->name('update.thumbnail');
         Route::post('update-profile', 'updateProfile')->name('update.profile');
     });
 

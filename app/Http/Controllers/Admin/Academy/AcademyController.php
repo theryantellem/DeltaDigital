@@ -34,7 +34,7 @@ class AcademyController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:200'],
-            'thumbnail' => ['required', 'mimes:jpg,png', 'max:50'],
+            'thumbnail' => ['required', 'mimes:jpeg,png,jpg,gif,svg,webp', 'max:2048'],
             'description' => ['nullable', 'max:10000'],
         ]);
 
@@ -65,7 +65,7 @@ class AcademyController extends Controller
     {
         $request->validate([
             'name' => ['nullable', 'string', 'max:200'],
-            'thumbnail' => ['nullable', 'mimes:jpg,png', 'max:30'],
+            'thumbnail' => ['nullable', 'mimes:jpeg,png,jpg,gif,svg,webp', 'max:2048'],
             'description' => ['nullable', 'string', 'max:10000']
         ]);
 

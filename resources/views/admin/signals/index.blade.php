@@ -189,8 +189,13 @@
                     this.entry_price = signal?.entry_price
                     this.stop_loss = signal?.stop_loss
                     this.target_price = signal?.target_price
-                    this.comment = signal?.comment
-                    this.description = signal?.comment
+
+                    if (signal?.category?.type === "trade") {
+                        this.comment = signal?.comment
+                    } else {
+                        this.description = signal?.comment
+                    }
+
                     this.percentage = signal?.percentage
 
                     this.edit = true
@@ -307,6 +312,7 @@
                         })
                 },
                 async updateSignal(signalId) {
+
                     this.errors = {};
 
                     this.loading = true

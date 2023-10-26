@@ -16,7 +16,7 @@ return new class extends Migration
             $table->uuid('uuid');
             $table->foreignId('admin_id')->index();
             $table->string('asset_type');
-            $table->string('order_type');
+            $table->string('order_type')->default('buy');
             $table->float('entry_price')->default(0.00);
             $table->float('stop_loss')->default(0.00);
             $table->float('target_price')->default(0.00);
