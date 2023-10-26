@@ -92,6 +92,7 @@ class ScheduleController extends Controller
             $validator = Validator::make($request->all(), [
                 'schedule' => 'required|exists:schedules,uuid',
                 'title' => 'required|string',
+                'thumbnail' => ['required', 'mimes:png,jpg,jpeg,webp', 'max:5000'],
                 'file' => ['required', 'mimes:mp4,avi,flv,mov,wmvp', 'max:512000'],
             ]);
 
@@ -103,6 +104,11 @@ class ScheduleController extends Controller
             $admin = auth()->guard('admin')->user();
 
             $videoUrl = null;
+            $thumbnail = null;
+
+            if ($request->hasFile('thumbnail')) {
+                $thumbnail = uploadFile($request->file('thumbnail'), "schedule/thumbnails", 'do_spaces');
+            }
 
             if ($request->hasFile('file')) {
                 // $videoUrl = $request->file('file')->store('recorded', 'do_spaces');
@@ -115,6 +121,7 @@ class ScheduleController extends Controller
                 'admin_id' => $admin->id,
                 'schedule_id' => $schdedule->id,
                 'title' => $request->title,
+                'thumbnail' => $thumbnail,
                 'video_file' => $videoUrl,
             ]);
 

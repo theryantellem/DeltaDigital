@@ -103,6 +103,8 @@
                     currentDate: "",
                     media: null,
                     photo_preview: null,
+                    thumbnail_preview: null,
+                    thumbnail: null,
                     loading: false,
                     errors: {}
                 }
@@ -242,6 +244,18 @@
                 handleCloseModal() {
                     this.clearForm()
                 },
+                handleThumbnailUpload(event) {
+                    this.thumbnail = event.target.files[0];
+
+                    if (this.thumbnail) {
+                        // Read the selected image and create a preview URL
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.thumbnail_preview = e.target.result; // Set the preview URL
+                        };
+                        reader.readAsDataURL(this.thumbnail);
+                    }
+                },
                 handleClose() {
                     // Access the video element using the ref
                     const videoElement = this.$refs.videoPlayer;
@@ -298,6 +312,7 @@
                     formData.append('file', this.file);
                     formData.append('schedule', this.schedule);
                     formData.append('title', this.title);
+                    formData.append('thumbnail', this.thumbnail);
 
                     await axios.post("{{ route('admin.schedule.upload') }}", formData, {
                             headers: {
