@@ -68,6 +68,12 @@
                         reader.readAsDataURL(this.photo);
                     }
                 },
+                handleCloseModal() {
+                    this.errors = {};
+                    this.photo = "";
+                    this.photo_preview = "{{ auth()->user()->thumbnail }}"
+                    this.$refs.fileInput.value = null;
+                },
                 async uploadThumbnail() {
                     this.errors = {};
 
