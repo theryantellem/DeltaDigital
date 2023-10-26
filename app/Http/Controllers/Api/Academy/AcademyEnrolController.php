@@ -17,7 +17,6 @@ class AcademyEnrolController extends ApiController
     public function index(Request $request)
     {
         $user = $request->user();
-        $user = User::find($user->id ?? 1);
 
         $resources  = EnrolmentResource::collection($user->academyEnrolments);
 
@@ -35,7 +34,6 @@ class AcademyEnrolController extends ApiController
 
         $module = AcademyModule::where('uuid', $request->module_uuid)->first();
         $user = $request->user();
-        $user = User::find($user->id ?? 1);
         $enrolment = AcademyEnrolment::where('academy_module_id', $module->id)
             ->where('user_id', $user->id)
             ->first();
@@ -79,8 +77,7 @@ class AcademyEnrolController extends ApiController
             return $this->sendError("Validations failed.", ['errors' => $validator->errors()], 400);
         }
 
-        $user = $request->user();
-        $user = User::find($user->id ?? 1);
+        $user = auth()->user();
 
         $enrolment = AcademyEnrolment::where('academy_module_id', $module->id)
             ->where('user_id', $user->id)

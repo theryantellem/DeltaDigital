@@ -56,7 +56,6 @@ class AcademyModuleController extends ApiController
         }
 
         $user = $request->user();
-        $user = User::find($user->id ?? 1);
         $academy = Academy::where('uuid', $request->academy_uuid)->first();
 
         $rating = AcademyRating::where('academy_id', $academy->id)
