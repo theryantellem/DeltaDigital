@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Events\LiveStarted;
 use App\Events\StopLive;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\LiveChatResource;
 use App\Http\Resources\ScheduleResources;
 use App\Http\Resources\VideoResource;
 use App\Models\Admin;
 use App\Models\Category;
 use App\Models\LiveAttendants;
+use App\Models\LiveChat;
 use App\Models\LiveSessions;
 use App\Models\Schedule;
 use App\Models\Video;
@@ -394,6 +396,23 @@ class ScheduleController extends Controller
             sendToLog($th);
 
             return response()->json(['success' => false, 'message' => 'Ops Somthing went wrong. try again later.'], 500);
+        }
+    }
+
+    function messages()
+    {
+        try {
+            $educator = auth()->guard('admin')->user();
+
+            $messages = LiveChat::where('admin_id', $educator->id)->latest()->get();
+
+            $messages = LiveChatResource::collection($messages);
+
+            return response()->json(['success' => true, 'messages' => $messages]);
+        } catch (\Exception $e) {
+            sendToLog($e);
+
+            return response()->json(["success'" > true, "message" => "Unable to complete your request at the moment."], 500);
         }
     }
 }

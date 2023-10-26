@@ -37,8 +37,7 @@ class LiveChatController extends ApiController
 
             $educatorDetails = Admin::where('uuid', $educator)->firstOrFail();
 
-            if(!$educatorDetails)
-            {
+            if (!$educatorDetails) {
                 return $this->sendError("Invalid educator");
             }
 

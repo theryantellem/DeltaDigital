@@ -41,7 +41,6 @@ class ChatNotification implements ShouldBroadcast
     public function broadcastWith()
     {
         return [
-            'message' => "New message",
             'message' => $this->message
         ];
     }

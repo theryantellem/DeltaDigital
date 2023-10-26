@@ -32,10 +32,6 @@
                         <div class="ms-auto">
                             @if (auth()->user()->hasRole('educator'))
                                 <div class="d-flex gap-3">
-                                    <div>
-                                        <button class="btn btn-primary btn-sm" data-bs-toggle="offcanvas"
-                                            href="#offcanvasSignal">Thumbnail</button>
-                                    </div>
                                     <div v-if="is_live">
                                         @if (!empty(auth()->user()->stream_key))
                                             <button class="btn btn-danger btn-sm" @click="stopLive">Stop Live</button>
@@ -43,6 +39,8 @@
                                     </div>
                                     <div v-else>
                                         <button class="btn btn-success btn-sm" @click="goLive">Go Live</button>
+                                        <button class="btn btn-primary btn-sm" data-bs-toggle="offcanvas"
+                                            href="#offcanvasSignal">Thumbnail</button>
                                         <button class="btn btn-primary btn-sm" data-bs-toggle="offcanvas"
                                             href="#offcanvasUpload" role="button">Upload Video</button>
                                     </div>
@@ -54,10 +52,11 @@
             </div>
         </div>
         <div v-if="is_live">
-            <div class="d-flex flex-column justify-content-center align-items-center">
+            {{-- <div class="d-flex flex-column justify-content-center align-items-center">
                 <img src="{{ asset('images/live.png') }}" width="250px" height="250px" alt="">
                 <h3 class="text-uppercase">You are live</h3>
-            </div>
+            </div> --}}
+            @include('admin.schedule.live-chat')
         </div>
         <div v-else class="row">
             @include('admin.schedule.videoList')
@@ -68,6 +67,19 @@
     @include('admin.thumbnailModal')
 @endsection
 @push('scripts')
+    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+    <script>
+        lightbox.option({
+            'resizeDuration': 200,
+            'wrapAround': true
+        });
+    </script>
+    <script>
+        //$(".nav-control").on('click', function() {
+        $(".chat-toggle").on('click', function() {
+            $(' .chat-left-area ,.chat-toggle').toggleClass("active");
+        });
+    </script>
     <script>
         const educator = new Vue({
             el: '#schedule',
@@ -83,15 +95,92 @@
                     errors: {},
                     is_live: false,
                     duration: 0,
-                    video: ""
+                    video: "",
+                    messages: [],
+                    message: "",
+                    followers: [],
+                    educator: "{{ Auth::guard('admin')->user()->uuid }}",
+                    currentDate: "",
+                    media: null,
+                    photo_preview: null,
+                    loading: false,
+                    errors: {}
                 }
+            },
+            mounted() {
+                this.getFollowers()
+                this.getMessages()
+                this.getCurrentDate()
+
+                var pusher = new Pusher("{{ env('PUSHER_APP_KEY') }}", {
+                    cluster: "{{ env('PUSHER_APP_CLUSTER') }}",
+                });
+
+                var channel = pusher.subscribe(`chat.${this.educator}`);
+                channel.bind('chat-message', (data) => {
+                    this.messages.unshift(data.message)
+                    this.scrollToBottom()
+                    // console.log(data)
+                });
             },
             created() {
                 this.is_live = "{{ Auth::user()->is_live ? true : false }}";
 
                 this.getVideos();
+
             },
             methods: {
+                getMessageClasses(message) {
+                    return {
+                        'justify-content-end align-items-end ms-auto': message.sender.id === this.educator
+                    };
+                },
+                shouldDisplayDate(message, index) {
+                    const nextMessage = this.reversedMessages[index - 1];
+                    if (nextMessage) {
+                        return message.formatedDate !== nextMessage.formatedDate;
+                    }
+                    return true;
+                },
+                scrollToBottom() {
+                    this.$nextTick(() => {
+                        const chatBox = this.$refs.chatBox;
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                    });
+                },
+                async getMessages() {
+                    await axios.get("{{ route('admin.schedule.live.message') }}").then(
+                        response => {
+                            const data = response.data
+                            if (data.success) {
+                                this.messages = data.messages
+                                this.scrollToBottom()
+                            } else {
+                                console.log(data)
+                            }
+                        }).catch(error => {
+                        console.log(error)
+                    })
+                },
+                getCurrentDate() {
+                    const today = new Date();
+                    const day = String(today.getDate()).padStart(2, '0');
+                    const month = String(today.getMonth() + 1).padStart(2, '0');
+                    const year = today.getFullYear();
+                    this.currentDate = `${day}/${month}/${year}`;
+                },
+                async getFollowers() {
+                    await axios.get('{{ route('admin.inbox.followers') }}').then(response => {
+                        const data = response.data
+                        if (data.success) {
+                            this.followers = data.followers
+                        } else {
+                            console.log(data)
+                        }
+                    }).catch(error => {
+                        console.log(error)
+                    })
+                },
                 async goLive() {
                     await axios.post(`/admin/schedule/live/start/${this.schedule}`).then(response => {
                         this.is_live = true
@@ -279,6 +368,11 @@
                                 })
                         }
                     );
+                }
+            },
+            computed: {
+                reversedMessages() {
+                    return this.messages.slice().reverse();
                 }
             }
         })
