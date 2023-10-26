@@ -170,7 +170,7 @@ const HomeTradeCard = ({item, seeLogs, Exchanges, tickers}: props) => {
 
                         {/* {currencyFormatter('en-US', 'USD').format(item.Avg_Price)}*/}
 
-                        {item.profit ? parseFloat(item.profit).toFixed(2) : '0.00'}%
+                        {item.profit ? parseFloat(item.profit).toFixed(2) : '0.00'}
                     </Text>
                     <Text style={styles.coinNameText}>
                         {parseFloat(item.Positionamount).toFixed(2)}
@@ -328,6 +328,22 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
 
     const TotalBal = parseInt(strategies?.data?.binance_balance) + parseInt(strategies?.data?.futures_binance_balance)
 
+
+
+    const sumBalance =    parseFloat(strategies?.data?.binance_balance) + parseFloat(strategies?.data?.coinbasepro_balance) + parseFloat(strategies?.data?.kucoin_balance)
+        +
+        parseFloat(strategies?.data?.kraken_balance)
+        +
+        parseFloat(strategies?.data?.futures_binance_balance)
+        +
+        parseFloat(strategies?.data?.futures_coinbasepro_balance)
+        +
+        parseFloat(strategies?.data?.futures_kucoin_balance)
+        +
+        parseFloat(strategies?.data?.futures_kraken_balance)
+
+    console.log(sumBalance.toFixed(2))
+
     return (
 
         <SafeAreaView style={styles.safeArea}>
@@ -408,7 +424,7 @@ const CyborgHome = ({navigation}: RootTabScreenProps<'CyborgHome'>) => {
                                         !hideBalance &&
                                         <Text style={styles.balance}>
 
-                                            {currencyFormatter('en-US', 'USD').format(TotalBal ? TotalBal : 0)}
+                                            {currencyFormatter('en-US', 'USD').format(sumBalance ? sumBalance : 0)}
 
                                         </Text>
                                     }

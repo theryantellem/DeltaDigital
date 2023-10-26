@@ -18,7 +18,7 @@ export const getSignals = async () => {
         redirect: 'follow'
     };
 
-    return fetch("https://deltacyborg.pro/api/signals", requestOptions)
+    return fetch("https://deltafinix.pro/api/signals", requestOptions)
         .then(response => response.json())
 
 
@@ -38,7 +38,7 @@ export const listAcademy = async () => {
         redirect: 'follow'
     };
 
-    return fetch("https://deltacyborg.pro/api/academy", requestOptions)
+    return fetch(`${BASE_ULR_NEW}/academy`, requestOptions)
         .then(response => response.json())
 
 
@@ -97,7 +97,7 @@ export const listAcademyDetails = async (id: string) => {
         redirect: 'follow'
     };
 
-    return fetch(`https://deltacyborg.pro/api/academy/${id}`, requestOptions)
+    return fetch(`${BASE_ULR_NEW}/academy/${id}`, requestOptions)
         .then(response => response.json())
 
 
@@ -117,7 +117,7 @@ export const pastStreamerVideos = async (id: string) => {
         redirect: 'follow'
     };
 
-    return fetch(`https://deltacyborg.pro/api/educators/videos/${id}`, requestOptions)
+    return fetch(`${BASE_ULR_NEW}/educators/videos/${id}`, requestOptions)
         .then(response => response.json())
 
 
@@ -137,7 +137,7 @@ export const listAcademyModules = async (id: string) => {
         redirect: 'follow'
     };
 
-    return fetch(`https://deltacyborg.pro/api/modules/show/${id}`, requestOptions)
+    return fetch(`${BASE_ULR_NEW}/modules/show/${id}`, requestOptions)
         .then(response => response.json())
 
 
@@ -157,7 +157,7 @@ export const listAcademyRating = async (id: string) => {
         redirect: 'follow'
     };
 
-    return fetch(`https://deltacyborg.pro/api/academy/rating/${id}`, requestOptions)
+    return fetch(`${BASE_ULR_NEW}/academy/rating/${id}`, requestOptions)
         .then(response => response.json())
 
 
@@ -196,6 +196,8 @@ export const getSignalsTest = {
 
     }
 }
+
+
 export const viewSignal = async (id: string) => {
 
 
@@ -268,6 +270,7 @@ export const getEducatorSignals = async (userId: string) => {
         "Authorization": `Bearer ${Token}`,
 
     }
+
     let timeoutId: NodeJS.Timeout
 
     const requestOptions = {
@@ -353,6 +356,70 @@ export const getEducatorsFollowing = async () => {
 }
 
 
+export const updateWatchTime = async ({body, id}: { body: any, id: string }) => {
+
+
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+    const myHeaders = {
+        "Authorization": `Bearer ${Token}`,
+        "Content-Type": "application/json",
+    }
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'PATCH',
+        headers: myHeaders,
+        body
+    };
+
+    return Promise.race([
+        fetch(`${BASE_ULR_NEW}/academy/watch-time/${id}`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])
+
+}
+
+export const enrollModule = async ( body: any) => {
+
+
+    let Token = await SecureStore.getItemAsync('delta-signal-token');
+    const myHeaders = {
+        "Authorization": `Bearer ${Token}`,
+        "Content-Type": "application/json",
+    }
+    let timeoutId: NodeJS.Timeout
+
+    const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body
+    };
+
+    return Promise.race([
+        fetch(`${BASE_ULR_NEW}/academy/enrolments`, requestOptions)
+            .then(response => response.json()),
+        new Promise((resolve, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+            //  clearTimeout(timeoutId)
+        }).then(() => {
+            clearTimeout(timeoutId)
+        })
+
+    ])
+
+}
+
+
+
 export const sendMessage = async ({body, id}: { body: any, id: string }) => {
 
 
@@ -434,6 +501,40 @@ export const getAlMessage = {
 
         return Promise.race([
             fetch(`${BASE_ULR_NEW}/chat/messages/${id}`, requestOptions)
+                .then(response => response.json()),
+            new Promise((resolve, reject) => {
+                timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+                //  clearTimeout(timeoutId)
+            }).then(() => {
+                clearTimeout(timeoutId)
+            })
+
+        ])
+
+    }
+}
+
+
+export const getLiveMessage = {
+
+    messages: async ({pageParam = 1, id}: { pageParam?: number, id: string }) => {
+
+
+        let Token = await SecureStore.getItemAsync('delta-signal-token');
+        const myHeaders = {
+            "Authorization": `Bearer ${Token}`,
+        }
+        let timeoutId: NodeJS.Timeout
+
+        const requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+
+        };
+
+        return Promise.race([
+            fetch(`${BASE_ULR_NEW}/live/messages/${id}`, requestOptions)
                 .then(response => response.json()),
             new Promise((resolve, reject) => {
                 timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)

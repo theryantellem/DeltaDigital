@@ -70,6 +70,10 @@ const OverView = ({navigation}: CyborgStackScreenProps<'OverView'>) => {
 
     useRefreshOnFocus(fetchStrategies)
     useRefreshOnFocus(fetchRevenue)
+
+
+
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <LinearGradient style={styles.background}

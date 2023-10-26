@@ -305,9 +305,25 @@ const ItemStreams = ({joinLiveStream,item}: streamProps) => {
                 }
             </View>
 
-            <Image style={styles.streamImage}
-                   source={{uri:item.photo}}/>
 
+            <FastImage
+
+                style={styles.streamImage}
+                source={{
+                    uri: item.thumbnail,
+
+                    cache: FastImage.cacheControl.web,
+                    priority: FastImage.priority.normal,
+
+                }}
+                resizeMode={FastImage.resizeMode.cover}
+            />
+
+            <View style={styles.streamerInfo}>
+                <Text style={styles.streamerInfoText}>
+                    {item?.first_name} {item?.last_name}
+                </Text>
+            </View>
         </TouchableOpacity>
     )
 }
@@ -428,13 +444,7 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
         refetch: refetchAcademy
     } = useQuery(['list-Academy'], listAcademy)
 
-    const {
-        data: pastStreams,
-        isLoading: loadingPastStreams,
-        refetch: refetchStreams
-    } = useQuery(['list-past-Streamer-Videos'], ()=>pastStreamerVideos(userData.id))
 
-//console.log(pastStreams)
     const viewEducator = (details: {}) => {
         navigation.navigate('MainSignalNav', {
             screen: 'ViewEducator', params: details
@@ -522,6 +532,11 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
             screen: 'SignalSummary'
         })
     }
+ const allLiveStreams = () => {
+        navigation.navigate('MainSignalNav', {
+            screen: 'AllStreams'
+        })
+    }
 
     const addFollowing = () => {
 
@@ -543,9 +558,11 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
       })
     }
 
+
     useRefreshOnFocus(fetchFollowing)
     useRefreshOnFocus(refetchSignals)
     useRefreshOnFocus(fetchLive)
+    useRefreshOnFocus(refetchAcademy)
 
 
     return (
@@ -672,6 +689,11 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
                             <Text style={styles.sectionTitleText}>
                                 Live Streaming
                             </Text>
+
+                            <TouchableOpacity onPress={allLiveStreams} activeOpacity={0.7} style={styles.seeAll}>
+                                <FontAwesome name="plus-circle" size={24} color={Colors.purplePrimary}/>
+
+                            </TouchableOpacity>
                         </View>
                         <View style={styles.liveStreaming}>
                             {
@@ -1190,7 +1212,24 @@ const styles = StyleSheet.create({
         color: Colors.textDark,
         fontSize: fontPixel(14),
         fontFamily: Fonts.faktumBold
-    }
+    },
+    streamerInfo: {
+        zIndex: 1,
+        position: 'absolute',
+        left: 15,
+        bottom: 15,
+        height: 35,
+        borderRadius: 5,
+        width: '90%',
+        paddingHorizontal: pixelSizeHorizontal(10),
+        backgroundColor: 'rgba(0,0,0,0.2)',
+        justifyContent: 'center',
+    },
+    streamerInfoText: {
+        fontFamily: Fonts.faktumBold,
+        fontSize: fontPixel(14),
+        color: Colors.text
+    },
 
 
 })

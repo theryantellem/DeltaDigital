@@ -6,16 +6,8 @@
 import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
 import {CompositeScreenProps, NavigatorScreenParams} from '@react-navigation/native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import RevenueScreen from "./screens/cyborg/profile/RevenueScreen";
-import SignalDetails from "./screens/finix/SignalDetails";
-import ViewEducator from "./screens/finix/ViewEducator";
-import StreamersList from "./screens/finix/StreamersList";
-import SignalSummary from "./screens/finix/SignalSummary";
-import MessageScreen from "./screens/finix/message/MessageScreen";
-import VideoScreen from "./screens/finix/academy/VideoScreen";
-import AllAcademy from "./screens/finix/academy/AllAcademy";
-import LeaveReview from "./screens/finix/academy/LeaveReview";
-import AcademyVideo from "./screens/finix/academy/AcademyVideo";
+import AllStreams from "./screens/finix/stream/AllStreams";
+
 
 
 declare global {
@@ -304,6 +296,9 @@ export type SignalStackParamList = {
     ViewAcademy: {
         id:string
     };
+    ViewVideo: {
+        file:string
+    };
     VideoScreen: {
         id:string,
         videoUrl:string,
@@ -320,6 +315,10 @@ export type SignalStackParamList = {
         videoTitle:string
     };
     AllAcademy:undefined;
+    AllStreams:undefined;
+    AllPastStreams: {
+        educatorId:string
+    };
     LeaveReview: {
         academy_uuid:string
     };

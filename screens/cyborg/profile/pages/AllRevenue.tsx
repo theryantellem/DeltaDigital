@@ -203,7 +203,7 @@ const AllRevenue = () => {
                    {
                        Platform.OS === 'ios' ?
 
-                           <IOSSegmentContol tabs={["History Record", "Futures History"]}
+                           <IOSSegmentContol tabs={["Spot Record", "Futures Record"]}
                                              currentIndex={tabIndex}
                                              onChange={handleTabsChange}
                                              segmentedControlBackgroundColor={'#7676801F'}
@@ -213,7 +213,7 @@ const AllRevenue = () => {
                                              paddingVertical={pixelSizeVertical(12)}/>
                            :
 
-                           <SegmentedControl tabs={["History Record", "Futures History"]}
+                           <SegmentedControl tabs={["Spot Record", "Futures Record"]}
                                              currentIndex={tabIndex}
                                              onChange={handleTabsChange}
                                              segmentedControlBackgroundColor={Colors.tintPrimary}

@@ -18,8 +18,8 @@ import Colors from "../../../constants/Colors";
 import {Entypo, Ionicons, Octicons} from "@expo/vector-icons";
 import {SignalStackScreenProps} from "../../../types";
 import {StatusBar} from "expo-status-bar";
-import {useQuery} from "@tanstack/react-query";
-import {listAcademyDetails, listAcademyModules, listAcademyRating} from "../../../api/finix-api";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {enrollModule, listAcademyDetails, listAcademyModules, listAcademyRating} from "../../../api/finix-api";
 import FastImage from "react-native-fast-image";
 import {
     BottomSheetBackdrop,
@@ -32,14 +32,17 @@ import {
 } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
 import Animated, {Easing, FadeInDown, FadeInLeft, FadeOutDown, FadeOutLeft, Layout} from "react-native-reanimated";
 import dayjs from "dayjs";
-import {useRefreshOnFocus} from "../../../helpers";
+import {isWhatPercentOf, truncate, useRefreshOnFocus} from "../../../helpers";
+import {addNotificationItem} from "../../../app/slices/dataSlice";
+import {useAppDispatch} from "../../../app/hooks";
+import ToastAnimated from "../../../components/toast";
 
 
 interface Interface {
-
-    completed:string,
+    enrollUser: (uuid: string) => void,
+    completed: string,
     viewVideoScreen: (id: string, videoUrl: string,
-                      videoTitle: string, description: string,caption:string,vid_length:string,completed:string) => void
+                      videoTitle: string, description: string, caption: string, vid_length: string, completed: string) => void
     index: number | null,
     item: {
         name: string,
@@ -53,25 +56,48 @@ interface Interface {
 }
 
 
-const RenderComponent = ({ viewVideoScreen, index, item, setCurrentIndex, currentIndex,completed}: Interface) => {
+const RenderComponent = ({
+                             viewVideoScreen,
+                             enrollUser,
+                             index,
+                             item,
+                             setCurrentIndex,
+                             currentIndex,
+                             completed
+                         }: Interface) => {
 
     return (
         <TouchableOpacity
 
-key={item.id}
+            key={item.id}
             onPress={() => {
+                enrollUser(item.id)
                 setCurrentIndex(index === currentIndex ? null : index);
             }}
             style={styles.cardContainer}
             activeOpacity={0.9}
         >
-            <Animated.View  l  style={styles.card}>
+            <Animated.View style={styles.card}>
                 <>
 
                     <View style={styles.accordionHead}>
                         <View style={styles.headLeft}>
-                            <Text style={styles.accordionTitle}>{item.name}:{item.caption}</Text>
-                            <Text style={styles.accordionSubTitle}>{item.description}</Text>
+                            <Text style={styles.accordionTitle}>{item.name}: {item.caption}</Text>
+                            <Text style={styles.accordionSubTitle}>{truncate(item.description,140)}</Text>
+
+
+
+                            <View style={styles.progressBar}>
+                                <View style={[styles.bar, {
+                                    width: completed,
+                                }]}>
+
+                                </View>
+                            </View>
+                            <Text style={styles.completedText}>
+                                {completed} completed
+                            </Text>
+
                         </View>
 
                         <View>
@@ -82,9 +108,9 @@ key={item.id}
 
 
                     </View>
-               {index === currentIndex && (
-                        <Animated.View  layout={Layout.easing(Easing.bounce).delay(50)}
-                                        entering={FadeInDown} exiting={FadeOutDown}  style={styles.accordionBody}>
+                    {index === currentIndex && (
+                        <Animated.View layout={Layout.easing(Easing.bounce).delay(50)}
+                                       entering={FadeInDown} exiting={FadeOutDown} style={styles.accordionBody}>
                             {item.videos.map((details: {
                                 "id": string,
                                 "name": string,
@@ -94,7 +120,7 @@ key={item.id}
                                 "length": string
                             }) => (
                                 <TouchableOpacity key={details.id + details.name}
-                                                  onPress={() => viewVideoScreen(details.id, details.video_file, details.name, details.description,
+                                                  onPress={() => viewVideoScreen(item.id, details.video_file, details.name, details.description,
                                                       details.caption, details.length, completed)}
                                                   activeOpacity={0.7}
                                                   style={[styles.accordionBodyButton, {}]}>
@@ -175,13 +201,15 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
 
 
     const {id} = route.params
-
+    const dispatch = useAppDispatch()
+    const queryClient = useQueryClient()
     const {data, isLoading, refetch} = useQuery(['listAcademyDetails', id], () => listAcademyDetails(id))
     const {
         data: ratings,
         isLoading: loadingRating,
         refetch: fetchReviews
     } = useQuery(['listAcademyRating', id], () => listAcademyRating(id))
+
 
     const [currentIndex, setCurrentIndex] = useState(null);
     // variables
@@ -198,7 +226,7 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
         bottomSheetModalDescriptionRef.current?.present(1);
     }, []);
 
-  const handlePresentModalPress = useCallback(() => {
+    const handlePresentModalPress = useCallback(() => {
         bottomSheetModalRef.current?.present(1);
     }, []);
 
@@ -220,14 +248,30 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
         ),
         []
     );
-    //console.log(ratings)
 
-    /*   const {
-           data: modules,
-           isLoading: loadingModules
-       } = useQuery(['listAcademyModules', id], () => listAcademyModules(id))
-   */
+    const {mutate, isLoading: enrolling} = useMutation(['enrollModule'], enrollModule, {
+        onSuccess: (data) => {
 
+            if (data.success) {
+                // fetchEducators()
+                //refetch()
+
+                dispatch(addNotificationItem({
+                    id: Math.random(),
+                    type: 'success',
+                    body: data.message,
+                }))
+
+                //  refetchFavs()
+            } else {
+
+            }
+
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries(['enrollModule']);
+        }
+    })
     useEffect(() => {
         if (Platform.OS === 'android') {
             if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -238,7 +282,7 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
 
 
     const viewVideoScreen = (id: string, videoUrl: string,
-                             videoTitle: string, description: string,caption:string,vid_length:string,completed:string) => {
+                             videoTitle: string, description: string, caption: string, vid_length: string, completed: string) => {
         navigation.navigate('VideoScreen', {
             id,
             videoUrl,
@@ -246,8 +290,8 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
             description,
             caption,
             completed,
-            length:vid_length,
-            posterImage:data?.data[0]?.thumbnail,
+            length: vid_length,
+            posterImage: data?.data[0]?.thumbnail,
         })
     }
 
@@ -264,6 +308,15 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
 
     useRefreshOnFocus(refetch)
     useRefreshOnFocus(fetchReviews)
+
+    const enrollUser = (module_uuid: string) => {
+        const body = JSON.stringify({
+            module_uuid
+        })
+        console.log(module_uuid)
+        mutate(body)
+    }
+
 
     return (
         <>
@@ -368,12 +421,13 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
                             !isLoading && data &&
                             <View style={styles.CategoriesContainer}>
 
-                                {data?.data[0].modules.map((item: any, index: number) => (
+                                {data?.data[0]?.modules.map((item: any, index: number) => (
 
-                                    <RenderComponent viewVideoScreen={viewVideoScreen} index={index}
+                                    <RenderComponent enrollUser={enrollUser} viewVideoScreen={viewVideoScreen}
+                                                     index={index}
                                                      currentIndex={currentIndex}
                                                      setCurrentIndex={setCurrentIndex}
-                                                     key={item.id} item={item} completed={item.completed} />
+                                                     key={item.id} item={item} completed={item.completed}/>
                                 ))}
 
                             </View>
@@ -391,13 +445,14 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
 
                 }
                 <View style={styles.bottomOptions}>
-                    <TouchableOpacity onPress={handlePresentModalDescriptionPress} activeOpacity={0.7} style={styles.bottomButton}>
+                    <TouchableOpacity onPress={handlePresentModalDescriptionPress} activeOpacity={0.7}
+                                      style={styles.bottomButton}>
                         <Text style={styles.bottomButtonText}>
                             Description
                         </Text>
                     </TouchableOpacity>
 
-                {/*    <TouchableOpacity activeOpacity={0.7} style={styles.bottomButton}>
+                    {/*    <TouchableOpacity activeOpacity={0.7} style={styles.bottomButton}>
                         <Text style={styles.bottomButtonText}>
                             Course Info
                         </Text>
@@ -419,7 +474,7 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
                     </TouchableOpacity>
                 </View>
 
-
+                <ToastAnimated/>
             </SafeAreaView>
 
 
@@ -467,7 +522,12 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
                         {loadingRating && <ActivityIndicator size='small' color={Colors.purplePrimary}/>}
 
                         {
-                            !loadingRating && ratings && ratings.data.map((({comment, reviewer_info, rating,created_at}) => (
+                            !loadingRating && ratings && ratings?.data.map((({
+                                                                                 comment,
+                                                                                 reviewer_info,
+                                                                                 rating,
+                                                                                 created_at
+                                                                             }) => (
                                 <ReviewCard reviewer_info={reviewer_info} comment={comment} key={created_at}
                                             rating={rating} name={reviewer_info.name}/>
                             )))
@@ -477,7 +537,6 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
                     </BottomSheetScrollView>
                 </BottomSheetModal>
             </BottomSheetModalProvider>
-
 
 
             <BottomSheetModalProvider>
@@ -512,7 +571,7 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
                                 fontSize: fontPixel(14),
                                 color: Colors.textDark
                             }]}>
-                             Description
+                                Description
                             </Text>
                             <TouchableOpacity onPress={handleCloseDescription}
                                               style={[styles.dismiss, {
@@ -528,7 +587,6 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
                                 {data?.data[0]?.description}
                             </Text>
                         </View>
-
 
 
                     </BottomSheetScrollView>
@@ -680,7 +738,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         width: '100%',
         paddingHorizontal: pixelSizeHorizontal(20),
-        height: heightPixel(90),
+        height: heightPixel(120),
         justifyContent: 'space-between',
         flexDirection: 'row',
         alignItems: 'center'
@@ -695,6 +753,26 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
 
     },
+    progressBar: {
+        width: '100%',
+        backgroundColor: '#F4F5F7',
+        height: 5,
+        borderRadius: 5,
+    },
+    bar: {
+
+        backgroundColor: Colors.success,
+
+        position: 'relative',
+        height: 5,
+        borderRadius: 5,
+    },
+    completedText:{
+        fontFamily: Fonts.faktumRegular,
+        color: Colors.textDark,
+        fontSize: fontPixel(12),
+    },
+
     accordionTitle: {
         fontFamily: Fonts.faktumBold,
         color: Colors.textDark,
@@ -703,7 +781,7 @@ const styles = StyleSheet.create({
     accordionSubTitle: {
         fontFamily: Fonts.faktumRegular,
         color: Colors.textDark,
-        fontSize: fontPixel(14),
+        fontSize: fontPixel(12),
     },
     accordionBody: {
 
@@ -804,7 +882,7 @@ const styles = StyleSheet.create({
 
     },
     reviewTitle: {
-        textTransform:'capitalize',
+        textTransform: 'capitalize',
         color: Colors.textDark,
         fontSize: fontPixel(14),
         fontFamily: Fonts.faktumMedium
@@ -861,9 +939,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: "#fff",
     },
-    descriptionBox:{
-        width:'100%',
-        marginTop:30,
+    descriptionBox: {
+        width: '100%',
+        marginTop: 30,
     },
     descriptionText: {
         color: Colors.textDark,

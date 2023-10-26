@@ -395,7 +395,7 @@ const StreamersList = ({navigation}: SignalStackScreenProps<'StreamersList'>) =>
                         {
                             Platform.OS === 'ios' ?
 
-                                <GradientSegmentControl tabs={["Educators", "Following"]}
+                                <GradientSegmentControl tabs={["Streamers", "Following"]}
                                                         currentIndex={tabIndex}
                                                         onChange={handleTabsChange}
                                                         segmentedControlBackgroundColor={'#7676801F'}
@@ -405,7 +405,7 @@ const StreamersList = ({navigation}: SignalStackScreenProps<'StreamersList'>) =>
                                                         paddingVertical={pixelSizeVertical(12)}/>
                                 :
 
-                                <SegmentedControl tabs={["Educators", "Following"]}
+                                <SegmentedControl tabs={["Streamers", "Following"]}
                                                   currentIndex={tabIndex}
                                                   onChange={handleTabsChange}
                                                   segmentedControlBackgroundColor={Colors.tintPrimary}

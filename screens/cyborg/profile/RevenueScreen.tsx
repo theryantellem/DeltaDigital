@@ -206,7 +206,7 @@ const seeAll = () => {
                    {
                        Platform.OS === 'ios' ?
 
-                           <IOSSegmentContol tabs={["History Record", "Futures Record"]}
+                           <IOSSegmentContol tabs={["Spot Record", "Futures Record"]}
                                              currentIndex={tabIndex}
                                              onChange={handleTabsChange}
                                              segmentedControlBackgroundColor={'#7676801F'}
@@ -216,7 +216,7 @@ const seeAll = () => {
                                              paddingVertical={pixelSizeVertical(12)}/>
                            :
 
-                           <SegmentedControl tabs={["History Record", "Futures Record"]}
+                           <SegmentedControl tabs={["Spot Record", "Futures Record"]}
                                              currentIndex={tabIndex}
                                              onChange={handleTabsChange}
                                              segmentedControlBackgroundColor={Colors.tintPrimary}

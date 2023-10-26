@@ -9,7 +9,7 @@ import {
     ActivityIndicator,
     AppState,
     Button,
-    Dimensions, ScrollView
+    Dimensions, ScrollView, Platform
 } from 'react-native';
 import {StatusBar} from "expo-status-bar";
 import {Ionicons} from "@expo/vector-icons";
@@ -21,20 +21,64 @@ import VideoPlayer from "react-native-media-console";
 import {SignalStackScreenProps} from "../../../types";
 
 
-import {Video, ResizeMode,Audio} from 'expo-av';
+import {Video, ResizeMode, Audio} from 'expo-av';
 import {convertSecondsToTime} from "../../../helpers";
+import {useAppDispatch} from "../../../app/hooks";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {enrollModule, updateWatchTime} from "../../../api/finix-api";
+import {addNotificationItem} from "../../../app/slices/dataSlice";
 
 
+if (Platform.OS === "ios") {
+    Audio.setAudioModeAsync({playsInSilentModeIOS: true});
+}
 const VideoScreen = ({navigation, route}: SignalStackScreenProps<'VideoScreen'>) => {
-    const {videoTitle, videoUrl, description, completed, length, caption, posterImage} = route.params
+
+    const dispatch = useAppDispatch()
+    const queryClient = useQueryClient()
+    const {videoTitle, videoUrl, description, completed, length, caption, posterImage, id} = route.params
 
     const [isVideoLoading, setIsVideoLoading] = useState(true)
     const [fullScreen, setFullScreen] = useState(false);
     const [paused, setPaused] = useState(true)
     const video = useRef(null);
     const [status, setStatus] = React.useState({});
+
+    const [durationMillis, setDurationMillis] = useState(0)
+    const [positionMillis, setPositionMillis] = useState(0);
+
+
+    const {mutate, isLoading} = useMutation(['updateWatchTime'], updateWatchTime, {
+        onSuccess: (data) => {
+
+            if (data.success) {
+                // fetchEducators()
+                //refetch()
+
+            /*    dispatch(addNotificationItem({
+                    id: Math.random(),
+                    type: 'success',
+                    body: data.message,
+                }))*/
+
+                //  refetchFavs()
+            } else {
+
+            }
+
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries(['updateWatchTime']);
+        }
+    })
+
     const goBack = () => {
-        setPaused(true)
+
+        const body = JSON.stringify({
+            watch_time: positionMillis / 1000
+        })
+
+        mutate({body, id})
         navigation.goBack()
     }
 
@@ -54,6 +98,7 @@ const VideoScreen = ({navigation, route}: SignalStackScreenProps<'VideoScreen'>)
     let videoWidth = Dimensions.get('window').width;
 
 
+//updateWatchTime
     return (
         <SafeAreaView style={styles.safeArea}>
             <StatusBar style="dark"/>
@@ -100,9 +145,10 @@ const VideoScreen = ({navigation, route}: SignalStackScreenProps<'VideoScreen'>)
                         </View>
                     }
                     <Video
+
                         rate={1.0}
 
-                    //    playsInSilentLockedModeIOS={ true }
+                        //    playsInSilentLockedModeIOS={ true }
                         onLoad={(status) => {
                             // console.log(status)
                             setIsVideoLoading(!status.isLoaded)
@@ -121,7 +167,9 @@ const VideoScreen = ({navigation, route}: SignalStackScreenProps<'VideoScreen'>)
                         resizeMode={ResizeMode.CONTAIN}
                         onPlaybackStatusUpdate={status => {
                             setStatus(() => status)
-
+                            // console.log(status.durationMillis)
+                            setDurationMillis(status.durationMillis)
+                            setPositionMillis(status.positionMillis)
                         }}
                     />
 
@@ -312,13 +360,13 @@ const styles = StyleSheet.create({
         fontSize: fontPixel(12),
         fontFamily: Fonts.faktumMedium
     },
-    videoLoader:{
+    videoLoader: {
         position: 'absolute',
         width: '80%',
         alignItems: 'center',
 
         justifyContent: 'center',
-        top:100
+        top: 100
     }
 
 

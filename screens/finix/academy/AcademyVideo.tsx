@@ -25,6 +25,8 @@ const AcademyVideo = ({route}: SignalStackScreenProps<'AcademyVideo'>) => {
         return `${mins}:${secs}`;
     };
 
+
+    //
     return (
         <View style={{flex: 1}}>
             <TouchableOpacity

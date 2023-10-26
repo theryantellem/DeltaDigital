@@ -28,7 +28,7 @@ const formSchema = yup.object().shape({
 
     apiKey: yup.string().required('API Key is required'),
     APISecrete: yup.string().required('API Secrete is required'),
-  passphrase: yup.string().required('Pass Phrase is required'),
+    passphrase: yup.string().required('Pass Phrase is required'),
 
 });
 
@@ -37,7 +37,7 @@ const ViewAPIBinding = ({route, navigation}: CyborgStackScreenProps<'ViewAPIBind
 
     const dispatch = useAppDispatch()
     const queryClient = useQueryClient()
-    const {exchange, apiSecrete, apiKey, exchangeName,isBound} = route.params
+    const {exchange, apiSecrete, apiKey, exchangeName, isBound} = route.params
 
     const [copied, setCopied] = useState(false);
 
@@ -51,7 +51,7 @@ const ViewAPIBinding = ({route, navigation}: CyborgStackScreenProps<'ViewAPIBind
     const [APISecrete, setAPISecrete] = useState(apiSecrete);
     const [focusSecrete, setFocusSecrete] = useState(false)
 
-    const [passphrase, setPassphrase] = useState('0');
+    const [passphrase, setPassphrase] = useState();
     const [focusPassphrase, setFocusPassphrase] = useState(false)
 
     const user = useAppSelector(state => state.user)
@@ -75,9 +75,9 @@ const ViewAPIBinding = ({route, navigation}: CyborgStackScreenProps<'ViewAPIBind
 
     const {isLoading, mutate} = useMutation(['bindAPI'], bindAPI, {
         onSuccess: async (data) => {
-console.log(data)
-            if (data.status == 1) {
 
+            if (data.status == 1) {
+                refetch()
                 navigation.navigate('SuccessScreen', {
                     type: 'success',
                     title: `${data.data}`,
@@ -99,6 +99,7 @@ console.log(data)
         }
     })
 
+
     const {
         resetForm,
         handleChange, handleSubmit, handleBlur,
@@ -113,7 +114,8 @@ console.log(data)
         validationSchema: formSchema,
         initialValues: {
             apiKey: apiKey,
-            passphrase: '0',
+            passphrase: exchange == '2' ? data?.data['User Details'][0].kupassphrase :
+                exchange == '3' ? data?.data['User Details'][0].coinbasepro_passphrase : '0',
             APISecrete: apiSecrete
 
         },
@@ -121,34 +123,44 @@ console.log(data)
             const {APISecrete, apiKey, passphrase} = values;
 
 
-            if(bindUnbind == '0') {
+            if (bindUnbind == '0') {
 
 
                 const formData = new FormData()
                 formData.append('api_passphrase', passphrase)
                 formData.append('api_key', apiKey)
                 formData.append('api_secret', APISecrete)
-                formData.append('bind',  '1')
+                formData.append('bind', '1')
                 formData.append('exchange', exchange)
 
-                mutate({body: formData, userId: User_Details.id})
-            }else{
+
+                mutate({
+                    userId: User_Details.id,
+                    api_passphrase: passphrase, api_key: apiKey, api_secret: APISecrete, bind: '1', exchange,
+
+                })
+                //   console.log(formData)
+            } else {
                 const formData = new FormData()
                 formData.append('api_passphrase', passphrase)
                 formData.append('api_key', apiKey)
                 formData.append('api_secret', APISecrete)
-                formData.append('bind',  '0' )
+                formData.append('bind', '0')
                 formData.append('exchange', exchange)
 
+//console.log({passphrase,apiKey,APISecrete,exchange})
+                mutate({
+                    userId: User_Details.id,
+                    api_passphrase: passphrase, api_key: apiKey, api_secret: APISecrete, bind: '0', exchange,
 
-               mutate({body: formData, userId: User_Details.id})
+                })
             }
 
         }
     });
 
 
-useRefreshOnFocus(refetch)
+    useRefreshOnFocus(refetch)
     return (
 
         <>
@@ -160,203 +172,224 @@ useRefreshOnFocus(refetch)
                 </View>
             }
 
-        <SafeAreaView style={styles.safeArea}>
-            <LinearGradient style={styles.background}
-                            colors={['#04074E', '#141621',]}
+            <SafeAreaView style={styles.safeArea}>
+                <LinearGradient style={styles.background}
+                                colors={['#04074E', '#141621',]}
 
-                            start={{x: 2.5, y: 0}}
-                            end={{x: 1.5, y: 0.8,}}
-                // locations={[0.1, 0.7,]}
+                                start={{x: 2.5, y: 0}}
+                                end={{x: 1.5, y: 0.8,}}
+                    // locations={[0.1, 0.7,]}
 
-            >
+                >
 
 
-                <HeaderWithTitle title={`${exchangeName} API Binding`}/>
-                <KeyboardAwareScrollView style={{
-                    width: '100%'
-                }} contentContainerStyle={styles.scrollView} scrollEnabled
-                                         showsVerticalScrollIndicator={false}>
+                    <HeaderWithTitle title={`${exchangeName} API Binding`}/>
+                    <KeyboardAwareScrollView style={{
+                        width: '100%'
+                    }} contentContainerStyle={styles.scrollView} scrollEnabled
+                                             showsVerticalScrollIndicator={false}>
 
-                    <View style={styles.planInfo}>
-                        <Text style={styles.planTitle}>
-                            IP Group Binding
-                        </Text>
-                        <View style={styles.planMessage}>
-                            <Text style={styles.planMessageTxt}>
-                                for security, binance Exchange recommends binding the server IP address when creating
-                                the API.
-                                For users who need to bind the IP address, click Edit permissions in the upper right
-                                corner
-                                after the API is created, and click in the IP address permission column to restrict
-                                access to
-                                only trusted IPs. (Recommended) option, click the copy button to copy the IP group to
-                                the input
-                                box and click OK, after adding, click save in the upper right corner.
+                        <View style={styles.planInfo}>
+                            <Text style={styles.planTitle}>
+                                IP Group Binding
                             </Text>
-                        </View>
-                    </View>
-
-                    <View style={styles.copyWrap}>
-                        <View>
-                            <Text style={styles.walletAddress}>
-                                {
-                                    truncateString(data.data['User Details'][0]['api group'], 45)
-                                }
-
-
-                            </Text>
+                            <View style={styles.planMessage}>
+                                <Text style={styles.planMessageTxt}>
+                                    for security, binance Exchange recommends binding the server IP address when
+                                    creating
+                                    the API.
+                                    For users who need to bind the IP address, click Edit permissions in the upper right
+                                    corner
+                                    after the API is created, and click in the IP address permission column to restrict
+                                    access to
+                                    only trusted IPs. (Recommended) option, click the copy button to copy the IP group
+                                    to
+                                    the input
+                                    box and click OK, after adding, click save in the upper right corner.
+                                </Text>
+                            </View>
                         </View>
 
-                        <TouchableOpacity
-                            onPress={() => copyToClipboard(data.data['User Details'][0]['api group'])}>
-                            <Ionicons name="ios-copy-outline" size={18}
-                                      color={Colors.primary}/>
-                        </TouchableOpacity>
+                        <View style={styles.copyWrap}>
+                            <View>
+                                <Text style={styles.walletAddress}>
+                                    {
+                                        truncateString(data.data['User Details'][0]['api group'], 45)
+                                    }
 
 
-                    </View>
-                    <HorizontalLine margin={20}/>
+                                </Text>
+                            </View>
+
+                            <TouchableOpacity
+                                onPress={() => copyToClipboard(data.data['User Details'][0]['api group'])}>
+                                <Ionicons name="ios-copy-outline" size={18}
+                                          color={Colors.primary}/>
+                            </TouchableOpacity>
 
 
-                    <View style={styles.authContainer}>
+                        </View>
+                        <HorizontalLine margin={20}/>
 
-                        <TextInput
 
-                            placeholder="API Key"
-                            keyboardType={"default"}
-                            touched={touched.apiKey}
-                            error={touched.apiKey && errors.apiKey}
-                            onFocus={() => setFocusApiKey(true)}
-                            onChangeText={(e) => {
-                                handleChange('apiKey')(e);
-                                setUserApiKey(e);
-                            }}
-                            onBlur={(e) => {
-                                handleBlur('apiKey')(e);
-                                setFocusApiKey(false);
-                            }}
-                            defaultValue={userApiKey}
-                            focus={focusApiKey}
-                            value={values.apiKey}
-                            label="API Key"/>
+                        <View style={styles.authContainer}>
 
-                        <TextInput
+                            <TextInput
 
-                            placeholder="API Secrete"
-                            keyboardType={"default"}
-                            touched={touched.APISecrete}
-                            error={touched.APISecrete && errors.APISecrete}
-                            onFocus={() => setFocusSecrete(true)}
-                            onChangeText={(e) => {
-                                handleChange('APISecrete')(e);
-                                setAPISecrete(e);
-                            }}
-                            onBlur={(e) => {
-                                handleBlur('APISecrete')(e);
-                                setFocusSecrete(false);
-                            }}
-                            defaultValue={APISecrete}
-                            focus={focusSecrete}
-                            value={values.APISecrete}
-                            label="API Secrete"/>
+                                placeholder="API Key"
+                                keyboardType={"default"}
+                                touched={touched.apiKey}
+                                error={touched.apiKey && errors.apiKey}
+                                onFocus={() => setFocusApiKey(true)}
+                                onChangeText={(e) => {
+                                    handleChange('apiKey')(e);
+                                    setUserApiKey(e);
+                                }}
+                                onBlur={(e) => {
+                                    handleBlur('apiKey')(e);
+                                    setFocusApiKey(false);
+                                }}
+                                defaultValue={userApiKey}
+                                focus={focusApiKey}
+                                value={values.apiKey}
+                                label="API Key"/>
+
+                            <TextInput
+
+                                placeholder="API Secrete"
+                                keyboardType={"default"}
+                                touched={touched.APISecrete}
+                                error={touched.APISecrete && errors.APISecrete}
+                                onFocus={() => setFocusSecrete(true)}
+                                onChangeText={(e) => {
+                                    handleChange('APISecrete')(e);
+                                    setAPISecrete(e);
+                                }}
+                                onBlur={(e) => {
+                                    handleBlur('APISecrete')(e);
+                                    setFocusSecrete(false);
+                                }}
+                                defaultValue={APISecrete}
+                                focus={focusSecrete}
+                                value={values.APISecrete}
+                                label="API Secrete"/>
+
+                            {
+                                exchange == '3' &&
+                                <TextInput
+
+                                    placeholder="Passphrase"
+                                    keyboardType={"default"}
+                                    touched={touched.passphrase}
+                                    error={touched.passphrase && errors.passphrase}
+                                    onFocus={() => setFocusPassphrase(true)}
+                                    onChangeText={(e) => {
+                                        handleChange('passphrase')(e);
+                                        setPassphrase(e);
+                                    }}
+                                    onBlur={(e) => {
+                                        handleBlur('passphrase')(e);
+                                        setFocusPassphrase(false);
+                                    }}
+                                    defaultValue={exchange == '3' ? data?.data['User Details'][0].coinbasepro_passphrase : '0'}
+                                    focus={focusPassphrase}
+                                    value={values.passphrase}
+                                    label="API Passphrase"/>
+                            }
+                            {
+                                exchange == '2' &&
+                                <TextInput
+
+                                    placeholder="Passphrase"
+                                    keyboardType={"default"}
+                                    touched={touched.passphrase}
+                                    error={touched.passphrase && errors.passphrase}
+                                    onFocus={() => setFocusPassphrase(true)}
+                                    onChangeText={(e) => {
+                                        handleChange('passphrase')(e);
+                                        setPassphrase(e);
+                                    }}
+                                    onBlur={(e) => {
+                                        handleBlur('passphrase')(e);
+                                        setFocusPassphrase(false);
+                                    }}
+                                    defaultValue={exchange == '2' ? data?.data['User Details'][0].kupassphrase : '0'}
+                                    focus={focusPassphrase}
+                                    value={values.passphrase}
+                                    label="API Passphrase"/>
+                            }
+
+                        </View>
 
                         {
                             isBound == '0'
-                            && exchangeName !== 'Binance' &&
-                            <TextInput
-
-                                placeholder="Passphrase"
-                                keyboardType={"default"}
-                                touched={touched.passphrase}
-                                error={touched.passphrase && errors.passphrase}
-                                onFocus={() => setFocusPassphrase(true)}
-                                onChangeText={(e) => {
-                                    handleChange('passphrase')(e);
-                                    setPassphrase(e);
-                                }}
-                                onBlur={(e) => {
-                                    handleBlur('passphrase')(e);
-                                    setFocusPassphrase(false);
-                                }}
-                                defaultValue={passphrase}
-                                focus={focusPassphrase}
-                                value={values.passphrase}
-                                label="API Passphrase (Optional)"/>
-                        }
-
-                    </View>
-
-                    {
-                        isBound == '0'
-                        &&
-                        <MyButton onPress={() => {
-                            setBindUnbind('0')
-                            handleSubmit()
-                        }} activeOpacity={0.7}
-                                  style={[styles.button, {
-                                      backgroundColor: !isValid ? Colors.disabled : Colors.purplePrimary
-                                  }]} disabled={!isValid}>
-
-                            {
-                                isLoading ? <ActivityIndicator color={"#fff"} size='small'/>
-                                    :
-                                    <Text style={styles.btnText}>
-                                        Bind
-                                    </Text>
-                            }
-
-
-                        </MyButton>
-                    }
-
-
-                    {
-                        isBound == '1'
-                        &&
-
-                        <View style={styles.buttonRow}>
-                            <MyButton onPress={() => {
-                                setBindUnbind('1')
-                                handleSubmit()
-                            }} activeOpacity={0.7}
-                                      style={[styles.smallButton, {
-                                          backgroundColor: !isValid ? Colors.disabled : Colors.purplePrimary
-                                      }]} disabled={!isValid}>
-
-
-                                        <Text style={styles.btnText}>
-                                            UNBIND
-                                        </Text>
-
-
-
-                            </MyButton>
-
+                            &&
                             <MyButton onPress={() => {
                                 setBindUnbind('0')
                                 handleSubmit()
                             }} activeOpacity={0.7}
-                                      style={[styles.smallButton, {
-                                          backgroundColor: !isValid ? Colors.disabled : Colors.primary
+                                      style={[styles.button, {
+                                          backgroundColor: !isValid ? Colors.disabled : Colors.purplePrimary
                                       }]} disabled={!isValid}>
 
-
+                                {
+                                    isLoading ? <ActivityIndicator color={"#fff"} size='small'/>
+                                        :
                                         <Text style={styles.btnText}>
-                                            REPLACE
+                                            Bind
                                         </Text>
-
+                                }
 
 
                             </MyButton>
+                        }
 
 
-                        </View>
-                    }
-                </KeyboardAwareScrollView>
+                        {
+                            isBound == '1'
+                            &&
 
-                <ToastAnimated/>
-            </LinearGradient>
-        </SafeAreaView>
+                            <View style={styles.buttonRow}>
+                                <MyButton onPress={() => {
+                                    setBindUnbind('1')
+                                    handleSubmit()
+                                }} activeOpacity={0.7}
+                                          style={[styles.smallButton, {
+                                              backgroundColor: !isValid ? Colors.disabled : Colors.purplePrimary
+                                          }]} disabled={!isValid}>
+
+
+                                    <Text style={styles.btnText}>
+                                        UNBIND
+                                    </Text>
+
+
+                                </MyButton>
+
+                                <MyButton onPress={() => {
+                                    setBindUnbind('0')
+                                    handleSubmit()
+                                }} activeOpacity={0.7}
+                                          style={[styles.smallButton, {
+                                              backgroundColor: !isValid ? Colors.disabled : Colors.primary
+                                          }]} disabled={!isValid}>
+
+
+                                    <Text style={styles.btnText}>
+                                        REPLACE
+                                    </Text>
+
+
+                                </MyButton>
+
+
+                            </View>
+                        }
+                    </KeyboardAwareScrollView>
+
+                    <ToastAnimated/>
+                </LinearGradient>
+            </SafeAreaView>
         </>
     );
 };
@@ -452,17 +485,17 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     loading: {
-        flex:1,
-        width:'100%',
+        flex: 1,
+        width: '100%',
         position: 'absolute',
         left: 0,
         right: 0,
-        zIndex:1,
+        zIndex: 1,
         top: 0,
         bottom: 0,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor:'rgba(0,0,0,0.3)'
+        backgroundColor: 'rgba(0,0,0,0.3)'
     },
 })
 

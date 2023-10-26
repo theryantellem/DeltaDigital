@@ -476,39 +476,31 @@ export const userCounselor = async (userId: string) => {
 
 }
 
-export const bindAPI = async ({userId, body}: { userId: string, body: any }) => {
+export const bindAPI = async ({userId,  api_passphrase,api_key,api_secret,bind,exchange}: { userId: string,
+    api_passphrase:string,api_key:string,api_secret:string,bind:string,exchange:string
+}) => {
     let Token = await SecureStore.getItemAsync('delta-signal-token');
 
     const myHeaders = {
         "TOKEN": Token,
-        "ID": userId
+        "ID": userId,
+       // "Content-Type": 'multipart/form-data'
     }
     let timeoutId: NodeJS.Timeout
 
 
     const requestOptions = {
-        method: 'POST',
+        method: 'GET',
         headers: myHeaders,
-        body
+
     };
 
-    /*  return Promise.race([
-          fetch(`${LIVE_PROD_URL}/Apibind`, requestOptions)
-              .then(response => response.json()),
-          new Promise((resolve, reject) => {
-              timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
 
-              //  clearTimeout(timeoutId)
-          }).then(() => {
-              clearTimeout(timeoutId)
-          })
-
-      ])
-  */
-    return fetch(`https://backend.deltacyborg.pro/Api/Mobile/Apibind?userId=${userId}`, requestOptions)
+    return fetch(`https://backend.deltacyborg.pro/Api/Mobile/Apibind?userId=${userId}&exchange=${exchange}&api_key=${api_key}&api_secret=${api_secret}&api_passphrase=${api_passphrase}&bind=${bind}`, requestOptions)
         .then(response => response.json())
 
 }
+
 
 
 /*GET RUNNING BOT STRATEGY*/

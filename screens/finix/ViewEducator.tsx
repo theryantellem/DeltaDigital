@@ -25,7 +25,7 @@ import {
     getEducator,
     getEducatorSignals,
     getSignals,
-    listAcademy,
+    listAcademy, pastStreamerVideos,
     unFollowEducator
 } from "../../api/finix-api";
 import {addNotificationItem} from "../../app/slices/dataSlice";
@@ -65,6 +65,7 @@ interface prosAcademy {
     }
     viewAcademy: (id: string) => void
 }
+
 interface Props {
     viewSignalImage: (item: {}) => void,
     viewSignal: (signal: {
@@ -125,44 +126,38 @@ interface Props {
         "status": string
     }
 }
+
 interface streamProps {
-    joinLiveStream: (educatorId:string,last_name:string,stream_url:string,photo: string,first_name:string) => void,
+    viewVideo: (file: string,) => void,
     item: {
         "id": string,
-        "first_name": string,
-        "last_name": string,
-        "photo": string
-        "is_live": number,
-        "stream_url": string
+        "file": string,
+        "thumbnail": string,
     }
 }
 
 
-
-const ItemStreams = ({joinLiveStream,item}: streamProps) => {
+const ItemPastStreams = ({viewVideo, item}: streamProps) => {
 
 
     return (
 
-        <TouchableOpacity onPress={()=>joinLiveStream(item.id,item.last_name,item.stream_url, item.photo,item.first_name)} activeOpacity={0.8} style={styles.streamCard}>
-            <View style={styles.streamLiveTag}>
-                <Entypo name="dot-single" size={24} color={"#fff"}/>
-                {
-                    item.is_live == 1 &&
+        <TouchableOpacity
+            onPress={() => viewVideo(item.file)}
+            activeOpacity={0.8} style={styles.pastStreamCard}>
 
-                    <Text style={[styles.liveText, {}]}>
-                        Live
-                    </Text>
-                }
-            </View>
+            {
+                item.thumbnail ?
 
-            <Image style={styles.streamImage}
-                   source={{uri:item.photo}}/>
-
+                    <Image style={styles.streamImage}
+                           source={{uri: item.thumbnail}}/>
+                    :
+                    <Image style={styles.streamImage}
+                           source={require('../../assets/images/streamIMG.png')}/>
+            }
         </TouchableOpacity>
     )
 }
-
 
 
 const ItemSignal = ({item, viewSignal, viewSignalImage}: Props) => {
@@ -180,28 +175,28 @@ const ItemSignal = ({item, viewSignal, viewSignalImage}: Props) => {
     return (
 
         <TouchableOpacity onPress={() => viewItemSignal(item)} activeOpacity={0.8} style={styles.loanAppCard}>
-            { item.category.type == 'news' &&
-            <>
+            {item.category.type == 'news' &&
+                <>
 
-                <View style={styles.chart_photoImageWrap}>
-                    <Image style={styles.chart_photoImage}
-                           source={{uri: item.chart_photo}}/>
-
-
-                </View>
+                    <View style={styles.chart_photoImageWrap}>
+                        <Image style={styles.chart_photoImage}
+                               source={{uri: item.chart_photo}}/>
 
 
-          <Text style={[styles.assetText, {
-                    fontFamily: Fonts.faktumBold
-                }]}>
-                    {item.category.name}
-                </Text>
+                    </View>
 
 
-            </>
+                    <Text style={[styles.assetText, {
+                        fontFamily: Fonts.faktumBold
+                    }]}>
+                        {item.category.name}
+                    </Text>
+
+
+                </>
             }
 
-          {item.category.type !== 'news' &&
+            {item.category.type !== 'news' &&
 
 
                 <>
@@ -298,7 +293,7 @@ const ItemAcademy = ({viewAcademy, item}: prosAcademy) => {
                 </Text>
                 <View style={styles.description}>
                     <Text style={styles.descriptionText}>
-                        {truncate(item.description,80)}
+                        {truncate(item.description, 80)}
                     </Text>
                 </View>
 
@@ -316,7 +311,7 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
 
     const {educator} = route.params
 
-const user = useAppSelector(state => state.user)
+    const user = useAppSelector(state => state.user)
     const {userData} = user
 
     const dispatch = useAppDispatch()
@@ -356,7 +351,7 @@ const user = useAppSelector(state => state.user)
             if (data.success) {
                 // fetchEducators()
                 //refetch()
-navigation.replace('SignalBottomTab')
+                navigation.replace('SignalBottomTab')
                 dispatch(addNotificationItem({
                     id: Math.random(),
                     type: 'success',
@@ -375,28 +370,35 @@ navigation.replace('SignalBottomTab')
     })
 
 
-  //  const {data: signals, isLoading: loadingSignals, refetch: refetchSignals} = useQuery(['getSignals'], getSignals)
+    //  const {data: signals, isLoading: loadingSignals, refetch: refetchSignals} = useQuery(['getSignals'], getSignals)
 
 
     const {
         data: educatorDetails,
         isLoading: loadingEducator,
         refetch: refetchEducator
-    } = useQuery(['get-educator-details',educator.id], () => getEducator(educator.id))
+    } = useQuery(['get-educator-details', educator.id], () => getEducator(educator.id))
 
-  const {
+    const {
         data: educatorSignals,
         isLoading: loadingSignals,
         refetch: refetchSignals
-    } = useQuery(['get-educator-signals',educator.id], () => getEducatorSignals(educator.id))
+    } = useQuery(['get-educator-signals', educator.id], () => getEducatorSignals(educator.id))
 
 
-   const {
+    const {
+        data: pastStreams,
+        isLoading: loadingPastStreams,
+        refetch: refetchStreams
+    } = useQuery(['list-past-Streamer-Videos',educator.id], () => pastStreamerVideos(educator.id))
+
+
+    //  console.log(pastStreams.data)
+    const {
         data: liveEducators,
-        isLoading:loadingLive,
+        isLoading: loadingLive,
         refetch: fetchLive
     } = useQuery([`educators-Live`], educatorsLive)
-
 
 
     const {
@@ -406,31 +408,35 @@ navigation.replace('SignalBottomTab')
     } = useQuery(['list-Academy'], listAcademy)
 
 
-
     const [tabIndex, setTabIndex] = useState<string>(!loadingEducator && educatorDetails?.data?.categories[0].category.id);
     const [filterCategory, setFilterCategory] = useState(!loadingEducator && educatorDetails?.data?.categories[0].category.name);
-   // console.log(educatorDetails?.data?.categories)
 
-    useEffect(()=>{
-        if(!loadingEducator){
+
+    useEffect(() => {
+        if (!loadingEducator) {
             setFilterCategory(educatorDetails?.data?.categories[0].category.name)
         }
 
-    },[educatorDetails])
-    const viewSignalImage = (details)=>{
+    }, [educatorDetails])
+    const viewSignalImage = (details) => {
         navigation.navigate('MainSignalNav', {
             screen: 'SignalImageDetails', params: {details}
 
         })
     }
 
-   useEffect(() => {
+    useEffect(() => {
         setTabIndex(educatorDetails?.data?.categories[0].category.id)
     }, [educatorDetails]);
 
     const viewAcademy = (id: string) => {
         navigation.navigate('ViewAcademy', {
-        id
+            id
+        })
+    }
+    const viewVideo = (file: string) => {
+        navigation.navigate('ViewVideo', {
+            file
         })
     }
 //console.log(educatorSignals)
@@ -445,14 +451,20 @@ navigation.replace('SignalBottomTab')
         ({item}) => <ItemAcademy item={item} viewAcademy={viewAcademy}/>,
         [],
     );
+    const renderItemPastStreams = useCallback(
+        ({item}) => <ItemPastStreams item={item} viewVideo={viewVideo}/>,
+        [],
+    );
 
-    const seeSignalSummary = () => {
-        navigation.navigate('SignalSummary')
+    const seeAllPastStreams = () => {
+        navigation.navigate('AllPastStreams',{
+            educatorId:educator.id
+        })
     }
-    const joinLiveStream = (educatorId:string,last_name:string,stream_url:string,photo: string,first_name:string) => {
+    const joinLiveStream = (educatorId: string, last_name: string, stream_url: string, photo: string, first_name: string) => {
         navigation.navigate('LiveStream', {
 
-                last_name,stream_url,photo,first_name,educatorId
+            last_name, stream_url, photo, first_name, educatorId
 
         })
     }
@@ -470,17 +482,19 @@ navigation.replace('SignalBottomTab')
     const unFollowEducatorNow = () => {
 
         const body = JSON.stringify({
-            educator:educator.id
+            educator: educator.id
         })
         unFollowNow(body)
     }
 
     const viewMore = () => {
-      navigation.navigate('EducatorSignalSummary',{
-          educator:educator.id,
-          educatorName:educator.first_name
-      })
+        navigation.navigate('EducatorSignalSummary', {
+            educator: educator.id,
+            educatorName: educator.first_name
+        })
     }
+
+
     useRefreshOnFocus(refetchEducator)
     useRefreshOnFocus(refetchSignals)
     useRefreshOnFocus(refetchAcademy)
@@ -521,7 +535,7 @@ navigation.replace('SignalBottomTab')
 
                         <View style={styles.favList}>
                             <View style={[styles.listIcon, {
-                                 backgroundColor: Colors.text,
+                                backgroundColor: Colors.text,
                             }]}>
 
 
@@ -541,7 +555,7 @@ navigation.replace('SignalBottomTab')
                             <View
                                 style={styles.listBody}>
                                 <Text style={styles.bodyTitle}>
-                                     {educator.first_name} {educator.last_name}
+                                    {educator.first_name} {educator.last_name}
                                 </Text>
                                 <View style={styles.listBottom}>
 
@@ -558,23 +572,24 @@ navigation.replace('SignalBottomTab')
                             {
                                 !unFollowing &&
 
-                            <MyButton disabled={unFollowing} onPress={unFollowEducatorNow} style={[styles.listBodyRight, {
-                                backgroundColor:'transparent'
-                            }]}>
-                                <LinearGradient style={styles.createBtnGradient}
-                                                colors={['#8D34F1', '#0075FF']}
+                                <MyButton disabled={unFollowing} onPress={unFollowEducatorNow}
+                                          style={[styles.listBodyRight, {
+                                              backgroundColor: 'transparent'
+                                          }]}>
+                                    <LinearGradient style={styles.createBtnGradient}
+                                                    colors={['#8D34F1', '#0075FF']}
 
-                                                start={{x: 0.3, y: 1}}
-                                                end={{x: 1, y: 3.3,}}
+                                                    start={{x: 0.3, y: 1}}
+                                                    end={{x: 1, y: 3.3,}}
 
-                                    // locations={[0.1, 0.7,]}
-                                >
-                                    <Text style={styles.buttonTxt}>
-                                        Following
-                                    </Text>
+                                        // locations={[0.1, 0.7,]}
+                                    >
+                                        <Text style={styles.buttonTxt}>
+                                            Following
+                                        </Text>
 
-                                </LinearGradient>
-                            </MyButton>
+                                    </LinearGradient>
+                                </MyButton>
                             }
                             {
                                 unFollowing && <ActivityIndicator size='small' color={Colors.text}/>
@@ -592,80 +607,119 @@ navigation.replace('SignalBottomTab')
                     {
                         !loadingEducator &&
 
-                    <View style={styles.segmentWrap}>
-                        <HorizontalScrollMenu
+                        <View style={styles.segmentWrap}>
+                            <HorizontalScrollMenu
 
-                         /*   items={[
+                                /*   items={[
 
-                                {
-                                    id: "0",
-                                    name: "Forex",
-                                },
-                                {
-                                    id: "1",
-                                    name: 'Crypto',
-                                },
+                                       {
+                                           id: "0",
+                                           name: "Forex",
+                                       },
+                                       {
+                                           id: "1",
+                                           name: 'Crypto',
+                                       },
 
 
-                            ]}*/
+                                   ]}*/
 
-                          items={educatorDetails?.data?.categories.map(({_id, category,symbol}: { _id: string,category:{name:string,id:string}, symbol: string }) => ({
-                                  id: category.id,
-                                  name: category.name
-                              }))}
+                                items={educatorDetails?.data?.categories.map(({_id, category, symbol}: {
+                                    _id: string,
+                                    category: { name: string, id: string },
+                                    symbol: string
+                                }) => ({
+                                    id: category.id,
+                                    name: category.name
+                                }))}
 
-                            containerStyle={{width: '110%',}}
-                            textStyle={{
-                                fontSize: fontPixel(12),
-                                textAlign: 'center',
-                                color: Colors.textDark,
-                                fontFamily: Fonts.faktumSemiBold
-                            }}
-                            activeTextStyle={{
-                                fontFamily: Fonts.faktumBold,
-                                fontSize: fontPixel(12),
-                                color: Colors.primary
-                            }}
-                            activeButtonStyle={{
-                                //borderBottomColor: Colors.primary,
-                                // borderBottomWidth: 1,
-                            }}
-                            contentContainerStyle={{
-                                justifyContent: 'center'
-                            }}
+                                containerStyle={{width: '110%',}}
+                                textStyle={{
+                                    fontSize: fontPixel(12),
+                                    textAlign: 'center',
+                                    color: Colors.textDark,
+                                    fontFamily: Fonts.faktumSemiBold
+                                }}
+                                activeTextStyle={{
+                                    fontFamily: Fonts.faktumBold,
+                                    fontSize: fontPixel(12),
+                                    color: Colors.primary
+                                }}
+                                activeButtonStyle={{
+                                    //borderBottomColor: Colors.primary,
+                                    // borderBottomWidth: 1,
+                                }}
+                                contentContainerStyle={{
+                                    justifyContent: 'center'
+                                }}
 
-                            activeColor={Colors.text}
-                            activeBackgroundColor={Colors.purplePrimary}
-                            buttonStyle={styles.tabButtonStyle}
-                            onPress={(e: { id: React.SetStateAction<string>; name: string }) => {
-                                setTabIndex(e.id)
-                                setFilterCategory(e.name)
-                            }}
-                            selected={tabIndex}
-                        />
-                    </View>
+                                activeColor={Colors.text}
+                                activeBackgroundColor={Colors.purplePrimary}
+                                buttonStyle={styles.tabButtonStyle}
+                                onPress={(e: { id: React.SetStateAction<string>; name: string }) => {
+                                    setTabIndex(e.id)
+                                    setFilterCategory(e.name)
+                                }}
+                                selected={tabIndex}
+                            />
+                        </View>
                     }
 
                     {
-                        !loadingLive && liveEducators &&  liveEducators?.data.find((educator: { id: any; }) => educator.id === educatorDetails?.data?.id)
-                    &&
-                    <TouchableOpacity
-                        //onPress={()=>joinLiveStream(item.id,item.last_name,item.stream_url, item.photo,item.first_name)}
-                        activeOpacity={0.8} style={styles.streamCard}>
-                        <View style={styles.streamLiveTag}>
-                            <Entypo name="dot-single" size={24} color={"#fff"}/>
+                        !loadingLive && liveEducators && liveEducators?.data.find((educator: {
+                            id: any;
+                        }) => educator.id === educatorDetails?.data?.id)
+                        &&
+                        <TouchableOpacity
+                            onPress={() => joinLiveStream(
+                                liveEducators?.data.find((educator: {
+                                    id: any;
+                                }) => educator.id === educatorDetails?.data?.id).id,
+                                liveEducators?.data.find((educator: {
+                                    id: any;
+                                }) => educator.id === educatorDetails?.data?.id).last_name,
+                                liveEducators?.data.find((educator: {
+                                    id: any;
+                                }) => educator.id === educatorDetails?.data?.id).stream_url,
+                                liveEducators?.data.find((educator: {
+                                    id: any;
+                                }) => educator.id === educatorDetails?.data?.id).photo,
+                                liveEducators?.data.find((educator: {
+                                    id: any;
+                                }) => educator.id === educatorDetails?.data?.id).first_name)}
+                            activeOpacity={0.8} style={styles.streamCard}>
+                            <View style={styles.streamLiveTag}>
+                                <Entypo name="dot-single" size={24} color={"#fff"}/>
 
 
                                 <Text style={[styles.liveText, {}]}>
                                     Live
                                 </Text>
 
-                        </View>
+                            </View>
 
-                        <Image style={styles.streamImage}
-                               source={require('../../assets/images/big_live_image.png')}/>
+                            <FastImage
 
-                    </TouchableOpacity>
+                                style={styles.streamImage}
+                                source={{
+                                    uri: liveEducators?.data.find((educator: {
+                                        id: any;
+                                    }) => educator.id === educatorDetails?.data?.id)?.thumbnail,
+
+                                    cache: FastImage.cacheControl.web,
+                                    priority: FastImage.priority.normal,
+
+                                }}
+                                resizeMode={FastImage.resizeMode.cover}
+                            />
+
+                            <View style={styles.streamerInfo}>
+                                <Text style={styles.streamerInfoText}>
+                                    {educator.first_name} {educator.last_name}
+                                </Text>
+                            </View>
+
+                        </TouchableOpacity>
                     }
                     <Pressable onPress={startMessage}>
                         <ImageBackground resizeMethod={"scale"}
@@ -708,8 +762,10 @@ navigation.replace('SignalBottomTab')
 
                             </TouchableOpacity>
                         </View>
-                        
-                        {!loadingSignals && educatorSignals && educatorSignals?.data.filter((signals: { category: { name: any; }; }) => signals.category.name == filterCategory)?.length < 1 &&
+
+                        {!loadingSignals && educatorSignals && educatorSignals?.data.filter((signals: {
+                                category: { name: any; };
+                            }) => signals.category.name == filterCategory)?.length < 1 &&
                             <View style={styles.messageWrap}>
                                 <View style={styles.imageWrap}>
 
@@ -727,10 +783,12 @@ navigation.replace('SignalBottomTab')
                         {
                             loadingSignals && <ActivityIndicator color={Colors.primary} size='small'/>
                         }
-                   {
+                        {
                             !loadingSignals && educatorSignals && educatorSignals?.data?.length > 0 &&
                             <FlatList
-                                data={educatorSignals?.data.slice(0,10).filter((signals: { category: { name: any; }; }) => signals.category.name == filterCategory)}
+                                data={educatorSignals?.data.slice(0, 10).filter((signals: {
+                                    category: { name: any; };
+                                }) => signals.category.name == filterCategory)}
                                 keyExtractor={keyExtractor}
                                 horizontal
                                 pagingEnabled
@@ -746,77 +804,7 @@ navigation.replace('SignalBottomTab')
                     </ImageBackground>
 
 
-                {/*    <ImageBackground resizeMethod={"scale"}
-                                     source={require('../../assets/images/signal/educator_BG.png')}
-                                     style={[styles.segmentBody, {
-                                         height: 150,
-                                         marginTop: 20,
-                                     }]}>
 
-                        <View style={styles.ActivityCardTop}>
-                            <Text style={[styles.listTitle, {
-                                fontFamily: Fonts.faktumBold
-                            }]}>
-                                Courses
-                            </Text>
-
-                        </View>
-
-                        <View style={styles.boxWrap}>
-
-                            <View style={styles.messageWrap}>
-                                <Ionicons name="ios-information-circle" size={24} color={Colors.text}/>
-                                <Text style={styles.message}>
-                                    No courses available for this educator!
-
-                                </Text>
-                            </View>
-
-                            <Image source={require('../../assets/images/signal/cours_img.png')} style={{
-                                width:120,
-                                height:70,
-                                resizeMode:"contain"
-                            }}/>
- <Image source={require('../../assets/images/signal/cours_img.png')} style={{
-                                width:120,
-                                height:70,
-                                resizeMode:"contain"
-                            }}/>
-
-                        </View>
-
-
-                    </ImageBackground>*/}
-
-
-                   {/* <ImageBackground resizeMethod={"scale"}
-                                     source={require('../../assets/images/signal/educator_BG.png')}
-                                     style={[styles.segmentBody, {
-                                         height: 150,
-                                         marginTop: 20,
-                                     }]}>
-
-                        <View style={styles.ActivityCardTop}>
-                            <Text style={[styles.listTitle, {
-                                fontFamily: Fonts.faktumBold
-                            }]}>
-                                Streaming
-                            </Text>
-
-                        </View>
-
-                        <View style={styles.messageWrap}>
-                            <Ionicons name="ios-information-circle" size={24} color={Colors.text}/>
-
-
-                            <Text style={styles.message}>
-                                No educator currently streaming!
-
-                            </Text>
-                        </View>
-
-
-                    </ImageBackground>*/}
 
 
                     <View style={styles.academySection}>
@@ -825,7 +813,7 @@ navigation.replace('SignalBottomTab')
                                 Academy
                             </Text>
 
-                         {/*   <TouchableOpacity  activeOpacity={0.7} style={styles.seeAll}>
+                            {/*   <TouchableOpacity  activeOpacity={0.7} style={styles.seeAll}>
                                 <FontAwesome name="plus-circle" size={24} color={Colors.purplePrimary}/>
 
                             </TouchableOpacity>*/}
@@ -847,7 +835,7 @@ navigation.replace('SignalBottomTab')
 
 
                                     <Text style={styles.message}>
-                         This streamer has no academy
+                                        This streamer has no academy
 
                                     </Text>
                                 </View>
@@ -876,15 +864,37 @@ navigation.replace('SignalBottomTab')
 
                     </View>
 
-                    {/*    <IF condition={tabIndex == 1}>
-                        <NoItem message={"No Forex Signal! "}/>
+                    <View style={styles.academySection}>
+                        <View style={styles.sectionTitle}>
+                            <Text style={styles.sectionTitleText}>
+                                Past streams
+                            </Text>
 
-                    </IF>
+                            <TouchableOpacity onPress={seeAllPastStreams} activeOpacity={0.7} style={styles.seeAll}>
+                                <FontAwesome name="plus-circle" size={24} color={Colors.purplePrimary}/>
 
-                    <IF condition={tabIndex == 2}>
-                        <NoItem message={"No Stocks Signal! "}/>
+                            </TouchableOpacity>
+                        </View>
 
-                    </IF>*/}
+                        {
+                            !loadingAcademy && academy &&
+
+                            <FlatList
+                                data={pastStreams?.data.slice(0, 8)}
+                                keyExtractor={keyExtractor}
+                                horizontal
+                                pagingEnabled
+                                scrollEnabled
+                                snapToAlignment="center"
+                                scrollEventThrottle={16}
+                                decelerationRate={"fast"}
+                                showsHorizontalScrollIndicator={false}
+                                renderItem={renderItemPastStreams}
+                            />
+                        }
+
+
+                    </View>
 
 
                 </ScrollView>
@@ -1207,6 +1217,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'row'
     },
+    pastStreamCard: {
+        marginHorizontal: 10,
+        width: widthPixel(180),
+        height: heightPixel(100),
+        borderRadius: 14,
+        alignItems: "center",
+        justifyContent: 'center',
+        overflow: 'hidden'
+    },
     streamCard: {
         marginHorizontal: 10,
         width: '90%',
@@ -1242,7 +1261,23 @@ const styles = StyleSheet.create({
         fontSize: fontPixel(12),
         color: Colors.text
     },
-
+    streamerInfo: {
+        zIndex: 1,
+        position: 'absolute',
+        left: 15,
+        bottom: 15,
+        height: 35,
+        borderRadius: 5,
+        width: '90%',
+        paddingHorizontal: pixelSizeHorizontal(10),
+        backgroundColor: 'rgba(0,0,0,0.2)',
+        justifyContent: 'center',
+    },
+    streamerInfoText: {
+        fontFamily: Fonts.faktumBold,
+        fontSize: fontPixel(14),
+        color: Colors.text
+    },
 
     academySection: {
         marginTop: 15,
@@ -1254,7 +1289,7 @@ const styles = StyleSheet.create({
     sectionTitle: {
         width: '90%',
         height: 60,
-        flexDirection:'row',
+        flexDirection: 'row',
 
         justifyContent: 'space-between',
         alignItems: 'center'

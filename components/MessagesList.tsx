@@ -2,17 +2,14 @@ import React, {useState, useRef, useCallback, useId, useEffect, useMemo} from "r
 import {FlatList, ScrollView, Text, StyleSheet, View, RefreshControl, TouchableOpacity} from "react-native";
 import Colors from "../constants/Colors";
 import {useAppSelector} from "../app/hooks";
-import {fontPixel, heightPixel, pixelSizeVertical} from "../helpers/normalize";
+import {fontPixel, heightPixel} from "../helpers/normalize";
 import {Fonts} from "../constants/Fonts";
 import dayjs from "dayjs";
 import FastImage from "react-native-fast-image";
 import {Entypo} from "@expo/vector-icons";
 import Pinchable from "react-native-pinchable";
-import {wait} from "../helpers";
-import TextWithLinks from "./TextWithLink";
+
 import Autolink from 'react-native-autolink';
-import * as Clipboard from "expo-clipboard";
-import {addNotificationItem} from "../app/slices/dataSlice";
 
 interface props {
 

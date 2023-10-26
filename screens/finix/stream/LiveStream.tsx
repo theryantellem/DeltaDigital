@@ -13,11 +13,11 @@ import {
 import {SafeAreaView} from "react-native-safe-area-context";
 import Colors from "../../../constants/Colors";
 import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../../helpers/normalize";
-import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
+
 import {Fonts} from "../../../constants/Fonts";
 import {Ionicons} from "@expo/vector-icons";
 import {SignalStackScreenProps} from "../../../types";
-import {ResizeMode, Video} from "expo-av";
+import {Audio, ResizeMode, Video} from "expo-av";
 import {StatusBar} from "expo-status-bar";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 
@@ -28,10 +28,15 @@ import {
     PusherEvent, PusherAuthorizerResult,
 } from '@pusher/pusher-websocket-react-native';
 import {addSingleMessage} from "../../../app/slices/dataSlice";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {sendMessage, sendMessageLive} from "../../../api/finix-api";
+import {useInfiniteQuery, useMutation, useQueryClient} from "@tanstack/react-query";
+import {getAlMessage, sendMessage, sendMessageLive} from "../../../api/finix-api";
+import LiveMessages from "./LiveMessages";
+import {useRefreshOnFocus} from "../../../helpers";
 
 
+if (Platform.OS === "ios") {
+    Audio.setAudioModeAsync({playsInSilentModeIOS: true});
+}
 const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) => {
 
     const queryClient = useQueryClient()
@@ -53,7 +58,9 @@ const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) =
     const [eventName, onChangeEventName] = React.useState('chat-message');
     const [members, onChangeMembers] = React.useState<PusherMember[]>([]);
 
-    const [liveMessages, setLiveMessages] = useState([]);
+    const [liveMessages, setLiveMessages] = useState([
+
+    ]);
 
     const log = async (line: string) => {
         logLines.push(line);
@@ -103,11 +110,11 @@ const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) =
 
             });
 
-            pusher.connect().then((r: any) => console.log(r));
+            pusher.connect()
             await pusher.subscribe({
                 channelName: `chat.${educatorId}`,
                 onEvent: (event: PusherEvent) => {
-                    // console.log(`The New Message: ${event.data.data}`);
+                    console.log(`The New Message: ${event.data.data}`);
                     console.log(event.data)
                     // setLiveMessages(addSingleMessage(event.data.data))
                 }
@@ -125,7 +132,7 @@ const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) =
 
         connect()
         // connect()
-        //  console.log(pusher.connectionState)
+        console.log(pusher.connectionState)
 
     }, []);
 
@@ -222,14 +229,49 @@ const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) =
 
     })
 
+    const {
+
+        data,
+        error,
+        isRefetching,
+        isFetching,
+        isLoading,
+        refetch,
+        isFetchingNextPage,
+        isFetchingPreviousPage,
+        fetchNextPage,
+
+        fetchPreviousPage,
+        isError,
+        hasNextPage,
+        hasPreviousPage,
+    } = useInfiniteQuery(
+        [`all-messages`, educatorId], async ({pageParam = 1}) => getAlMessage.messages({pageParam, id: educatorId}),
+        {
+            getNextPageParam: lastPage => {
+                if (lastPage.next !== null) {
+                    return lastPage.next;
+                }
+
+                return lastPage;
+            },
+            getPreviousPageParam: (firstPage) => firstPage.previousId ?? undefined,
+
+        },
+    )
+
+
 
     const handleNewMessage = (message: string) => {
+
         const body = JSON.stringify({
             message
         })
         mutate({body, id: educatorId})
 
     }
+
+    useRefreshOnFocus(refetch)
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -271,7 +313,7 @@ const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) =
                         uri: stream_url,
                     }}
                     posterSource={{uri: photo}}
-                  // usePoster
+                    // usePoster
                     useNativeControls
                     resizeMode={ResizeMode.CONTAIN}
                     shouldPlay
@@ -306,8 +348,9 @@ const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) =
 
                     <View style={styles.chatBarInfo}>
                         <View style={styles.chatBarInfoImageWrap}>
-                            <Image source={{uri:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8LAAN2VZp-LTwmGGioHuiQz4CdF3M239RgLxzQaqwCg&s'}}
-                                   style={styles.educatorImage}/>
+                            <Image
+                                source={{uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8LAAN2VZp-LTwmGGioHuiQz4CdF3M239RgLxzQaqwCg&s'}}
+                                style={styles.educatorImage}/>
 
                         </View>
 
@@ -329,36 +372,17 @@ const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) =
             </View>
 
             <View style={styles.flatList}>
+                {
+                    !isLoading && data && data?.pages[0]?.data &&
 
-                <View style={styles.chatUser}>
-                    <View style={styles.chatBody}>
-                        <View style={styles.chatBodyLeft}>
-                            <View style={styles.chatUserImage}>
-
-                            </View>
-                            <Text style={styles.chatUserName}>
-                                lauraievega:
-                            </Text>
-                        </View>
-
-                        <Text>
-                            6:59pm:
-                        </Text>
-                    </View>
-
-                    <View style={styles.chatMessage}>
-<Text style={styles.chatText}>
-    hello world
-</Text>
-                    </View>
-                </View>
-
+                <LiveMessages messages={data?.pages[0]?.data?.slice(0,15)}/>
+                }
             </View>
 
             <KeyboardAvoidingView
 
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
-                keyboardVerticalOffset={50}
+                keyboardVerticalOffset={10}
                 style={{width: '100%',}} contentContainerStyle={styles.scrollView}
 
 
@@ -512,11 +536,11 @@ const styles = StyleSheet.create({
         backgroundColor: "#eee",
         marginRight: 8,
     },
-    educatorImage:{
-        width:'100%',
-        height:'100%',
-        borderRadius:50,
-        overflow:'hidden'
+    educatorImage: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 50,
+        overflow: 'hidden'
     },
     chatBarBody: {},
     chatBarUsername: {
@@ -620,52 +644,6 @@ const styles = StyleSheet.create({
         flex: 1,
 
 
-    },
-    chatUser: {
-        width: '100%',
-
-        alignItems: 'center',
-        minHeight: 60,
-        justifyContent: 'flex-start',
-    },
-    chatBody: {
-        width: '100%',
-        flexDirection: 'row',
-        alignItems: 'center',
-        height: 40,
-        justifyContent: 'space-between',
-    },
-    chatUserName:{
-        fontFamily: Fonts.faktumBold,
-        color:Colors.textDark,
-        fontSize: fontPixel(14),
-    },
-    chatText:{
-        fontFamily: Fonts.faktumRegular,
-        color:Colors.textDark,
-        fontSize: fontPixel(14),
-    },
-    chatBodyLeft: {
-        width: '80%',
-        flexDirection: 'row',
-        alignItems: 'center',
-        height: 40,
-        justifyContent: 'flex-start',
-    },
-    chatUserImage: {
-        marginRight: 8,
-        height: 30,
-        width: 30,
-        backgroundColor: "#eee",
-        borderRadius: 30,
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    chatMessage: {
-        width: '100%',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
     },
 
 
