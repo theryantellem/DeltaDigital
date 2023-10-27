@@ -256,7 +256,7 @@ const ViewAPIBinding = ({route, navigation}: CyborgStackScreenProps<'ViewAPIBind
 
                             <TextInput
 
-                                placeholder="API Secrete"
+                                placeholder="API Secret"
                                 keyboardType={"default"}
                                 touched={touched.APISecrete}
                                 error={touched.APISecrete && errors.APISecrete}
@@ -272,7 +272,7 @@ const ViewAPIBinding = ({route, navigation}: CyborgStackScreenProps<'ViewAPIBind
                                 defaultValue={APISecrete}
                                 focus={focusSecrete}
                                 value={values.APISecrete}
-                                label="API Secrete"/>
+                                label="API Secret"/>
 
                             {
                                 exchange == '3' &&

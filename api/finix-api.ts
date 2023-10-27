@@ -18,7 +18,7 @@ export const getSignals = async () => {
         redirect: 'follow'
     };
 
-    return fetch("https://deltafinix.pro/api/signals", requestOptions)
+    return fetch(`${BASE_ULR_NEW}/signals`, requestOptions)
         .then(response => response.json())
 
 

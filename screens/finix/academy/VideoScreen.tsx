@@ -20,7 +20,6 @@ import {Fonts} from "../../../constants/Fonts";
 import VideoPlayer from "react-native-media-console";
 import {SignalStackScreenProps} from "../../../types";
 
-
 import {Video, ResizeMode, Audio} from 'expo-av';
 import {convertSecondsToTime} from "../../../helpers";
 import {useAppDispatch} from "../../../app/hooks";
@@ -29,9 +28,7 @@ import {enrollModule, updateWatchTime} from "../../../api/finix-api";
 import {addNotificationItem} from "../../../app/slices/dataSlice";
 
 
-if (Platform.OS === "ios") {
-    Audio.setAudioModeAsync({playsInSilentModeIOS: true});
-}
+
 const VideoScreen = ({navigation, route}: SignalStackScreenProps<'VideoScreen'>) => {
 
     const dispatch = useAppDispatch()
@@ -47,6 +44,11 @@ const VideoScreen = ({navigation, route}: SignalStackScreenProps<'VideoScreen'>)
     const [durationMillis, setDurationMillis] = useState(0)
     const [positionMillis, setPositionMillis] = useState(0);
 
+
+    if (Platform.OS === "ios") {
+        Audio.setAudioModeAsync({playsInSilentModeIOS: true});
+
+    }
 
     const {mutate, isLoading} = useMutation(['updateWatchTime'], updateWatchTime, {
         onSuccess: (data) => {

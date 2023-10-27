@@ -148,9 +148,19 @@ const ItemPastStreams = ({viewVideo, item}: streamProps) => {
 
             {
                 item.thumbnail ?
+                    <FastImage
 
-                    <Image style={styles.streamImage}
-                           source={{uri: item.thumbnail}}/>
+                        style={styles.streamImage}
+                        source={{
+                            uri: item.thumbnail,
+
+                            cache: FastImage.cacheControl.web,
+                            priority: FastImage.priority.normal,
+
+                        }}
+                        resizeMode={FastImage.resizeMode.cover}
+                    />
+
                     :
                     <Image style={styles.streamImage}
                            source={require('../../assets/images/streamIMG.png')}/>

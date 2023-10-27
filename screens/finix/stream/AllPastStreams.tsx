@@ -30,7 +30,7 @@ import HeaderWithTitle from "../../../components/cyborg/header/HeaderWithTitle";
 
 
 interface streamProps {
-    joinLiveStream: (educatorId:string,last_name:string,stream_url:string,photo: string,first_name:string) => void,
+    joinLiveStream: (stream_url:string,) => void,
     item: {
         "id": string,
         "first_name": string,
@@ -48,7 +48,7 @@ const ItemStreams = ({joinLiveStream,item}: streamProps) => {
     return (
 
         <Pressable
-onPress={()=>joinLiveStream(item.id,item.last_name,item.stream_url, item.photo,item.first_name)}
+onPress={()=>joinLiveStream(item.stream_url)}
 
                           style={styles.streamCardPast}>
 
@@ -125,11 +125,15 @@ const AllPastStreams = ({navigation,route}: SignalStackScreenProps<'AllPastStrea
 
             })
     }
-
+    const viewVideo = (file: string) => {
+        navigation.navigate('ViewVideo', {
+            file
+        })
+    }
 
 
     const renderItemStreams = useCallback(
-        ({item}) => <ItemStreams item={item} joinLiveStream={joinLiveStream}/>,
+        ({item}) => <ItemStreams item={item} joinLiveStream={viewVideo}/>,
         [],
     );
 
@@ -159,7 +163,7 @@ navigation.goBack()
                     {
                         Platform.OS === 'ios' ?
 
-                            <GradientSegmentControl tabs={["All", "Favourites"]}
+                            <GradientSegmentControl tabs={["All", "Favorites"]}
                                                     currentIndex={tabIndex}
                                                     onChange={handleTabsChange}
                                                     segmentedControlBackgroundColor={'#7676801F'}
@@ -169,7 +173,7 @@ navigation.goBack()
                                                     paddingVertical={pixelSizeVertical(12)}/>
                             :
 
-                            <SegmentedControl tabs={["All", "Favourites"]}
+                            <SegmentedControl tabs={["All", "Favorites"]}
                                               currentIndex={tabIndex}
                                               onChange={handleTabsChange}
                                               segmentedControlBackgroundColor={Colors.tintPrimary}
@@ -186,7 +190,7 @@ navigation.goBack()
                     !loadingPastStreams && pastStreams &&
 
                     <FlashList
-                        data={pastStreams?.data.filter(stream =>stream.is_favourite == 0)}
+                        data={pastStreams?.data}
 
                         keyExtractor={keyExtractor}
 
@@ -336,7 +340,7 @@ const styles = StyleSheet.create({
         resizeMode: 'cover'
     },
     streamCardPast: {
-backgroundColor:'red',
+
         width: '100%',
         marginVertical:pixelSizeVertical(8),
         height: heightPixel(180),

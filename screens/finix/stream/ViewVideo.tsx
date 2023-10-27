@@ -1,6 +1,17 @@
-import {View, Text, TouchableOpacity, Touchable, Image, Pressable, ScrollView, ActivityIndicator,StyleSheet} from 'react-native';
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    Touchable,
+    Image,
+    Pressable,
+    ScrollView,
+    ActivityIndicator,
+    StyleSheet,
+    Platform
+} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
-import {ResizeMode, Video} from 'expo-av';
+import {Audio, ResizeMode, Video} from 'expo-av';
 import Slider from '@react-native-community/slider';
 import {SignalStackScreenProps} from "../../../types";
 import {SafeAreaView} from "react-native-safe-area-context";
@@ -12,6 +23,10 @@ import {convertSecondsToTime} from "../../../helpers";
 import {Fonts} from "../../../constants/Fonts";
 
 
+
+if (Platform.OS === "ios") {
+    Audio.setAudioModeAsync({playsInSilentModeIOS: true});
+}
 const ViewVideo = ({route,navigation}: SignalStackScreenProps<'ViewVideo'>) => {
 
     const {file} = route.params

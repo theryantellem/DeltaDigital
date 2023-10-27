@@ -8,7 +8,7 @@ import {
     ScrollView,
     ImageBackground,
     Image,
-    TouchableOpacity, Pressable, Platform, TextInput, ActivityIndicator, KeyboardAvoidingView
+    TouchableOpacity, Pressable, Platform, TextInput, ActivityIndicator, KeyboardAvoidingView, Keyboard
 } from 'react-native';
 import {SafeAreaView} from "react-native-safe-area-context";
 import Colors from "../../../constants/Colors";
@@ -29,7 +29,7 @@ import {
 } from '@pusher/pusher-websocket-react-native';
 import {addSingleMessage} from "../../../app/slices/dataSlice";
 import {useInfiniteQuery, useMutation, useQueryClient} from "@tanstack/react-query";
-import {getAlMessage, sendMessage, sendMessageLive} from "../../../api/finix-api";
+import {getAlMessage, getLiveMessage, sendMessage, sendMessageLive} from "../../../api/finix-api";
 import LiveMessages from "./LiveMessages";
 import {useRefreshOnFocus} from "../../../helpers";
 
@@ -215,20 +215,6 @@ const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) =
     };
 
 
-    const {isLoading: isSending, mutate} = useMutation(['sendMessage-live'], sendMessageLive, {
-        onSuccess: (data) => {
-
-            if (data.success) {
-                setText('')
-                //   refetch()
-            }
-        },
-        onSettled: () => {
-            queryClient.invalidateQueries(['sendMessage-live']);
-        }
-
-    })
-
     const {
 
         data,
@@ -246,7 +232,7 @@ const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) =
         hasNextPage,
         hasPreviousPage,
     } = useInfiniteQuery(
-        [`all-messages`, educatorId], async ({pageParam = 1}) => getAlMessage.messages({pageParam, id: educatorId}),
+        [`all-live-messages`, educatorId], async ({pageParam = 1}) => getLiveMessage.messages({pageParam, id: educatorId}),
         {
             getNextPageParam: lastPage => {
                 if (lastPage.next !== null) {
@@ -259,6 +245,21 @@ const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) =
 
         },
     )
+    const {isLoading: isSending, mutate} = useMutation(['sendMessage-live'], sendMessageLive, {
+        onSuccess: (data) => {
+Keyboard.dismiss()
+            if (data.success) {
+                setText('')
+                   refetch()
+            }
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries(['sendMessage-live']);
+        }
+
+    })
+
+
 
 
 
@@ -349,7 +350,7 @@ const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) =
                     <View style={styles.chatBarInfo}>
                         <View style={styles.chatBarInfoImageWrap}>
                             <Image
-                                source={{uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8LAAN2VZp-LTwmGGioHuiQz4CdF3M239RgLxzQaqwCg&s'}}
+                                source={{uri: photo ? photo :'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8LAAN2VZp-LTwmGGioHuiQz4CdF3M239RgLxzQaqwCg&s'}}
                                 style={styles.educatorImage}/>
 
                         </View>
@@ -359,11 +360,9 @@ const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) =
                                 {first_name} {last_name}
                             </Text>
                             <Text style={styles.chatBarText}>
-                                Name of the class
+                                {last_name} - Live
                             </Text>
-                            <Text style={styles.chatBarText}>
-                                Category
-                            </Text>
+
                         </View>
                     </View>
 
@@ -375,7 +374,7 @@ const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) =
                 {
                     !isLoading && data && data?.pages[0]?.data &&
 
-                <LiveMessages messages={data?.pages[0]?.data?.slice(0,15)}/>
+                <LiveMessages messages={data?.pages[0]?.data.reverse()}/>
                 }
             </View>
 
@@ -551,7 +550,7 @@ const styles = StyleSheet.create({
     chatBarText: {
         fontFamily: Fonts.faktumRegular,
         color: '#000',
-        fontSize: fontPixel(16),
+        fontSize: fontPixel(14),
     },
     chatBarInfoImage: {
         width: '100%',

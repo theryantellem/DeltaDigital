@@ -5,6 +5,9 @@ import Slider from '@react-native-community/slider';
 import {SignalStackScreenProps} from "../../../types";
 
 
+
+
+
 const AcademyVideo = ({route}: SignalStackScreenProps<'AcademyVideo'>) => {
 
     const {videoUrl} = route.params
@@ -26,7 +29,7 @@ const AcademyVideo = ({route}: SignalStackScreenProps<'AcademyVideo'>) => {
     };
 
 
-    //
+
     return (
         <View style={{flex: 1}}>
             <TouchableOpacity

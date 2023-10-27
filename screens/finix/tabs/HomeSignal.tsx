@@ -496,7 +496,7 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
     const joinLiveStream = (educatorId:string,last_name:string,stream_url:string,photo: string,first_name:string) => {
         navigation.navigate('MainSignalNav', {
             screen: 'LiveStream',params:{
-                last_name,stream_url,photo,first_name,educatorId
+                last_name,stream_url,photo,first_name,educatorId,
             }
         })
     }
@@ -570,6 +570,8 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
             <ImageBackground source={require('../../../assets/images/signal/signal_BG.png')}
                              resizeMode={'cover'}
                              style={styles.dashboardImage}>
+
+
                 <ScrollView style={{width: '100%',}} contentContainerStyle={styles.scrollView} scrollEnabled
                             showsVerticalScrollIndicator={false}
 
@@ -1154,6 +1156,7 @@ const styles = StyleSheet.create({
 
     academySection: {
         marginTop: 15,
+        marginBottom: 30,
         width: '100%',
         height: heightPixel(350),
 

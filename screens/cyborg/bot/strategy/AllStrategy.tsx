@@ -201,7 +201,7 @@ const AllStrategy = ({navigation}: CyborgStackScreenProps<'AllStrategy'>) => {
 
     const selectExchange = (exchangeId: string, status: '0' | '1', apiKey: string, apiSecrete: string, exchangeName: string) => {
 
-
+       // setExchange(exchangeId)
         if (status == '1') {
 
             setSelectedExchange(exchangeId)
@@ -279,13 +279,13 @@ const AllStrategy = ({navigation}: CyborgStackScreenProps<'AllStrategy'>) => {
 
             const formData = new FormData()
             formData.append('capital', capital)
-            formData.append('exchange', exchange)
+            formData.append('exchange', selectedExchange)
             formData.append('id', marketId)
             formData.append('market', market)
 
             mutate({body: formData, userId: User_Details.id})
 
-           // console.log(formData)
+            //console.log(formData)
         }
     });
 

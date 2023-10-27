@@ -3,24 +3,23 @@ import {BASE_ULR_NEW, LIVE_PROD_URL} from "@env";
 
 
 export const loginUser = async (userdata: any) => {
-    const myHeaders = {
-        "Content-Type": 'multipart/form-data'
-    }
+
+
+
     let timeoutId: NodeJS.Timeout
 
     const requestOptions = {
         method: 'POST',
-        headers: myHeaders,
+
         body: userdata,
     };
 
     return Promise.race([
-        fetch(`${LIVE_PROD_URL}/login`, requestOptions)
+        fetch(`https://sumotrust.com/api/v1/php/login.php?apiKey=0ac82ab0e2804272d4d237e9c230c0e1185d0a5f67c9afbfb25d6335e33a71e6eb426040df40399bccfb6317d28e16a1b8c2cf996beba82668e53516446c4cb2`, requestOptions)
             .then(response => response.json()),
         new Promise((resolve, reject) => {
             timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
 
-            //  clearTimeout(timeoutId)
         }).then(() => {
             clearTimeout(timeoutId)
         })
@@ -40,18 +39,13 @@ export const signInUser = async (userdata: any) => {
         body: userdata,
     };
 
-    return Promise.race([
-        fetch(`${BASE_ULR_NEW}/login`, requestOptions)
-            .then(response => response.json()),
-        new Promise((resolve, reject) => {
-            timeoutId = setTimeout(() => reject(new Error('Timeout')), 15000)
+
+       return  fetch(`http://deltafinix.pro/api/login`, requestOptions)
+            .then(response => response.json())
+
 
             //  clearTimeout(timeoutId)
-        }).then(() => {
-            clearTimeout(timeoutId)
-        })
 
-    ])
 
 }
 export const getUser = async (userId: string) => {

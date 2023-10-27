@@ -1,10 +1,11 @@
 import React, {useCallback} from 'react';
-import {StyleSheet, View, Text, FlatList, RefreshControl} from "react-native";
+import {StyleSheet, View, Text, FlatList, RefreshControl, Image} from "react-native";
 import {Fonts} from "../../../constants/Fonts";
 import Colors from "../../../constants/Colors";
 import {fontPixel} from "../../../helpers/normalize";
 import {useInfiniteQuery} from "@tanstack/react-query";
 import {getAlMessage} from "../../../api/finix-api";
+import FastImage from "react-native-fast-image";
 
 
 interface props {
@@ -24,13 +25,27 @@ const MessageCard = ({item}:props)=>{
                 <View style={styles.chatBodyLeft}>
                     <View style={styles.chatUserImage}>
 
+
+                        <FastImage
+
+                            style={styles.userImage}
+                            source={{
+                                uri: item.sender?.photo,
+
+                                cache: FastImage.cacheControl.web,
+                                priority: FastImage.priority.normal,
+
+                            }}
+                            resizeMode={FastImage.resizeMode.cover}
+                        />
+
                     </View>
                     <Text style={styles.chatUserName}>
                         {item.sender.name}
                     </Text>
                 </View>
 
-                <Text>
+                <Text style={styles.messageText}>
                     {item.formatedTime}
                 </Text>
             </View>
@@ -85,12 +100,18 @@ const styles = StyleSheet.create({
     chatUserName: {
         fontFamily: Fonts.faktumBold,
         color: Colors.textDark,
+        textTransform:'capitalize',
         fontSize: fontPixel(14),
+    },
+    messageText: {
+        fontFamily: Fonts.faktumMedium,
+        color: Colors.textDark,
+        fontSize: fontPixel(12),
     },
     chatText: {
         fontFamily: Fonts.faktumRegular,
         color: Colors.textDark,
-        fontSize: fontPixel(14),
+        fontSize: fontPixel(12),
     },
     chatBodyLeft: {
         width: '80%',
@@ -106,7 +127,15 @@ const styles = StyleSheet.create({
         backgroundColor: "#eee",
         borderRadius: 30,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        overflow:'hidden'
+    },
+    userImage:{
+       width:'100%',
+       height:'100%',
+       alignItems:'center',
+       resizeMode:'cover',
+        borderRadius:100,
     },
     chatMessage: {
         width: '100%',

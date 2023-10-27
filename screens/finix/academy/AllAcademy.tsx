@@ -21,6 +21,7 @@ import {Fonts} from "../../../constants/Fonts";
 import {useQuery} from "@tanstack/react-query";
 import {listAcademy} from "../../../api/finix-api";
 import {truncate, useRefreshOnFocus} from "../../../helpers";
+import FastImage from "react-native-fast-image";
 
 
 interface prosAcademy {
@@ -48,8 +49,19 @@ const AcademyItem = ({item,viewAcademy}:prosAcademy) =>{
         <TouchableOpacity onPress={() => viewAcademy(item.id)} activeOpacity={0.8} style={styles.academyCard}>
 
             <View style={styles.academyCardImageWrap}>
-                <Image style={styles.academyCardImage}
-                       source={{uri: item.thumbnail}}/>
+
+                <FastImage
+
+                    style={styles.academyCardImage}
+                    source={{
+                        uri: item.thumbnail,
+
+                        cache: FastImage.cacheControl.web,
+                        priority: FastImage.priority.normal,
+
+                    }}
+                    resizeMode={FastImage.resizeMode.cover}
+                />
             </View>
             <View style={styles.academyCardBody}>
                 <Text style={styles.academyTitle}>
