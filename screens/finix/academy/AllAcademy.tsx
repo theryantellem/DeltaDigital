@@ -69,7 +69,7 @@ const AcademyItem = ({item,viewAcademy}:prosAcademy) =>{
                 </Text>
                 <View style={styles.description}>
                     <Text style={styles.descriptionText}>
-                        {truncate(item.description,80)}
+                        { item.description ? truncate(item.description,80) : ''}
                     </Text>
                 </View>
 
@@ -138,7 +138,7 @@ const AllAcademy = ({navigation}:SignalStackScreenProps<'AllAcademy'>) => {
                 <View style={{
                     width:'100%',
                     alignItems:'center',
-
+flex:1,
                 }}>
 
 

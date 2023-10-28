@@ -15,7 +15,7 @@ import Colors from "../../../constants/Colors";
 import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../../helpers/normalize";
 
 import {Fonts} from "../../../constants/Fonts";
-import {Ionicons} from "@expo/vector-icons";
+import {FontAwesome5, Ionicons} from "@expo/vector-icons";
 import {SignalStackScreenProps} from "../../../types";
 import {Audio, ResizeMode, Video} from "expo-av";
 import {StatusBar} from "expo-status-bar";
@@ -28,8 +28,8 @@ import {
     PusherEvent, PusherAuthorizerResult,
 } from '@pusher/pusher-websocket-react-native';
 import {addSingleMessage} from "../../../app/slices/dataSlice";
-import {useInfiniteQuery, useMutation, useQueryClient} from "@tanstack/react-query";
-import {getAlMessage, getLiveMessage, sendMessage, sendMessageLive} from "../../../api/finix-api";
+import {useInfiniteQuery, useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {getAlMessage, getLiveMessage, sendMessage, sendMessageLive, userJoinLive} from "../../../api/finix-api";
 import LiveMessages from "./LiveMessages";
 import {useRefreshOnFocus} from "../../../helpers";
 
@@ -41,7 +41,7 @@ const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) =
 
     const queryClient = useQueryClient()
     const pusher = Pusher.getInstance();
-    const {stream_url, photo, last_name, first_name, educatorId} = route.params
+    const {stream_url, photo, last_name, first_name, educatorId,schedule} = route.params
 
     let logLines: string[] = [];
     const [logText, setLog] = React.useState('');
@@ -58,9 +58,7 @@ const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) =
     const [eventName, onChangeEventName] = React.useState('chat-message');
     const [members, onChangeMembers] = React.useState<PusherMember[]>([]);
 
-    const [liveMessages, setLiveMessages] = useState([
-
-    ]);
+    const [liveMessages, setLiveMessages] = useState([]);
 
     const log = async (line: string) => {
         logLines.push(line);
@@ -215,6 +213,8 @@ const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) =
     };
 
 
+    const {data: userJoin, refetch: joinLive,isLoading:loadingJoined} = useQuery(['userJoinLive', schedule?.id], () => userJoinLive(schedule?.id))
+
     const {
 
         data,
@@ -232,7 +232,10 @@ const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) =
         hasNextPage,
         hasPreviousPage,
     } = useInfiniteQuery(
-        [`all-live-messages`, educatorId], async ({pageParam = 1}) => getLiveMessage.messages({pageParam, id: educatorId}),
+        [`all-live-messages`, educatorId], async ({pageParam = 1}) => getLiveMessage.messages({
+            pageParam,
+            id: educatorId
+        }),
         {
             getNextPageParam: lastPage => {
                 if (lastPage.next !== null) {
@@ -247,10 +250,10 @@ const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) =
     )
     const {isLoading: isSending, mutate} = useMutation(['sendMessage-live'], sendMessageLive, {
         onSuccess: (data) => {
-Keyboard.dismiss()
+            Keyboard.dismiss()
             if (data.success) {
                 setText('')
-                   refetch()
+                refetch()
             }
         },
         onSettled: () => {
@@ -258,9 +261,6 @@ Keyboard.dismiss()
         }
 
     })
-
-
-
 
 
     const handleNewMessage = (message: string) => {
@@ -273,6 +273,7 @@ Keyboard.dismiss()
     }
 
     useRefreshOnFocus(refetch)
+    useRefreshOnFocus(joinLive)
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -323,7 +324,12 @@ Keyboard.dismiss()
 
                     }}
                 />
-
+                <View style={styles.streamerInfo}>
+                    <FontAwesome5 name="users" size={16} color="#fff" />
+                    <Text style={styles.streamerInfoText}>
+                        {userJoin.viewers}
+                    </Text>
+                </View>
             </View>
 
             <View style={[styles.chatHeader, {height: 100,}]}>
@@ -350,7 +356,7 @@ Keyboard.dismiss()
                     <View style={styles.chatBarInfo}>
                         <View style={styles.chatBarInfoImageWrap}>
                             <Image
-                                source={{uri: photo ? photo :'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8LAAN2VZp-LTwmGGioHuiQz4CdF3M239RgLxzQaqwCg&s'}}
+                                source={{uri: photo ? photo : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8LAAN2VZp-LTwmGGioHuiQz4CdF3M239RgLxzQaqwCg&s'}}
                                 style={styles.educatorImage}/>
 
                         </View>
@@ -360,7 +366,10 @@ Keyboard.dismiss()
                                 {first_name} {last_name}
                             </Text>
                             <Text style={styles.chatBarText}>
-                                {last_name} - Live
+                                {schedule?.name}
+                            </Text>
+                            <Text style={styles.chatBarText}>
+                                {schedule?.category?.name}
                             </Text>
 
                         </View>
@@ -374,7 +383,7 @@ Keyboard.dismiss()
                 {
                     !isLoading && data && data?.pages[0]?.data &&
 
-                <LiveMessages messages={data?.pages[0]?.data.reverse()}/>
+                    <LiveMessages messages={data?.pages[0]?.data.reverse()}/>
                 }
             </View>
 
@@ -644,7 +653,27 @@ const styles = StyleSheet.create({
 
 
     },
+    streamerInfo: {
+        zIndex: 1,
+        position: 'absolute',
+        left: 15,
+        bottom: 15,
+        height: 35,
+        borderRadius: 5,
+        flexDirection:"row",
+        alignItems:'center',
+      minWidth:50,
 
+        paddingHorizontal: pixelSizeHorizontal(8),
+        backgroundColor: 'rgba(0,0,0,0.2)',
+        justifyContent: 'center',
+    },
+    streamerInfoText: {
+        marginLeft:5,
+        fontFamily: Fonts.faktumBold,
+        fontSize: fontPixel(14),
+        color: Colors.text
+    },
 
 })
 

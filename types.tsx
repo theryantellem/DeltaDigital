@@ -292,6 +292,9 @@ export type SignalStackParamList = {
         first_name: string,
         "photo": string,
         educatorId: string,
+        schedule: {  "category": { "id": number, "name":string, "photo": null, "type": string },
+            "id":string
+            "name": string },
     };
     ViewAcademy: {
         id:string

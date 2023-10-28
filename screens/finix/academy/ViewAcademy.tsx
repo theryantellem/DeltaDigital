@@ -83,7 +83,10 @@ const RenderComponent = ({
                     <View style={styles.accordionHead}>
                         <View style={styles.headLeft}>
                             <Text style={styles.accordionTitle}>{item.name}: {item.caption}</Text>
-                            <Text style={styles.accordionSubTitle}>{truncate(item.description,140)}</Text>
+                            <Text style={styles.accordionSubTitle}>{
+                                item.description ?
+                                truncate(item.description,140) :   item.description
+                            }</Text>
 
 
 
@@ -318,6 +321,7 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
     }
 
 
+
     return (
         <>
 
@@ -362,6 +366,7 @@ const ViewAcademy = ({navigation, route}: SignalStackScreenProps<'ViewAcademy'>)
 
 
                         <View style={styles.frameImageWrap}>
+
                             <FastImage
 
                                 style={styles.frameImage}

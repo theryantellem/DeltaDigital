@@ -136,14 +136,23 @@ interface PropsSignal {
 }
 
 interface streamProps {
-    joinLiveStream: (educatorId:string,last_name:string,stream_url:string,photo: string,first_name:string) => void,
+    joinLiveStream: (educatorId: string, last_name: string, stream_url: string, photo: string, first_name: string,schedule: {
+        "category": { "id": number, "name":string, "photo": null, "type": string },
+        "id":string
+        "name": string
+    }) => void,
     item: {
         "id": string,
         "first_name": string,
         "last_name": string,
         "photo": string
         "is_live": number,
-        "stream_url": string
+        "stream_url": string,
+        schedule: {
+            "category": { "id": number, "name":string, "photo": null, "type": string },
+            "id":string
+            "name": string
+        }
     }
 }
 
@@ -288,20 +297,22 @@ const ItemSignal = ({item, viewSignal, viewSignalImage}: PropsSignal) => {
     )
 }
 
-const ItemStreams = ({joinLiveStream,item}: streamProps) => {
+const ItemStreams = ({joinLiveStream, item}: streamProps) => {
 
 
     return (
 
-        <TouchableOpacity onPress={()=>joinLiveStream(item.id,item.last_name,item.stream_url, item.photo,item.first_name)} activeOpacity={0.8} style={styles.streamCard}>
+        <TouchableOpacity
+            onPress={() => joinLiveStream(item.id, item.last_name, item.stream_url, item.photo, item.first_name, item.schedule)}
+            activeOpacity={0.8} style={styles.streamCard}>
             <View style={styles.streamLiveTag}>
                 <Entypo name="dot-single" size={24} color={"#fff"}/>
                 {
                     item.is_live == 1 &&
 
-                <Text style={[styles.liveText, {}]}>
-                    Live
-                </Text>
+                    <Text style={[styles.liveText, {}]}>
+                        Live
+                    </Text>
                 }
             </View>
 
@@ -357,7 +368,7 @@ const ItemAcademy = ({viewAcademy, item}: prosAcademy) => {
                 </Text>
                 <View style={styles.description}>
                     <Text style={styles.descriptionText}>
-                        {truncate(item.description,80)}
+                        {item.description ? truncate(item.description, 80) : ''}
                     </Text>
                 </View>
 
@@ -425,9 +436,9 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
     } = useQuery([`getEducatorsFollowing`], getEducatorsFollowing)
 
 
-  const {
+    const {
         data: liveEducators,
-        isLoading:loadingLive,
+        isLoading: loadingLive,
         refetch: fetchLive
     } = useQuery([`educators-Live`], educatorsLive)
 
@@ -493,10 +504,12 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
         })
     }
 
-    const joinLiveStream = (educatorId:string,last_name:string,stream_url:string,photo: string,first_name:string) => {
+    const joinLiveStream = (educatorId: string, last_name: string, stream_url: string, photo: string, first_name: string, schedule: { "category": { "id": number, "name":string, "photo": null, "type": string },
+        "id":string
+        "name": string}) => {
         navigation.navigate('MainSignalNav', {
-            screen: 'LiveStream',params:{
-                last_name,stream_url,photo,first_name,educatorId,
+            screen: 'LiveStream', params: {
+                last_name, stream_url, photo, first_name, educatorId, schedule
             }
         })
     }
@@ -532,7 +545,7 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
             screen: 'SignalSummary'
         })
     }
- const allLiveStreams = () => {
+    const allLiveStreams = () => {
         navigation.navigate('MainSignalNav', {
             screen: 'AllStreams'
         })
@@ -553,9 +566,9 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
     }
 
     const viewMoreAcademy = () => {
-      navigation.navigate('MainSignalNav',{
-          screen:'AllAcademy'
-      })
+        navigation.navigate('MainSignalNav', {
+            screen: 'AllAcademy'
+        })
     }
 
 
@@ -686,7 +699,7 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
                         }
                     </ImageBackground>
 
-                       <View style={styles.liveStreamingSection}>
+                    <View style={styles.liveStreamingSection}>
                         <View style={styles.sectionTitle}>
                             <Text style={styles.sectionTitleText}>
                                 Live Streaming
@@ -716,10 +729,10 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
                                     </View>
 
 
-                                    <Text style={[styles.message,{
+                                    <Text style={[styles.message, {
                                         color: Colors.textDark
                                     }]}>
-                                       No Streamer is live now
+                                        No Streamer is live now
 
                                     </Text>
                                 </View>
@@ -727,19 +740,19 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
                             {
                                 !loadingLive && liveEducators &&
 
-                            <FlatList
-                                data={liveEducators?.data}
+                                <FlatList
+                                    data={liveEducators?.data}
 
-                                keyExtractor={keyExtractor}
-                                horizontal
-                                pagingEnabled
-                                scrollEnabled
-                                snapToAlignment="center"
-                                scrollEventThrottle={16}
-                                decelerationRate={"fast"}
-                                showsHorizontalScrollIndicator={false}
-                                renderItem={renderItemStreams}
-                            />
+                                    keyExtractor={keyExtractor}
+                                    horizontal
+                                    pagingEnabled
+                                    scrollEnabled
+                                    snapToAlignment="center"
+                                    scrollEventThrottle={16}
+                                    decelerationRate={"fast"}
+                                    showsHorizontalScrollIndicator={false}
+                                    renderItem={renderItemStreams}
+                                />
                             }
 
                         </View>
@@ -761,6 +774,11 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
 
 
                         <View style={styles.academyCardSlide}>
+
+                            {
+                                loadingAcademy && <ActivityIndicator color={Colors.primary} size='small'/>
+                            }
+
                             {!loadingAcademy && academy && academy?.data?.length < 1 &&
                                 <View style={styles.messageWrap}>
 
@@ -774,14 +792,13 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
                                     </View>
 
 
-                                    <Text style={styles.message}>
-                                        Follow an educator and receive signals!
+                                    <Text style={[styles.message, {
+                                        color: Colors.textDark
+                                    }]}>
+                                        No Academy by streamers yet!
 
                                     </Text>
                                 </View>
-                            }
-                            {
-                                loadingAcademy && <ActivityIndicator color={Colors.primary} size='small'/>
                             }
                             {
                                 !loadingAcademy && academy &&
@@ -1108,7 +1125,7 @@ const styles = StyleSheet.create({
     sectionTitle: {
         width: '90%',
         height: 60,
-        flexDirection:'row',
+        flexDirection: 'row',
 
         justifyContent: 'space-between',
         alignItems: 'center'

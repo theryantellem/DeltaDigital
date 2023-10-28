@@ -64,7 +64,7 @@ export const educatorsLive = async () => {
 
 }
 
-export const userJoinLive = async () => {
+export const userJoinLive = async (streamId:string) => {
 
     let Token = await SecureStore.getItemAsync('delta-signal-token');
 
@@ -77,7 +77,7 @@ export const userJoinLive = async () => {
         redirect: 'follow'
     };
 
-   return  fetch(`${BASE_ULR_NEW}/schedules/join-live`, requestOptions)
+   return  fetch(`${BASE_ULR_NEW}/schedules/join-live/${streamId}`, requestOptions)
         .then(response => response.json())
 
 

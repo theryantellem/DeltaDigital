@@ -4,7 +4,7 @@
     "slug": "delta-signal",
     "scheme": "delta-signal",
     "owner": "delta-signal",
-    "version": "2.4.9",
+    "version": "2.5.1",
     "jsEngine": "hermes",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -28,7 +28,7 @@
       "userInterfaceStyle": "light",
       "bundleIdentifier": "com.deltaSignal.mobile",
       "googleServicesFile": "./GoogleService-Info.plist",
-      "buildNumber": "46",
+      "buildNumber": "48",
       "usesIcloudStorage": true,
       "infoPlist": {
         "remote-notification": "Allow user to receive remote notification",
@@ -46,7 +46,7 @@
         "backgroundColor": "#ffffff"
       },
       "googleServicesFile": "./google-services.json",
-      "versionCode": 46,
+      "versionCode": 48,
       "userInterfaceStyle": "light",
       "permissions": [
         "RECEIVE_BOOT_COMPLETED",
