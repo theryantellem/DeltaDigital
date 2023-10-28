@@ -21,7 +21,7 @@ class AcademyVideoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:200'],
+            'name' => ['required', 'string', 'max:200', 'regex:/[^\s]+/'],
             'module_uuid' => ['required', 'exists:academy_modules,uuid'],
             'description' => ['nullable', 'max:10000'],
             'video_file' => ['required', 'mimes:mp4,avi,flv,mov,wmvp,mkv', 'max:512000'],
@@ -51,7 +51,7 @@ class AcademyVideoController extends Controller
     public function validateVideoFile(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:200'],
+            'name' => ['required', 'string', 'max:200', 'regex:/[^\s]+/'],
             'module_uuid' => ['required', 'exists:academy_modules,uuid'],
             'description' => ['nullable', 'max:10000'],
             'video_file' => ['required', 'mimes:mp4,avi,flv,mov,wmvp', 'max:512000'],

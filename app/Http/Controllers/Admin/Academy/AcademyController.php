@@ -33,7 +33,7 @@ class AcademyController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:200'],
+            'name' => ['required', 'string', 'max:200', 'regex:/[^\s]+/'],
             'thumbnail' => ['required', 'mimes:jpeg,png,jpg,gif,svg,webp', 'max:2048'],
             'description' => ['nullable', 'max:10000'],
         ]);

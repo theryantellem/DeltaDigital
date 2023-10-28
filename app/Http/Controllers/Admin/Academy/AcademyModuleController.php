@@ -48,7 +48,7 @@ class AcademyModuleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:200'],
+            'name' => ['required', 'string', 'max:200', 'regex:/[^\s]+/'],
             'academy_uuid' => ['required', 'exists:academies,uuid'],
             'description' => ['nullable', 'max:10000'],
         ]);
