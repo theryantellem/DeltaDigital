@@ -73,7 +73,7 @@ class ProfileController extends Controller
             'photo' => $photo,
         ]);
 
-        return back()->with('success', 'Profile photo updated successfully.');
+        return response()->json(['success' => true, 'message' => 'Profile photo updated successfully.']);
     }
 
     function updateThumbnail(Request $request)
