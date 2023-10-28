@@ -50,7 +50,7 @@ class AcademyModuleController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:200', 'regex:/[^\s]+/'],
             'academy_uuid' => ['required', 'exists:academies,uuid'],
-            'description' => ['nullable', 'max:10000'],
+            'description' => ['nullable', 'max:10000', 'required_if:description,!=,null|regex:/[^\s]+/'],
         ]);
 
         $academy = Academy::where('uuid', $request->academy_uuid)->first();

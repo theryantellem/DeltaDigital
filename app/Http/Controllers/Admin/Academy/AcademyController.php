@@ -35,7 +35,7 @@ class AcademyController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:200', 'regex:/[^\s]+/'],
             'thumbnail' => ['required', 'mimes:jpeg,png,jpg,gif,svg,webp', 'max:2048'],
-            'description' => ['nullable', 'max:10000'],
+            'description' => ['nullable', 'max:10000', 'required_if:description,!=,null|regex:/[^\s]+/'],
         ]);
 
         $thumbnail = uploadFile($request->file('thumbnail'), "academy/thumbnails", "do_spaces");
