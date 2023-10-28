@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\Schedule;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -10,27 +11,36 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class JoinedStream
+class JoinedStream implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public $schedule;
+
     /**
      * Create a new event instance.
+     *
+     * @return void
      */
-    public function __construct()
+    public function __construct(Schedule $schedule)
     {
-        //
+        $this->schedule = $schedule;
     }
 
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
+     * @return \Illuminate\Broadcasting\Channel|array
      */
-    public function broadcastOn(): array
+    public function broadcastOn()
     {
         return [
-            new PrivateChannel('channel-name'),
+            new Channel("joined-stream.{$this->schedule->uuid}")
         ];
+    }
+
+    public function broadcastAs()
+    {
+        return "joined-stream";
     }
 }

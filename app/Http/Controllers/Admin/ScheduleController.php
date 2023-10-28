@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\ChatNotification;
 use App\Events\LiveStarted;
 use App\Events\StopLive;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ChatResource;
 use App\Http\Resources\LiveChatResource;
 use App\Http\Resources\ScheduleResources;
 use App\Http\Resources\VideoResource;
@@ -141,7 +143,6 @@ class ScheduleController extends Controller
     {
         try {
 
-
             $schdule = Schedule::whereUuid($id)->first();
 
             if (!$schdule) {
@@ -151,7 +152,8 @@ class ScheduleController extends Controller
             $user = Auth::guard('admin')->user();
 
             $user->update([
-                'is_live' => true
+                'is_live' => true,
+                'live_schedule' =>  $schdule->id
             ]);
 
             $fcmTokens =  followersPushTokens($user->id);
@@ -171,6 +173,8 @@ class ScheduleController extends Controller
             }
 
             $schdule->update(['viewers' => 0]);
+
+            LiveChat::where('admin_id', $user->id)->delete();
 
             broadcast(new LiveStarted($schdule))->toOthers();
 
@@ -201,7 +205,8 @@ class ScheduleController extends Controller
             $user = Auth::guard('admin')->user();
 
             $user->update([
-                'is_live' => false
+                'is_live' => false,
+                'live_schedule' => null
             ]);
 
             $schdule->update(['viewers' => 0]);
@@ -223,6 +228,8 @@ class ScheduleController extends Controller
             }
 
             $schdule->update(['viewers' => 0]);
+
+            LiveChat::where('admin_id', $user->id)->delete();
 
             broadcast(new StopLive($schdule))->toOthers();
 
@@ -420,6 +427,74 @@ class ScheduleController extends Controller
             sendToLog($e);
 
             return response()->json(["success'" > true, "message" => "Unable to complete your request at the moment."], 500);
+        }
+    }
+
+    function sendMessage(Request $request)
+    {
+        try {
+
+            $user = Auth::guard('admin')->user();
+
+            $validator = Validator::make($request->all(), [
+                'media' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                'message' => 'nullable|string|required_if:media,null',
+            ]);
+
+            if ($request->message == 'null' && !$request->hasFile('media')) {
+                return response()->json(['success' => false, 'error' => "Cannot send null message."], 400);
+            }
+
+            // Handle validation errors
+            if ($validator->fails()) {
+                return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+            }
+
+            if ($request->hasFile('media')) {
+                // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
+                $message = uploadFile($request->file('media'), "media", "do_spaces");
+                $type = "media";
+            } else {
+                $message = $request->message;
+                $type = "text";
+            }
+
+            $chat = LiveChat::create([
+                'admin_id' => $user->id,
+                'sender_id' => $user->id,
+                'message' => $message,
+                'type' => $type
+            ]);
+
+            $chat = new LiveChatResource($chat);
+
+            event(new ChatNotification($user->uuid, $chat));
+
+            return response()->json(['success' => true, 'message' => $chat]);
+        } catch (\Exception $e) {
+            sendToLog($e);
+
+            return response()->json(['success' => false, 'error' => "An error has occurred."], 500);
+        }
+    }
+
+    function getCounts($id)
+    {
+        try {
+
+            $schdule = Schedule::whereUuid($id)->first();
+
+            if (!$schdule) {
+                return response()->json(['success' => false, 'message' => 'Schedule not found.'], 404);
+            }
+
+            return response()->json(['success' => true, 'count' => $schdule->viewers]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            sendToLog($th);
+
+            return response()->json(['success' => false, 'message' => 'Ops Somthing went wrong. try again later.'], 500);
         }
     }
 }

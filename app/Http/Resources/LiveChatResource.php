@@ -35,6 +35,7 @@ class LiveChatResource extends JsonResource
             'id' => $this->uuid,
             'message' => $this->message,
             'sender' => $sender,
+            'type' => $this->type,
             'created_at' => $this->created_at,
             'formatedDate' => Carbon::parse($this->created_at)->format('d/m/Y'),
             'formatedTime' => Carbon::parse($this->created_at)->format('g:i A')

@@ -129,6 +129,8 @@ Route::middleware(['auth:admin'])->group(function () {
         Route::post('live/stop/{schedule}', 'stopLive')->name('live.stop');
         Route::get('live/views/{schedule}', 'stopLive')->name('live.views');
         Route::get('live/message', 'messages')->name('live.message');
+        Route::post('live/message', 'sendMessage')->name('live.message.send');
+        Route::get('live/count/{schedule}', 'getCounts')->name('live.count');
         Route::delete('delete/{schedule}', 'destroy')->name('delete');
     });
 

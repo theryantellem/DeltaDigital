@@ -21,6 +21,7 @@ class VideoResource extends JsonResource
             'thumbnail' => $this->thumbnail,
             'file' => $this->video_file,
             'created_at' => $this->created_at,
+            'category' => new CategoryResource($this->schedule->category)
         ];
     }
 }

@@ -54,4 +54,9 @@ class Admin extends Authenticatable
     {
         return $this->hasMany(EducatorCategory::class, 'admin_id');
     }
+
+    function liveSchedule()
+    {
+        return $this->belongsTo(Schedule::class, 'live_schedule');
+    }
 }

@@ -76,7 +76,7 @@ class ScheduleController extends ApiController
                 'date' => date("Y-m-d")
             ]);
 
-            broadcast(new JoinedStream($schdule));
+            event(new JoinedStream($schdule));
         }
 
         return response()->json(['message' => 'updated successfully', 'viewers' => $schdule->viewers]);

@@ -28,6 +28,7 @@
                                     <strong>Stream Key:</strong> {{ auth()->user()->stream_key }}
                                 </span>
                             </p>
+                            <h4 v-if="is_live">Users on Live: @{{ liveCount }}</h4>
                         </div>
                         <div class="ms-auto">
                             @if (auth()->user()->hasRole('educator'))
@@ -106,7 +107,8 @@
                     thumbnail_preview: null,
                     thumbnail: null,
                     loading: false,
-                    errors: {}
+                    errors: {},
+                    liveCount: "{{ $schedule->viewers }}"
                 }
             },
             mounted() {
@@ -118,11 +120,20 @@
                     cluster: "{{ env('PUSHER_APP_CLUSTER') }}",
                 });
 
-                var channel = pusher.subscribe(`chat.${this.educator}`);
-                channel.bind('chat-message', (data) => {
+                const chatChannel = pusher.subscribe(`chat.${this.educator}`);
+                chatChannel.bind('chat-message', (data) => {
                     this.messages.unshift(data.message)
                     this.scrollToBottom()
-                    // console.log(data)
+                });
+
+                const liveJoined = pusher.subscribe(`joined-stream.${this.schedule}`);
+                liveJoined.bind('joined-stream', (data) => {
+                    this.getViewers()
+                });
+
+                const liveEnded = pusher.subscribe(`stop-live.${this.schedule}`);
+                liveEnded.bind('StopLive', (data) => {
+                    this.liveCount = 0
                 });
             },
             created() {
@@ -130,8 +141,19 @@
 
                 this.getVideos();
 
+
             },
             methods: {
+                openFileInput() {
+                    this.$refs.chatFileInput.click();
+                },
+                getViewers() {
+                    axios.get(`/admin/schedule/live/count/${this.schedule}`).then(res => {
+                        this.liveCount = res.data.count
+                    }).catch(err => {
+                        console.log(err)
+                    })
+                },
                 getMessageClasses(message) {
                     return {
                         'justify-content-end align-items-end ms-auto': message.sender.id === this.educator
@@ -244,6 +266,75 @@
                 handleCloseModal() {
                     this.clearForm()
                 },
+                handleFileUpload(event) {
+                    this.media = event.target.files[0];
+
+                    if (this.media) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.photo_preview = e.target.result; // Set the preview URL
+                        };
+                        reader.readAsDataURL(this.media);
+
+                        previewMediaModal.show()
+
+                    }
+                },
+                async sendMessage() {
+
+                    this.errors = {}
+
+                    if (this.message === "" && this.media === "") {
+                        return
+                    }
+
+                    const formData = new FormData();
+                    formData.append('_token', '{{ csrf_token() }}');
+
+                    formData.append('message', this.message)
+
+                    if (this.media) {
+                        formData.append('media', this.media)
+                    }
+
+                    this.loading = true
+
+                    await axios.post("{{ route('admin.schedule.live.message.send') }}", formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    }).then(
+                        response => {
+                            const data = response.data
+                            // console.log(data)
+                            if (data.success) {
+                                this.clearForm()
+                                this.messages.unshift(data.message)
+                                this.scrollToBottom()
+
+                                previewMediaModal.hide()
+                            } else {
+                                console.log(data)
+                            }
+                        }).catch(error => {
+
+                        console.log(error)
+
+                        if (error.response && error.response.data && error.response.data.errors) {
+                            // Set validation errors from the backend response
+                            this.errors = error.response.data.errors;
+
+                        } else {
+                            // console.log(error.response)
+                            Notiflix.Notify.Failure(error.response.data.message)
+                            // Handle other types of errors, if needed
+                        }
+
+                    }).finally(() => {
+                        this.clearForm()
+                        this.loading = false
+                    })
+                },
                 handleThumbnailUpload(event) {
                     this.thumbnail = event.target.files[0];
 
@@ -271,6 +362,7 @@
                     this.file_preview = "";
                     this.progress = 0;
                     this.$refs.fileInput.value = null;
+                    this.message = null
                 },
                 async uploadFile() {
 
@@ -393,5 +485,9 @@
         })
 
         const offcanvasPlayVideo = new bootstrap.Offcanvas(document.getElementById('offcanvasPlayVideo'));
+
+        const previewMediaModal = new bootstrap.Modal(document.getElementById('previewImage'), {
+            keyboard: false
+        })
     </script>
 @endpush
