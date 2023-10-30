@@ -38,6 +38,7 @@ import {
 } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
 
 
+
 interface itemProps {
     selected: string,
     item: { "category": {
@@ -73,6 +74,28 @@ const SelectValue = ({selected, item,}: itemProps) => {
 
 interface props {
 
+    followEducator: (educatorId: string) => void
+    setStreamerCat: (categories: []) => void
+    unFollowEducator: (educatorId: string) => void
+    unFollowing: boolean,
+    following: boolean,
+    selected: string,
+
+    item: {
+        "email": string,
+        "first_name": string,
+        "id": string,
+        "last_name": string,
+        "photo": string,
+        "total_followers": number,
+        "following": boolean,
+        categories: []
+    }
+
+}
+interface propsFollowed {
+
+    viewEducator: (details: {  }) => void
     followEducator: (educatorId: string) => void
     setStreamerCat: (categories: []) => void
     unFollowEducator: (educatorId: string) => void
@@ -203,6 +226,95 @@ const EducatorItem = ({
     )
 }
 
+
+
+const EducatorItemFollowing = ({
+                          setStreamerCat,
+                          item,
+                          selected,
+                          followEducator,
+                          unFollowEducator,
+                          following,
+                                   viewEducator,
+                          unFollowing
+                      }: propsFollowed) => {
+
+    return (
+        <Pressable onPress={()=>viewEducator(item)} style={styles.favList}>
+            <View style={[styles.listIcon, {
+                //  backgroundColor: Colors.secondary,
+            }]}>
+
+
+                <FastImage
+                    style={styles.tAvatar}
+                    source={{
+                        cache: FastImage.cacheControl.web,
+                        uri: item?.photo,
+                        priority: FastImage.priority.normal,
+                    }}
+
+                    resizeMode={FastImage.resizeMode.cover}
+                />
+
+
+            </View>
+            <View
+                style={styles.listBody}>
+                <Text style={styles.bodyTitle}>
+                    {item?.first_name} {item?.last_name}
+                </Text>
+                <View style={styles.listBottom}>
+
+
+                    <Text style={styles.bodySubText}>
+                        {item?.total_followers} <Text style={{fontFamily: Fonts.faktumRegular}}>followers </Text>
+                    </Text>
+                    <Octicons name="dot-fill" size={12} color={"#737373"}/>
+                    <Pressable onPress={() => setStreamerCat(item.categories)} style={styles.seeCategories}>
+                        <Text style={[styles.bodySubText, {
+                            fontFamily: Fonts.faktumMedium
+                        }]}>
+                            Categories
+                        </Text>
+                        <Entypo name="chevron-right" size={14} color="#fff"/>
+                    </Pressable>
+
+
+                </View>
+
+            </View>
+
+
+
+
+                <MyButton onPress={() => unFollowEducator(item.id)} style={[styles.listBodyRight, {
+                    // backgroundColor: !isValid ? Colors.border : Colors.primary
+                }]}>
+                    <LinearGradient style={styles.createBtnGradient}
+                                    colors={['#8D34F1', '#0075FF']}
+
+                                    start={{x: 0.3, y: 1}}
+                                    end={{x: 1, y: 3.3,}}
+
+                        // locations={[0.1, 0.7,]}
+                    >
+                        {
+                            item.id == selected && unFollowing
+                                ? <ActivityIndicator size='small' color={"#fff"}/>
+                                :
+                                <Text style={styles.buttonTxt}>
+                                    Following
+                                </Text>
+                        }
+                    </LinearGradient>
+                </MyButton>
+
+
+
+        </Pressable>
+    )
+}
 
 const StreamersList = ({navigation}: SignalStackScreenProps<'StreamersList'>) => {
 
@@ -346,8 +458,28 @@ const StreamersList = ({navigation}: SignalStackScreenProps<'StreamersList'>) =>
         setStreamerCategories(Categories)
     }
 
+    const viewProfile = (details:{
+        "email": string,
+        "first_name": string,
+        "id": string,
+        "last_name": string,
+        "photo": string,
+        "total_followers": number,
+    }) => {
+        navigation.navigate('ViewEducator', {
+            educator:details
+        })
+
+    }
+
     const renderItem = useCallback(
         ({item}) => <EducatorItem setStreamerCat={streamerCat} selected={selected} unFollowing={unFollowing}
+                                  following={following} item={item}
+                                  followEducator={followEducatorNow} unFollowEducator={unFollowEducatorNow}/>,
+        [following, unFollowing, selected],
+    );
+    const renderItemFollowed = useCallback(
+        ({item}) => <EducatorItemFollowing viewEducator={viewProfile} setStreamerCat={streamerCat} selected={selected} unFollowing={unFollowing}
                                   following={following} item={item}
                                   followEducator={followEducatorNow} unFollowEducator={unFollowEducatorNow}/>,
         [following, unFollowing, selected],
@@ -472,7 +604,7 @@ const StreamersList = ({navigation}: SignalStackScreenProps<'StreamersList'>) =>
                                     scrollEnabled
                                     showsVerticalScrollIndicator={false}
                                     data={filterUsers?.filter(users => users.following == true)}
-                                    renderItem={renderItem}
+                                    renderItem={renderItemFollowed}
                                     keyExtractor={keyExtractor}
                                     onEndReachedThreshold={0.3}
                                     refreshControl={

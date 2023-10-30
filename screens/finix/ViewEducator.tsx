@@ -831,7 +831,7 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
 
 
                         <View style={styles.academyCardSlide}>
-                            {!loadingAcademy && academy && academy?.data?.length < 1 &&
+                            {!loadingAcademy && academy && academy?.data.filter(acade => acade.educator.id === educatorDetails?.data?.id).length < 1 &&
                                 <View style={styles.messageWrap}>
 
 
@@ -842,12 +842,13 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
 
 
                                     </View>
-
-
-                                    <Text style={styles.message}>
+                                    <Text style={[styles.message, {
+                                        color: Colors.textDark
+                                    }]}>
                                         This streamer has no academy
 
                                     </Text>
+
                                 </View>
                             }
                             {
@@ -880,14 +881,39 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
                                 Past streams
                             </Text>
 
+                            {   !loadingPastStreams && pastStreams  && pastStreams?.data.length > 0 &&
                             <TouchableOpacity onPress={seeAllPastStreams} activeOpacity={0.7} style={styles.seeAll}>
                                 <FontAwesome name="plus-circle" size={24} color={Colors.purplePrimary}/>
 
                             </TouchableOpacity>
+                            }
                         </View>
+                        {
+                            !loadingPastStreams && pastStreams  && pastStreams?.data.length < 1 &&
+
+                        <View style={styles.messageWrap}>
+
+
+                            <View style={styles.imageWrap}>
+
+                                <Image source={require('../../assets/images/EmptyBox/empty_state.png')}
+                                       style={styles.fileBroken}/>
+
+
+                            </View>
+
+
+                            <Text style={[styles.message, {
+                                color: Colors.textDark
+                            }]}>
+                                No Streamer is live now
+
+                            </Text>
+                        </View>
+                        }
 
                         {
-                            !loadingAcademy && academy &&
+                            !loadingPastStreams && pastStreams &&
 
                             <FlatList
                                 data={pastStreams?.data.slice(0, 8)}

@@ -698,7 +698,7 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
                             />
                         }
                     </ImageBackground>
-
+                    {!loadingLive && liveEducators && liveEducators?.data?.length > 0 &&
                     <View style={styles.liveStreamingSection}>
                         <View style={styles.sectionTitle}>
                             <Text style={styles.sectionTitleText}>
@@ -710,13 +710,12 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
 
                             </TouchableOpacity>
                         </View>
+
                         <View style={styles.liveStreaming}>
-                            {
-                                loadingLive && <ActivityIndicator color={Colors.primary} size='small'/>
-                            }
 
 
-                            {!loadingLive && liveEducators && liveEducators?.data?.length < 1 &&
+
+                            {/*
                                 <View style={styles.messageWrap}>
 
 
@@ -735,8 +734,8 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
                                         No Streamer is live now
 
                                     </Text>
-                                </View>
-                            }
+                                </View>*/}
+
                             {
                                 !loadingLive && liveEducators &&
 
@@ -759,6 +758,7 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
 
 
                     </View>
+                    }
 
                     <View style={styles.academySection}>
                         <View style={styles.sectionTitle}>
