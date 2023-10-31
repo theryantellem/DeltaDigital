@@ -7,6 +7,7 @@ use App\Events\LiveStarted;
 use App\Events\StopLive;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ChatResource;
+use App\Http\Resources\EducatorResource;
 use App\Http\Resources\LiveChatResource;
 use App\Http\Resources\ScheduleResources;
 use App\Http\Resources\VideoResource;
@@ -167,8 +168,7 @@ class ScheduleController extends Controller
                     'title' => "Live started",
                     'message' => "{$name} is live.",
                     'data' => [
-                        'stream_url' => env('LIVE_URL ') . "/{$user->stream_key}.m3u8",
-                        'android_stream_url' => env('ANDRIOD_LIVE_URL') . "/{$user->stream_key}.m3u8",
+                        'stream' => new EducatorResource($user),
                     ]
                 ];
 
