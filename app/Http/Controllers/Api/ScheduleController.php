@@ -92,7 +92,7 @@ class ScheduleController extends ApiController
             }
 
             $schedule->update([
-                'viewers ' =>  !$schedule->viewers - 1
+                'viewers' =>  !$schedule->viewers - 1
             ]);
 
             LiveAttendants::where([
