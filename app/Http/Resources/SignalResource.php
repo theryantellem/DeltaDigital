@@ -31,6 +31,7 @@ class SignalResource extends JsonResource
             'chart_photo' => $this->chart_photo,
             'status' => $this->market_status,
             'is_updated' => $this->is_updated,
+            'created_at' => $this->created_at,
             // 'status' => $this->status
         ];
     }
