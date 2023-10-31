@@ -25,6 +25,7 @@ class EducatorResource extends JsonResource
             'thumbnail' => $this->thumbnail ? $this->thumbnail : asset('frontend/img/finix.png'),
             'is_live' => $this->is_live ?  1 : 0,
             'stream_url' => $this->is_live ?  env('LIVE_URL') . "/{$this->stream_key}.m3u8" : null,
+            'android_stream_url' => $this->is_live ? env('ANDRIOD_LIVE_URL') . "/{$this->stream_key}.m3u8" : null,
             'schedule' => $this->is_live && $this->liveSchedule ? ['id' => $this->liveSchedule->uuid, 'name' => $this->liveSchedule->name, 'category' => new CategoryResource($this->liveSchedule->category)] : null,
             'live_count' => $this->is_live && $this->liveSchedule ? $this->liveSchedule->viewers : 0
         ];

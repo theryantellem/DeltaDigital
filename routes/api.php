@@ -108,7 +108,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('', 'index');
         Route::get('/{schedule}', 'show');
         Route::get('/join-live/{schedule}', 'setViewers');
-        Route::get('/leave-live/{schedule}', 'leaveStream');
+        Route::post('/leave-live/{schedule}', 'leaveStream');
         Route::get('{educator}/educator-schedules', 'educatorSchedules');
         Route::get('/live/educators', 'educatorsOnLive');
     });

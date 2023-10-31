@@ -167,7 +167,8 @@ class ScheduleController extends Controller
                     'title' => "Live started",
                     'message' => "{$name} is live.",
                     'data' => [
-                        'stream_url' => env('LIVE_URL ') . "/{$user->stream_key}.m3u8"
+                        'stream_url' => env('LIVE_URL ') . "/{$user->stream_key}.m3u8",
+                        'android_stream_url' => env('ANDRIOD_LIVE_URL') . "/{$user->stream_key}.m3u8",
                     ]
                 ];
 
@@ -224,7 +225,8 @@ class ScheduleController extends Controller
                     'title' => "Live ended",
                     'message' => "{$name} live has ended.",
                     'data' => [
-                        'stream_url' => null
+                        'stream_url' => null,
+                        'android_stream_url' => null
                     ]
                 ];
 
