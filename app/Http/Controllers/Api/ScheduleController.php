@@ -82,6 +82,35 @@ class ScheduleController extends ApiController
         return response()->json(['message' => 'updated successfully', 'viewers' => $schdule->viewers]);
     }
 
+    function leaveStream($id)
+    {
+        try {
+            $schedule = Schedule::whereUuid($id)->first();
+
+            if (!$schedule) {
+                return response()->json(['success' => false, 'message' => 'Schedule not found.'], 404);
+            }
+
+            $schedule->update([
+                'viewers ' =>  !$schedule->viewers - 1
+            ]);
+
+            LiveAttendants::where([
+                'user_id' => Auth::user()->id,
+                'schedule_id' => $schedule->id,
+                'date' => date("Y-m-d")
+            ])->delete();
+
+            event(new JoinedStream($schedule));
+
+            return response()->json(['message' => 'updated successfully', 'viewers' => $schedule->viewers]);
+        } catch (\Exception $e) {
+            sendToLog($e);
+
+            return $this->sendError("Unable to complete your request at the moment.", [], 500);
+        }
+    }
+
     function educatorsOnLive()
     {
         try {

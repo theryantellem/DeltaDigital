@@ -86,7 +86,10 @@ class MessageController extends Controller
                 $data = [
                     'push_tokens' =>  $fcmTokens,
                     'title' => "Chat Notification",
-                    'message' => "You have new message in {$name}'s channel"
+                    'message' => "You have new message in {$name}'s channel",
+                    'data' => [
+                        'message' => $chat
+                    ]
                 ];
 
                 dispatch(new \App\Jobs\PushNotificationJob($data));

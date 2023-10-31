@@ -108,15 +108,14 @@ class SignalController extends Controller
                 $data = [
                     'push_tokens' =>  $fcmTokens,
                     'title' => "Signal Created.",
-                    'message' => "{$name} created new signal."
+                    'message' => "{$name} created new signal.",
+                    'data' => [
+                        'signal' => $signal
+                    ]
                 ];
 
                 dispatch(new \App\Jobs\PushNotificationJob($data));
-                // Notification::send(null, new SendPushNotification("Signal Created", "A new signal has been created. Tap to view details.", $fcmTokens));
             }
-
-            // // dispatch notification
-            // event(new SignalNotification($user->uuid, $signal, "created"));
 
             return response()->json(['success' => true, 'signal' => $signal, 'message' => 'Signal created successfully.'], 201);
         } catch (\Throwable $th) {
@@ -151,7 +150,10 @@ class SignalController extends Controller
                 $data = [
                     'push_tokens' =>  $fcmTokens,
                     'title' => "Signal Status updated.",
-                    'message' => "{$name} updated signal status."
+                    'message' => "{$name} updated signal status.",
+                    'data' => [
+                        'signal' => $signal
+                    ]
                 ];
 
                 dispatch(new \App\Jobs\PushNotificationJob($data));
@@ -193,7 +195,10 @@ class SignalController extends Controller
                 $data = [
                     'push_tokens' =>  $fcmTokens,
                     'title' => "Signal Status updated",
-                    'message' => "{$name} updated signal status."
+                    'message' => "{$name} updated signal status.",
+                    'data' => [
+                        'signal' => $signal
+                    ]
                 ];
 
                 dispatch(new \App\Jobs\PushNotificationJob($data));
@@ -273,7 +278,10 @@ class SignalController extends Controller
                 $data = [
                     'push_tokens' =>  $fcmTokens,
                     'title' => "Signal Updated",
-                    'message' => "{$name} updated signal."
+                    'message' => "{$name} updated signal.",
+                    'data' => [
+                        'signal' => $signal
+                    ]
                 ];
 
                 dispatch(new \App\Jobs\PushNotificationJob($data));

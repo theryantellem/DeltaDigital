@@ -9,7 +9,7 @@ class PushNotification
 {
     function sendNotification($data)
     {
-        $data = [
+        $payload = [
             "registration_ids" => $data['push_tokens'],
             "notification" => [
                 "title" => $data['title'],
@@ -17,7 +17,11 @@ class PushNotification
             ]
         ];
 
-        $dataString = json_encode($data);
+        if (!empty($data['data'])) {
+            $payload["data"] =  $data['data'];
+        }
+
+        $dataString = json_encode($payload);
 
         return self::handle($dataString);
     }
