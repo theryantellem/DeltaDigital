@@ -225,8 +225,7 @@ class ScheduleController extends Controller
                     'title' => "Live ended",
                     'message' => "{$name} live has ended.",
                     'data' => [
-                        'stream_url' => null,
-                        'android_stream_url' => null
+                        'stream' => null
                     ]
                 ];
 
