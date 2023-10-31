@@ -7,6 +7,7 @@ import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
 import {CompositeScreenProps, NavigatorScreenParams} from '@react-navigation/native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import AllStreams from "./screens/finix/stream/AllStreams";
+import WatchLiveStream from "./screens/finix/stream/WatchLiveStream";
 
 
 
@@ -286,7 +287,7 @@ export type SignalStackParamList = {
         }
     };
     SignalSummary: undefined;
-    LiveStream: {
+    WatchLiveStream: {
         "stream_url": string,
         "last_name": string,
         first_name: string,

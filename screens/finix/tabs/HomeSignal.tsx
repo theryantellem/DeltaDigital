@@ -508,7 +508,7 @@ const HomeSignal = ({navigation}: SignalRootTabScreenProps<'SignalHome'>) => {
         "id":string
         "name": string}) => {
         navigation.navigate('MainSignalNav', {
-            screen: 'LiveStream', params: {
+            screen: 'WatchLiveStream', params: {
                 last_name, stream_url, photo, first_name, educatorId, schedule
             }
         })

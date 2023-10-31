@@ -37,7 +37,7 @@ interface streamProps {
         "last_name": string,
         "photo": string
         "is_live": number,
-        "stream_url": string
+        "file": string
         "is_favourite": number
     }
 }
@@ -48,7 +48,7 @@ const ItemStreams = ({joinLiveStream,item}: streamProps) => {
     return (
 
         <Pressable
-onPress={()=>joinLiveStream(item.stream_url)}
+onPress={()=>joinLiveStream(item.file)}
 
                           style={styles.streamCardPast}>
 
@@ -117,14 +117,7 @@ const AllPastStreams = ({navigation,route}: SignalStackScreenProps<'AllPastStrea
     const keyExtractor = useCallback((item: { id: any; }) => item.id, [],)
 
 
-    const joinLiveStream = (educatorId: string, last_name: string, stream_url: string, photo: string, first_name: string) => {
-        navigation.navigate('LiveStream',
 
-            {
-                last_name, stream_url, photo, first_name, educatorId
-
-            })
-    }
     const viewVideo = (file: string) => {
         navigation.navigate('ViewVideo', {
             file

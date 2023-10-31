@@ -303,7 +303,7 @@ const ItemAcademy = ({viewAcademy, item}: prosAcademy) => {
                 </Text>
                 <View style={styles.description}>
                     <Text style={styles.descriptionText}>
-                        {truncate(item.description, 80)}
+                        { item.description ? truncate(item.description, 80) :  item.description}
                     </Text>
                 </View>
 
@@ -472,7 +472,7 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
         })
     }
     const joinLiveStream = (educatorId: string, last_name: string, stream_url: string, photo: string, first_name: string) => {
-        navigation.navigate('LiveStream', {
+        navigation.navigate('WatchLiveStream', {
 
             last_name, stream_url, photo, first_name, educatorId
 
@@ -773,7 +773,7 @@ const ViewEducator = ({navigation, route}: SignalStackScreenProps<'ViewEducator'
                             </TouchableOpacity>
                         </View>
 
-                        {!loadingSignals && educatorSignals && educatorSignals?.data.filter((signals: {
+                        {!loadingSignals && educatorSignals && educatorSignals?.data?.filter((signals: {
                                 category: { name: any; };
                             }) => signals.category.name == filterCategory)?.length < 1 &&
                             <View style={styles.messageWrap}>

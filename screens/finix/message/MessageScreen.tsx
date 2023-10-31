@@ -294,7 +294,7 @@ const MessageScreen = ({navigation, route}: SignalStackScreenProps<'MessageScree
 
     const {isLoading: isSending, mutate} = useMutation(['sendMessage'], sendMessage, {
         onSuccess: (data) => {
-console.log(data)
+
             if (data.success) {
                 Keyboard.dismiss()
                 setText('')

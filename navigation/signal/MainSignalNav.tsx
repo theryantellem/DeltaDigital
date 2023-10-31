@@ -22,6 +22,7 @@ import AcademyVideo from "../../screens/finix/academy/AcademyVideo";
 import ViewVideo from "../../screens/finix/stream/ViewVideo";
 import AllStreams from "../../screens/finix/stream/AllStreams";
 import AllPastStreams from "../../screens/finix/stream/AllPastStreams";
+import WatchLiveStream from "../../screens/finix/stream/WatchLiveStream";
 
 
 const StackNav = createNativeStackNavigator<SignalStackParamList>();
@@ -48,7 +49,7 @@ export function MainSignalNav() {
             <StackNav.Screen name={"AllStreams"} component={AllStreams}/>
             <StackNav.Screen name={"AllPastStreams"} component={AllPastStreams}/>
             <StackNav.Screen name={"LeaveReview"} component={LeaveReview}/>
-            <StackNav.Screen name={"LiveStream"} component={LiveStream} options={{
+            <StackNav.Screen name={"WatchLiveStream"} component={WatchLiveStream} options={{
                 animation: 'slide_from_bottom'
             }}/>
             <StackNav.Screen name={"ViewAcademy"} component={ViewAcademy} options={{

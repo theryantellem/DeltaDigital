@@ -32,7 +32,7 @@ const ViewVideo = ({route,navigation}: SignalStackScreenProps<'ViewVideo'>) => {
     const {file} = route.params
     //console.log(videoUrl)
 
-
+console.log(file)
 
     const [isVideoLoading, setIsVideoLoading] = useState(true)
     const [fullScreen, setFullScreen] = useState(false);

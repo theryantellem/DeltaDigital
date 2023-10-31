@@ -17,10 +17,14 @@ import {fontPixel, heightPixel, pixelSizeHorizontal, widthPixel} from "../../../
 import {Fonts} from "../../../constants/Fonts";
 import {FontAwesome5, Ionicons} from "@expo/vector-icons";
 import {SignalStackScreenProps} from "../../../types";
-//import {Audio, AVPlaybackStatusSuccess, ResizeMode, Video} from "expo-av";
+import {Audio, AVPlaybackStatusSuccess, ResizeMode, Video} from "expo-av";
+
 import {StatusBar} from "expo-status-bar";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
-import Video , {VideoRef} from 'react-native-video';
+
+
+// At the top where our imports are...
+import VideoPlayer from 'react-native-media-console';
 import {
     Pusher,
     PusherMember,
@@ -34,186 +38,20 @@ import LiveMessages from "./LiveMessages";
 import {useRefreshOnFocus} from "../../../helpers";
 
 
-const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) => {
+const WatchLiveStream = ({navigation, route}: SignalStackScreenProps<'WatchLiveStream'>) => {
 
 
-    const videoRef = useRef<VideoRef>(null);
+    const videoRef = useRef(null);
 
     const queryClient = useQueryClient()
     const pusher = Pusher.getInstance();
-    const {stream_url, photo, last_name, first_name, educatorId,schedule} = route.params
-
-    let logLines: string[] = [];
-    const [logText, setLog] = React.useState('');
+    const {stream_url, photo, last_name, first_name, educatorId, schedule} = route.params
     const [text, setText] = useState('')
-    const [isVideoLoading, setIsVideoLoading] = useState(true)
-    const [fullScreen, setFullScreen] = useState(false);
-    const [paused, setPaused] = useState(true)
-    const video = useRef(null);
+    const [isVideoLoading, setIsVideoLoading] = useState(false);
     const [status, setStatus] = React.useState({});
+    const {data: userJoin, refetch: joinLive, isLoading: loadingJoined} = useQuery(['userJoinLive', schedule?.id], () => userJoinLive(schedule?.id))
 
-    const [apiKey, onChangeApiKey] = React.useState('2e03de85bbf93cd88884');
-    const [cluster, onChangeCluster] = React.useState('eu');
-    const [channelName, onChangeChannelName] = React.useState('chat.1');
-    const [eventName, onChangeEventName] = React.useState('chat-message');
-    const [members, onChangeMembers] = React.useState<PusherMember[]>([]);
-
-    const [liveMessages, setLiveMessages] = useState([]);
-
-    const log = async (line: string) => {
-        logLines.push(line);
-        setLog(logLines.join('\n'));
-    };
-
-    const goBack = () => {
-        navigation.goBack()
-    }
-
-
-    const connect = async () => {
-        try {
-            /* await AsyncStorage.multiSet([
-                 ['APIKEY', apiKey],
-                 ['CLUSTER', cluster],
-                 ['CHANNEL', channelName],
-             ]);*/
-
-            await pusher.init({
-                apiKey,
-                cluster,
-                // authEndpoint
-                // ============
-                // You can let the pusher library call an endpoint URL,
-                // Please look here to implement a server side authorizer:
-                // https://pusher.com/docs/channels/server_api/authenticating-users/
-                //
-                // authEndpoint: '<Add your Auth Endpoint URL here>',
-                //
-                // onAuthorizer
-                // ============
-                // Or you can implement your own authorizer callback.
-                // See https://pusher.com/docs/channels/library_auth_reference/auth-signatures/
-                // for the format of this object, you need your key and secret from your Pusher
-                // Account.
-                // onAuthorizer,
-                onConnectionStateChange,
-                onError,
-                onEvent,
-                onSubscriptionSucceeded,
-                onSubscriptionError,
-                onSubscriptionCount,
-                onDecryptionFailure,
-                onMemberAdded,
-                onMemberRemoved,
-
-            });
-
-            pusher.connect()
-            await pusher.subscribe({
-                channelName: `chat.${educatorId}`,
-                onEvent: (event: PusherEvent) => {
-                    console.log(`The New Message: ${event.data.data}`);
-                    console.log(event.data)
-                    // setLiveMessages(addSingleMessage(event.data.data))
-                }
-            }).then(res => {
-                //console.log({channelName: res.channelName})
-
-            });
-        } catch (e) {
-            log('ERROR: ' + e);
-        }
-    };
-
-
-    useEffect(() => {
-
-        connect()
-        // connect()
-        console.log(pusher.connectionState)
-
-    }, []);
-
-
-    const onConnectionStateChange = (
-        currentState: string,
-        previousState: string
-    ) => {
-        log(
-            `onConnectionStateChange. previousState=${previousState} newState=${currentState}`
-        );
-    };
-
-    const onError = (message: string, code: Number, error: any) => {
-        log(`onError: ${message} code: ${code} exception: ${error}`);
-    };
-
-    const onEvent = (event: any) => {
-        log(`onEvent: ${event}`);
-    };
-
-    const onSubscriptionSucceeded = (channelName: string, data: any) => {
-        log(
-            `onSubscriptionSucceeded: ${channelName} data: ${JSON.stringify(data)}`
-        );
-        const channel: PusherChannel | undefined = pusher.getChannel(channelName);
-
-        if (!channel) {
-            return;
-        }
-
-        const me = channel.me;
-        onChangeMembers([...channel.members.values()]);
-        console.log("Subscription Succeeded")
-        log(`Me: ${me}`);
-    };
-
-    const onSubscriptionCount = (
-        channelName: string,
-        subscriptionCount: Number
-    ) => {
-        log(
-            `onSubscriptionCount: ${subscriptionCount}, channelName: ${channelName}`
-        );
-    };
-
-    const onSubscriptionError = (
-        channelName: string,
-        message: string,
-        e: any
-    ) => {
-        log(`onSubscriptionError: ${message}, channelName: ${channelName} e: ${e}`);
-    };
-
-    const onDecryptionFailure = (eventName: string, reason: string) => {
-        log(`onDecryptionFailure: ${eventName} reason: ${reason}`);
-    };
-
-    const onMemberAdded = (channelName: string, member: PusherMember) => {
-        log(`onMemberAdded: ${channelName} user: ${member}`);
-        const channel: PusherChannel | undefined = pusher.getChannel(channelName);
-
-        if (!channel) {
-            return;
-        }
-
-        onChangeMembers([...channel.members.values()]);
-    };
-
-
-    const onMemberRemoved = (channelName: string, member: PusherMember) => {
-        log(`onMemberRemoved: ${channelName} user: ${member}`);
-        const channel: PusherChannel | undefined = pusher.getChannel(channelName);
-
-        if (!channel) {
-            return;
-        }
-
-        onChangeMembers([...channel.members.values()]);
-    };
-
-
-  //  const {data: userJoin, refetch: joinLive,isLoading:loadingJoined} = useQuery(['userJoinLive', schedule?.id], () => userJoinLive(schedule?.id))
+    const [fullScreen, setFullScreen] = useState(false);
 
     const {
 
@@ -237,8 +75,8 @@ const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) =
             id: educatorId
         }),
         {
-            refetchInterval:1000,
-            refetchOnMount:true,
+            refetchInterval: 1000,
+            refetchOnMount: true,
             getNextPageParam: lastPage => {
                 if (lastPage.next !== null) {
                     return lastPage.next;
@@ -274,10 +112,13 @@ const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) =
 
     }
 
+    const goBack = () => {
+        navigation.goBack()
+    }
 
     useRefreshOnFocus(refetch)
-   // useRefreshOnFocus(joinLive)
-
+    // useRefreshOnFocus(joinLive)
+//console.log(stream_url)
     return (
         <SafeAreaView style={styles.safeArea}>
             <StatusBar style="dark"/>
@@ -304,60 +145,75 @@ const LiveStream = ({navigation, route}: SignalStackScreenProps<'LiveStream'>) =
 
 
             <View style={styles.frameImageWrap}>
-              {/*  <Video
-                    rate={1.0}
-                    isMuted={false}
-                    volume={1.0}
 
-                    onLoad={(status) => {
 
-                        setIsVideoLoading(!status.isLoaded)
-                    }}
-                    ref={video}
-                    style={styles.frameImage}
-                    source={{
-                        uri: stream_url,
-                        type:'m3u8',
-                        overrideFileExtensionAndroid:'m3u8',
-                    }}
-                    posterSource={{uri: photo}}
-                    // usePoster
-                    useNativeControls
-                    resizeMode={ResizeMode.CONTAIN}
-                    shouldPlay
-               onPlaybackStatusUpdate={status => {
-                        setStatus(() => status)
+                {Platform.OS == 'android' &&
+                    <VideoPlayer
+                        isFullscreen={fullScreen}
+                        toggleResizeModeOnFullscreen
+                        onEnterFullscreen={() => setFullScreen(true)}
+                        fullscreen={fullScreen}
+                        fullscreenAutorotate
+                        fullscreenOrientation='all'
+                        pictureInPicture
+                        containerStyle={styles.frameImage}
+                        videoRef={videoRef}
 
-                    }}
-                  //  onPlaybackStatusUpdate={(status: AVPlaybackStatusSuccess) => setStatus(() => { return { isPlaying: status.isPlaying } })}
-                    onError={(err) => console.error("Playback error", err)}
-                />
-                  */}
+                        source={{uri: stream_url}}
+                        navigator={navigation}
+                        showDuration
 
-                <Video
-                    // Can be a URL or a local file.
-                    source={{
-                        uri: 'https://deltadigitalstream.com/hls/ab54761871de4990a9cc1e93f26ec227.m3u8',
+                        seekColor={Colors.primary}
+                    />
 
-                    }}
-                    // Store reference
-                    ref={videoRef}
-                    // Callback when remote video is buffering
-                   //onBuffer={onBuffer}
-                    // Callback when video cannot be loaded
-                    onError={onError}
-                    style={styles.frameImage}
-                />
-               {/* {
+                }
+
+
+                {
+                    Platform.OS == 'ios' &&
+
+
+                    <Video
+                        rate={1.0}
+                        isMuted={false}
+                        volume={1.0}
+
+                        onLoad={(status) => {
+
+                            setIsVideoLoading(!status.isLoaded)
+                        }}
+                        ref={videoRef}
+                        style={styles.frameImage}
+                        source={{
+                            uri: stream_url,
+                            type: 'm3u8',
+                            overrideFileExtensionAndroid: 'm3u8'
+
+                        }}
+
+                        posterSource={{uri: photo}}
+                        // usePoster
+                        useNativeControls
+                        resizeMode={ResizeMode.CONTAIN}
+                        shouldPlay
+
+
+                        //onPlaybackStatusUpdate={(status: AVPlaybackStatusSuccess) => setStatus(() => { return { isPlaying: status.isPlaying } })}
+                        onError={(err) => console.error("Playback error", err)}
+                    />
+                }
+
+
+                {
                     userJoin &&
 
-                <View style={styles.streamerInfo}>
-                    <FontAwesome5 name="users" size={16} color="#fff" />
-                    <Text style={styles.streamerInfoText}>
-                        {userJoin?.viewers}
-                    </Text>
-                </View>
-                }*/}
+                    <View style={styles.streamerInfo}>
+                        <FontAwesome5 name="users" size={16} color="#fff"/>
+                        <Text style={styles.streamerInfoText}>
+                            {userJoin?.viewers}
+                        </Text>
+                    </View>
+                }
             </View>
 
             <View style={[styles.chatHeader, {height: 100,}]}>
@@ -688,21 +544,27 @@ const styles = StyleSheet.create({
         bottom: 15,
         height: 35,
         borderRadius: 5,
-        flexDirection:"row",
-        alignItems:'center',
-      minWidth:50,
+        flexDirection: "row",
+        alignItems: 'center',
+        minWidth: 50,
 
         paddingHorizontal: pixelSizeHorizontal(8),
         backgroundColor: 'rgba(0,0,0,0.2)',
         justifyContent: 'center',
     },
     streamerInfoText: {
-        marginLeft:5,
+        marginLeft: 5,
         fontFamily: Fonts.faktumBold,
         fontSize: fontPixel(14),
         color: Colors.text
     },
-
+    video: {
+        alignSelf: 'center',
+        width: '100%',
+        maxHeight: '90%',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 })
 
-export default LiveStream;
+export default WatchLiveStream;
