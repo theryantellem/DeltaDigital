@@ -62,7 +62,7 @@ class ScheduleController extends ApiController
             return response()->json(['success' => false, 'message' => 'Schedule not found.'], 404);
         }
 
-        $user = LiveAttendants::where('user_id', Auth::user()->id)->where('schedule_id', $id)->where('date', date("Y-m-d"))->first();
+        $user = LiveAttendants::where('user_id', Auth::user()->id)->where('schedule_id', $schdule->id)->where('date', date("Y-m-d"))->first();
 
         if (!$user) {
 
