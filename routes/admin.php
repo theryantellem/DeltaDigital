@@ -172,21 +172,52 @@ Route::get('test-notifications', function () {
 
 Route::get('push-notification', function () {
 
-    // $fcmTokens =  followersPushTokens(1);
-
-    // if (!empty($fcmTokens)) {
-    //     \Illuminate\Support\Facades\Notification::send(null, new \App\Notifications\SendPushNotification("Signal Created", "A new signal has been created. Tap to view details.", $fcmTokens));
-    // }
-
     $firebaseToken = ["f-7-xyUjI05-g2xU13RXtr:APA91bHamFGUhQy476Forn8hKozkkGNqKOnPSTtA9xhjOpRCK1v-moHicASA-IEqXtyU_8wDx43US5apAeYq83iRjnImUPvfEDnunDvzWJR5vndvUQhMvZZMp4iEOWAUTUrOqPu2-sGd"];
 
-    $data = [
-        'push_tokens' => $firebaseToken,
-        'title' => "Hello World",
-        'message' => "Trust your day is fine."
+    $headers = [
+        'Authorization' => 'Bearer' . env('FIREBASE_SERVER_KEY'),
+        'Content-Type' => 'application/json',
     ];
 
-    $firebase = new \App\Services\PushNotification();
+    $client = new \GuzzleHttp\Client([
+        'base_uri' => 'https://fcm.googleapis.com/v1/projects/delta-signal/messages:send',
+        // 'verify' => false,
+    ]);
 
-    dd($firebase->sendNotification($data));
+    $data = [
+        "message" => [
+            "token" => $firebaseToken,
+            "notification" => [
+                "title" => "Testing Notification",
+                "body" => "Testing Notification",
+            ],
+            "data" => [
+                "signals" => "hello"
+            ]
+        ]
+    ];
+
+    $data = json_encode($data);
+
+    $response = $client->post('send', [
+        'headers' => $headers,
+        'body' => $data,
+    ]);
+
+    // Process the response
+    $statusCode = $response->getStatusCode();
+    $responseData = $response->getBody()->getContents();
+
+    dd($responseData, true);
+
+
+    // $data = [
+    //     'push_tokens' => $firebaseToken,
+    //     'title' => "Hello World",
+    //     'message' => "Trust your day is fine."
+    // ];
+
+    // $firebase = new \App\Services\PushNotification();
+
+    // dd($firebase->sendNotification($data));
 });

@@ -63,10 +63,10 @@
                             </svg>
                             <span v-else>Send</span>
                         </button>
-                        <button type="button" class="btn btn-primary p-2" :disabled="loading"
+                        {{-- <button type="button" class="btn btn-primary p-2" :disabled="loading"
                             @click.prevent="openFileInput">
                             <i class="fa fa-paperclip me-2"></i>
-                            Attach
+                            Attach --}}
                         </button>
                         <input type="file" ref="chatFileInput" style="display: none" accept="image/*"
                             @change="handleFileUpload">
