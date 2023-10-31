@@ -31,7 +31,7 @@
                             </div>
                             <div v-else class="message-received w-auto">
                                 <div class="d-flex">
-                                    <img :src="message?.sender?.photo" class="avatar rounded-circle" alt="">
+                                    <img :src="message?.sender?.photo || '{{ asset('assets/images/ultimate_avatar.webp') }}'" class="avatar rounded-circle" alt="">
                                     <div class="ms-1 text">
                                         <a :href="message?.message" data-lightbox="profile" class="chat-meadia"
                                             v-if="message?.type === 'media'">
@@ -63,10 +63,10 @@
                             </svg>
                             <span v-else>Send</span>
                         </button>
-                        {{-- <button type="button" class="btn btn-primary p-2" :disabled="loading"
+                        <button type="button" class="btn btn-primary p-2" :disabled="loading"
                             @click.prevent="openFileInput">
                             <i class="fa fa-paperclip me-2"></i>
-                            Attach --}}
+                            Attach
                         </button>
                         <input type="file" ref="chatFileInput" style="display: none" accept="image/*"
                             @change="handleFileUpload">
