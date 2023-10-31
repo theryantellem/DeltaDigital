@@ -309,6 +309,7 @@
                             // console.log(data)
                             if (data.success) {
                                 this.clearForm()
+                                this.message = ""
                                 this.messages.unshift(data.message)
                                 this.scrollToBottom()
 
