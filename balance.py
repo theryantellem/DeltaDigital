@@ -35,7 +35,7 @@ def GetBalance(exchange,exchange_id):
     
     if exchange_id == 1:
         balance = exchange.fetch_balance()
-        balance = balance['free']['USDT'] 
+        balance = balance['total']['USDT']
         # balance = balance['info']['availableBalance']
     elif exchange_id == 2:
         balance = exchange.fetch_balance()
@@ -76,8 +76,7 @@ def botapi():
                 values = {'exchange_name': 'binance', 'api_key': api_key,
                           'secret_key': api_secret}
                 # future market
-                futureExchange = Exchange_(values,"future")    
-            
+                futureExchange = Exchange_(values,"future")   
                 # spot market
                 spotExchange = Exchange_(values)    
                 spot_balance = GetBalance(spotExchange,platform)    
@@ -112,12 +111,10 @@ def botapi():
                 
                 spot_balance = GetBalance(spotExchange,platform)
             
-            
-            
             future_balance = GetBalance(futureExchange,platform)
             
             link = f"{base_url}/postbalance?&user_id={user_id}&balance={spot_balance}&platform={platform}&futures_balance={future_balance}"
-            # requests.get(link)
+            requests.get(link)
             
             return jsonify({"Status": "SUCCESS","balance":spot_balance,"futures_balance":future_balance})
             
@@ -129,5 +126,5 @@ def botapi():
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5232, debug=True)
-    # serve(app, port=5232, threads=100)
+    # app.run(host="0.0.0.0", port=5232, debug=True)
+    serve(app, port=5232, threads=100)

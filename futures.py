@@ -67,13 +67,14 @@ def Posttrade(
     total_profit=0,
     trade_type=1,
     current_profit=0,
+    marketMode="Short"
 ):
     link = (
         f"{base_url}/posttrade?setid={setid}&user_id={user_id}&qty={qty}&in_position={in_position}"
         f"&buy_position=0&sell_position=0&trade_price={trade_price}"
         f"&tgmessage={tgmessage}&first_buy={first_buy}&position_amount={position_amount}"
         f"&first_price={first_price}&balance={balance}&platform={platform}&trade_type={trade_type}"
-        f"&re_capital={re_capital}&closing_price=0&strategy_cal=0&profit={current_profit}"
+        f"&re_capital={re_capital}&closing_price=0&strategy_cal=0&profit={current_profit}&market_mode={marketMode}"
     )
     response = requests.get(link)
 
@@ -93,11 +94,12 @@ def Settletrade(
     balance=0,
     trade_type=1,
     percent=0,
+    marketMode="Short"
 ):
     link = (
         f"{base_url}/settletrade?setid={setid}&user_id={user_id}&qty={qty}&in_position={in_position}"
         f"&trade_price={trade_price}&tgmessage={tgmessage}&first_buy={first_buy}&position_amount={position_amount}"
-        f"&profit={profit}&coin={coin}&exchange={platform}&balance={balance}"
+        f"&profit={profit}&coin={coin}&exchange={platform}&balance={balance}&market_mode={marketMode}"
         f"&trade_type={trade_type}"
     )
     response = requests.get(link)
@@ -388,6 +390,7 @@ def bot():
                         position_amount=position_amount,
                         first_price=first_price,
                         balance=balance,
+                        marketMode="Long"
                     )
 
                     return jsonify({"Status": "SUCCESS"})
@@ -465,6 +468,7 @@ def bot():
                         position_amount=position_amount,
                         first_price=first_price,
                         balance=balance,
+                        marketMode="Short"
                     )
                     return jsonify({"Status": "SUCCESS"})
 
@@ -770,6 +774,7 @@ def bot():
                             position_amount=qtyusdt,
                             balance=balance,
                             percent=percent,
+                            marketMode="Long"
                         )
 
                     if profit < 0.00001:
@@ -787,10 +792,11 @@ def bot():
                             position_amount=qtyusdt,
                             balance=balance,
                             percent=percent,
+                            marketMode="Long"
                         )
 
                     # Send all records 
-                    Posttrade(
+                    UpdateProfit(
                         setid=setid,
                         user_id=user_id,
                         platform=platform,
@@ -1005,6 +1011,7 @@ def bot():
                             position_amount=qtyusdt,
                             balance=balance,
                             percent=percent,
+                            marketMode="Short"
                         )
 
                     if profit < 0.00001:
@@ -1022,9 +1029,10 @@ def bot():
                             position_amount=qtyusdt,
                             balance=balance,
                             percent=percent,
+                            marketMode="Short"
                         )
                     
-                    Posttrade(
+                    UpdateProfit(
                         setid=setid,
                         user_id=user_id,
                         platform=platform,
@@ -1151,6 +1159,7 @@ def bot():
                             position_amount=qtyusdt,
                             balance=balance,
                             percent=percent,
+                            marketMode="Long"
                         )
 
                     if profit < 0.00001:
@@ -1168,9 +1177,10 @@ def bot():
                             position_amount=qtyusdt,
                             balance=balance,
                             percent=percent,
+                            marketMode="Long"
                         )
 
-                    Posttrade(
+                    UpdateProfit(
                         setid=setid,
                         user_id=user_id,
                         platform=platform,
@@ -1296,6 +1306,7 @@ def bot():
                             position_amount=qtyusdt,
                             balance=balance,
                             percent=percent,
+                            marketMode="Short"
                         )
 
                     if profit < 0.00001:
@@ -1313,9 +1324,10 @@ def bot():
                             position_amount=qtyusdt,
                             balance=balance,
                             percent=percent,
+                            marketMode="Short"
                         )
 
-                    Posttrade(
+                    UpdateProfit(
                         setid=setid,
                         user_id=user_id,
                         platform=platform,
@@ -1449,6 +1461,7 @@ def bot():
                             first_price=first_price,
                             trade_price=trade_price,
                             balance=balance,
+                            marketMode="Long"
                         )
 
                         return jsonify({"Status": "SUCCESS"})
@@ -1577,6 +1590,7 @@ def bot():
                             first_price=first_price,
                             trade_price=trade_price,
                             balance=balance,
+                            marketMode="Short"
                         )
 
                         return jsonify({"Status": "SUCCESS"})
