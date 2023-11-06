@@ -67,14 +67,15 @@ def Posttrade(
     total_profit=0,
     trade_type=1,
     current_profit=0,
-    marketMode="Short"
+    marketMode="Short",
+    floating_loss=0
 ):
     link = (
         f"{base_url}/posttrade?setid={setid}&user_id={user_id}&qty={qty}&in_position={in_position}"
         f"&buy_position=0&sell_position=0&trade_price={trade_price}"
         f"&tgmessage={tgmessage}&first_buy={first_buy}&position_amount={position_amount}"
         f"&first_price={first_price}&balance={balance}&platform={platform}&trade_type={trade_type}"
-        f"&re_capital={re_capital}&closing_price=0&strategy_cal=0&profit={current_profit}&market_mode={marketMode}"
+        f"&re_capital={re_capital}&closing_price=0&strategy_cal=0&profit={current_profit}&market_mode={marketMode}&floating_loss={floating_loss}"
     )
     response = requests.get(link)
 
@@ -94,13 +95,14 @@ def Settletrade(
     balance=0,
     trade_type=1,
     percent=0,
-    marketMode="Short"
+    marketMode="Short",
+    floating_loss=0
 ):
     link = (
         f"{base_url}/settletrade?setid={setid}&user_id={user_id}&qty={qty}&in_position={in_position}"
         f"&trade_price={trade_price}&tgmessage={tgmessage}&first_buy={first_buy}&position_amount={position_amount}"
         f"&profit={profit}&coin={coin}&exchange={platform}&balance={balance}&market_mode={marketMode}"
-        f"&trade_type={trade_type}"
+        f"&trade_type={trade_type}&floating_loss={floating_loss}"
     )
     response = requests.get(link)
 
@@ -119,13 +121,14 @@ def UpdateProfit(
     balance=0.00,
     trade_type=1,
     current_profit=0,
+    floating_loss=0
 ):
     link = (
         f"{base_url}/updateProfit?setid={setid}&user_id={user_id}&qty={qty}&in_position={in_position}"
         f"&trade_price={trade_price}"
         f"&tgmessage={tgmessage}&first_buy={first_buy}&position_amount={position_amount}"
         f"&first_price={first_price}&balance={balance}&platform={platform}&trade_type={trade_type}"
-        f"&profit={current_profit}"
+        f"&profit={current_profit}&floating_loss={floating_loss}"
     )
     response = requests.get(link)
 
@@ -244,6 +247,8 @@ def bot():
     total_profit = 0
 
     current_profit = 0
+    
+    floating_loss = 0
 
     while True:
         try:
@@ -262,18 +267,6 @@ def bot():
             if platform == 2:  # kucoin
                 market = coin + "USDTM"
                 exchange_name = "kucoinfutures"
-                values = {
-                    "exchange_name": exchange_name,
-                    "api_key": Decrypt_(api_key),
-                    "secret_key": Decrypt_(api_secret),
-                    "password": api_passphrase,
-                    "market_name": exchange_name,
-                }
-                exchange = Exchange_(values)
-
-            if platform == 3:  # coinbase pro
-                market = coin + "USDT"
-                exchange_name = "coinbasepro"
                 values = {
                     "exchange_name": exchange_name,
                     "api_key": Decrypt_(api_key),
@@ -303,14 +296,14 @@ def bot():
                     details = "Your exchange balance is below your trade capital."
                     PostTradeLog(setid, user_id, balance, details, platform)
 
-                    return jsonify({"Status": "SUCCESS"})
+                    return jsonify({"Status": "SUCCESS","details": details})
 
                 # stop trade without setting
                 if in_position == False and re_capital < 1:
                     t = time.time()
                     details = "Your bot does not have total capital setting. Enter capital in settings to proceed with trading."
                     PostTradeLog(setid, user_id, balance, details, platform)
-                    return jsonify({"Status": "SUCCESS"})
+                    return jsonify({"Status": "SUCCESS","details": details})
 
                 if (
                     in_position == False
@@ -454,6 +447,7 @@ def bot():
                     quantity = qty
 
                     tgmessage = "First buy order succesfully filled."
+                    
                     balance = GetBalance(exchange, platform)
 
                     Posttrade(
@@ -509,6 +503,7 @@ def bot():
                     qty = positions[0]["contracts"]
                     quantity = qty
                     current_profit = positions[0]["info"]["unRealizedProfit"]
+                    floating_loss = positions[0]["percentage"]
                     # print(current_profit)
 
                 if platform == 2:
@@ -518,6 +513,7 @@ def bot():
                     position_amount = positions[0]["initialMargin"]
                     quantity = qty
                     current_profit = positions[0]["unrealizedPnl"]
+                    floating_loss = positions[0]["percentage"]
 
                 current_profit = float(current_profit)
                 balance = GetBalance(exchange, platform)
@@ -538,7 +534,8 @@ def bot():
                         first_price=0,
                         position_amount=0,
                         balance=balance,
-                        current_profit=current_profit
+                        current_profit=current_profit,
+                        floating_loss=floating_loss
                     )
                     return jsonify({"Status": "SUCCESS"})
 
@@ -555,7 +552,8 @@ def bot():
                         first_price=0,
                         position_amount=0,
                         balance=balance,
-                        current_profit=current_profit
+                        current_profit=current_profit,
+                        flaoting_loss=floating_loss
                     )
                     
                     return jsonify({"Status": "SUCCESS"})
@@ -572,7 +570,8 @@ def bot():
                     position_amount=position_amount,
                     first_price=first_price,
                     balance=balance,
-                    current_profit=current_profit
+                    current_profit=current_profit,
+                    floating_loss=floating_loss
                 )
 
             # Take profit long
@@ -586,12 +585,14 @@ def bot():
                     # here
                     position_amount = positions[0]["initialMargin"]
                     current_profit = positions[0]["unrealizedPnl"]
+                    floating_loss = positions[0]["percentage"]
 
                 if platform == 2:
                     positions = exchange.fetch_positions([market])
                     avg_price = positions[0]["info"]["avgEntryPrice"]
                     position_amount = positions[0]["initialMargin"]
                     current_profit = positions[0]["unrealizedPnl"]
+                    floating_loss = positions[0]["percentage"]
                     side = positions[0]["side"]
 
                 side = side.lower()
@@ -611,6 +612,7 @@ def bot():
                         positions = exchange.fetch_positions([market])
                         avg_price = positions[0]["info"]["entryPrice"]
                         profit = positions[0]["info"]["unRealizedProfit"]
+                        floating_loss = positions[0]["percentage"]
                         t = time.time()
                         t = int(t * 1000)
                         time.sleep(3)
@@ -650,6 +652,7 @@ def bot():
                         positions = exchange.fetch_positions([market])
                         avg_price = positions[0]["info"]["avgEntryPrice"]
                         profit = positions[0]["info"]["unrealisedPnl"]
+                        floating_loss = positions[0]["percentage"]
                         fee = 0.08 * leverage
                         fee_call = float(profit) * float(fee) / 100
                         profit = float(profit) - float(fee_call)
@@ -671,6 +674,7 @@ def bot():
                         positions = exchange.fetch_positions([market])
                         avg_price = positions[0]["info"]["entryPrice"]
                         profit = positions[0]["info"]["unRealizedProfit"]
+                        floating_loss = positions[0]["percentage"]
                         fee = 0.06 * leverage
                         fee_call = float(profit) * float(fee) / 100
                         profit = float(profit) - float(fee_call)
@@ -710,6 +714,7 @@ def bot():
                         positions = exchange.fetch_positions([market])
                         avg_price = positions[0]["info"]["avgEntryPrice"]
                         profit = positions[0]["info"]["unrealisedPnl"]
+                        floating_loss = positions[0]["percentage"]
                         fee = 0.08 * leverage
                         fee_call = float(profit) * float(fee) / 100
                         profit = float(profit) - float(fee_call)
@@ -756,7 +761,8 @@ def bot():
                             first_price=first_price,
                             balance=balance,
                             tgmessage=details,
-                            current_profit=profit
+                            current_profit=profit,
+                            flaoting_loss=flaoting_loss
                         )
 
                     if profit >= 0.00001:
@@ -768,6 +774,7 @@ def bot():
                             coin=coin,
                             in_position=in_position,
                             profit=profit,
+                            floating_loss=floating_loss,
                             trade_price=trade_price,
                             tgmessage="",
                             first_buy=entry_call,
@@ -786,6 +793,7 @@ def bot():
                             coin=coin,
                             in_position=in_position,
                             profit=profit,
+                            floating_loss=floating_loss,
                             trade_price=trade_price,
                             tgmessage="",
                             first_buy=entry_call,
@@ -802,6 +810,7 @@ def bot():
                         platform=platform,
                         in_position=in_position,
                         current_profit=profit,
+                        floating_loss=floating_loss,
                         qty=qty,
                         position_amount=position_amount,
                         first_buy=entry_call,
@@ -819,6 +828,7 @@ def bot():
                     side = positions[0]["side"]
                     position_amount = positions[0]["initialMargin"]
                     current_profit = positions[0]["unrealizedPnl"]
+                    floating_loss = positions[0]["percentage"]
 
                 if platform == 2:
                     positions = exchange.fetch_positions([market])
@@ -826,6 +836,7 @@ def bot():
                     side = positions[0]["side"]
                     position_amount = positions[0]["initialMargin"]
                     current_profit = positions[0]["unrealizedPnl"]
+                    floating_loss = positions[0]["percentage"]
 
                 side = side.lower()
                 cal = float(avg_price) * float(take_profit) / 100
@@ -847,6 +858,7 @@ def bot():
                         positions = exchange.fetch_positions([market])
                         avg_price = positions[0]["info"]["entryPrice"]
                         profit = positions[0]["info"]["unRealizedProfit"]
+                        floating_loss = positions[0]["percentage"]
                         fee = 0.06 * leverage
                         fee_call = float(profit) * float(fee) / 100
                         profit = float(profit) - float(fee_call)
@@ -886,6 +898,7 @@ def bot():
                         positions = exchange.fetch_positions([market])
                         avg_price = positions[0]["info"]["avgEntryPrice"]
                         profit = positions[0]["info"]["unrealisedPnl"]
+                        floating_loss = positions[0]["percentage"]
                         fee = 0.08 * leverage
                         fee_call = float(profit) * float(fee) / 100
                         profit = float(profit) - float(fee_call)
@@ -907,6 +920,7 @@ def bot():
                         positions = exchange.fetch_positions([market])
                         avg_price = positions[0]["info"]["entryPrice"]
                         profit = positions[0]["info"]["unRealizedProfit"]
+                        floating_loss = positions[0]["percentage"]
                         t = time.time()
                         t = int(t * 1000)
                         time.sleep(3)
@@ -946,6 +960,7 @@ def bot():
                         positions = exchange.fetch_positions([market])
                         avg_price = positions[0]["info"]["avgEntryPrice"]
                         profit = positions[0]["info"]["unrealisedPnl"]
+                        floating_loss = positions[0]["percentage"]
                         fee = 0.08 * leverage
                         fee_call = float(profit) * float(fee) / 100
                         profit = float(profit) - float(fee_call)
@@ -993,7 +1008,8 @@ def bot():
                             first_price=first_price,
                             balance=balance,
                             tgmessage=details,
-                            current_profit=profit
+                            current_profit=profit,
+                            floating_loss=floating_loss
                         )
 
                     if profit >= 0.00001:
@@ -1005,6 +1021,7 @@ def bot():
                             coin=coin,
                             in_position=in_position,
                             profit=profit,
+                            floating_loss=floating_loss,
                             trade_price=trade_price,
                             tgmessage="Take profit filled",
                             first_buy=entry_call,
@@ -1023,6 +1040,7 @@ def bot():
                             coin=coin,
                             in_position=in_position,
                             profit=profit,
+                            floating_loss=floating_loss,
                             trade_price=trade_price,
                             tgmessage="Take profit filled",
                             first_buy=entry_call,
@@ -1038,6 +1056,7 @@ def bot():
                         platform=platform,
                         in_position=in_position,
                         current_profit=profit,
+                        floating_loss=floating_loss,
                         qty=qty,
                         position_amount=position_amount,
                         first_buy=entry_call,
@@ -1061,6 +1080,7 @@ def bot():
                         positions = exchange.fetch_positions([market])
                         avg_price = positions[0]["info"]["entryPrice"]
                         profit = positions[0]["info"]["unRealizedProfit"]
+                        floating_loss = positions[0]["percentage"]
                         current_profit = profit
                         t = time.time()
                         t = int(t * 1000)
@@ -1097,6 +1117,7 @@ def bot():
                         positions = exchange.fetch_positions([market])
                         avg_price = positions[0]["info"]["avgEntryPrice"]
                         profit = positions[0]["info"]["unrealisedPnl"]
+                        floating_loss = positions[0]["percentage"]
                         current_profit = profit
                         order = exchange.create_market_sell_order(
                             market,
@@ -1140,6 +1161,7 @@ def bot():
                             position_amount=position_amount,
                             first_price=first_price,
                             current_profit=profit,
+                            floating_loss=floating_loss,
                             balance=balance,
                             tgmessage=details
                         )
@@ -1153,6 +1175,7 @@ def bot():
                             coin=coin,
                             in_position=in_position,
                             profit=profit,
+                            floating_loss=floating_loss,
                             trade_price=trade_price,
                             tgmessage="",
                             first_buy=entry_call,
@@ -1171,6 +1194,7 @@ def bot():
                             coin=coin,
                             in_position=in_position,
                             profit=profit,
+                            floating_loss=floating_loss,
                             trade_price=trade_price,
                             tgmessage="",
                             first_buy=entry_call,
@@ -1186,6 +1210,7 @@ def bot():
                         platform=platform,
                         in_position=in_position,
                         current_profit=profit,
+                        floating_loss=floating_loss,
                         qty=qty,
                         position_amount=position_amount,
                         first_buy=entry_call,
@@ -1210,6 +1235,7 @@ def bot():
                         positions = exchange.fetch_positions([market])
                         avg_price = positions[0]["info"]["entryPrice"]
                         profit = positions[0]["info"]["unRealizedProfit"]
+                        floating_loss = positions[0]["percentage"]
                         current_profit = profit
                         t = time.time()
                         t = int(t * 1000)
@@ -1246,6 +1272,7 @@ def bot():
                         positions = exchange.fetch_positions([market])
                         avg_price = positions[0]["info"]["avgEntryPrice"]
                         profit = positions[0]["info"]["unrealisedPnl"]
+                        floating_loss = positions[0]["percentage"]
                         current_profit = profit
                         order = exchange.create_market_buy_order(
                             market,
@@ -1289,6 +1316,7 @@ def bot():
                             first_price=first_price,
                             balance=balance,
                             tgmessage=details,
+                            floating_loss=floating_loss
                         )
 
                     if profit >= 0.00001:
@@ -1306,7 +1334,8 @@ def bot():
                             position_amount=qtyusdt,
                             balance=balance,
                             percent=percent,
-                            marketMode="Short"
+                            marketMode="Short",
+                            floating_loss=floating_loss
                         )
 
                     if profit < 0.00001:
@@ -1324,7 +1353,8 @@ def bot():
                             position_amount=qtyusdt,
                             balance=balance,
                             percent=percent,
-                            marketMode="Short"
+                            marketMode="Short",
+                            floating_loss=floating_loss
                         )
 
                     UpdateProfit(
@@ -1339,6 +1369,7 @@ def bot():
                         trade_price=trade_price,
                         first_price=first_price,
                         balance=balance,
+                        floating_loss=floating_loss
                     )
 
                     return jsonify({"Status": "SUCCESS"})
@@ -1382,7 +1413,8 @@ def bot():
                                 first_price=first_price,
                                 balance=balance,
                                 tgmessage=details,
-                                current_profit=current_profit
+                                current_profit=current_profit,
+                                floating_loss=floating_loss
                             )
 
                             return jsonify({"Status": "SUCCESS"})
@@ -1406,6 +1438,7 @@ def bot():
                             positions = exchange.fetch_positions([market])
                             avg_price = positions[0]["info"]["entryPrice"]
                             profit = positions[0]["info"]["unRealizedProfit"]
+                            floating_loss = positions[0]["percentage"]
                             current_profit = profit
 
                         if platform == 2:
@@ -1437,6 +1470,7 @@ def bot():
                             positions = exchange.fetch_positions([market])
                             avg_price = positions[0]["info"]["avgEntryPrice"]
                             profit = positions[0]["info"]["unrealisedPnl"]
+                            floating_loss = positions[0]["percentage"]
                             current_profit = profit
 
                         profit = float(profit)
@@ -1461,7 +1495,8 @@ def bot():
                             first_price=first_price,
                             trade_price=trade_price,
                             balance=balance,
-                            marketMode="Long"
+                            marketMode="Long",
+                            floating_loss=floating_loss
                         )
 
                         return jsonify({"Status": "SUCCESS"})
@@ -1509,6 +1544,7 @@ def bot():
                                 first_price=first_price,
                                 balance=balance,
                                 current_profit=current_profit,
+                                floating_loss=floating_loss
                             )
                             return jsonify({"Status": "SUCCESS"})
 
@@ -1532,6 +1568,7 @@ def bot():
                             avg_price = positions[0]["info"]["entryPrice"]
                             profit = positions[0]["info"]["unRealizedProfit"]
                             current_profit = profit
+                            floating_loss = positions[0]["percentage"]
 
                         if platform == 2:
                             lots = exchange.fetch_markets(params={"symbol": market})
@@ -1565,6 +1602,7 @@ def bot():
                             avg_price = positions[0]["info"]["avgEntryPrice"]
                             profit = positions[0]["info"]["unrealisedPnl"]
                             current_profit = profit
+                            floating_loss = positions[0]["percentage"]
 
                         profit = float(profit)
                         balance = GetBalance(exchange, platform)
@@ -1590,7 +1628,8 @@ def bot():
                             first_price=first_price,
                             trade_price=trade_price,
                             balance=balance,
-                            marketMode="Short"
+                            marketMode="Short",
+                            floating_loss=floating_loss
                         )
 
                         return jsonify({"Status": "SUCCESS"})
@@ -1609,7 +1648,8 @@ def bot():
                     position_amount=position_amount,
                     first_price=first_price,
                     balance=balance,
-                    current_profit=current_profit
+                    current_profit=current_profit,
+                    floating_loss=floating_loss
                 )
 
                 return jsonify({"Status": "SUCCESS"})
