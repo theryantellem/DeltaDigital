@@ -94,6 +94,7 @@ def botapi():
                  
                 # spot market
                 spotExchange = Exchange_(values) 
+                spot_balance = GetBalance(spotExchange,platform)
                     
             if platform == 3: #coinbasepro
                 values = {'exchange_name': 'coinbasepro', 'api_key': api_key,
@@ -101,6 +102,7 @@ def botapi():
                  
                 # spot market
                 spotExchange = Exchange_(values)
+                spot_balance = GetBalance(spotExchange,platform)
                 
             if platform == 4: #kraken
                 
