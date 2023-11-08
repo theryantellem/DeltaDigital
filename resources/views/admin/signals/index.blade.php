@@ -42,31 +42,39 @@
                             <tbody v-if="signals.length > 0">
                                 <tr role="row" class="odd" v-for="(signal,index) in signals" :key="index">
                                     <td>
-                                        <div class="products" v-if="signal?.asset">
+                                        <div v-if="signal?.category?.type === 'trade'" class="products" v-if="signal?.asset">
                                             <img :src="signal?.asset?.image" class="avatar avatar-md" alt="">
                                             <div>
                                                 <h6><a href="#">@{{ signal?.asset?.name }}</a></h6>
                                             </div>
                                         </div>
+                                        <div v-else>
+                                            <span >---</span>
+                                        </div>
                                     </td>
                                     <td><span class="d-flex">@{{ signal?.category?.name }}</span></td>
-                                    <td>
-                                        <span class="d-flex"
-                                            v-if="signal?.category?.type === 'trade'">@{{ signal?.order_type }}</span>
+                                    <td class="text-center">
+                                        <span v-if="signal?.category?.type === 'trade'">@{{ signal?.order_type }}</span>
+                                            <span v-else>---</span>
                                     </td>
-                                    <td><span class="d-flex justify-content-center">@{{ signal?.entry_price }}</span></td>
-                                    <td>
-                                        <span class="d-flex justify-content-center">@{{ signal?.stop_loss }}</span>
+                                    <td class="text-center">
+                                        <span v-if="signal?.category?.type === 'trade'" >@{{ signal?.entry_price }}</span>
+                                        <span v-else>---</span>
                                     </td>
-                                    <td>
-                                        <span class="d-flex justify-content-center">@{{ signal?.target_price }}</span>
+                                    <td class="text-center">
+                                        <span v-if="signal?.category?.type === 'trade'" >@{{ signal?.stop_loss }}</span>
+                                        <span v-else>---</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span v-if="signal?.category?.type === 'trade'">@{{ signal?.target_price }}</span>
+                                        <span v-else>---</span>
                                     </td>
                                     <td>
                                         @{{ signal?.caption }}
                                     </td>
                                     @if (Auth::user()->hasRole('educator'))
                                         <td>
-                                            <select class="default-select status-select"
+                                            <select v-if="signal?.category?.type === 'trade'" class="default-select status-select"
                                                 @change="updateMarketStatus($event,signal.id)">
                                                 <option v-for="(status,index) in marketStatus" :value="index"
                                                     :selected="index === signal?.status">
@@ -369,6 +377,7 @@
                     this.stop_loss = "";
                     this.target_price = "";
                     this.comment = "";
+                    this.description = "";
                     this.photo = "";
                     this.chart_photo = ""
                     this.category = "";

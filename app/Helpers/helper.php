@@ -144,20 +144,29 @@ if (!function_exists('followersPushTokens')) {
 if (!function_exists('uploadFile')) { /* send to log" */
     function uploadFile($file, $folder, $driver = "")
     {
-        if ($driver === "do_spaces") {
-            $extension = $file->getClientOriginalExtension(); // Get the file extension (e.g., 'jpg', 'png', 'pdf')
-            // Generate a unique filename using a timestamp and a random string
-            $uniqueFileName = time() . '_' . uniqid() . '.' . $extension;
-
-            $filePath = "{$folder}/" . $uniqueFileName;
-
-            $path = Storage::disk('do_spaces')->put($filePath, $file, 'public');
-            $fileUrl = Storage::disk('do_spaces')->url($path);
-        } else {
+        // using config
+        if (config('app.env') === 'local') {
+            // The environment is local
             $file_name = time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path("{$folder}"), $file_name);
 
             $fileUrl = url("{$folder}/" . $file_name);
+        } else {
+            if ($driver === "do_spaces") {
+                $extension = $file->getClientOriginalExtension(); // Get the file extension (e.g., 'jpg', 'png', 'pdf')
+                // Generate a unique filename using a timestamp and a random string
+                $uniqueFileName = time() . '_' . uniqid() . '.' . $extension;
+
+                $filePath = "{$folder}/" . $uniqueFileName;
+
+                $path = Storage::disk('do_spaces')->put($filePath, $file, 'public');
+                $fileUrl = Storage::disk('do_spaces')->url($path);
+            } else {
+                $file_name = time() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path("{$folder}"), $file_name);
+
+                $fileUrl = url("{$folder}/" . $file_name);
+            }
         }
 
         return $fileUrl;

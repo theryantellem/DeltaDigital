@@ -33,9 +33,9 @@ class SignalController extends Controller
         $admin = Auth::guard('admin')->user();
 
         if ($admin->hasRole('super_admin')) {
-            $signals = Signal::get();
+            $signals = Signal::latest()->get();
         } else {
-            $signals = Signal::where('admin_id', $admin->id)->get();
+            $signals = Signal::where('admin_id', $admin->id)->latest()->get();
         }
 
         $signals = SignalResource::collection($signals);
@@ -45,7 +45,7 @@ class SignalController extends Controller
         $status = \App\Enums\SignalStatusEnum::options();
 
         $assets = AssetResource::collection(Asset::get());
-        $categories = EducatorCategory::with('category')->where('admin_id', $admin->id)->get();
+        $categories = EducatorCategory::with('category')->where('admin_id', $admin->id)->latest()->get();
         // $categories = CategoryResource::collection(Category::get());
 
         return response()->json(['signals' => $signals, 'categories' => $categories, 'order_type' => $orderType, 'market_status' => $marketStaus, 'status' => $status, 'assets' => $assets]);
@@ -64,7 +64,7 @@ class SignalController extends Controller
                 'entry_price' => 'required_if:type,trade|nullable|numeric',
                 'stop_loss' => 'required_if:type,trade|nullable|numeric',
                 'target_price' => 'required_if:type,trade|nullable|numeric',
-                'percentage' => 'numeric',
+                'percentage' => 'nullable|numeric',
                 'comment' => 'nullable|string',
                 'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
                 'description' => 'required_if:type,news'
@@ -87,11 +87,11 @@ class SignalController extends Controller
                 'admin_id' => $user->id,
                 'asset_type' => $request->asset_type,
                 'order_type' => $request->order_type ?? 'buy',
-                'entry_price' => $request->entry_price,
-                'stop_loss' => $request->stop_loss,
-                'target_price' => $request->target_price,
+                'entry_price' => $request->entry_price ?? 0,
+                'stop_loss' => $request->stop_loss ?? 0,
+                'target_price' => $request->target_price ?? 0,
                 'category_id' => $request->category,
-                'percentage' => $request->percentage,
+                'percentage' => $request->percentage ?? 0,
                 'comment' => !empty($request->comment) ? $request->comment : $request->description,
                 'chart_photo' =>  $chartUrl,
             ]);
@@ -225,7 +225,7 @@ class SignalController extends Controller
             'entry_price' => 'required_if:type,trade|nullable|numeric',
             'stop_loss' => 'required_if:type,trade|nullable|numeric',
             'target_price' => 'required_if:type,trade|nullable|numeric',
-            'percentage' => 'numeric',
+            'percentage' => 'nullable|numeric',
             'comment' => 'nullable|string',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'description' => 'required_if:type,news'
@@ -254,11 +254,11 @@ class SignalController extends Controller
             $signal->update([
                 'asset_type' => $request->asset_type,
                 'order_type' => $request->order_type ?? 'buy',
-                'entry_price' => $request->entry_price,
-                'stop_loss' => $request->stop_loss,
-                'target_price' => $request->target_price,
+                'entry_price' => $request->entry_price ?? 0,
+                'stop_loss' => $request->stop_loss ?? 0,
+                'target_price' => $request->target_price ?? 0,
                 'category_id' => $request->category,
-                'percentage' => $request->percentage,
+                'percentage' => $request->percentage ?? 0,
                 'comment' => !empty($request->comment) ? $request->comment : $request->description,
                 'chart_photo' =>  $chartUrl,
                 'is_updated' => true
