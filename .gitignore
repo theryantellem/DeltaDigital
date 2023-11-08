@@ -5,6 +5,8 @@ public/hot
 public/media
 public/academy/*
 public/images
+public/recorded/*
+public/signals/*
 /storage/*.key
 vendor
 .env
