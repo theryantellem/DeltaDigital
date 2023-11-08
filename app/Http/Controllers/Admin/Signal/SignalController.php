@@ -157,7 +157,6 @@ class SignalController extends Controller
                 ];
 
                 dispatch(new \App\Jobs\PushNotificationJob($data));
-                // Notification::send(null, new SendPushNotification("Signal Created", "A new signal has been created. Tap to view details.", $fcmTokens));
             }
 
             event(new SignalNotification(Auth::guard('admin')->user()->uuid, $signal, "updated"));
@@ -202,7 +201,6 @@ class SignalController extends Controller
                 ];
 
                 dispatch(new \App\Jobs\PushNotificationJob($data));
-                // Notification::send(null, new SendPushNotification("Signal Created", "A new signal has been created. Tap to view details.", $fcmTokens));
             }
 
             return response()->json(['success' => true, 'message' => 'Status updated successfully.']);
@@ -285,7 +283,6 @@ class SignalController extends Controller
                 ];
 
                 dispatch(new \App\Jobs\PushNotificationJob($data));
-                // Notification::send(null, new SendPushNotification("Signal Created", "A new signal has been created. Tap to view details.", $fcmTokens));
             }
 
 

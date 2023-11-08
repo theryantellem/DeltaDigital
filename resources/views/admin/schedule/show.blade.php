@@ -69,6 +69,7 @@
 @endsection
 @push('scripts')
     <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
     <script>
         lightbox.option({
             'resizeDuration': 200,
@@ -108,7 +109,8 @@
                     thumbnail: null,
                     loading: false,
                     errors: {},
-                    liveCount: "{{ $schedule->viewers }}"
+                    liveCount: "{{ $schedule->viewers }}",
+                    socket: ""
                 }
             },
             mounted() {
@@ -116,31 +118,49 @@
                 this.getMessages()
                 this.getCurrentDate()
 
-                var pusher = new Pusher("{{ env('PUSHER_APP_KEY') }}", {
-                    cluster: "{{ env('PUSHER_APP_CLUSTER') }}",
+                // var pusher = new Pusher("{{ env('PUSHER_APP_KEY') }}", {
+                //     cluster: "{{ env('PUSHER_APP_CLUSTER') }}",
+                // });
+
+                // const chatChannel = pusher.subscribe(`chat.${this.educator}`);
+                // chatChannel.bind('chat-message', (data) => {
+                //     this.messages.unshift(data.message)
+                //     this.scrollToBottom()
+                // });
+
+                // const liveJoined = pusher.subscribe(`joined-stream.${this.schedule}`);
+                // liveJoined.bind('joined-stream', (data) => {
+                //     this.getViewers()
+                // });
+
+                // const liveEnded = pusher.subscribe(`stop-live.${this.schedule}`);
+                // liveEnded.bind('StopLive', (data) => {
+                //     this.liveCount = 0
+                // });
+
+                this.socket = io("{{ env('SOCKET_IO_ENDPOINT') }}");
+
+                this.socket.on(`message:received:${this.educator}`, function(message) {
+                    this.messages.unshift(message)
                 });
 
-                const chatChannel = pusher.subscribe(`chat.${this.educator}`);
-                chatChannel.bind('chat-message', (data) => {
-                    this.messages.unshift(data.message)
-                    this.scrollToBottom()
-                });
-
-                const liveJoined = pusher.subscribe(`joined-stream.${this.schedule}`);
-                liveJoined.bind('joined-stream', (data) => {
+                this.socket.on(`joined:stream:${this.schedule}`, function() {
                     this.getViewers()
                 });
 
-                const liveEnded = pusher.subscribe(`stop-live.${this.schedule}`);
-                liveEnded.bind('StopLive', (data) => {
+                this.socket.on(`left:stream:${this.schedule}`, function() {
+                    this.getViewers()
+                });
+
+                this.socket.on(`stop:live:${this.schedule}`, function() {
                     this.liveCount = 0
                 });
+
             },
             created() {
                 this.is_live = "{{ Auth::user()->is_live ? true : false }}";
 
                 this.getVideos();
-
 
             },
             methods: {
@@ -289,6 +309,7 @@
                     }
 
                     const formData = new FormData();
+
                     formData.append('_token', '{{ csrf_token() }}');
 
                     formData.append('message', this.message)
@@ -296,6 +317,8 @@
                     if (this.media) {
                         formData.append('media', this.media)
                     }
+
+                    // this.educator
 
                     this.loading = true
 
@@ -314,6 +337,11 @@
                                 this.scrollToBottom()
 
                                 previewMediaModal.hide()
+
+                                this.socket.emit("message:send", {
+                                    message: data.message,
+                                    room: this.educator,
+                                });
                             } else {
                                 console.log(data)
                             }

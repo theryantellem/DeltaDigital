@@ -179,7 +179,7 @@ class ScheduleController extends Controller
 
             LiveChat::where('admin_id', $user->id)->delete();
 
-            broadcast(new LiveStarted($schdule))->toOthers();
+            // broadcast(new LiveStarted($schdule))->toOthers();
 
             return response()->json(['success' => true, 'message' => 'your are now live ']);
         } catch (\Throwable $th) {
@@ -236,7 +236,7 @@ class ScheduleController extends Controller
 
             LiveChat::where('admin_id', $user->id)->delete();
 
-            broadcast(new StopLive($schdule))->toOthers();
+            // broadcast(new StopLive($schdule))->toOthers();
 
             return response()->json(['success' => true, 'message' => 'live session have ended']);
             // return redirect()->route('dashboard.educator.schedule.show',$id);
@@ -473,7 +473,7 @@ class ScheduleController extends Controller
 
             $chat = new LiveChatResource($chat);
 
-            event(new ChatNotification($user->uuid, $chat));
+            // event(new ChatNotification($user->uuid, $chat));
 
             return response()->json(['success' => true, 'message' => $chat]);
         } catch (\Exception $e) {
