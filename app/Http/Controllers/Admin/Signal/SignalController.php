@@ -67,7 +67,8 @@ class SignalController extends Controller
                 'percentage' => 'nullable|numeric',
                 'comment' => 'nullable|string',
                 'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-                'description' => 'required_if:type,news'
+                'description' => 'required_if:type,news',
+                'document' => 'nullable|mimes:pdf,xlsx,xls'
             ]);
 
             // Handle validation errors
@@ -78,9 +79,14 @@ class SignalController extends Controller
             $user = Auth::guard('admin')->user();
 
             $chartUrl = null;
+            $fileUrl = null;
 
             if ($request->hasFile('photo')) {
                 $chartUrl = uploadFile($request->file('photo'), "signals", "do_spaces");
+            }
+
+            if ($request->hasFile('document')) {
+                $fileUrl = uploadFile($request->file('document'), "documents", "do_spaces");
             }
 
             $signal = Signal::create([
@@ -94,6 +100,7 @@ class SignalController extends Controller
                 'percentage' => $request->percentage ?? 0,
                 'comment' => !empty($request->comment) ? $request->comment : $request->description,
                 'chart_photo' =>  $chartUrl,
+                'file_url' => $fileUrl
             ]);
 
             // broadcast events

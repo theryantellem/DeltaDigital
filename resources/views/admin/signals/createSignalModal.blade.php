@@ -85,8 +85,12 @@
                             <textarea rows="2" v-model="description" class="form-control"></textarea>
                             <span v-if="errors.description" class="text-danger">@{{ errors.description[0] }}</span>
                         </div>
+                        <div v-if="!edit" class="col-xl-12 mb-3">
+                            <label class="form-label">Document</label>
+                            <input type="file" accept=".pdf, .xls, .xlsx, .csv" @change="handleDocumentUpload($event)" class="form-control" />
+                            <span v-if="errors?.document" class="text-danger">@{{ errors.document[0] }}</span>
+                        </div>
                     </div>
-
                 </div>
 
                 <div v-if="type">

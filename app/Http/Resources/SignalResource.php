@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class SignalResource extends JsonResource
 {
@@ -32,6 +33,8 @@ class SignalResource extends JsonResource
             'status' => $this->market_status,
             'is_updated' => $this->is_updated,
             'created_at' => $this->created_at,
+            'formatedDate' => Carbon::parse($this->created_at)->format('M j, Y, g:i A'),
+            'document' => $this->file_url
             // 'status' => $this->status
         ];
     }

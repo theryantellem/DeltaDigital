@@ -32,6 +32,7 @@
                                     <th>Target Price</th>
                                     <th>Comment</th>
                                     <th>Market Status</th>
+                                    <th>Date</th>
                                     @if (Auth::user()->hasRole('educator'))
                                         <th>
                                             Action
@@ -42,27 +43,28 @@
                             <tbody v-if="signals.length > 0">
                                 <tr role="row" class="odd" v-for="(signal,index) in signals" :key="index">
                                     <td>
-                                        <div v-if="signal?.category?.type === 'trade'" class="products" v-if="signal?.asset">
+                                        <div v-if="signal?.category?.type === 'trade'" class="products"
+                                            v-if="signal?.asset">
                                             <img :src="signal?.asset?.image" class="avatar avatar-md" alt="">
                                             <div>
                                                 <h6><a href="#">@{{ signal?.asset?.name }}</a></h6>
                                             </div>
                                         </div>
                                         <div v-else>
-                                            <span >---</span>
+                                            <span>---</span>
                                         </div>
                                     </td>
                                     <td><span class="d-flex">@{{ signal?.category?.name }}</span></td>
                                     <td class="text-center">
                                         <span v-if="signal?.category?.type === 'trade'">@{{ signal?.order_type }}</span>
-                                            <span v-else>---</span>
-                                    </td>
-                                    <td class="text-center">
-                                        <span v-if="signal?.category?.type === 'trade'" >@{{ signal?.entry_price }}</span>
                                         <span v-else>---</span>
                                     </td>
                                     <td class="text-center">
-                                        <span v-if="signal?.category?.type === 'trade'" >@{{ signal?.stop_loss }}</span>
+                                        <span v-if="signal?.category?.type === 'trade'">@{{ signal?.entry_price }}</span>
+                                        <span v-else>---</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span v-if="signal?.category?.type === 'trade'">@{{ signal?.stop_loss }}</span>
                                         <span v-else>---</span>
                                     </td>
                                     <td class="text-center">
@@ -74,12 +76,16 @@
                                     </td>
                                     @if (Auth::user()->hasRole('educator'))
                                         <td>
-                                            <select v-if="signal?.category?.type === 'trade'" class="default-select status-select"
+                                            <select v-if="signal?.category?.type === 'trade'"
+                                                class="default-select status-select"
                                                 @change="updateMarketStatus($event,signal.id)">
                                                 <option v-for="(status,index) in marketStatus" :value="index"
                                                     :selected="index === signal?.status">
                                                     @{{ status }}</option>
                                             </select>
+                                        </td>
+                                        <td>
+                                            @{{ signal?.formatedDate }}
                                         </td>
                                         <td class="edit-action">
                                             <a href="#" @click.prevent="viewSignal(signal)"
@@ -148,7 +154,8 @@
                     type: "",
                     chart_photo_preview: null,
                     photo_preview: null,
-                    description: ""
+                    description: "",
+                    document: ""
                 }
             },
             mounted() {
@@ -172,6 +179,9 @@
                         reader.readAsDataURL(this.photo);
 
                     }
+                },
+                handleDocumentUpload(event) {
+                    this.document = event.target.files[0];
                 },
                 handleChartPhotoUpload(event) {
                     this.chart_photo = event.target.files[0];
@@ -287,6 +297,7 @@
                     formData.append('photo', this.chart_photo);
                     formData.append('type', this.type);
                     formData.append('description', this.description);
+                    formData.append('document', this.document);
 
                     await axios.post("{{ route('admin.signals.store') }}", formData, {
                             headers: {
