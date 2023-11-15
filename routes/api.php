@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/login', [AuthenticationController::class, 'login']);
+Route::post('/check-user', [AuthenticationController::class, 'getUserDetails']);
 
 Route::middleware('auth:sanctum')->group(function () {
     // cyborg

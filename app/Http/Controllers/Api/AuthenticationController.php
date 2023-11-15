@@ -16,11 +16,9 @@ class AuthenticationController extends ApiController
 {
     function login(Request $request, Authentication $authentication)
     {
-        try {
 
-            DB::beginTransaction();
 
-            $validator = Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
                 'username' => 'required|string',
                 'password' => 'required|string',
             ]);
@@ -30,11 +28,17 @@ class AuthenticationController extends ApiController
                 return $this->sendError("Validation error", $validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
+
+        try {
+
+            DB::beginTransaction();
+
             $response = $authentication->login($request->username, $request->password);
 
             $data = $response['data'];
 
             // dd($data);
+
             if (empty($data)) {
                 return $this->sendError("Service Unavailable", [], Response::HTTP_SERVICE_UNAVAILABLE);
             }
@@ -154,6 +158,31 @@ class AuthenticationController extends ApiController
 
             return $this->sendResponse($responseData, "Successful login.", Response::HTTP_OK);
         } catch (\Throwable $e) {
+            logger(["auth error" => $e->getMessage()]);
+            return $this->sendError("Service Unavailable", [], Response::HTTP_SERVICE_UNAVAILABLE);
+        }
+    }
+
+    function getUserDetails(Request $request, Authentication $authentication)
+    {
+        try {
+
+            $validator = Validator::make($request->all(), [
+                'username' => 'required|string'
+            ]);
+
+
+            if ($validator->fails()) {
+                return $this->sendError("Validation error", $validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            $response = $authentication->getUser($request->username);
+
+            $data = $response['data'];
+
+            dd($data);
+        } catch (\Throwable $e) {
+            DB::rollBack();
             logger(["auth error" => $e->getMessage()]);
             return $this->sendError("Service Unavailable", [], Response::HTTP_SERVICE_UNAVAILABLE);
         }

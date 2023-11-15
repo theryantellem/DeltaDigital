@@ -159,6 +159,7 @@ Route::middleware(['auth:admin'])->group(function () {
         Route::get('/{video}', 'index')->name('index');
         Route::post('validate', 'validateVideoFile')->name('validate');
         Route::post('store', 'store')->name('store');
+        Route::post('sort', 'updateOrder')->name('sort');
         Route::put('update/{video}', 'update')->name('update');
         Route::delete('delete/{video}', 'delete')->name('delete');
     }));

@@ -76,6 +76,26 @@ class AcademyVideoController extends Controller
         return response()->json(['success' => true, 'message' => 'Video updated successfully.']);
     }
 
+    public function updateOrder(Request $request)
+    {
+        $this->validate($request, [
+            'videos.*.order' => 'required|numeric',
+        ]);
+
+        $videos = AcademyVideo::all();
+
+        foreach ($videos as $video) {
+            $id = $video->id;
+            foreach ($request->videos as $videoNew) {
+                if ($videoNew['id'] == $id) {
+                    $video->update(['order' => $videoNew['order']]);
+                }
+            }
+        }
+
+        return response('Updated Successfully.', 200);
+    }
+
     public function delete(AcademyVideo $video)
     {
         $video->delete();
