@@ -26,6 +26,21 @@ io.on("connection", (socket) => {
 
     });
 
+    // start live
+    socket.on('start:live', async (educator) => {
+        console.log(educator)
+
+        io.emit(`live:started`, educator)
+
+    });
+
+    // start live
+    socket.on('stop:live', async (educator) => {
+
+        io.emit(`live:stoped`, educator)
+
+    });
+
     // Handle join stream
     socket.on('join:stream', async (schedule) => {
         io.emit(`joined:stream:${schedule}`, schedule)
