@@ -228,14 +228,28 @@
                 async goLive() {
                     await axios.post(`/admin/schedule/live/start/${this.schedule}`).then(response => {
                         this.is_live = true
-                    }).then(error => {
+
+                        this.socket.emit("start:live", {
+                            educator: {
+                                id: "{{ Auth::user()->uuid }}",
+                                name: "{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}",
+                            },
+                        });
+                    }).catch(error => {
                         console.log(error);
                     })
                 },
                 async stopLive() {
                     await axios.post(`/admin/schedule/live/stop/${this.schedule}`).then(response => {
                         this.is_live = false
-                    }).then(error => {
+
+                        this.socket.emit("stop:live", {
+                            educator: {
+                                id: "{{ Auth::user()->uuid }}",
+                                name: "{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}",
+                            },
+                        });
+                    }).catch(error => {
                         console.log(error);
                     })
                 },
