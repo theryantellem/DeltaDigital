@@ -112,6 +112,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/leave-live/{schedule}', 'leaveStream');
         Route::get('{educator}/educator-schedules', 'educatorSchedules');
         Route::get('/live/educators', 'educatorsOnLive');
+        Route::get('/live/viewers/{schedule}', 'getViewers');
     });
 
     Route::controller(LiveChatController::class)->prefix('live')->group(function () {

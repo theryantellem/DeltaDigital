@@ -111,6 +111,13 @@ class ScheduleController extends ApiController
         }
     }
 
+    function getViewers($schedule)
+    {
+        $schdule = Schedule::whereUuid($schedule)->firstOrFail();
+
+        return $this->sendResponse($schdule->viewers);
+    }
+
     function educatorsOnLive()
     {
         try {
