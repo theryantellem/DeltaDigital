@@ -140,19 +140,19 @@
 
                 this.socket = io("{{ env('SOCKET_IO_ENDPOINT') }}");
 
-                this.socket.on(`message:received:${this.educator}`, function(message) {
+                this.socket.on(`message:received:${this.educator}`, (message) => {
                     this.messages.unshift(message)
                 });
 
-                this.socket.on(`joined:stream:${this.schedule}`, function() {
+                this.socket.on(`joined:stream:${this.schedule}`, () => {
                     this.getViewers()
                 });
 
-                this.socket.on(`left:stream:${this.schedule}`, function() {
+                this.socket.on(`left:stream:${this.schedule}`, () => {
                     this.getViewers()
                 });
 
-                this.socket.on(`stop:live:${this.schedule}`, function() {
+                this.socket.on(`stop:live:${this.schedule}`, () => {
                     this.liveCount = 0
                 });
 
@@ -497,7 +497,7 @@
                         'Cancle',
                         function okCb() {
                             axios.delete(`/admin/schedule/videos/delete/${video?.id}`)
-                                .then(function(response) {
+                                .then((response) =>{
                                     if (response.data.success) {
                                         Notiflix.Notify.Success(response.data.message);
 
