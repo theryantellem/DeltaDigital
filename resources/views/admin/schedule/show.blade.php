@@ -355,7 +355,6 @@
                                 this.socket.emit("message:send", {
                                     message: data.message,
                                     room: this.educator,
-                                    room:"test"
                                 });
                             } else {
                                 console.log(data)
