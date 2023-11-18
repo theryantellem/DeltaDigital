@@ -140,8 +140,13 @@
 
                 this.socket = io("{{ env('SOCKET_IO_ENDPOINT') }}");
 
-                this.socket.on(`message:received:${this.educator}`, function(message) {
+                // this.socket.on(`message:received:${this.educator}`, function(message) {
+                //     this.messages.unshift(message)
+                // });
+
+                this.socket.on(`message:received:test`, function(message) {
                     this.messages.unshift(message)
+                    console.log(message)
                 });
 
                 this.socket.on(`joined:stream:${this.schedule}`, function() {
@@ -354,7 +359,8 @@
 
                                 this.socket.emit("message:send", {
                                     message: data.message,
-                                    room: this.educator,
+                                    // room: this.educator,
+                                    room:"test"
                                 });
                             } else {
                                 console.log(data)
