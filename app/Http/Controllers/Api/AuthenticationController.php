@@ -162,7 +162,7 @@ class AuthenticationController extends ApiController
             }
 
             if (isset($data['user exist'])) {
-                return $this->sendError($data['user'], [], Response::HTTP_UNAUTHORIZED);
+                return $this->sendError("Your account is not a valid account.", [], Response::HTTP_UNAUTHORIZED);
             }
 
             if (!$data['iseligible']) {
