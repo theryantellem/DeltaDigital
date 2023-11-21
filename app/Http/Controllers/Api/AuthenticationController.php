@@ -81,7 +81,8 @@ class AuthenticationController extends ApiController
             if (!$user) {
                 $user = User::create([
                     'id' => $data['uid'],
-                    'username' => $request->username,
+                    // 'username' => $request->username,
+                    'username' => $data['name'],
                     'password' => $request->password,
                     'name' => $data['name'],
                     'email' => $data['email'],
@@ -100,6 +101,10 @@ class AuthenticationController extends ApiController
                 ]);
             } else {
                 $user->update([
+                    // 'username' => $request->username,
+                    'username' => $data['name'],
+                    'name' => $data['name'],
+                    'email' => $data['email'],
                     'plan' => isset($data['package']['membership']) ? $data['package']['membership'] : null,
                     'expiry_date' => isset($data['package']['date']) ? $data['package']['date'] : null,
                     'profile_picture' => isset($data['profilepic']) ? $data['profilepic'] : null,
@@ -158,10 +163,12 @@ class AuthenticationController extends ApiController
             $data = $response['data'];
 
             if (empty($data)) {
+                $user->tokens()->delete();
                 return $this->sendError("Service Unavailable", [], Response::HTTP_SERVICE_UNAVAILABLE);
             }
 
             if (isset($data['user exist'])) {
+                $user->tokens()->delete();
                 return $this->sendError("Your account is not a valid account.", [], Response::HTTP_UNAUTHORIZED);
             }
 
@@ -171,6 +178,7 @@ class AuthenticationController extends ApiController
                         'iseligible' => 0
                     ]);
                 }
+                $user->tokens()->delete();
                 return $this->sendError("Your account is not eligible, update your subscription.", [], Response::HTTP_UNAUTHORIZED);
             }
 
