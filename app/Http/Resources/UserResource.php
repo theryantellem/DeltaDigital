@@ -31,7 +31,8 @@ class UserResource extends JsonResource
             'iseligible' => $this->iseligible ? $this->iseligible : false,
             'cyborg' => in_array($this->plan, cyborgPlans()) ? true : false,
             'signal' => in_array($this->plan, signalPlans()) ? true : false,
-            'push_token' => $this->fcm_token
+            'push_token' => $this->fcm_token,
+            'pin'  => $this->pin
         ];
     }
 }

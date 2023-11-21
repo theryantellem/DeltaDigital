@@ -28,6 +28,8 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthenticationController::class, 'login']);
 Route::post('/check-user', [AuthenticationController::class, 'getUserDetails']);
 
+Route::post('/pin/validate', [AuthenticationController::class, 'loginWithPin'])->middleware('auth:sanctum');
+
 Route::middleware('auth:sanctum')->group(function () {
     // cyborg
     Route::prefix('cyborg')->group(function () {
