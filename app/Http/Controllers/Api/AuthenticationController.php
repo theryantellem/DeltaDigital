@@ -19,14 +19,14 @@ class AuthenticationController extends ApiController
 
 
         $validator = Validator::make($request->all(), [
-                'username' => 'required|string',
-                'password' => 'required|string',
-            ]);
+            'username' => 'required|string',
+            'password' => 'required|string',
+        ]);
 
 
-            if ($validator->fails()) {
-                return $this->sendError("Validation error", $validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
-            }
+        if ($validator->fails()) {
+            return $this->sendError("Validation error", $validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
 
         try {
@@ -133,17 +133,19 @@ class AuthenticationController extends ApiController
         }
     }
 
-    function loginWithPin(Request $request)
+    function loginWithPin(Request $request, Authentication $authentication)
     {
+        $validator = Validator::make($request->all(), [
+            'pin' => 'required|numeric|digits:4',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError("Validation error", $validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
         try {
 
-            $validator = Validator::make($request->all(), [
-                'pin' => 'required|numeric|digits:4',
-            ]);
-
-            if ($validator->fails()) {
-                return $this->sendError("Validation error", $validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
-            }
+            DB::beginTransaction();
 
             $user = $request->user();
 
@@ -151,10 +153,46 @@ class AuthenticationController extends ApiController
                 return $this->sendError("Invalid pin", [], Response::HTTP_UNAUTHORIZED);
             }
 
+            $response = $authentication->getUser($user->username);
+
+            $data = $response['data'];
+
+            if (empty($data)) {
+                return $this->sendError("Service Unavailable", [], Response::HTTP_SERVICE_UNAVAILABLE);
+            }
+
+            if (isset($data['user exist'])) {
+                return $this->sendError($data['user'], [], Response::HTTP_UNAUTHORIZED);
+            }
+
+            if (!$data['iseligible']) {
+                if ($user) {
+                    $user->update([
+                        'iseligible' => 0
+                    ]);
+                }
+                return $this->sendError("Your account is not eligible, update your subscription.", [], Response::HTTP_UNAUTHORIZED);
+            }
+
+            $user->update([
+                'plan' => isset($data['package']['membership']) ? $data['package']['membership'] : null,
+                'expiry_date' => isset($data['package']['date']) ? $data['package']['date'] : null,
+                'profile_picture' => isset($data['profilepic']) ? $data['profilepic'] : null,
+                'iseligible' => isset($data['iseligible']) ? $data['iseligible'] : 0,
+            ]);
+
             $token = $user->createToken('auth-token');
 
             $responseData['user'] = new UserResource($user);
             $responseData['auth_token'] = $token->plainTextToken;
+
+            DB::commit();
+
+            $user->refresh();
+
+            if (in_array($user->plan, cyborgPlans())) {
+                dispatch(new \App\Jobs\SetupCyborgUserJob($user));
+            }
 
             return $this->sendResponse($responseData, "Successful login.", Response::HTTP_OK);
         } catch (\Throwable $e) {
