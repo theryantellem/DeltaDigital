@@ -11,7 +11,7 @@ public/signals/*
 vendor
 .env
 .htaccess
-package.json
+/package.json
 .env.backup
 .env.production
 .phpunit.result.cache
