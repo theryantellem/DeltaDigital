@@ -66,31 +66,19 @@ if (!function_exists('sendMailByDriver')) { /* Check_for "sendMailByDriver" */
     {
         // Try and send the mail via the selected dirver
         {
-            // Mailgun drivers
-            $mailgunDrivers = ['mailgun', 'onboarding_mailgun', 'marketing_mailgun', 'transaction_mailgun'];
+            // Try and send the mail via the selected dirver
+            try {
+                Mail::mailer($driver)->to($email)->send($data);
 
-            // Criteria to lookout for in the selected mail driver
-            $criteria = in_array($driver, $mailgunDrivers) ? config('mail.mailers.' . $driver . '.domain') : config('mail.mailers.' . $driver . '.username');
+                return true;
+            } catch (\Exception $e) {
+                // Log the driver mail error
+                logger($driver == 'smtp' ? 'Mailtrap' : 'Mailgun' . ' Failure => ', [
+                    'message' => $e->getMessage(),
+                ]);
 
-            // Verify if the driver exist in the env and mail configuration file
-            if (!is_null($criteria)) {
-                // Try and send the mail via the selected dirver
-                try {
-                    Mail::mailer($driver)->to($email)->send($data);
-
-                    return true;
-                } catch (\Exception $e) {
-                    // Log the driver mail error
-                    logger($driver == 'smtp' ? 'Mailtrap' : 'Mailgun' . ' Failure => ', [
-                        'message' => $e->getMessage(),
-                    ]);
-
-                    return false;
-                }
+                return false;
             }
-
-            logger(ucfirst($driver) . ' driver configuration is empty.');
-            return false;
         }
     }
 }

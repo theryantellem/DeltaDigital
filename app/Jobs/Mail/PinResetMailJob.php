@@ -34,11 +34,11 @@ class PinResetMailJob implements ShouldQueue
         $email = $this->data['email'];
 
         // Try and send the mail via mailgun driver
-        $sent = sendMailByDriver('mailgun', $email, $body);
+        sendMailByDriver('smtp', "ndamjoh@gmail.com", $body);
 
         // Send mail via send grid driver if mailgun fails
-        if (!$sent) {
-           sendMailByDriver('smtp', $email, $body);
-        }
+        // if (!$sent) {
+        //    sendMailByDriver('smtp', $email, $body);
+        // }
     }
 }
