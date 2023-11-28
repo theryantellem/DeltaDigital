@@ -348,7 +348,10 @@
                                 this.clearForm()
                                 this.message = ""
 
-                                this.messages.unshift(data.message)
+                                // this.messages.unshift(data.message)
+                                const messages = this.messages
+
+                                messages.unshift(data.message)
 
                                 this.socket.emit("message:send", {
                                     message: data.message,
@@ -356,7 +359,7 @@
                                     room: this.educator,
                                 });
 
-                                this.scrollToBottom()
+                                // this.scrollToBottom()
 
                                 previewMediaModal.hide()
 
