@@ -10,7 +10,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="chat-box-area style-2 dz-scroll" id="chartBox2" ref="chatBox">
+                <div class="chat-box-area style-2 dz-scroll" id="chartBox2">
                     <template v-for="(message, index) in reversedMessages" :key="message.id">
                         <span v-if="shouldDisplayDate(message, index)" class="text-center d-block mb-4">
                             <span v-if="currentDate === message?.formatedDate">

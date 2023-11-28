@@ -188,7 +188,7 @@
                 },
                 scrollToBottom() {
                     this.$nextTick(() => {
-                        const chatBox = this.$refs.chatBox;
+                        const chatBox = this.$refs.chartBox2;
                         chatBox.scrollTop = chatBox.scrollHeight;
                     });
                 },
@@ -347,15 +347,18 @@
                             if (data.success) {
                                 this.clearForm()
                                 this.message = ""
-                                this.messages.unshift(data.message)
-                                this.scrollToBottom()
-
-                                previewMediaModal.hide()
 
                                 this.socket.emit("message:send", {
                                     message: data.message,
                                     room: this.educator,
                                 });
+
+                                this.messages.unshift(data.message)
+                                this.scrollToBottom()
+
+                                previewMediaModal.hide()
+
+
                             } else {
                                 console.log(data)
                             }
@@ -497,7 +500,7 @@
                         'Cancle',
                         function okCb() {
                             axios.delete(`/admin/schedule/videos/delete/${video?.id}`)
-                                .then((response) =>{
+                                .then((response) => {
                                     if (response.data.success) {
                                         Notiflix.Notify.Success(response.data.message);
 
