@@ -349,13 +349,9 @@
                                 this.message = ""
 
                                 // this.messages.unshift(data.message)
-                                const messages = this.messages
-
-                                messages.unshift(data.message)
 
                                 this.socket.emit("message:send", {
                                     message: data.message,
-                                    messages: this.messages,
                                     room: this.educator,
                                 });
 
