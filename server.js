@@ -21,8 +21,8 @@ io.on("connection", (socket) => {
     // Handle the chat message event
     socket.on(events.MESSAGE_SEND, async (data) => {
 
-        const { room, message } = data
-        io.emit(`${events.MESSAGE_RECEIVED}:${room}`, message)
+        const { room, message, messages } = data
+        io.emit(`${events.MESSAGE_RECEIVED}:${room}`, { message: message, messages: messages })
 
     });
 
