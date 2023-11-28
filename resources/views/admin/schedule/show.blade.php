@@ -352,7 +352,7 @@
 
                                 this.socket.emit("message:send", {
                                     message: data.message,
-                                    messages: messages,
+                                    messages: this.messages,
                                     room: this.educator,
                                 });
 
