@@ -72,7 +72,7 @@ class LiveChatController extends ApiController
 
             $chat = new LiveChatResource($chat);
 
-            event(new ChatNotification($educatorDetails->uuid, $chat));
+            // event(new ChatNotification($educatorDetails->uuid, $chat));
 
             return $this->sendResponse($chat, "Message sent successfully.", 201);
         } catch (\Exception $e) {
