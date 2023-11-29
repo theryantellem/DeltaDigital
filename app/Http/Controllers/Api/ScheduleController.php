@@ -64,6 +64,8 @@ class ScheduleController extends ApiController
 
         $user = LiveAttendants::where('user_id', Auth::user()->id)->where('schedule_id', $schdule->id)->where('date', date("Y-m-d"))->first();
 
+
+
         if (!$user) {
 
             $schdule->viewers = $schdule->viewers + 1;
@@ -76,8 +78,16 @@ class ScheduleController extends ApiController
                 'date' => date("Y-m-d")
             ]);
 
-            event(new JoinedStream($schdule));
+            // event(new JoinedStream($schdule));
         }
+
+        $sch = $schdule->refresh();
+
+        if ($sch->viewers == 0) {
+            $sch->update(['viewers' => 1]);
+        }
+
+        $schdule = $schdule->refresh();
 
         return response()->json(['message' => 'updated successfully', 'viewers' => $schdule->viewers]);
     }
@@ -101,7 +111,7 @@ class ScheduleController extends ApiController
                 'date' => date("Y-m-d")
             ])->delete();
 
-            event(new JoinedStream($schedule));
+            // event(new JoinedStream($schedule));
 
             return response()->json(['message' => 'updated successfully', 'viewers' => $schedule->viewers]);
         } catch (\Exception $e) {
