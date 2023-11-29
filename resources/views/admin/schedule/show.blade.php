@@ -142,6 +142,7 @@
 
                 this.socket.on(`message:received:${this.educator}`, (message) => {
                     this.messages.unshift(message)
+                    this.scrollToBottom()
                 });
 
                 this.socket.on(`joined:stream:${this.schedule}`, () => {
@@ -242,6 +243,7 @@
                 async stopLive() {
                     await axios.post(`/admin/schedule/live/stop/${this.schedule}`).then(response => {
                         this.is_live = false
+                        this.liveCount = 0
 
                         this.socket.emit("stop:live", {
                             educator: {
@@ -249,6 +251,7 @@
                                 name: "{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}",
                             },
                         });
+
                     }).catch(error => {
                         console.log(error);
                     })

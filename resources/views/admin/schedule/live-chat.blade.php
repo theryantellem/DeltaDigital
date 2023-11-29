@@ -1,7 +1,7 @@
 <div class="card overflow-hidden">
     <div class="card-body p-0">
         <div class="row gx-0">
-            <div class="col-xl-12 col-lg-8 col-sm-7 chat-border">
+            <div class="col-xl-12 col-lg-12 col-sm-12 chat-border">
                 <div class="chat-p shaprate">
                     <div class="d-flex justify-content-center align-items-center text-center">
                         <img src="{{ asset('images/live.png') }}" class="avatar avatar-lg  rounded-circle" alt="">
@@ -10,7 +10,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="chat-box-area style-2 dz-scroll" id="chartBox2">
+                <div class="chat-box-area style-2 dz-scroll" id="chartBox2" ref="chartBox2">
                     <template v-for="(message, index) in reversedMessages" :key="message.id">
                         <span v-if="shouldDisplayDate(message, index)" class="text-center d-block mb-4">
                             <span v-if="currentDate === message?.formatedDate">
