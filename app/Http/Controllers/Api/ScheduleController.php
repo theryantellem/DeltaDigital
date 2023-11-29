@@ -64,13 +64,11 @@ class ScheduleController extends ApiController
 
         $user = LiveAttendants::where('user_id', Auth::user()->id)->where('schedule_id', $schdule->id)->where('date', date("Y-m-d"))->first();
 
-
-
         if (!$user) {
 
-            $schdule->viewers = $schdule->viewers + 1;
+            // $schdule->viewers = $schdule->viewers + 1;
 
-            $schdule->save();
+            // $schdule->save();
 
             LiveAttendants::create([
                 'user_id' => Auth::user()->id,
@@ -81,11 +79,17 @@ class ScheduleController extends ApiController
             // event(new JoinedStream($schdule));
         }
 
-        $sch = $schdule->refresh();
+        $count = LiveAttendants::where('schedule_id', $schdule->id)->where('date', date("Y-m-d"))->count();
 
-        if ($sch->viewers == 0) {
-            $sch->update(['viewers' => 1]);
-        }
+        $schdule->update([
+            'viewers' => $count
+        ]);
+
+        // $sch = $schdule->refresh();
+
+        // if ($sch->viewers == 0) {
+        //     $sch->update(['viewers' => 1]);
+        // }
 
         $schdule = $schdule->refresh();
 
