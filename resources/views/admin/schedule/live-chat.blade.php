@@ -26,7 +26,7 @@
                                     v-if="message?.type === 'media'">
                                     <img :src="message?.message" height="200px" width="200px" alt="">
                                 </a>
-                                <p v-else>@{{ message?.message }}</p>
+                                <p v-else v-html="makeUrlsClickable(message?.message)"></p>
                                 <span class="fs-12">@{{ message?.formatedTime }} </span>
                             </div>
                             <div v-else class="message-received w-auto">
@@ -37,7 +37,7 @@
                                             v-if="message?.type === 'media'">
                                             <img :src="message?.message" height="200px" width="200px" alt="">
                                         </a>
-                                        <p v-else class="mb-1">@{{ message?.message }}</p>
+                                        <p v-else class="mb-1" v-html="makeUrlsClickable(message?.message)"></p>
                                         <span>@{{ message?.sender?.name }} @{{ message?.formatedTime }}</span>
                                     </div>
                                 </div>

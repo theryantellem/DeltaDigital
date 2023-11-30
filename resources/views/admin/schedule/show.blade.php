@@ -165,6 +165,17 @@
 
             },
             methods: {
+                makeUrlsClickable(text) {
+                    // Regular expression to find URLs in the text
+                    const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+                    // Replace URLs with clickable links
+                    const formattedText = text.replace(urlRegex, (url) => {
+                        return `<a href="${url}" target="_blank">${url}</a>`;
+                    });
+
+                    return formattedText;
+                },
                 openFileInput() {
                     this.$refs.chatFileInput.click();
                 },
