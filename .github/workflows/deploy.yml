@@ -1,0 +1,23 @@
+name: Deploy Application
+
+on:
+  push:
+    branches:
+       - production
+
+jobs:
+  create-deployment-artifacts:
+    name: Create Deployment artifacts
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ""
+          username: ""
+          password: ""
+          port: ""
+          script: "cd /var/www/html && ./.scripts/deploy.sh"
+
