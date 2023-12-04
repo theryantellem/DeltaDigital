@@ -12,12 +12,22 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Deploy to server
-        uses: appleboy/ssh-action@v1.0.0
+      - name: Configure PHP 8.0
+        uses: shivammathur/setup-php@master
         with:
-          host: ""
-          username: ""
-          password: ""
-          port: ""
-          script: "cd /var/www/html && ./.scripts/deploy.sh"
+          php-version: 8.1
+          extensions: mbstring, ctype, fileinfo, openssl, PDO, bcmath, json, tokenizer, xml
+
+      - name: Composer install
+        run: |
+          composer install --no-dev --no-interaction --prefer-dist
+
+      # - name: Deploy to server
+      #   uses: appleboy/ssh-action@v1.0.0
+      #   with:
+      #     host: ""
+      #     username: ""
+      #     password: ""
+      #     port: ""
+      #     script: "cd /var/www/html && ./.scripts/deploy.sh"
 
