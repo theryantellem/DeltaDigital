@@ -101,7 +101,7 @@ Route::middleware('throttle:120,1')->group(function () {
             Route::get('modules/show/{module}', [AcademyModuleController::class, 'show']); // This endpoint list all video under a module
             Route::get('video/{video}', [AcademyVideoController::class, 'index']);
             Route::post('enrolments', [AcademyEnrolController::class, 'store']);
-            Route::get('enrolments', [AcademyEnrolController::class, 'index']);
+            Route::get('all/enrolments', [AcademyEnrolController::class, 'index']);
             Route::get('enrolments/{enrolment}', [AcademyEnrolController::class, 'show']);
             Route::delete('enrolments/{enrolment}', [AcademyEnrolController::class, 'delete']);
             Route::post('rating', [AcademyModuleController::class, 'rating']);
