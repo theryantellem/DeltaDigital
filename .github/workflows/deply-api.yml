@@ -10,7 +10,7 @@ jobs:
     name: Create Deployment artifacts
     runs-on: ubuntu-latest
     outputs:
-      DEPLOYMENT_MATRIX: ${{ steps.export-deployment-matrix.outputs.deployment-matrix }}
+      deployment-matrix: ${{ steps.export-deployment-matrix.outputs.deployment-matrix }}
 
     steps:
       - uses: actions/checkout@v3
