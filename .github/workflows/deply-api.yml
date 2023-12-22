@@ -13,7 +13,7 @@ jobs:
       deployment-matrix: ${{ steps.export-deployment-matrix.outputs.deployment-matrix }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Configure PHP 8.2
         uses: shivammathur/setup-php@master
         with:
@@ -30,7 +30,7 @@ jobs:
         run: tar -czf "${GITHUB_SHA}"tar.gz --exclude=*.git --exclude=node_modules *
 
       - name: Store artifact for distribution
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: app-build
           path: ${{ github.sha }}.tar.gz
@@ -51,7 +51,7 @@ jobs:
       matrix:
         server: ${{ fromJson(needs.create-deployment-artifacts.outputs.deployment-matrix) }}
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: app-build
 
