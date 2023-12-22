@@ -38,7 +38,6 @@ jobs:
       - name: Export deployment matrix
         id: export-deployment-matrix
         run: |
-          delimiter="$(openssl rand -hex 8)"
           JSON="$(cat ./.github/workflows/servers.json)"
           JSON="${JSON//'%'/'%25'}"
           JSON="${JSON//$'\n'/'%0A'}"
