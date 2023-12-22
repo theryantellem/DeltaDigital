@@ -233,4 +233,41 @@ class AuthenticationController extends ApiController
             return $this->sendError("Service Unavailable", [], Response::HTTP_SERVICE_UNAVAILABLE);
         }
     }
+
+    function checkLogin(Request $request, Authentication $authentication)
+    {
+        try {
+            $user = $request->user();
+
+            $response = $authentication->getUser($user->username);
+
+            $data = $response['data'];
+
+            if (empty($data)) {
+                $user->tokens()->delete();
+                return $this->sendError("Service Unavailable", [], Response::HTTP_SERVICE_UNAVAILABLE);
+            }
+
+            if (isset($data['user exist'])) {
+                $user->tokens()->delete();
+                return $this->sendError("Your account is not a valid account.", [], Response::HTTP_UNAUTHORIZED);
+            }
+
+            if (!$data['iseligible']) {
+                if ($user) {
+                    $user->update([
+                        'iseligible' => 0
+                    ]);
+                }
+                $user->tokens()->delete();
+                return $this->sendError("Your account is not eligible, update your subscription.", [], Response::HTTP_UNAUTHORIZED);
+            }
+
+            return $this->sendResponse("User is active");
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            logger(["auth error" => $e->getMessage()]);
+            return $this->sendError("Service Unavailable", [], Response::HTTP_SERVICE_UNAVAILABLE);
+        }
+    }
 }

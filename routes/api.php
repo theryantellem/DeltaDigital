@@ -32,7 +32,10 @@ Route::middleware('throttle:120,1')->group(function () {
 
     Route::post('/pin/validate', [AuthenticationController::class, 'loginWithPin'])->middleware('auth:sanctum');
 
-    Route::middleware(['auth:sanctum','is.eligible'])->group(function () {
+    Route::middleware(['auth:sanctum', 'is.eligible'])->group(function () {
+
+        Route::post('/check/authentication', [AuthenticationController::class, 'checkLogin']);
+
         // cyborg
         Route::prefix('cyborg')->group(function () {
             Route::controller(\App\Http\Controllers\Api\Cyborg\BindController::class)->group(function () {

@@ -35,7 +35,7 @@ class SetupCyborgUserJob implements ShouldQueue
             if (in_array($this->user->plan, cyborgPlans())) {
                 $response = $cyborgService->setupUser($this->user);
 
-                logger(['user_set_response' => $response]);
+                // logger(['user_set_response' => $response]);
             }
         } catch (\Throwable $th) {
             logger(['user_set_error' => $th->getMessage()]);
