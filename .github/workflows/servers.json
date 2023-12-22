@@ -1,0 +1,12 @@
+[
+    {
+      "name": "server-2",
+      "ip": "159.223.132.230",
+      "username": "root",
+      "password" : "Delta2022Digital",
+      "port": "22",
+      "beforeHooks": "echo $GITH",
+      "afterHooks": "",
+      "path": "/var/www/html"
+    }
+  ]
