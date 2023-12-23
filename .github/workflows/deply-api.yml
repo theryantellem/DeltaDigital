@@ -13,13 +13,14 @@ jobs:
       deployment-matrix: ${{ steps.export-deployment-matrix.outputs.deployment-matrix }}
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Configure PHP 8.2
         uses: shivammathur/setup-php@master
         with:
           php-version: 8.2
-          extensions: mbstring, ctype, fileinfo, openssl, PDO, bcmath, json, tokenizer, xml, curl
+          extensions: mbstring,ctype,fileinfo,openssl,PDO,bcmath,json,tokenizer,xml,curl
 
       - name: Composer install
         run: |
@@ -28,7 +29,7 @@ jobs:
       - name: Create deployment artifact
         env:
           GITHUB_SHA: ${{ github.sha }}
-        run: tar -czf "${GITHUB_SHA}"tar.gz --exclude=*.git --exclude=node_modules *
+        run: tar -czf "${GITHUB_SHA}tar.gz" --exclude=*.git --exclude=node_modules *
 
       - name: Store artifact for distribution
         uses: actions/upload-artifact@v3
@@ -52,9 +53,11 @@ jobs:
       matrix:
         server: ${{ fromJson(needs.create-deployment-artifacts.outputs.deployment-matrix) }}
     steps:
-      - uses: actions/download-artifact@v3
+      - name: Download artifact
+        uses: actions/download-artifact@v3
         with:
           name: app-build
+
       - name: Upload
         uses: appleboy/scp-action@master
         with:
@@ -107,8 +110,8 @@ jobs:
           port: ${{ matrix.server.port }}
           envs:
             GITHUB_SHA,RELEASE_PATH,ACTIVE_RELEASE_PATH,STORAGE_PATH,BASE_PATH
-            script: |
-                ${{ matrix.server.beforeHooks }}
+          script: |
+            ${{ matrix.server.beforeHooks }}
 
   activate-release:
     name: "${{ matrix.server.name }}: Activate release"
@@ -166,7 +169,7 @@ jobs:
             ${{ matrix.server.afterHooks }}
 
   clean-up:
-    name: "${{ matrix.server.name }}: Clean up"
+    name: "${{ matrix.server.name }}: Clean"
     runs-on: ubuntu-latest
     needs: [ create-deployment-artifacts, prepare-release-on-servers, run-before-hooks, activate-release, run-after-hooks ]
     strategy:
@@ -174,7 +177,7 @@ jobs:
         server: ${{ fromJson(needs.create-deployment-artifacts.outputs.deployment-matrix) }}
 
     steps:
-      - name: Run after hooks
+      - name: Run clean-up
         uses: appleboy/ssh-action@master
         env:
           RELEASES_PATH: ${{ matrix.server.path }}/releases
@@ -188,6 +191,3 @@ jobs:
           script: |
             cd $RELEASES_PATH && ls -t -1 | tail -n +6 | xargs rm -rf
             cd $ARTIFACTS_PATH && ls -t -1 | tail -n +6 | xargs rm -rf
-
-
-
