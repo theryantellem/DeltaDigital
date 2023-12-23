@@ -39,13 +39,12 @@ jobs:
         id: export-deployment-matrix
         run: |
           delimiter="$(openssl rand -hex 8)"
-          JSON="$(cat ./.github/workflows/servers.json)"
+          JSON="$(cat ./deployment-config.json)"
           echo "DEPLOYMENT_MATRIX<<${delimiter}" >> "${GITHUB_OUTPUT}"
           echo "$JSON" >> "${GITHUB_OUTPUT}"
           echo "${delimiter}" >> "${GITHUB_OUTPUT}"
 
   prepare-release-on-servers:
-    name: "${{ matrix.server.name }}: Prepare release"
     runs-on: ubuntu-latest
     needs: create-deployment-artifacts
     strategy:
