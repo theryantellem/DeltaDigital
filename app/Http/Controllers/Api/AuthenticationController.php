@@ -263,15 +263,21 @@ class AuthenticationController extends ApiController
             }
 
             if (!$data['iseligible']) {
+
                 if ($user) {
                     $user->update([
                         'iseligible' => 0,
-                        'timezone'   => $request->timezone
                     ]);
                 }
+
                 $user->tokens()->delete();
+
                 return $this->sendError("Your account is not eligible, update your subscription.", [], Response::HTTP_UNAUTHORIZED);
             }
+
+            $user->update([
+                'timezone'   => $request->timezone
+            ]);
 
             return $this->sendResponse("User is active");
         } catch (\Throwable $e) {
