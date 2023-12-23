@@ -237,6 +237,15 @@ class AuthenticationController extends ApiController
     function checkLogin(Request $request, Authentication $authentication)
     {
         try {
+
+            $validator = Validator::make($request->all(), [
+                'timezone' => 'nullable|string'
+            ]);
+
+            if ($validator->fails()) {
+                return $this->sendError("Validation error", $validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
             $user = $request->user();
 
             $response = $authentication->getUser($user->username);
@@ -256,7 +265,8 @@ class AuthenticationController extends ApiController
             if (!$data['iseligible']) {
                 if ($user) {
                     $user->update([
-                        'iseligible' => 0
+                        'iseligible' => 0,
+                        'timezone'   => $request->timezone
                     ]);
                 }
                 $user->tokens()->delete();
