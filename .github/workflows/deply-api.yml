@@ -40,7 +40,7 @@ jobs:
         run: |
           JSON="$(cat ./deployment-config.json)"
           JSON="${JSON//'%'/'%25'}"
-          JOSN="${JSON//$'\n'/'%0A'}"
+          JSON="${JSON//$'\n'/'%0A'}"
           JSON="${JSON//$'\r'/'%0D'}"
           echo "::set-output name=deployment-matrix::$JSON"
 
