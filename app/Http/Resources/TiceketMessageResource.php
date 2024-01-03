@@ -17,7 +17,7 @@ class TiceketMessageResource extends JsonResource
         return [
             'message'=>$this->message,
             'file'=>$this->file,
-            'created_at'=>$this->created_at
+            'created_at'=>formatDate($this->created_at)
         ];
     }
 }

@@ -31,14 +31,22 @@ class LiveChatResource extends JsonResource
             ];
         }
 
+        $user = auth()->user();
+
+         // Assuming $user is the authenticated user with their timezone stored
+         $userTimezone = optional($user)->timezone ?: config('app.timezone');
+
+         // Convert the created_at timestamp to the user's timezone
+         $createdAtInUserTimezone = $this->created_at->setTimezone($userTimezone);
+
         return [
             'id' => $this->uuid,
             'message' => $this->message,
             'sender' => $sender,
             'type' => $this->type,
-            'created_at' => $this->created_at,
-            'formatedDate' => Carbon::parse($this->created_at)->format('d/m/Y'),
-            'formatedTime' => Carbon::parse($this->created_at)->format('g:i A')
+            'created_at' => $createdAtInUserTimezone,
+            'formatedDate' => $createdAtInUserTimezone->format('d/m/Y'),
+            'formatedTime' => $createdAtInUserTimezone->format('g:i A')
         ];
     }
 }

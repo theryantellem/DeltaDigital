@@ -276,8 +276,16 @@ class AuthenticationController extends ApiController
             }
 
             $user->update([
-                'timezone'   => $request->timezone
+                'timezone'      => $request->timezone,
+                'iseligible'    => 1,
+                'expiry_date'   => isset($data['package']['date']) ? $data['package']['date'] : null,
             ]);
+
+            $user->refresh();
+
+            if (in_array($user->plan, cyborgPlans())) {
+                dispatch(new \App\Jobs\SetupCyborgUserJob($user));
+            }
 
             return $this->sendResponse("User is active");
         } catch (\Throwable $e) {

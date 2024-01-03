@@ -160,3 +160,20 @@ if (!function_exists('uploadFile')) { /* send to log" */
         return $fileUrl;
     }
 }
+
+if (!function_exists('formatDate')) {
+    function formatDate($date)
+    {
+        $user = auth()->user();
+
+        $userTimezone = optional($user)->timezone ?: config('app.timezone');
+
+        // Convert the created_at timestamp to the user's timezone
+        $createdAtInUserTimezone = $date->setTimezone($userTimezone);
+
+        // Format the date for display
+        $formattedCreatedAt = $createdAtInUserTimezone->format('M j, Y, g:i A');
+
+        return $formattedCreatedAt;
+    }
+}

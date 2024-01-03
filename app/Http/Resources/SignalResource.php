@@ -33,7 +33,7 @@ class SignalResource extends JsonResource
             'status' => $this->market_status,
             'is_updated' => $this->is_updated,
             'created_at' => $this->created_at,
-            'formatedDate' => Carbon::parse($this->created_at)->format('M j, Y, g:i A'),
+            'formatedDate' => formatDate($this->created_at),
             'document' => $this->file_url
             // 'status' => $this->status
         ];
