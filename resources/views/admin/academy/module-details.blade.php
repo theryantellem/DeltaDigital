@@ -72,7 +72,8 @@
 
                     await axios.post(`/admin/academy/modules/sort-videos`, {
                         videos: this.videos,
-                        module: this.module
+                        module: this.module,
+                        _token:"{{ csrf_token() }}"
                     }).then(response => {
                         console.log(response);
                     }).catch(error => {

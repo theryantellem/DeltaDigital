@@ -120,6 +120,7 @@ Route::middleware(['auth:admin'])->group(function () {
         Route::get('/all', 'schedules')->name('all');
         Route::get('/videos/{schedule}', 'getVideos')->name('videos');
         Route::post('/videos/favourite/{video}', 'makeFavourite')->name('videos.favourite');
+        Route::post('/sort/videos', 'sortVideos')->name('videos.sort');
         Route::delete('/videos/delete/{video}', 'deleteVideo')->name('videos.delete');
         Route::post('store', 'store')->name('store');
         Route::get('show/{schedule}', 'show')->name('show');

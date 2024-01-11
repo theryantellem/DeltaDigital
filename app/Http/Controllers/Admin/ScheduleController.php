@@ -51,7 +51,7 @@ class ScheduleController extends Controller
             return response()->json(['success' => false, 'message' => 'Schedule not found.']);
         }
 
-        $videos = Video::where('schedule_id', $schedule->id)->get();
+        $videos = Video::where('schedule_id', $schedule->id)->orderBy('order', 'asc')->get();
 
         $videos = VideoResource::collection($videos);
 
@@ -501,5 +501,25 @@ class ScheduleController extends Controller
 
             return response()->json(['success' => false, 'message' => 'Ops Somthing went wrong. try again later.'], 500);
         }
+    }
+
+    function sortVideos(Request $request)
+    {
+        $schedule = Schedule::whereUuid($request->schedule)->first();
+
+        $videos = Video::where('schedule_id', $schedule->id)->get();
+
+        foreach ($videos as $video) {
+            $video->timestamps = false;
+            $id = $video->uuid;
+
+            foreach ($request->videos as $frontVideo) {
+                if ($frontVideo['id'] == $id) {
+                    $video->update(['order' => $frontVideo['order']]);
+                }
+            }
+        }
+
+        return response('Update Successful.', 200);
     }
 }

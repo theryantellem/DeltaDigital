@@ -113,7 +113,7 @@
                     errors: {},
                     liveCount: "{{ $schedule->viewers }}",
                     socket: "",
-                    drag:false
+                    drag: false
                 }
             },
             mounted() {
@@ -168,8 +168,20 @@
 
             },
             methods: {
-                endDrag(){
-                    console.log("hello");
+             async endDrag() {
+                    this.videos.map((video, index) => {
+                        video.order = index + 1;
+                    })
+
+                    await axios.post(`/admin/schedule/sort/videos`, {
+                        videos: this.videos,
+                        schedule: this.schedule,
+                        _token:"{{ csrf_token() }}"
+                    }).then(response => {
+                        console.log(response);
+                    }).catch(error => {
+                        console.log(error);
+                    });
                 },
                 makeUrlsClickable(text) {
                     // Regular expression to find URLs in the text

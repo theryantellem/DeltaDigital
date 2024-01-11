@@ -2,10 +2,13 @@
     <img src="{{ asset('images/empty-folder.png') }}" width="250px" height="250px" alt="">
     <h3 class="text-center">No Data Available</h3>
 </div>
-<draggable class="row" v-model="videos" group="fragenblatt" group="fragenblatt" @start="drag=true" @change="endDrag">
+<draggable class="row" v-model="videos" group="fragenblatt" group="fragenblatt" :options="{animation:200, handle:'.my-handle'}" @start="drag=true" @change="endDrag">
     <div v-for="(video,index) in videos" class="col-lg-4" :key="index" :id="'video_' + video?.id">
         <div class="card">
             <div class="card-body">
+                <div class="d-flex justify-content-end">
+                    <i class="fa fa-arrows my-handle fx-2" aria-hidden="true"></i>
+                </div>
                 <div class="post-img">
                     <video width="330px" height="200px" :src="video?.video_file" autoplay loop muted>
                     </video>
