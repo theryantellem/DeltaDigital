@@ -30,7 +30,7 @@ class AcademyModule extends Model
 
     public function videos()
     {
-        return $this->hasMany(AcademyVideo::class);
+        return $this->hasMany(AcademyVideo::class)->orderBy('order','ASC');
     }
 
 }

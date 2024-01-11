@@ -8,6 +8,7 @@ use App\Http\Resources\Academy\ModulesResource;
 use App\Http\Resources\Academy\ModuleWithVideosResource;
 use App\Models\Academy;
 use App\Models\AcademyModule;
+use App\Models\AcademyVideo;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -74,6 +75,26 @@ class AcademyModuleController extends Controller
         $resource = new ModuleWithVideosResource($module);
 
         return response()->json(['success' => true, 'data' => $resource]);
+    }
+
+    function sortVideos(Request $request)
+    {
+        $module = AcademyModule::whereUuid($request->module)->first();
+
+        $videos = AcademyVideo::where('academy_module_id', $module->id)->get();
+
+        foreach ($videos as $video) {
+            $video->timestamps = false;
+            $id = $video->uuid;
+
+            foreach ($request->videos as $frontVideo) {
+                if ($frontVideo['id'] == $id) {
+                    $video->update(['order' => $frontVideo['order']]);
+                }
+            }
+        }
+
+        return response('Update Successful.', 200);
     }
 
     public function update(Request $request, AcademyModule $module)

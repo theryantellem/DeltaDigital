@@ -152,6 +152,7 @@ Route::middleware(['auth:admin'])->group(function () {
         Route::get('show/{module}', 'show')->name('show'); // This endpoint list all video under a module
         Route::put('update/{module}', 'update')->name('update');
         Route::put('make-video-favourite/{module}', 'makeFavourite')->name('makeFavourite');
+        Route::post('sort-videos','sortVideos');
         Route::delete('delete/{module}', 'delete')->name('delete');
     }));
 

@@ -70,6 +70,8 @@
 @push('scripts')
     <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.7.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.16.0/vuedraggable.min.js"></script>
     <script>
         lightbox.option({
             'resizeDuration': 200,
@@ -110,7 +112,8 @@
                     loading: false,
                     errors: {},
                     liveCount: "{{ $schedule->viewers }}",
-                    socket: ""
+                    socket: "",
+                    drag:false
                 }
             },
             mounted() {
@@ -165,6 +168,9 @@
 
             },
             methods: {
+                endDrag(){
+                    console.log("hello");
+                },
                 makeUrlsClickable(text) {
                     // Regular expression to find URLs in the text
                     const urlRegex = /(https?:\/\/[^\s]+)/g;

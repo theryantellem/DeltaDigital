@@ -38,6 +38,8 @@
     </div>
 @endsection
 @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.7.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.16.0/vuedraggable.min.js"></script>
     <script>
         new Vue({
             el: '#schedule',
@@ -55,13 +57,30 @@
                     video: "",
                     file_size: 0,
                     file_type: "",
-                    errors: {}
+                    errors: {},
+                    drag: false
                 }
             },
             created() {
                 this.getVideos();
             },
             methods: {
+                async endDrag() {
+                    this.videos.map((video, index) => {
+                        video.order = index + 1;
+                    })
+
+                    await axios.post(`/admin/academy/modules/sort-videos`, {
+                        videos: this.videos,
+                        module: this.module
+                    }).then(response => {
+                        console.log(response);
+                    }).catch(error => {
+                        console.log(error);
+                    });
+
+
+                },
                 async getVideos() {
                     await axios.get(`/admin/academy/modules/show/${this.module}`).then(response => {
                         const data = response.data.data

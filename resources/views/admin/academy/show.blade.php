@@ -105,13 +105,14 @@
                     errors: {},
                     edit: false,
                     description: "",
-                    moduleId: ""
+                    moduleId: "",
                 }
             },
             created() {
                 this.getModules();
             },
             methods: {
+
                 async getModules() {
                     await axios.get(`/admin/academy/modules/${this.courseId}`).then(response => {
                         const data = response.data.data
