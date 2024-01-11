@@ -155,7 +155,7 @@ class EducatorController extends ApiController
                 return $this->sendError("Educator not found.", [], 400);
             }
 
-            $videos = Video::where('admin_id', $educator->id)->latest()->paginate(10);
+            $videos = Video::where('admin_id', $educator->id)->orderBy('order', 'asc')->paginate(10);
 
             $videos = VideoResource::collection($videos);
 
