@@ -1,7 +1,7 @@
 [
     {
-      "name": "server-2",
-      "ip": "159.223.132.230",
+      "name": "server-1",
+      "ip": "159.65.234.80",
       "username": "root",
       "password" : "Delta2022Digital",
       "port": "22",
