@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\EducatorController;
 use App\Http\Controllers\Api\LiveChatController;
 use App\Http\Controllers\Api\ScheduleController;
 use App\Http\Controllers\Api\SignalsController;
+use App\Http\Controllers\SubscribeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -129,4 +130,7 @@ Route::middleware('throttle:120,1')->group(function () {
 
         Route::get('categories', [CategoryController::class, 'index']);
     });
+
+    Route::post('/subscribe', [SubscribeController::class, 'subscription']);
+    Route::post('/unsubscribe', [SubscribeController::class, 'unSubscription']);
 });
