@@ -86,7 +86,7 @@ if (!function_exists('sendMailByDriver')) { /* Check_for "sendMailByDriver" */
 if (!function_exists('cyborgPlans')) { /* Check_for "plans allowed for cyborg" */
     function cyborgPlans()
     {
-        return  ["Delta Digital Plus", "Delta Digital Plus Renewal", "Delta Digital Plus Upgrade", "Delta Digital Pro Renewal", "Delta Digital Pro Upgrade", "Delta Digital Pro","Delta Digital Cyborg","Delta Digital Cyborg Renewal","Cyborg Annual","Cyborg Annual Renewal","Cyborg", "Cyborg Renewal", "Cyborg Annual", "Cyborg Annual Renewal", "Cyborg Annual Upgrade","Plus", "Plus Upgrade", "Plus Renewal", "Pro", "Pro Upgrade", "Pro Renewal"];
+        return  ["Delta Digital Plus", "Delta Digital Plus Renewal", "Delta Digital Plus Upgrade", "Delta Digital Pro Renewal", "Delta Digital Pro Upgrade", "Delta Digital Pro","Delta Digital Cyborg","Delta Digital Cyborg Renewal","Cyborg Annual","Cyborg Annual Renewal","Cyborg", "Cyborg Renewal", "Cyborg Annual Renewal", "Cyborg Annual Upgrade","Plus", "Plus Upgrade", "Plus Renewal", "Pro", "Pro Upgrade", "Pro Renewal","Cyborg monthly","Pro package","Cyborg Annual"];
     }
 }
 
