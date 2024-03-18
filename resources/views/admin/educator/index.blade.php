@@ -24,6 +24,7 @@
                                     <tr role="row">
                                         <th>User</th>
                                         <th>Email</th>
+                                        <th>Streams</th>
                                         <th>
                                             Action
                                         </th>
@@ -42,6 +43,12 @@
                                             </div>
                                         </td>
                                         <td><span class="text-center">@{{ educator.email }}</span></td>
+                                        <td class="edit-action">
+                                            <a href="#" class="btn btn-sm btn-primary me-1"
+                                                @click.prevent="showStreams(educator)">
+                                                Streams
+                                            </a>
+                                        </td>
                                         <td class="edit-action">
                                             <a href="#" class="icon-box icon-box-xs bg-primary me-1"
                                                 @click.prevent="show(educator)">
@@ -68,6 +75,7 @@
                 </div>
             </div>
             @include('admin.educator.createModal')
+            @include('admin.educator.streamsModal')
         </template>
 
     </div>
@@ -90,6 +98,7 @@
                     photo_preview: null,
                     categories: [],
                     categoryList: [],
+                    streams: [],
                     edit: false,
                     educatorId: ""
                 }
@@ -147,6 +156,25 @@
                     this.edit = true
 
                     offcanvasSignal.show()
+                },
+                async showStreams(educator) {
+
+                    await axios.get(`/admin/educators/streams/${educator?.id}`).then(response => {
+
+                        this.streams = response.data.liveSessions
+
+                        const educator = response.data.educator
+
+                        this.first_name = educator?.first_name
+                        this.last_name = educator?.last_name
+                        this.email = educator?.email
+                        this.photo_preview = educator?.photo
+
+                    }).catch(error => {
+                        console.log(error)
+                    })
+
+                    streamCanvas.show()
                 },
                 async createEducator() {
                     this.errors = {};
@@ -269,6 +297,7 @@
         })
 
         const offcanvasSignal = new bootstrap.Offcanvas(document.getElementById('offcanvasSignal'));
+        const streamCanvas = new bootstrap.Offcanvas(document.getElementById('offstreamCanvas'));
 
         $("#categoriesSelect").select2();
     </script>

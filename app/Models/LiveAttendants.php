@@ -10,4 +10,9 @@ class LiveAttendants extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    function schedule()
+    {
+        return $this->belongsTo(Schedule::class, 'schedule_id');
+    }
 }

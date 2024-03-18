@@ -77,6 +77,7 @@ Route::middleware(['auth:admin'])->group(function () {
     });
 
     Route::get('educators/all', [EducatorController::class, 'allEducators'])->name('educators.all');
+    Route::get('educators/streams/{id}',[EducatorController::class,'streams'])->name('educators.streams');
     Route::resource('educators', EducatorController::class);
 
     Route::resource('banners', BannerController::class);

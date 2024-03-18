@@ -31,4 +31,9 @@ class Schedule extends Model
     {
         return $this->hasMany(Video::class);
     }
+
+    public function liveSessions()
+    {
+        return $this->hasMany(LiveSessions::class);
+    }
 }

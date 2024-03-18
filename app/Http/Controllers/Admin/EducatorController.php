@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\EducatorResource;
+use App\Http\Resources\LiveAttendanceResource;
 use App\Models\Admin;
 use App\Models\Category;
 use App\Models\ChatGroup;
 use App\Models\EducatorCategory;
+use App\Models\LiveSessions;
 use App\Models\Signal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +26,21 @@ class EducatorController extends Controller
     public function index()
     {
         return view('admin.educator.index');
+    }
+
+    function streams($id)
+    {
+        $admin = Admin::whereUuid($id)->first();
+
+        $liveSessions = LiveSessions::whereHas('schedule', function ($query) use ($admin) {
+            $query->where('admin_id', $admin->id);
+        })->get();
+
+        $liveSessions = LiveAttendanceResource::collection($liveSessions);
+
+        $educator = new EducatorResource($admin);
+
+        return response()->json(['success' => true, 'liveSessions' => $liveSessions,'educator'=>$educator], 200);
     }
 
     function allEducators()
@@ -64,7 +81,7 @@ class EducatorController extends Controller
             $imageUrl = null;
 
             if ($request->hasFile('photo')) {
-                $imageUrl = uploadFile($request->file('photo'), "educator","do_spaces");
+                $imageUrl = uploadFile($request->file('photo'), "educator", "do_spaces");
             }
 
             // $password = rand(000000, 999999);
@@ -158,7 +175,7 @@ class EducatorController extends Controller
         $imageUrl = $educator->photo;
 
         if ($request->hasFile('photo')) {
-            $imageUrl = uploadFile($request->file('photo'), "educator","do_spaces");
+            $imageUrl = uploadFile($request->file('photo'), "educator", "do_spaces");
         }
 
         $educator->update([
