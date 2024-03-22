@@ -252,24 +252,36 @@ class ScheduleController extends Controller
 
     function store(Request $request)
     {
+
+        $fields = [
+            'category' => 'required|exists:categories,id',
+            'schedule_day' => 'required',
+            'schedule_time' => 'required',
+            'schedule_name' => 'required',
+            'description' => 'nullable|string'
+        ];
+
+        if (auth()->guard('admin')->user()->hasRole('super_admin')) {
+            $fields['educator'] = 'required|exists:admins,uuid';
+        }
+
+        $validator = Validator::make($request->all(), $fields);
+
+        // Handle validation errors
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+
         try {
             DB::beginTransaction();
 
-            $validator = Validator::make($request->all(), [
-                'category' => 'required|exists:categories,id',
-                'educator' => 'required|exists:admins,uuid',
-                'schedule_day' => 'required',
-                'schedule_time' => 'required',
-                'schedule_name' => 'required',
-                'description' => 'nullable|string'
-            ]);
 
-            // Handle validation errors
-            if ($validator->fails()) {
-                return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+            if (auth()->guard('admin')->user()->hasRole('super_admin')) {
+                $educator = Admin::where('uuid', $request->educator)->first();
+            } else {
+                $educator = auth()->guard('admin')->user();
             }
-
-            $educator = Admin::where('uuid', $request->educator)->first();
 
             $category = Category::where('id', $request->category)->first();
 
@@ -297,21 +309,25 @@ class ScheduleController extends Controller
 
     function update(Request $request, $id)
     {
+
+        $fields = [
+            'category' => 'required|exists:categories,id',
+            'schedule_day' => 'required',
+            'schedule_time' => 'required',
+            'schedule_name' => 'required',
+            'description' => 'nullable|string'
+        ];
+
+        $validator = Validator::make($request->all(), $fields);
+
+        // Handle validation errors
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+
         try {
             DB::beginTransaction();
-
-            $validator = Validator::make($request->all(), [
-                'category' => 'required|exists:categories,id',
-                'schedule_day' => 'required',
-                'schedule_time' => 'required',
-                'schedule_name' => 'required',
-                'description' => 'nullable|string'
-            ]);
-
-            // Handle validation errors
-            if ($validator->fails()) {
-                return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
-            }
 
             $schdedule = Schedule::where('uuid', $id)->first();
 

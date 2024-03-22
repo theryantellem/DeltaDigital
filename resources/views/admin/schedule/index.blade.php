@@ -6,12 +6,12 @@
     <div id="schedules">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="heading mb-0">Schedules Management</h2>
-            @if (auth()->user()->can('create_schedule'))
-                <div class="d-flex align-items-center">
-                    <a class="btn btn-primary btn-sm me-2" data-bs-toggle="offcanvas" href="#offcanvasSignal" role="button"
-                        aria-controls="offcanvasSignal">+Create Schedule</a>
-                </div>
-            @endif
+            {{-- @if (auth()->user()->can('create_schedule')) --}}
+            <div class="d-flex align-items-center">
+                <a class="btn btn-primary btn-sm me-2" data-bs-toggle="offcanvas" href="#offcanvasSignal" role="button"
+                    aria-controls="offcanvasSignal">+Create Schedule</a>
+            </div>
+            {{-- @endif --}}
         </div>
         <template>
             <div class="card">
@@ -31,8 +31,7 @@
                                         <th>Name</th>
                                         <th>Day</th>
                                         <th>Time</th>
-                                        @if (auth()->user()->hasRole('educator') ||
-                                                auth()->user()->can('edit_schedules'))
+                                        @if (auth()->user()->hasRole('educator') || auth()->user()->can('edit_schedules'))
                                             <th class="text-center">
                                                 Action
                                             </th>
@@ -74,27 +73,24 @@
                                         <td>
                                             @{{ schedule?.time }}
                                         </td>
-                                        @if (auth()->user()->hasRole('educator'))
-                                            <td class="edit-action text-center">
+                                        <td class="edit-action">
+                                            @if (auth()->user()->hasRole('educator'))
                                                 <a href="#" class="btn btn-sm btn-primary me-1"
                                                     @click.prevent="details(schedule?.id)">
                                                     Details
                                                 </a>
-                                            </td>
-                                        @endif
-                                        @if (auth()->user()->can('edit_schedules') &&
-                                                !auth()->user()->hasRole('educator'))
-                                            <td class="edit-action">
-                                                <a href="#" class="icon-box icon-box-xs bg-primary me-1"
+                                            @endif
+                                            @if (auth()->user()->can('edit_schedules'))
+                                                <a href="#" class="btn btn-sm btn-primary me-1"
                                                     @click.prevent="show(schedule)">
-                                                    <i class="fa-solid fa-pencil text-white"></i>
+                                                    <i class="fa-solid fa-pencil text-white"></i> Edit
                                                 </a>
                                                 <a href="#" @click.prevent="deleteSchedule(schedule)"
-                                                    class="icon-box icon-box-xs bg-danger ms-1">
-                                                    <i class="fa-solid fa-trash text-white"></i>
+                                                    class="btn btn-sm btn-danger me-1">
+                                                    <i class="fa-solid fa-trash text-white"></i> Delete
                                                 </a>
-                                            </td>
-                                        @endif
+                                            @endif
+                                        </td>
                                     </tr>
                                 </tbody>
                                 <tbody v-else>
@@ -181,6 +177,13 @@
                 async getEducators() {
                     await axios.get("{{ route('admin.educators.all') }}").then(response => {
                         this.educators = response.data.educators
+
+                        // check if the logged in user has role educator
+                        // if true set the educator to the logged in user
+                        if ("{{ auth()->user()->hasRole('educator') }}") {
+                            this.educator = "{{ auth()->user()->uuid }}"
+                        }
+
                     }).catch(error => {
                         console.log(error);
                     })
@@ -193,6 +196,8 @@
                     this.educator = schedule?.educator?.id
                     // this.description = schedule?.description
                     this.edit = true
+
+                    console.log(schedule?.time)
 
                     this.scheduleId = schedule?.id
 

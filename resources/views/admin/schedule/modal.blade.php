@@ -10,17 +10,19 @@
     <div class="offcanvas-body">
         <form>
             <div class="row">
-                <div class="col-xl-12 mb-3">
-                    <label for="exampleFormControlInput3" class="form-label">Educator<span
-                            class="text-danger">*</span></label>
-                    <select v-model="educator" class="form-control" :readonly="edit">
-                        <option value="">--selecet--</option>
-                        <option v-for="educator in educators" :key="educator?.id" :value="educator?.id">
-                            @{{ educator?.first_name }} @{{ educator?.last_name }}
-                        </option>
-                    </select>
-                    <span v-if="errors?.educator" class="text-danger">@{{ errors.educator[0] }}</span>
-                </div>
+                @if (!auth()->user()->hasRole('educator'))
+                    <div class="col-xl-12 mb-3">
+                        <label for="exampleFormControlInput3" class="form-label">Educator<span
+                                class="text-danger">*</span></label>
+                        <select v-model="educator" class="form-control" :readonly="edit">
+                            <option value="">--selecet--</option>
+                            <option v-for="educator in educators" :key="educator?.id" :value="educator?.id">
+                                @{{ educator?.first_name }} @{{ educator?.last_name }}
+                            </option>
+                        </select>
+                        <span v-if="errors?.educator" class="text-danger">@{{ errors.educator[0] }}</span>
+                    </div>
+                @endif
                 <div class="col-xl-12 mb-3">
                     <label for="exampleFormControlInput3" class="form-label">Category<span
                             class="text-danger">*</span></label>
