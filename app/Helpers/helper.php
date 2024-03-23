@@ -177,3 +177,17 @@ if (!function_exists('formatDate')) {
         return $formattedCreatedAt;
     }
 }
+
+if (!function_exists('formatFirstToLast')) {
+    function formatFirstToLast($array)
+    {
+        if (empty($array)) {
+            return '';
+        }
+
+        $firstItem = reset($array); // Get the first element of the array
+        $lastItem = end($array);    // Get the last element of the array
+
+        return $firstItem === $lastItem ? $firstItem : $firstItem . ' - ' . $lastItem;
+    }
+}
