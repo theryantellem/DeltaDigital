@@ -68,7 +68,7 @@
                                             @{{ schedule?.name }}
                                         </td>
                                         <td>
-                                            @{{ schedule?.day }}
+                                            @{{ schedule?.days }}
                                         </td>
                                         <td>
                                             @{{ schedule?.time }}
@@ -124,7 +124,7 @@
                     category: "",
                     educator: "",
                     categories: [],
-                    schedule_day: "",
+                    schedule_day: [],
                     schedule_time: "",
                     schedule_name: "",
                     description: "",
@@ -196,8 +196,6 @@
                     this.educator = schedule?.educator?.id
                     // this.description = schedule?.description
                     this.edit = true
-
-                    console.log(schedule?.time)
 
                     this.scheduleId = schedule?.id
 

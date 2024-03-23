@@ -255,7 +255,7 @@ class ScheduleController extends Controller
 
         $fields = [
             'category' => 'required|exists:categories,id',
-            'schedule_day' => 'required',
+            'schedule_day.*' => 'required',
             'schedule_time' => 'required',
             'schedule_name' => 'required',
             'description' => 'nullable|string'
@@ -289,7 +289,7 @@ class ScheduleController extends Controller
                 'admin_id' => $educator->id,
                 'category_id' => $category->id,
                 'schedule_time' =>  date("H:i a", strtotime($request->schedule_time)),
-                'schedule_day' => $request->schedule_day,
+                'schedule_day' => json_encode($request->schedule_day),
                 'name' => $request->schedule_name
             ]);
 
@@ -312,7 +312,7 @@ class ScheduleController extends Controller
 
         $fields = [
             'category' => 'required|exists:categories,id',
-            'schedule_day' => 'required',
+            'schedule_day.*' => 'required',
             'schedule_time' => 'required',
             'schedule_name' => 'required',
             'description' => 'nullable|string'
@@ -324,7 +324,6 @@ class ScheduleController extends Controller
         if ($validator->fails()) {
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
-
 
         try {
             DB::beginTransaction();
@@ -340,7 +339,7 @@ class ScheduleController extends Controller
             $schdedule->update([
                 'category_id' => $category->id,
                 'schedule_time' => date("H:i a", strtotime($request->schedule_time)),
-                'schedule_day' => $request->schedule_day,
+                'schedule_day' => json_encode($request->schedule_day),
                 'name' => $request->schedule_name
             ]);
 

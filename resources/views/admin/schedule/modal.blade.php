@@ -45,12 +45,16 @@
                 <div class="col-xl-12 mb-3">
                     <label for="exampleFormControlInput3" class="form-label">Day<span
                             class="text-danger">*</span></label>
-                    <select v-model="schedule_day" id="" class="form-control">
-                        <option value="">--selecet--</option>
-                        <option v-for="day in WeekDays" :key="day" :value="day">
-                            @{{ day }}
-                        </option>
-                    </select>
+                    <div class="row">
+                        <div v-for="(day,index) in WeekDays" :key="index" class="col-xl-4 col-xxl-6 col-6">
+                            <div class="form-check custom-checkbox mb-3">
+                                <input type="checkbox" class="form-check-input" :id="'customCheckBox'+index" v-model="schedule_day"
+                                    :value="day">
+                                <label class="form-check-label" :for="'customCheckBox'+index">
+                                    @{{ day }}</label>
+                            </div>
+                        </div>
+                    </div>
                     <span v-if="errors?.schedule_day" class="text-danger">@{{ errors?.schedule_day[0] }}</span>
                 </div>
                 <div class="col-xl-12 mb-3">
