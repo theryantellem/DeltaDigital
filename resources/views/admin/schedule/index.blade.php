@@ -31,7 +31,7 @@
                                         <th>Name</th>
                                         <th>Day</th>
                                         <th>Time</th>
-                                        @if (auth()->user()->hasRole('educator') || auth()->user()->can('edit_schedules'))
+                                        @if (auth()->user()->hasRole('educator'))
                                             <th class="text-center">
                                                 Action
                                             </th>
@@ -80,7 +80,7 @@
                                                     Details
                                                 </a>
                                             @endif
-                                            @if (auth()->user()->can('edit_schedules'))
+                                            @if (auth()->user()->can('edit_schedules') || auth()->user()->hasRole('educator'))
                                                 <a href="#" class="btn btn-sm btn-primary me-1"
                                                     @click.prevent="show(schedule)">
                                                     <i class="fa-solid fa-pencil text-white"></i> Edit
