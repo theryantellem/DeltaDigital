@@ -33,7 +33,7 @@ class UserResource extends JsonResource
             'signal' => in_array($this->plan, signalPlans()) ? true : false,
             'push_token' => $this->fcm_token,
             'pin'  => $this->pin,
-            'subscribe' => (bool) $this->subscribe
+            'subscribe' => (bool) $this->id != "20874" ? true : $this->subscribe,
         ];
     }
 }
