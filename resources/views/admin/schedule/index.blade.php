@@ -31,11 +31,9 @@
                                         <th>Name</th>
                                         <th>Day</th>
                                         <th>Time</th>
-                                        @if (auth()->user()->hasRole('educator'))
-                                            <th class="text-center">
-                                                Action
-                                            </th>
-                                        @endif
+                                        <th class="text-center">
+                                            Action
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody v-if="schedules.length > 0">
