@@ -181,13 +181,21 @@ if (!function_exists('formatDate')) {
 if (!function_exists('formatFirstToLast')) {
     function formatFirstToLast($array)
     {
+        // if (empty($array)) {
+        //     return '';
+        // }
+
+        // $firstItem = reset($array); // Get the first element of the array
+        // $lastItem = end($array);    // Get the last element of the array
+
+        // return $firstItem === $lastItem ? $firstItem : $firstItem . ' - ' . $lastItem;
+
         if (empty($array)) {
             return '';
         }
 
-        $firstItem = reset($array); // Get the first element of the array
-        $lastItem = end($array);    // Get the last element of the array
+        $result = implode(', ', $array);
 
-        return $firstItem === $lastItem ? $firstItem : $firstItem . ' - ' . $lastItem;
+        return $result;
     }
 }
