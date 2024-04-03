@@ -35,6 +35,7 @@
         </div>
         @include('admin.academy.uploadModal')
         @include('admin.academy.PlayVideo')
+        @include('admin.academy.EditVideo')
     </div>
 @endsection
 @push('scripts')
@@ -73,7 +74,7 @@
                     await axios.post(`/admin/academy/modules/sort-videos`, {
                         videos: this.videos,
                         module: this.module,
-                        _token:"{{ csrf_token() }}"
+                        _token: "{{ csrf_token() }}"
                     }).then(response => {
                         console.log(response);
                     }).catch(error => {
@@ -144,6 +145,60 @@
                     this.video = video
 
                     offcanvasPlayVideo.show()
+                },
+                editVideo(video) {
+                    this.video = video
+                    this.name = video.name
+                    this.description = video.description
+
+                    offcanvasEditVideo.show()
+                },
+                async updateVideo() {
+                    this.errors = {}
+
+                    if (!this.name) {
+                        this.errors.name = "Name is required.";
+                    }
+
+                    if (this.description.length > 10000) {
+                        this.errors.description = "Description is too long.";
+                    }
+
+                    if (Object.keys(this.errors).length > 0) {
+                        return false
+                    }
+
+                    this.loading = true
+
+                    const formData = {
+                        name: this.name,
+                        description: this.description
+                    }
+
+                    await axios.put(`/admin/academy/videos/update/${this?.video?.id}`, formData)
+                        .then(response => {
+
+                            this.getVideos();
+
+                            Notiflix.Notify.Success(response.data.message);
+
+                            offcanvasEditVideo.hide()
+
+                        })
+                        .catch(error => {
+                            if (error.response && error.response.data && error.response.data.errors) {
+                                // Set validation errors from the backend response
+                                this.errors = error.response.data.errors;
+                            } else {
+                                // console.log(error.response)
+                                Notiflix.Notify.Failure("Service unavailable");
+                                // Handle other types of errors, if needed
+                            }
+
+                        }).finally(() => {
+                            this.loading = false
+                        });
+
                 },
                 async uploadFile() {
 
@@ -258,5 +313,6 @@
         })
 
         const offcanvasPlayVideo = new bootstrap.Offcanvas(document.getElementById('offcanvasPlayVideo'));
+        const offcanvasEditVideo = new bootstrap.Offcanvas(document.getElementById('offcanvasEditVideo'));
     </script>
 @endpush

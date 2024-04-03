@@ -2,7 +2,8 @@
     <img src="{{ asset('images/empty-folder.png') }}" width="250px" height="250px" alt="">
     <h3 class="text-center">No Data Available</h3>
 </div>
-<draggable class="row" v-model="videos" group="fragenblatt" group="fragenblatt" :options="{animation:200, handle:'.my-handle'}" @start="drag=true" @change="endDrag">
+<draggable class="row" v-model="videos" group="fragenblatt" group="fragenblatt"
+    :options="{ animation: 200, handle: '.my-handle' }" @start="drag=true" @change="endDrag">
     <div v-for="(video,index) in videos" class="col-lg-4" :key="index" :id="'video_' + video?.id">
         <div class="card">
             <div class="card-body">
@@ -23,11 +24,11 @@
                 </div>
                 @if (auth()->user()->hasRole('educator'))
                     <ul class="post-comment d-flex mt-3">
-                        {{-- <li>
-                        <label class="me-3"><a href="javascript:void(0)">
-                                <i class="fa fa-pencil me-2 text-primary"></i>Edit</a>
-                        </label>
-                    </li> --}}
+                        <li>
+                            <label class="me-3"><a href="javascript:void(0)" @click.prevent="editVideo(video)">
+                                    <i class="fa fa-pencil me-2 text-primary"></i>Edit</a>
+                            </label>
+                        </li>
                         <li>
                             <label class="me-3">
                                 <a href="javascript:void(0)" @click.prevent="playVideo(video)">
