@@ -14,7 +14,9 @@ class PushNotification
             "notification" => [
                 "title" => $data['title'],
                 "body" => $data['message'],
-            ]
+                "sound" => "default",
+            ],
+            "priority" => "high"
         ];
 
         if (!empty($data['data'])) {
