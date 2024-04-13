@@ -23,17 +23,29 @@
                 </div>
             </div>
         </div>
-        <div class="d-flex justify-content-between">
+        <div class="d-flex justify-content-between mb-3">
             <h4>Videos</h4>
             @if (auth()->user()->hasRole('educator'))
-                <button class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasUpload" role="button">Upload
-                    Video</button>
+                <div>
+                    <button class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasUploadedDocument"
+                        role="button">
+                        Documents
+                    </button>
+                    <button class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasUploadDocument"
+                        role="button">
+                        Upload Document
+                    </button>
+                    <button class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasUpload" role="button">Upload
+                        Video</button>
+                </div>
             @endif
         </div>
         <div class="row">
             @include('admin.academy.videoList')
         </div>
         @include('admin.academy.uploadModal')
+        @include('admin.academy.uploadDocument')
+        @include('admin.academy.uploadedDocument')
         @include('admin.academy.PlayVideo')
         @include('admin.academy.EditVideo')
     </div>
@@ -50,8 +62,10 @@
                     description: "",
                     module: "{{ $module->uuid }}",
                     file: null,
+                    doc_file: null,
                     progress: 0,
                     videos: [],
+                    documents: [],
                     file_preview: null,
                     loading: false,
                     duration: "",
@@ -64,6 +78,7 @@
             },
             created() {
                 this.getVideos();
+                this.getDocuments();
             },
             methods: {
                 async endDrag() {
@@ -88,6 +103,16 @@
                         const data = response.data.data
 
                         this.videos = data.videos
+
+                    }).catch(error => {
+                        console.log(error);
+                    });
+                },
+                async getDocuments() {
+                    await axios.get(`/admin/academy/document/${this.module}`).then(response => {
+                        const data = response.data.documents
+
+                        this.documents = data
 
                     }).catch(error => {
                         console.log(error);
@@ -121,6 +146,9 @@
                         }
                     }
                 },
+                handleDocumentFileChange(event) {
+                    this.doc_file = event.target.files[0];
+                },
                 handleCloseModal() {
                     this.clearForm()
                 },
@@ -135,11 +163,13 @@
                 },
                 clearForm() {
                     this.file = null;
+                    this.doc_file = null;
                     this.name = ""
                     this.description = ""
                     this.file_preview = null;
                     this.progress = 0;
                     this.$refs.fileInput.value = null;
+                    this.$refs.fileDocInput.value = null;
                 },
                 playVideo(video) {
                     this.video = video
@@ -200,6 +230,80 @@
                         });
 
                 },
+                async uploadDocs() {
+                    this.errors = {}
+
+                    if (!this.name) {
+                        this.errors.name = "Name is required.";
+                    }
+
+                    if (!this.doc_file) {
+                        this.errors.doc_file = "document file is required.";
+                    }
+
+                    // Check file type
+                    const allowedTypes = ['application/pdf',
+                        'application/msword',
+                    ]; // Add more allowed types as needed
+
+                    if (this.doc_file && !allowedTypes.includes(this.doc_file.type)) {
+                        this.errors.doc_file = "Invalid file type. Supported types are: " + allowedTypes.join(
+                            ', ');
+                    }
+
+                    const maxSizeInBytes = 100 * 1024 * 1024; // 500 MB
+
+                    if (this.doc_file && this.doc_file.size > maxSizeInBytes) {
+                        this.errors.doc_file = "File size exceeds the allowed limit (100MB).";
+                    }
+
+                    if (Object.keys(this.errors).length > 0) {
+                        return false
+                    }
+
+                    this.loading = true
+
+                    let formData = new FormData();
+                    formData.append('doc_file', this.doc_file);
+                    formData.append('module_uuid', this.module);
+                    formData.append('name', this.name);
+
+                    await axios.post("{{ route('admin.academy.document.store') }}", formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            },
+                            onUploadProgress: progressEvent => {
+                                this.progress = Math.round((progressEvent.loaded / progressEvent
+                                    .total) * 100);
+                            }
+                        })
+                        .then(response => {
+
+                            this.clearForm();
+
+                            this.documents.push(response.data.file);
+
+                            offcanvasUploadDocument.hide();
+
+                            Notiflix.Notify.Success(response.data.message);
+
+                        })
+                        .catch(error => {
+                            if (error.response && error.response.data && error.response.data.errors) {
+                                // Set validation errors from the backend response
+                                this.errors = error.response.data.errors;
+                            } else {
+                                // console.log(error.response)
+                                Notiflix.Notify.Failure("Service unavailable");
+                                // Handle other types of errors, if needed
+                            }
+
+                        }).finally(() => {
+                            this.loading = false
+                        });
+
+
+                },
                 async uploadFile() {
 
                     this.errors = {}
@@ -221,6 +325,7 @@
                         'video/quicktime',
                         'video/x-ms-wmv'
                     ]; // Add more allowed types as needed
+
                     if (this.file && !allowedTypes.includes(this.file.type)) {
                         this.errors.file = "Invalid file type. Supported types are: " + allowedTypes.join(', ');
                     }
@@ -314,5 +419,7 @@
 
         const offcanvasPlayVideo = new bootstrap.Offcanvas(document.getElementById('offcanvasPlayVideo'));
         const offcanvasEditVideo = new bootstrap.Offcanvas(document.getElementById('offcanvasEditVideo'));
+        const offcanvasUploadedDocument = new bootstrap.Offcanvas(document.getElementById('offcanvasUploadedDocument'));
+        const offcanvasUploadDocument = new bootstrap.Offcanvas(document.getElementById('offcanvasUploadDocument'));
     </script>
 @endpush

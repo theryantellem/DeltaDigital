@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\Academy\AcademyController;
 use App\Http\Controllers\Admin\Academy\AcademyModuleController;
 use App\Http\Controllers\Admin\Academy\AcademyVideoController;
+use App\Http\Controllers\Admin\AcademyDocumentController;
+use App\Http\Controllers\Admin\AcademyDocumentCotnroller;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\AdminManagementController;
 use App\Http\Controllers\Admin\AssetsController;
@@ -166,6 +168,11 @@ Route::middleware(['auth:admin'])->group(function () {
         Route::put('update/{video}', 'update')->name('update');
         Route::delete('delete/{video}', 'delete')->name('delete');
     }));
+
+    Route::controller(AcademyDocumentController::class)->prefix('academy/document')->name('academy.document.')->group(function(){
+        Route::get('/{module}','index')->name('index');
+        Route::post('/store','store')->name('store');
+    });
 });
 
 Route::get('test-notifications', function () {

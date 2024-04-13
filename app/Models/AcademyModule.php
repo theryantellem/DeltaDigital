@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AcademyModule extends Model
 {
-    use HasFactory, SoftDeletes,GeneratesUuid;
+    use HasFactory, SoftDeletes, GeneratesUuid;
 
     protected $guarded = [];
 
@@ -30,7 +30,11 @@ class AcademyModule extends Model
 
     public function videos()
     {
-        return $this->hasMany(AcademyVideo::class)->orderBy('order','ASC');
+        return $this->hasMany(AcademyVideo::class)->orderBy('order', 'ASC');
     }
 
+    public function documents()
+    {
+        return $this->hasMany(AcademyDocument::class)->orderBy('order', 'ASC');
+    }
 }
