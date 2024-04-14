@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Academy\AcademyController;
 use App\Http\Controllers\Api\Academy\AcademyEnrolController;
 use App\Http\Controllers\Api\Academy\AcademyModuleController;
 use App\Http\Controllers\Api\Academy\AcademyVideoController;
+use App\Http\Controllers\Api\AcademyDocumentController;
 use App\Http\Controllers\Api\AuthenticationController;
 use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\CategoryController;
@@ -111,6 +112,7 @@ Route::middleware('throttle:120,1')->group(function () {
             Route::post('rating', [AcademyModuleController::class, 'rating']);
             Route::get('rating/{academy}', [AcademyModuleController::class, 'getRating']);
             Route::patch('watch-time/{module}', [AcademyEnrolController::class, 'watchTime']);
+            Route::get('documents/{module}', [AcademyDocumentController::class, 'index']);
         });
 
         Route::controller(ScheduleController::class)->prefix('schedules')->group(function () {

@@ -33,4 +33,9 @@ class AcademyModule extends Model
         return $this->hasMany(AcademyVideo::class)->orderBy('order','asc');
     }
 
+    public function documents()
+    {
+        return $this->hasMany(AcademyDocument::class)->orderBy('order', 'ASC');
+    }
+
 }
