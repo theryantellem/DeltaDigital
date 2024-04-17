@@ -74,7 +74,10 @@ class ChatController extends ApiController
                 $data = [
                     'push_tokens' =>  $fcmTokens,
                     'title' => "Chat Notification",
-                    'message' => "You have new message in {$name}'s channel"
+                    'message' => "You have new message in {$name}'s channel",
+                    'data' => [
+                        'chat' => $chat
+                    ]
                 ];
 
                 dispatch(new \App\Jobs\PushNotificationJob($data));
