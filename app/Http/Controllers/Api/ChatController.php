@@ -76,10 +76,12 @@ class ChatController extends ApiController
                     'title' => "Chat Notification",
                     'message' => "You have new message in {$name}'s channel",
                     'data' => [
-                        'id' => $chatr->uuid,
-                        'first_name' => $chatr->educator->first_name,
-                        'last_name' => $chatr->educator->last_name,
-                        'email' => $chatr->educator->email,
+                        'chat' => [
+                            'id' => $chatr->uuid,
+                            'first_name' => $chatr->educator->first_name,
+                            'last_name' => $chatr->educator->last_name,
+                            'email' => $chatr->educator->email,
+                        ]
                     ]
                 ];
 
