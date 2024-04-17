@@ -55,14 +55,14 @@ class ChatController extends ApiController
                 $type = "text";
             }
 
-            $chat = Chat::create([
+            $chatr = Chat::create([
                 'chat_group_id' => $educatorDetails->chatGroup->id,
                 'sender_id' => auth()->user()->id,
                 'message' => $message,
                 'type' => $type
             ]);
 
-            $chat = new ChatResource($chat);
+            $chat = new ChatResource($chatr);
 
             event(new ChatNotification($educatorDetails->uuid, $chat));
 
@@ -76,7 +76,10 @@ class ChatController extends ApiController
                     'title' => "Chat Notification",
                     'message' => "You have new message in {$name}'s channel",
                     'data' => [
-                        'chat' => $chat
+                        'id' => $chatr->uuid,
+                        'first_name' => $chatr->educator->first_name,
+                        'last_name' => $chatr->educator->last_name,
+                        'email' => $chatr->educator->email,
                     ]
                 ];
 
