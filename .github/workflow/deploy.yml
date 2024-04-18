@@ -1,4 +1,4 @@
-name: Deploy Api
+name: Deploy to Administrator
 
 on:
   push:
