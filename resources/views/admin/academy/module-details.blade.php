@@ -69,6 +69,7 @@
                     file_preview: null,
                     loading: false,
                     duration: "",
+                    video_length: null,
                     video: "",
                     file_size: 0,
                     file_type: "",
@@ -134,8 +135,9 @@
 
                                 // Ensure metadata is loaded to get the duration
                                 videoElement.addEventListener('loadedmetadata', () => {
+                                    this.video_length = videoElement.duration
                                     this.duration = videoElement.duration; // Get the duration in seconds
-                                    // console.log('Video duration:', duration)
+                                    console.log('Video duration:', this.duration)
                                 });
 
                             };
@@ -343,6 +345,9 @@
                     }
 
                     console.log(this.duration)
+                    console.log(this.video_length)
+
+                    const duration = this.video_length
 
                     this.loading = true
 
@@ -351,7 +356,7 @@
                     formData.append('module_uuid', this.module);
                     formData.append('name', this.name);
                     formData.append('description', this.description);
-                    formData.append('length', this.duration)
+                    formData.append('length', duration)
 
                     await axios.post("{{ route('admin.academy.videos.store') }}", formData, {
                             headers: {
