@@ -344,7 +344,6 @@
                         return false
                     }
 
-                    console.log(this.duration)
                     console.log(this.video_length)
 
                     const duration = this.video_length
