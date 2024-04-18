@@ -23,6 +23,7 @@ class AcademyVideoController extends Controller
     {
 
         $validator = Validator::make(
+            $request->all(),
             [
                 'name' => ['required', 'string', 'max:200', 'regex:/[^\s]+/'],
                 'module_uuid' => ['required', 'exists:academy_modules,uuid'],
@@ -76,7 +77,7 @@ class AcademyVideoController extends Controller
     public function update(Request $request, AcademyVideo $video)
     {
 
-        $validator = Validator::make([
+        $validator = Validator::make($request->all(), [
             'name' => ['nullable', 'string', 'max:200'],
             'description' => ['nullable', 'max:10000'],
         ]);
@@ -95,7 +96,7 @@ class AcademyVideoController extends Controller
 
     public function updateOrder(Request $request)
     {
-        $validator = Validator::make([
+        $validator = Validator::make($request->all(), [
             'videos.*.order' => 'required|numeric',
         ]);
 
