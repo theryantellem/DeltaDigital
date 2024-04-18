@@ -56,7 +56,7 @@ class AcademyVideoController extends Controller
         } catch (\Exception $e) {
             logger($e->getMessage());
 
-            return response()->json(['success' => false, 'message' => 'Error uploading video.']);
+            return response()->json(['success' => false, 'message' => 'Error uploading video.', 'errors' => $e]);
         }
     }
 
