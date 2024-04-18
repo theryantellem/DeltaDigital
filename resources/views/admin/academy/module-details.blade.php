@@ -134,9 +134,7 @@
 
                                 // Ensure metadata is loaded to get the duration
                                 videoElement.addEventListener('loadedmetadata', () => {
-                                    console.log(videoElement.duration)
-                                    this.duration = videoElement
-                                        .duration; // Get the duration in seconds
+                                    this.duration = videoElement.duration; // Get the duration in seconds
                                     // console.log('Video duration:', duration)
                                 });
 
@@ -343,6 +341,8 @@
                     if (Object.keys(this.errors).length > 0) {
                         return false
                     }
+
+                    console.log(this.duration)
 
                     this.loading = true
 
