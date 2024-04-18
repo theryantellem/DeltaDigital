@@ -27,7 +27,7 @@
                         id="formFileSm" type="file">
                     <span v-if="errors?.file" class="text-danger">@{{ errors?.file }}</span>
                 </div>
-                <div>
+                <div v-if="video_length">
                     <button :disabled="loading" @click.prevent="uploadFile" class="btn btn-primary me-1">
                         {{-- <span v-if="loading" class="spinner-border spinner-border-sm" role="status"
                             aria-hidden="true"></span> --}}
