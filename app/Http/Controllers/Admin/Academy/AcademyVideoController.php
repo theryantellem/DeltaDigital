@@ -54,7 +54,7 @@ class AcademyVideoController extends Controller
 
             return response()->json(['success' => true, 'message' => 'New video created successfully.', 'video' => $video]);
         } catch (\Exception $e) {
-            logger($e->getMessage());
+            logger($e);
 
             return response()->json(['success' => false, 'message' => 'Error uploading video.', 'errors' => $e]);
         }
