@@ -22,19 +22,19 @@ class AcademyVideoController extends Controller
     public function store(Request $request)
     {
 
-        // $validator = Validator::make(
-        //     [
-        //         'name' => ['required', 'string', 'max:200', 'regex:/[^\s]+/'],
-        //         'module_uuid' => ['required', 'exists:academy_modules,uuid'],
-        //         'description' => ['nullable', 'max:10000', 'required_if:description,!=,null|regex:/[^\s]+/'],
-        //         'video_file' => ['required', 'mimes:mp4,avi,flv,mov,wmvp,mkv', 'max:512000'],
-        //         'length' => ['required', 'numeric', 'min:5'],
-        //     ]
-        // );
+        $validator = Validator::make(
+            [
+                'name' => ['required', 'string', 'max:200', 'regex:/[^\s]+/'],
+                'module_uuid' => ['required', 'exists:academy_modules,uuid'],
+                'description' => ['nullable', 'max:10000', 'required_if:description,!=,null|regex:/[^\s]+/'],
+                'video_file' => ['required', 'mimes:mp4,avi,flv,mov,wmvp,mkv', 'max:512000'],
+                'length' => ['required', 'numeric', 'min:5'],
+            ]
+        );
 
-        // if ($validator->fails()) {
-        //     return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
-        // }
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
 
         try {
             $module = AcademyModule::where('uuid', $request->module_uuid)->first();
