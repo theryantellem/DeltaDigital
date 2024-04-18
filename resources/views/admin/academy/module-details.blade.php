@@ -371,6 +371,7 @@
 
                         })
                         .catch(error => {
+                            console.log(error.response)
                             if (error.response && error.response.data && error.response.data.errors) {
                                 // Set validation errors from the backend response
                                 this.errors = error.response.data.errors;

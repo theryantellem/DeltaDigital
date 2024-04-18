@@ -8,6 +8,7 @@ use App\Models\AcademyModule;
 use App\Models\AcademyVideo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 
 class AcademyVideoController extends Controller
 {
@@ -20,32 +21,43 @@ class AcademyVideoController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:200', 'regex:/[^\s]+/'],
-            'module_uuid' => ['required', 'exists:academy_modules,uuid'],
-            'description' => ['nullable', 'max:10000', 'required_if:description,!=,null|regex:/[^\s]+/'],
-            'video_file' => ['required', 'mimes:mp4,avi,flv,mov,wmvp,mkv', 'max:512000'],
-            'length' => ['required', 'numeric', 'min:5'],
-        ]);
 
-        $module = AcademyModule::where('uuid', $request->module_uuid)->first();
+        $validator = Validator::make(
+            [
+                'name' => ['required', 'string', 'max:200', 'regex:/[^\s]+/'],
+                'module_uuid' => ['required', 'exists:academy_modules,uuid'],
+                'description' => ['nullable', 'max:10000', 'required_if:description,!=,null|regex:/[^\s]+/'],
+                'video_file' => ['required', 'mimes:mp4,avi,flv,mov,wmvp,mkv', 'max:512000'],
+                'length' => ['required', 'numeric', 'min:5'],
+            ]
+        );
 
-        $video = NULL;
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
 
-        $video = uploadFile($request->file('video_file'), "academy/videos", "do_spaces");
+        try {
+            $module = AcademyModule::where('uuid', $request->module_uuid)->first();
 
-        // $video = $request->file('video_file')->store('academy/videos', 'public_uploads');
+            $video = NULL;
 
-        $uploaded = $module->videos()->create([
-            'name' => $request->name,
-            'video_file' => $video,
-            'length' => $request->length,
-            'description' => $request->description,
-        ]);
+            $video = uploadFile($request->file('video_file'), "academy/videos", "do_spaces");
 
-        $video = new VideosResource($uploaded);
+            $uploaded = $module->videos()->create([
+                'name' => $request->name,
+                'video_file' => $video,
+                'length' => $request->length,
+                'description' => $request->description,
+            ]);
 
-        return response()->json(['success' => true, 'message' => 'New video created successfully.', 'video' => $video]);
+            $video = new VideosResource($uploaded);
+
+            return response()->json(['success' => true, 'message' => 'New video created successfully.', 'video' => $video]);
+        } catch (\Exception $e) {
+            logger($e->getMessage());
+
+            return response()->json(['success' => false, 'message' => 'Error uploading video.']);
+        }
     }
 
     public function validateVideoFile(Request $request)
