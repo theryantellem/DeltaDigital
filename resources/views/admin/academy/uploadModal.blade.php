@@ -30,10 +30,10 @@
                 <div v-if="processing">
                     <button class="btn btn-primary" type="button" disabled>
                         <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
-                        Procesando...
+                        procesamiento de vídeo...
                     </button>
                 </div>
-                <div v-if="video_length && !processing">
+                <div v-if="video_length && !processing && progress == 0">
                     <button :disabled="loading" @click.prevent="uploadFile" class="btn btn-primary me-1">
                         {{-- <span v-if="loading" class="spinner-border spinner-border-sm" role="status"
                             aria-hidden="true"></span> --}}

@@ -183,6 +183,7 @@
                     this.progress = 0;
                     this.$refs.fileInput.value = null;
                     this.$refs.fileDocInput.value = null;
+                    this.video_length = null;
                 },
                 playVideo(video) {
                     this.video = video
@@ -355,8 +356,6 @@
                     if (Object.keys(this.errors).length > 0) {
                         return false
                     }
-
-                    console.log(this.video_length)
 
                     const duration = this.video_length
 
