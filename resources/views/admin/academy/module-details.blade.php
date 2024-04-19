@@ -74,7 +74,8 @@
                     file_size: 0,
                     file_type: "",
                     errors: {},
-                    drag: false
+                    drag: false,
+                    processing: false,
                 }
             },
             created() {
@@ -120,6 +121,7 @@
                     });
                 },
                 handleFileChange(event) {
+                    this.processing = true
                     this.file = event.target.files[0];
 
                     if (this.file) {
@@ -139,6 +141,15 @@
                                     this.duration = videoElement.duration; // Get the duration in seconds
                                     console.log('Video duration:', this.duration)
                                     this.video_length = videoElement.duration
+
+                                    if(this.video_length)
+                                    {
+                                        this.processing = false;
+                                    }else{
+                                        this.processing = false;
+
+                                        Notiflix.Notify.Failure("Kindly Select a video file.");
+                                    }
                                 });
 
                             };
