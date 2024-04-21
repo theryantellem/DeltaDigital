@@ -382,6 +382,7 @@
 
                     console.log(duration)
 
+
                     let formData = new FormData();
                     formData.append('video_file', this.file);
                     formData.append('module_uuid', this.module);
