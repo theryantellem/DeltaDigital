@@ -37,28 +37,30 @@ class AcademyVideoController extends Controller
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
-        try {
-            $module = AcademyModule::where('uuid', $request->module_uuid)->first();
+        // try {
+        $module = AcademyModule::where('uuid', $request->module_uuid)->first();
 
-            $video = NULL;
+        $video = $request->file('video_file');
 
-            $video = uploadFile($request->file('video_file'), "academy/videos", "do_spaces");
+        $videoUrl = NULL;
 
-            $uploaded = $module->videos()->create([
-                'name' => $request->name,
-                'video_file' => $video,
-                'length' => $request->length,
-                'description' => $request->description,
-            ]);
+        $videoUrl = uploadFile($request->file('video_file'), "academy/videos", "do_spaces");
 
-            $video = new VideosResource($uploaded);
+        $uploaded = $module->videos()->create([
+            'name' => $request->name,
+            'video_file' => $videoUrl,
+            'length' => $request->length,
+            'description' => $request->description,
+        ]);
 
-            return response()->json(['success' => true, 'message' => 'New video created successfully.', 'video' => $video]);
-        } catch (\Exception $e) {
-            logger($e);
+        $video = new VideosResource($uploaded);
 
-            return response()->json(['success' => false, 'message' => 'Error uploading video.', 'errors' => $e]);
-        }
+        return response()->json(['success' => true, 'message' => 'New video created successfully.', 'video' => $video]);
+        // } catch (\Exception $e) {
+        //     logger($e);
+
+        //     return response()->json(['success' => false, 'message' => 'Error uploading video.', 'errors' => $e]);
+        // }
     }
 
     public function validateVideoFile(Request $request)

@@ -138,14 +138,14 @@
                                 // Ensure metadata is loaded to get the duration
                                 videoElement.addEventListener('loadedmetadata', () => {
 
-                                    this.duration = videoElement.duration; // Get the duration in seconds
-                                    console.log('Video duration:', this.duration)
+                                    this.duration = videoElement
+                                        .duration; // Get the duration in seconds
+
                                     this.video_length = videoElement.duration
 
-                                    if(this.video_length)
-                                    {
+                                    if (this.video_length) {
                                         this.processing = false;
-                                    }else{
+                                    } else {
                                         this.processing = false;
 
                                         Notiflix.Notify.Failure("Kindly Select a video file.");
@@ -352,14 +352,35 @@
                         this.errors.file = "File size exceeds the allowed limit (500MB).";
                     }
 
-
                     if (Object.keys(this.errors).length > 0) {
                         return false
                     }
 
-                    const duration = this.video_length
-
                     this.loading = true
+
+                    // Get the uploaded file
+                    const file = this.$refs.fileInput.files[0];
+
+                    // Check if a file is selected
+                    if (!file) {
+                        this.errors.file = "Please select a video file.";
+                        this.loading = false;
+                        return false;
+                    }
+
+                    // Create a new video element to get the duration
+                    const videoElement = document.createElement('video');
+                    videoElement.src = URL.createObjectURL(file);
+
+                    // Wait for metadata to be loaded
+                    await new Promise((resolve) => {
+                        videoElement.addEventListener('loadedmetadata', resolve);
+                    });
+
+                    // Get the duration
+                    const duration = videoElement.duration;
+
+                    console.log(duration)
 
                     let formData = new FormData();
                     formData.append('video_file', this.file);
