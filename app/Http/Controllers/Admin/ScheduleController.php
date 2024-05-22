@@ -96,7 +96,7 @@ class ScheduleController extends Controller
                 'schedule' => 'required|exists:schedules,uuid',
                 'title' => 'required|string',
                 'thumbnail' => ['required', 'mimes:png,jpg,jpeg,webp', 'max:5000'],
-                'file' => ['required', 'mimes:mp4,avi,flv,mov,wmvp', 'max:512000'],
+                'file' => ['required', 'mimes:mp4,avi,flv,mov,wmvp', 'max:1048576'],
             ]);
 
             // Handle validation errors

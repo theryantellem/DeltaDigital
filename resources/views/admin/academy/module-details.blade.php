@@ -345,11 +345,11 @@
                     }
 
                     // Check file size (e.g., 10MB limit)
-                    // const maxSizeInBytes = 1 * 1024 * 1024 * 1024; // 1 GB
-                    const maxSizeInBytes = 500 * 1024 * 1024; // 500 MB
+                    const maxSizeInBytes = 1 * 1024 * 1024 * 1024; // 1 GB
+                    // const maxSizeInBytes = 500 * 1024 * 1024; // 500 MB
 
                     if (this.file && this.file.size > maxSizeInBytes) {
-                        this.errors.file = "File size exceeds the allowed limit (500MB).";
+                        this.errors.file = "File size exceeds the allowed limit (1GB).";
                     }
 
                     if (Object.keys(this.errors).length > 0) {
@@ -380,8 +380,7 @@
                     // Get the duration
                     const duration = videoElement.duration;
 
-                    console.log(duration)
-
+                    // console.log(duration)
 
                     let formData = new FormData();
                     formData.append('video_file', this.file);
