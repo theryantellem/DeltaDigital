@@ -86,14 +86,14 @@ if (!function_exists('sendMailByDriver')) { /* Check_for "sendMailByDriver" */
 if (!function_exists('cyborgPlans')) { /* Check_for "plans allowed for cyborg" */
     function cyborgPlans()
     {
-        return  ["Delta Digital Plus", "Delta Digital Plus Renewal", "Delta Digital Plus Upgrade", "Delta Digital Pro Renewal", "Delta Digital Pro Upgrade", "Delta Digital Pro","Delta Digital Cyborg","Delta Digital Cyborg Renewal","Cyborg Annual","Cyborg Annual Renewal","Cyborg", "Cyborg Renewal", "Cyborg Annual Renewal", "Cyborg Annual Upgrade","Plus", "Plus Upgrade", "Plus Renewal", "Pro", "Pro Upgrade", "Pro Renewal","Cyborg monthly","Pro package","Cyborg Annual"];
+        return  ["Delta Digital Plus", "Delta Digital Plus Renewal", "Delta Digital Plus Upgrade", "Delta Digital Pro Renewal", "Delta Digital Pro Upgrade", "Delta Digital Pro","Delta Digital Cyborg","Delta Digital Cyborg Renewal","Cyborg Annual","Cyborg Annual Renewal","Cyborg", "Cyborg Renewal", "Cyborg Annual Renewal", "Cyborg Annual Upgrade","Plus", "Plus Upgrade", "Plus Renewal", "Pro", "Pro Upgrade", "Pro Renewal","Cyborg monthly","Pro package","Cyborg Annual","PRO"];
     }
 }
 
 if (!function_exists('signalPlans')) { /* Check_for "plans allowed for signal" */
     function signalPlans()
     {
-        return  ["Delta Digital Plus", "Delta Digital Plus Renewal", "Delta Digital Plus Upgrade", "Delta Digital Pro Renewal", "Delta Digital Pro Upgrade", "Delta Digital Pro", "Delta Digital Standard Renewal","Delta Digital Finix","Delta Digital Finix Renewal","Finix Annual","Finix Annual Renewal","Finix", "Finix Renewal", "Finix Annual", "Finix Annual Renewal", "Finix Annual Upgrade","Plus", "Plus Upgrade", "Plus Renewal", "Pro", "Pro Upgrade", "Pro Renewal"];
+        return  ["Delta Digital Plus", "Delta Digital Plus Renewal", "Delta Digital Plus Upgrade", "Delta Digital Pro Renewal", "Delta Digital Pro Upgrade", "Delta Digital Pro", "Delta Digital Standard Renewal","Delta Digital Finix","Delta Digital Finix Renewal","Finix Annual","Finix Annual Renewal","Finix", "Finix Renewal", "Finix Annual", "Finix Annual Renewal", "Finix Annual Upgrade","Plus", "Plus Upgrade", "Plus Renewal", "Pro", "Pro Upgrade", "Pro Renewal","PRO"];
     }
 }
 
