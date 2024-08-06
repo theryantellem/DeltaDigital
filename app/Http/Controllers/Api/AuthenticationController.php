@@ -213,6 +213,7 @@ class AuthenticationController extends ApiController
     {
         try {
 
+
             $validator = Validator::make($request->all(), [
                 'username' => 'required|string'
             ]);
