@@ -34,6 +34,8 @@ class ChatController extends ApiController
     {
         try {
 
+            $user = $request->user();
+
             $educatorDetails = Admin::where('uuid', $educator)->firstOrFail();
 
             $validator = Validator::make($request->all(), [
@@ -57,7 +59,7 @@ class ChatController extends ApiController
 
             $chatr = Chat::create([
                 'chat_group_id' => $educatorDetails->chatGroup->id,
-                'sender_id' => auth()->user()->id,
+                'sender_id' => $user->id,
                 'message' => $message,
                 'type' => $type
             ]);

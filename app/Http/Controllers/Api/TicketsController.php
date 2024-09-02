@@ -17,11 +17,13 @@ class TicketsController extends ApiController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $tickets = TicketResource::collection(Ticket::where('user_id', Auth::user()->id)->get());
+        $user = $request->user();
 
-        return $this->sendResponse($tickets,"Lists of tickets.");
+        $tickets = TicketResource::collection(Ticket::where('user_id', $user->id)->get());
+
+        return $this->sendResponse($tickets, "Lists of tickets.");
     }
 
     /**
@@ -29,7 +31,7 @@ class TicketsController extends ApiController
      */
     public function store(Request $request)
     {
-        try{
+        try {
 
             $validator = Validator::make($request->all(), [
                 'subject' => 'required|string',
@@ -39,13 +41,12 @@ class TicketsController extends ApiController
 
             // Handle validation errors
             if ($validator->fails()) {
-                return $this->sendError("Validation error.", ['errors' => $validator->errors()],Response::HTTP_UNPROCESSABLE_ENTITY );
+                return $this->sendError("Validation error.", ['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
             $imageUrl = null;
 
-            if($request->hasFile('file'))
-            {
+            if ($request->hasFile('file')) {
                 $image = $request->file('file');
                 $image_name = time() . '.' . $image->getClientOriginalExtension();
                 $image->move(public_path('images/strategy'), $image_name);
@@ -56,7 +57,7 @@ class TicketsController extends ApiController
             $ticket = Ticket::create([
                 'user_id' => $request->user()->id,
                 'subject' => $request->subject,
-                'status'=>"open"
+                'status' => "open"
             ]);
 
             $ticket->messages()->create([
@@ -66,13 +67,12 @@ class TicketsController extends ApiController
 
             $ticket = new TicketResource($ticket);
 
-            return $this->sendResponse(['ticket' => $ticket],"Ticket created successfully.",Response::HTTP_CREATED);
+            return $this->sendResponse(['ticket' => $ticket], "Ticket created successfully.", Response::HTTP_CREATED);
         } catch (\Throwable $th) {
             logger(['add_tickets' => $th->getMessage()]);
 
-            return $this->sendError("Ops Something went wrong. try again later.",[],Response::HTTP_SERVICE_UNAVAILABLE);
+            return $this->sendError("Ops Something went wrong. try again later.", [], Response::HTTP_SERVICE_UNAVAILABLE);
         }
-
     }
 
     /**
@@ -98,36 +98,33 @@ class TicketsController extends ApiController
 
             // Handle validation errors
             if ($validator->fails()) {
-                    return $this->sendError("Validation error.", ['errors' => $validator->errors()],Response::HTTP_UNPROCESSABLE_ENTITY );
-                }
+                return $this->sendError("Validation error.", ['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
 
-                $imageUrl = null;
+            $imageUrl = null;
 
-                if($request->hasFile('file'))
-                {
-                    $image = $request->file('photo');
-                    $image_name = time() . '.' . $image->getClientOriginalExtension();
-                    $image->move(public_path('images/strategy'), $image_name);
+            if ($request->hasFile('file')) {
+                $image = $request->file('photo');
+                $image_name = time() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('images/strategy'), $image_name);
 
-                    $imageUrl = url('/images/tickets/' . $image_name);
-                }
+                $imageUrl = url('/images/tickets/' . $image_name);
+            }
 
-                $message = TicketMessage::create([
-                    'ticket_id' => $ticket->id,
-                    'message' => $request->message,
-                    'file' => $imageUrl
-                ]);
+            $message = TicketMessage::create([
+                'ticket_id' => $ticket->id,
+                'message' => $request->message,
+                'file' => $imageUrl
+            ]);
 
             $message = new TiceketMessageResource($message);
 
-                return $this->sendResponse(['message'=>$message],"Sent Successfully.",Response::HTTP_CREATED);
-
+            return $this->sendResponse(['message' => $message], "Sent Successfully.", Response::HTTP_CREATED);
         } catch (\Throwable $th) {
             logger(['add_tickets' => $th->getMessage()]);
 
             return $this->sendError("Ops Something went wrong. try again later.", [], Response::HTTP_SERVICE_UNAVAILABLE);
         }
-
     }
 
     /**
@@ -136,9 +133,9 @@ class TicketsController extends ApiController
     public function destroy(Ticket $ticket)
     {
         $ticket->update([
-            'deleted_at'=>now()
+            'deleted_at' => now()
         ]);
 
-        return $this->sendResponse([],"Ticket deleted successfully.");
+        return $this->sendResponse([], "Ticket deleted successfully.");
     }
 }

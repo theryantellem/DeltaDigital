@@ -54,15 +54,17 @@ class ScheduleController extends ApiController
         return $this->sendResponse($resources, "Schedules retrieved successfully.", Response::HTTP_OK);
     }
 
-    function setViewers($id)
+    function setViewers(Request $request, $id)
     {
+        $user = $request->user();
+
         $schdule = Schedule::whereUuid($id)->first();
 
         if (!$schdule) {
             return response()->json(['success' => false, 'message' => 'Schedule not found.'], 404);
         }
 
-        $user = LiveAttendants::where('user_id', Auth::user()->id)->where('schedule_id', $schdule->id)->where('date', date("Y-m-d"))->first();
+        $user = LiveAttendants::where('user_id', $user->id)->where('schedule_id', $schdule->id)->where('date', date("Y-m-d"))->first();
 
         if (!$user) {
 
@@ -71,7 +73,7 @@ class ScheduleController extends ApiController
             // $schdule->save();
 
             LiveAttendants::create([
-                'user_id' => Auth::user()->id,
+                'user_id' => $user->id,
                 'schedule_id' => $schdule->id,
                 'date' => date("Y-m-d")
             ]);
@@ -96,9 +98,11 @@ class ScheduleController extends ApiController
         return response()->json(['message' => 'updated successfully', 'viewers' => $schdule->viewers]);
     }
 
-    function leaveStream($id)
+    function leaveStream(Request $request, $id)
     {
         try {
+            $user = $request->user();
+
             $schedule = Schedule::whereUuid($id)->first();
 
             if (!$schedule) {
@@ -110,7 +114,7 @@ class ScheduleController extends ApiController
             ]);
 
             LiveAttendants::where([
-                'user_id' => Auth::user()->id,
+                'user_id' => $user->id,
                 'schedule_id' => $schedule->id,
                 'date' => date("Y-m-d")
             ])->delete();
@@ -132,12 +136,14 @@ class ScheduleController extends ApiController
         return $this->sendResponse($schdule->viewers);
     }
 
-    function educatorsOnLive()
+    function educatorsOnLive(Request $request)
     {
         try {
 
+            $user = $request->user();
+
             // get list of eductors user is following
-            $educators = UserFollower::where('user_id', auth()->user()->id)->pluck('admin_id')->toArray();
+            $educators = UserFollower::where('user_id', $user->id)->pluck('admin_id')->toArray();
 
             $educators = Admin::whereIn('id', $educators)->where('is_live', true)->get();
 

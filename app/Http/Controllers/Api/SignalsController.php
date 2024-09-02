@@ -11,11 +11,14 @@ use Illuminate\Http\Request;
 
 class SignalsController extends ApiController
 {
-    function index()
+    function index(Request $request)
     {
         try {
+
+            $user = $request->user();
+
             // get list of eductors user is following
-            $educators = UserFollower::where('user_id', auth()->user()->id)->pluck('admin_id')->toArray();
+            $educators = UserFollower::where('user_id', $user->id)->pluck('admin_id')->toArray();
 
             $signals = Signal::whereIn('admin_id', $educators)->latest()->paginate(30);
 

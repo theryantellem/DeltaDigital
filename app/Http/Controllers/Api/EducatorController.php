@@ -40,10 +40,12 @@ class EducatorController extends ApiController
         return $this->sendResponse($educator);
     }
 
-    function following()
+    function following(Request $request)
     {
         try {
-            $followings = UserFollower::where('user_id', auth()->user()->id)->get();
+            $user = $request->user();
+
+            $followings = UserFollower::where('user_id', $user->id)->get();
 
             $following = FollowResource::collection($followings);
 

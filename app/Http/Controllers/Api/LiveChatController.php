@@ -51,6 +51,8 @@ class LiveChatController extends ApiController
                 return $this->sendError("Validations failed.", ['errors' => $validator->errors()], 422);
             }
 
+            $user = $request->user();
+
             // if ($request->hasFile('media')) {
             //     // $imageUrl = $this->uploadFile($request->file('photo'), "strategy");
             //     $image = $request->file('media');
@@ -66,7 +68,7 @@ class LiveChatController extends ApiController
 
             $chat = LiveChat::create([
                 'admin_id' => $educatorDetails->id,
-                'sender_id' => auth()->user()->id,
+                'sender_id' => $user->id,
                 'message' => $request->message
             ]);
 

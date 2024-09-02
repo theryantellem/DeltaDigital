@@ -17,7 +17,6 @@ class AuthenticationController extends ApiController
     function login(Request $request, Authentication $authentication)
     {
 
-
         $validator = Validator::make($request->all(), [
             'username' => 'required|string',
             'password' => 'required|string',

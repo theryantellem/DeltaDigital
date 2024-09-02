@@ -77,7 +77,7 @@ class AcademyEnrolController extends ApiController
             return $this->sendError("Validations failed.", ['errors' => $validator->errors()], 400);
         }
 
-        $user = auth()->user();
+        $user = $request->user();
 
         $enrolment = AcademyEnrolment::where('academy_module_id', $module->id)
             ->where('user_id', $user->id)

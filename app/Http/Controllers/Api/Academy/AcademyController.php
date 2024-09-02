@@ -6,15 +6,17 @@ use App\Http\Controllers\ApiController;
 use App\Http\Resources\Academy\AcademyResource;
 use App\Models\Academy;
 use App\Models\UserFollower;
+use Illuminate\Support\Facades\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class AcademyController extends ApiController
 {
-    public function index()
+    public function index(Request $request)
     {
-        $user = auth()->user();
+        $user = $request->user();
+
         $adminIds = UserFollower::where('user_id', $user->id)->pluck('admin_id')->toArray();
- 
+
         $data = Academy::whereIn('admin_id', $adminIds)->orderBy('id', 'desc')->get();
         $resource = AcademyResource::collection($data);
 

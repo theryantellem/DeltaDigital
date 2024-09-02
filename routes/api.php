@@ -34,7 +34,7 @@ Route::middleware('throttle:120,1')->group(function () {
 
     Route::post('/pin/validate', [AuthenticationController::class, 'loginWithPin'])->middleware('auth:sanctum');
 
-    Route::middleware(['auth:sanctum', 'is.eligible'])->group(function () {
+    Route::middleware(['customSanctumAuth'])->group(function () {
 
         Route::post('/check/authentication', [AuthenticationController::class, 'checkLogin']);
 

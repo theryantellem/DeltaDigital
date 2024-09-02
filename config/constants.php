@@ -15,5 +15,8 @@ return [
         'private_key' => env('COINPAYMENT_PRIVATE_KEY'),
         'url' => env('COINPAYMENT_BASEURL'),
         'ipn_url' => env('COINPAYMENT_IPN_URL')
+    ],
+    'auth' => [
+        'base_url' => env('AUTH_BASE_URL', 'https://deltadigital.pro/api/digitalservices')
     ]
 ];
