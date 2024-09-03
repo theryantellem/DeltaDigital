@@ -6,7 +6,7 @@ use App\Http\Controllers\ApiController;
 use App\Http\Resources\Academy\AcademyResource;
 use App\Models\Academy;
 use App\Models\UserFollower;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class AcademyController extends ApiController
