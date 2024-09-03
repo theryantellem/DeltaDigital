@@ -13,13 +13,19 @@ class AcademyController extends ApiController
 {
     public function index(Request $request)
     {
-        $user = $request->user();
+        try {
+            $user = $request->user();
 
-        $adminIds = UserFollower::where('user_id', $user->id)->pluck('admin_id')->toArray();
+            $adminIds = UserFollower::where('user_id', $user->id)->pluck('admin_id')->toArray();
 
-        $data = Academy::whereIn('admin_id', $adminIds)->orderBy('id', 'desc')->get();
-        $resource = AcademyResource::collection($data);
+            $data = Academy::whereIn('admin_id', $adminIds)->orderBy('id', 'desc')->get();
+            $resource = AcademyResource::collection($data);
 
-        return $this->sendResponse($resource, "Academy list retrieved successfully.", Response::HTTP_OK);
+            return $this->sendResponse($resource, "Academy list retrieved successfully.", Response::HTTP_OK);
+        } catch (\Exception $e) {
+            sendToLog($e);
+
+            return $this->sendError("Service unavailable");
+        }
     }
 }
