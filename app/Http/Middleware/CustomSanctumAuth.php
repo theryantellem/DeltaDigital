@@ -48,21 +48,30 @@ class CustomSanctumAuth extends Middleware
             $user = (object) $user->data;
 
             // Update or create the user in the local database
-            $user = User::updateOrCreate(
-                ['id' => $user->user_id],
-                [
-                    'id' => $user->user_id,
+            $user = User::where('email', $user->email)->first();
+
+            if ($user) {
+                $user->update([
                     'uuid' => $user->id,
                     'name' => $user->name,
-                    'email' => $user->email,
                     'username' => $user->username,
                     'password' => "check", // You should set a proper password or handle it as per your requirement
                     'role' => $user->role,
                     'profile_picture' => $user->profile_picture,
                     'created_at' => $user->created_at,
-                ]
-            );
-
+                ]);
+            } else {
+                $user = User::create([
+                    'id' => $user->user_id,
+                    'uuid' => $user->id,
+                    'name' => $user->name,
+                    'username' => $user->username,
+                    'password' => "check", // You should set a proper password or handle it as per your requirement
+                    'role' => $user->role,
+                    'profile_picture' => $user->profile_picture,
+                    'created_at' => $user->created_at,
+                ]);
+            }
 
             // Attach the user to the request
             $request->setUserResolver(function () use ($user) {
