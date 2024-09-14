@@ -48,10 +48,10 @@ class CustomSanctumAuth extends Middleware
             $user = (object) $user->data;
 
             // Update or create the user in the local database
-            $user = User::where('email', $user->email)->first();
+            $userp = User::where('email', $user->email)->orWhere('id', $user->user_id)->first();
 
-            if ($user) {
-                $user->update([
+            if ($userp) {
+                $userp->update([
                     'uuid' => $user->id,
                     'name' => $user->name,
                     'username' => $user->username,
@@ -61,7 +61,7 @@ class CustomSanctumAuth extends Middleware
                     'created_at' => $user->created_at,
                 ]);
             } else {
-                $user = User::create([
+                $userp = User::create([
                     'id' => $user->user_id,
                     'uuid' => $user->id,
                     'name' => $user->name,
@@ -72,6 +72,8 @@ class CustomSanctumAuth extends Middleware
                     'created_at' => $user->created_at,
                 ]);
             }
+
+            $user = $userp;
 
             // Attach the user to the request
             $request->setUserResolver(function () use ($user) {
