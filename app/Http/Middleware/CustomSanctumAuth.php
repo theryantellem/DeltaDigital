@@ -21,7 +21,7 @@ class CustomSanctumAuth extends Middleware
      */
     public function handle($request, Closure $next, ...$guards)
     {
-        // try {
+        try {
         // Retrieve the user ID from the custom header
         $userId = $request->header('X-User-ID');
 
@@ -40,6 +40,7 @@ class CustomSanctumAuth extends Middleware
 
             // Decode the response and check if the user exists
             $user = (object) $response->json();
+
 
             if (!$user || empty($user->data)) {
                 return response()->json(['error' => 'Invalid user ID on headers'], 400);
@@ -65,6 +66,7 @@ class CustomSanctumAuth extends Middleware
                     'id' => $user->user_id,
                     'uuid' => $user->id,
                     'name' => $user->name,
+                    'email' =>  $user->email,
                     'username' => $user->username,
                     'password' => "check", // You should set a proper password or handle it as per your requirement
                     'role' => $user->role,
@@ -95,10 +97,10 @@ class CustomSanctumAuth extends Middleware
 
         // Continue with the request
         return $next($request);
-        // } catch (\Exception $e) {
-        //     sendToLog($e);
+        } catch (\Exception $e) {
+            sendToLog($e);
 
-        //     return response()->json(["message" => "Service unavailable"], 500);
-        // }
+            return response()->json(["message" => "Service unavailable"], 500);
+        }
     }
 }
