@@ -4,66 +4,77 @@ namespace App\Services;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
+use Google\Client as GoogleClient;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
 
 class PushNotification
 {
     function sendNotification($data)
     {
         $payload = [
-            "registration_ids" => $data['push_tokens'],
-            "notification" => [
-                "title" => $data['title'],
-                "body" => $data['message'],
-            ]
+            'message' => [
+                'token' => $data['push_token'],
+                'notification' => [
+                    'title' => $data['title'],
+                    'body' => $data['message'],
+                ],
+            ],
         ];
 
         if (!empty($data['data'])) {
             $payload["data"] =  $data['data'];
         }
 
-        $dataString = json_encode($payload);
+        // $dataString = json_encode($payload);
 
-        return self::handle($dataString);
+        return self::handle($payload);
     }
 
-    function handle($data)
+    function handle($payload)
     {
         try {
+            $credentialsFilePath = public_path('json/file.json');
 
-            // $headers = [
-            //     'Authorization' => 'Bearer' . env('FIREBASE_SERVER_KEY'),
-            //     'Content-Type' => 'application/json',
-            // ];
+            $client = new GoogleClient();
+
+            $client->setAuthConfig($credentialsFilePath);
+
+            $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
+
+            $client->refreshTokenWithAssertion();
+
+            $token = $client->getAccessToken();
+
+            $projectId = 'delta-signal';
+
+            $access_token = $token['access_token'];
 
             $headers = [
-                'Authorization' => 'key=' . env('FIREBASE_SERVER_KEY'),
+                'Authorization' => 'Bearer ' . $access_token,
                 'Content-Type' => 'application/json',
             ];
 
-            // $client = new Client([
-            //     'base_uri' => 'https://fcm.googleapis.com/v1/projects/delta-signal/messages:send',
-            //     'verify' => false,
+            $response = Http::withHeaders($headers)
+                ->post("https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send", $payload);
+
+            if ($response->failed()) {
+                // return response()->json([
+                //     'message' => 'Request Error: ' . $response->body(),
+                // ], 500);
+                return false;
+            }
+
+            return true;
+
+            // return response()->json([
+            //     'message' => 'Notification has been sent',
+            //     'response' => $response->json(),
             // ]);
-
-            $client = new Client([
-                'base_uri' => 'https://fcm.googleapis.com/fcm/send',
-                'verify' => false,
-            ]);
-
-            $response = $client->post('send', [
-                'headers' => $headers,
-                'body' => $data,
-            ]);
-
-            // Process the response
-            $statusCode = $response->getStatusCode();
-            $responseData = $response->getBody()->getContents();
-
-            return json_decode($responseData, true);
         } catch (\Exception $e) {
             sendToLog($e);
 
-            return $e;
+            return false;
         }
     }
 }

@@ -29,7 +29,12 @@ class PushNotificationJob implements ShouldQueue
         try {
             $firebase = new \App\Services\PushNotification();
 
-            $firebase->sendNotification($this->data);
+            // $firebase->sendNotification($this->data);
+
+            foreach ($this->data['push_tokens'] as $token) {
+                $this->data['push_token'] = $token;
+                $firebase->sendNotification($this->data);
+            }
         } catch (\Exception $e) {
             sendToLog($e);
         }

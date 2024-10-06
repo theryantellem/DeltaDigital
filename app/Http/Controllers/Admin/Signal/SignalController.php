@@ -117,7 +117,7 @@ class SignalController extends Controller
                     'title' => "Signal Created.",
                     'message' => "{$name} created new signal.",
                     'data' => [
-                        'signal' => $signal
+                        'signal' => $signal->id,
                     ]
                 ];
 
@@ -159,7 +159,7 @@ class SignalController extends Controller
                     'title' => "Signal Status updated.",
                     'message' => "{$name} updated signal status.",
                     'data' => [
-                        'signal' => $signal
+                        'signal' => $signal->id,
                     ]
                 ];
 
@@ -203,7 +203,7 @@ class SignalController extends Controller
                     'title' => "Signal Status updated",
                     'message' => "{$name} updated signal status.",
                     'data' => [
-                        'signal' => $signal
+                        'signal' => $signal->id,
                     ]
                 ];
 
@@ -285,7 +285,7 @@ class SignalController extends Controller
                     'title' => "Signal Updated",
                     'message' => "{$name} updated signal.",
                     'data' => [
-                        'signal' => $signal
+                        'signal' => $signal->id,
                     ]
                 ];
 

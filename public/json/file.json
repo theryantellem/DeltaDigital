@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "delta-signal",
+  "private_key_id": "541e1c46cbe90165b7f2ad3ad188ce3cab6b2885",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDALxofQ5aEAeg4\n6dv5aM9E/udhmk9v2o5yy6liegmZJKdnBnC9epIDreWaXp/hZZ1zAm/98O2I+mCz\nRhXxaVygp2O5vtI8mP6/Q6tifHw5PYSnTiGTYsuYuI5MF1OiboSJaGEhcPT6UXTs\nhcfgcRt6KyB2AINmSVEj5TsqmX7P3LD+OOHtC9BMySKaa7AZfT9XoztaOPEGgBqk\nBVJIW0zGx5VaXOkFynx1++OFYFlbnaAs3z93ZawduP16LK8JwuCPpqGJiPlXrjIv\nzKJP6MOFPr8xZ+HCSYdb9Zd+7QCkIHY5EJ3n87eQpcPfqybRX4Ir515cKtAwh7pz\np7GSerfVAgMBAAECggEAB34+pz3oIjT91CxAFKkivbavmFVfKAYOPEkXDV0jPyqX\n8VMltamQBF81Hs/2LWBcI3YSnkTUyhyzBQJkTCGWyDfGkmEvisfPVO9DQSeH42Zz\n498OvZOiSw3VFH/rVZ+4ALCGavqfvpvK8objzGs0jk6cqSUremM86+id5jMOZ/XK\nNrRyHxkh1RYRVAESlnuwi7N8fiKZuX6i/3b62QlOZQqSw2cAUq6CV1xOcB9TjKli\n4yxLDLZHZjKRD54J8y0Finvy7fpkhChLjZrqyEQ2lvhWKQC/8yOAyJtW6C5Jtqrr\nYUPd45qkYO+uJLiJXYPU2gSW8Xp8JS8S/QjaOegFKQKBgQD2xgbEEYUmOhjmSyQ2\nP6bClhrttGn8bCfeJtfZhuknhdDDd9JeKhITFcG3RModM09ssmR99S2RcU2Nq0qM\nq4a6rtwTSteNHuex4i8Aei2MDfgmM3WSZFsDBppfdLDJ2l5MOEhyCImqtiD0Pwev\n7sMvXiTuMYVOWDsRlWexNnNGOQKBgQDHXpN28YQ3fRIgM0mFRDuFm7vuAhH+b8eR\nj8oUvlMerouwzQzC8a2KBkVDej4N3206j4aHzRM/64PhmdMsvao0mtZi3yiYLF8J\nxKokQi7YeKkkd4GOOD3SZGwGEfrnRR/CCqz0mRsOLFb3z9uvYoc/aGb/U03bcby5\nsEFtj6zefQKBgQDPXlkRKifZl7iUzVAAxjw8CCdY2OK3W6uk4r8/7D7BF5H2sBn3\nRyMpJn9Comu1XgjALqiDsCQ6tBuXkPl0fC8bcRU+oQXBcNcChC87F3Bu4M5GS7fg\n7LQONt5CmKx28ymKo0E9ki8dZS8MEGtFTD5474PZJYP/8eSxQfuAz2DPAQKBgDMv\nqvisxV9hsxelU0jt3cJN25Ad4/TJShmrKxzsSHbmJWM9IfujBQUc2weaCPiS1n5k\nfwu6sSiGFRQE5FzmTR64ajZ0SP3Y1oWxgmVQwKo/QF3meNLEycqMkdd1Ik/iRWcS\nSpl5/aJD7Agvy51Z1JOJAHipMKIYr3WVNRcl/iIZAoGBAMH6rGoWGF3fEjzviDka\nxrNLXY56RdNohpn8YWTGu/qEWuJ38AiqNClPPx/55ANPvUbwM1OPxVjfYDRsp5H/\n71LKqHRMHmL9KTLadhhiDi5TTPsO65wX/l2wq4jTH9RBww4gf3eJUQi0AFaCtrRp\nEon+oHKI/TPRxIFiBiw90MpI\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-e60lu@delta-signal.iam.gserviceaccount.com",
+  "client_id": "112537739807292006465",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-e60lu%40delta-signal.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

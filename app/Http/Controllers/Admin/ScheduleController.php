@@ -168,7 +168,7 @@ class ScheduleController extends Controller
                     'title' => "Live started",
                     'message' => "{$name} is live.",
                     'data' => [
-                        'stream' => new EducatorResource($user),
+                        'stream' => $user->uuid,
                     ]
                 ];
 
