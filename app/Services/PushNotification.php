@@ -12,21 +12,32 @@ class PushNotification
 {
     function sendNotification($data)
     {
-        $payload = [
-            'message' => [
-                'token' => $data['push_token'],
-                'notification' => [
-                    'title' => $data['title'],
-                    'body' => $data['message'],
-                ],
-            ],
-        ];
+        $payload =
+            [
+                "message" => [
+                    'token' => $data['push_token'],
+                    "notification" => [
+                        'title' => $data['title'],
+                        'body' => $data['message'],
+                    ],
+                    "android" => [
+                        "notification" => [
+                            "sound" => "default"
+                        ]
+                    ],
+                    "apns" => [
+                        "payload" => [
+                            "aps" => [
+                                "sound" => "default"
+                            ]
+                        ]
+                    ]
+                ]
+            ];
 
         if (!empty($data['data'])) {
-            $payload["data"] =  $data['data'];
+            $payload["message"]["data"] =  $data['data'];
         }
-
-        // $dataString = json_encode($payload);
 
         return self::handle($payload);
     }
@@ -34,7 +45,7 @@ class PushNotification
     function handle($payload)
     {
         try {
-            $credentialsFilePath = public_path('json/file.json');
+            $credentialsFilePath = base_path('lkl.json');
 
             $client = new GoogleClient();
 
@@ -59,10 +70,10 @@ class PushNotification
                 ->post("https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send", $payload);
 
             if ($response->failed()) {
-                // return response()->json([
-                //     'message' => 'Request Error: ' . $response->body(),
-                // ], 500);
-                return false;
+                return response()->json([
+                    'message' => 'Request Error: ' . $response->body(),
+                ], 500);
+                // return false;
             }
 
             return true;

@@ -20,15 +20,31 @@ Route::get('/', function () {
 
 Route::get('test', function () {
     $data = [
-        'push_tokens' =>  ['fXZZ8qCUDkc6omS_dW4Eqz:APA91bE2vV5bIu8Qq8DzL0-C8ldwVFFeFwk_jP_VgjOedVsWt5tpsivNtXZ84JSzP4AbITE0Ow9WV2w4isKy3Liw3V7iI9--4CMhkQroeHAdtMXqGh8X3S6mIjPqnA99IenI203_mTih'],
+        'push_tokens' =>  ['f5uNZe_-tk03t6S-SUsdnw:APA91bFRU_20laXbsvFOkr2DMqKxUUmpmri6O-acLbjCvC7-VwGVloZYUBwjh_yB83MbCvD9Bs2nzZm0SKvDpRr0nwbOQsxN-FLnxXXXqvam3WC1-CoNygmVVlWNTy4GxAtedsjNlLbi'],
         'title' => "Signal Created.",
         'message' => "push notification test",
     ];
 
     dispatch(new PushNotificationJob($data));
 
+    dD("done");
+
     // $firebase = new \App\Services\PushNotification();
 
-    // dD($firebase->sendNotification($data));
+    // $data['push_token'] = "f5uNZe_-tk03t6S-SUsdnw:APA91bFRU_20laXbsvFOkr2DMqKxUUmpmri6O-acLbjCvC7-VwGVloZYUBwjh_yB83MbCvD9Bs2nzZm0SKvDpRr0nwbOQsxN-FLnxXXXqvam3WC1-CoNygmVVlWNTy4GxAtedsjNlLbi";
+    // $res = $firebase->sendNotification($data);
 
+    // dD($res);
+
+    // $res = [];
+
+    // foreach ($data['push_tokens'] as $token) {
+    //     $data['push_token'] = $token;
+    //     $firebase->sendNotification($data);
+    //     // dd($firebase);
+
+    //     // array_push($res, $firebase);
+    // }
+
+    // dD($res);
 });
