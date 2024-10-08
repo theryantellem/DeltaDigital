@@ -88,7 +88,7 @@ class MessageController extends Controller
                     'title' => "Chat Notification",
                     'message' => "You have new message in {$name}'s channel",
                     'data' => [
-                        'message' => $chat
+                        'message' => json_encode($chat)
                     ]
                 ];
 

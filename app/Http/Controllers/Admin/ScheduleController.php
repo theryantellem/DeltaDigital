@@ -168,7 +168,7 @@ class ScheduleController extends Controller
                     'title' => "Live started",
                     'message' => "{$name} is live.",
                     'data' => [
-                        'stream' => $user->uuid,
+                        'stream' => json_encode($user),
                     ]
                 ];
 
@@ -225,7 +225,7 @@ class ScheduleController extends Controller
                     'title' => "Live ended",
                     'message' => "{$name} live has ended.",
                     'data' => [
-                        'stream' => null
+                        'stream' => ""
                     ]
                 ];
 

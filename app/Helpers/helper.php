@@ -119,7 +119,9 @@ if (!function_exists('followersPushTokens')) {
     {
         $followers = \App\Models\UserFollower::with('user')->where('admin_id', $educator)
             ->whereHas('user', function ($query) {
-                $query->whereNotNull('fcm_token')->where('iseligible', 1)->select('fcm_token');
+                $query->whereNotNull('fcm_token')
+                    // ->where('iseligible', 1)
+                    ->select('fcm_token');
             })
             ->get();
 

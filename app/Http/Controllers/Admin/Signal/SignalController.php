@@ -106,7 +106,7 @@ class SignalController extends Controller
             // broadcast events
             $signal = new SignalResource($signal);
 
-            $fcmTokens =  followersPushTokens($user->id);
+            $fcmTokens = followersPushTokens($user->id);
 
             if (!empty($fcmTokens)) {
 
@@ -117,7 +117,7 @@ class SignalController extends Controller
                     'title' => "Signal Created.",
                     'message' => "{$name} created new signal.",
                     'data' => [
-                        'signal' => $signal->id,
+                        'signal' => json_encode($signal),
                     ]
                 ];
 
@@ -159,7 +159,7 @@ class SignalController extends Controller
                     'title' => "Signal Status updated.",
                     'message' => "{$name} updated signal status.",
                     'data' => [
-                        'signal' => $signal->id,
+                        'signal' => json_encode($signal),
                     ]
                 ];
 
@@ -198,12 +198,14 @@ class SignalController extends Controller
 
                 $name = ucfirst($user->first_name) . ' ' . ucfirst($user->last_name);
 
+                logger("hello");
+
                 $data = [
                     'push_tokens' =>  $fcmTokens,
                     'title' => "Signal Status updated",
                     'message' => "{$name} updated signal status.",
                     'data' => [
-                        'signal' => $signal->id,
+                        'signal' => json_encode($signal),
                     ]
                 ];
 
@@ -285,7 +287,7 @@ class SignalController extends Controller
                     'title' => "Signal Updated",
                     'message' => "{$name} updated signal.",
                     'data' => [
-                        'signal' => $signal->id,
+                        'signal' => json_encode($signal),
                     ]
                 ];
 

@@ -79,7 +79,7 @@ Route::middleware(['auth:admin'])->group(function () {
     });
 
     Route::get('educators/all', [EducatorController::class, 'allEducators'])->name('educators.all');
-    Route::get('educators/streams/{id}',[EducatorController::class,'streams'])->name('educators.streams');
+    Route::get('educators/streams/{id}', [EducatorController::class, 'streams'])->name('educators.streams');
     Route::resource('educators', EducatorController::class);
 
     Route::resource('banners', BannerController::class);
@@ -156,7 +156,7 @@ Route::middleware(['auth:admin'])->group(function () {
         Route::get('show/{module}', 'show')->name('show'); // This endpoint list all video under a module
         Route::put('update/{module}', 'update')->name('update');
         Route::put('make-video-favourite/{module}', 'makeFavourite')->name('makeFavourite');
-        Route::post('sort-videos','sortVideos');
+        Route::post('sort-videos', 'sortVideos');
         Route::delete('delete/{module}', 'delete')->name('delete');
     }));
 
@@ -169,9 +169,9 @@ Route::middleware(['auth:admin'])->group(function () {
         Route::delete('delete/{video}', 'delete')->name('delete');
     }));
 
-    Route::controller(AcademyDocumentController::class)->prefix('academy/document')->name('academy.document.')->group(function(){
-        Route::get('/{module}','index')->name('index');
-        Route::post('/store','store')->name('store');
+    Route::controller(AcademyDocumentController::class)->prefix('academy/document')->name('academy.document.')->group(function () {
+        Route::get('/{module}', 'index')->name('index');
+        Route::post('/store', 'store')->name('store');
     });
 });
 
@@ -183,50 +183,20 @@ Route::get('test-notifications', function () {
 
 Route::get('push-notification', function () {
 
-    $firebaseToken = ["f-7-xyUjI05-g2xU13RXtr:APA91bHamFGUhQy476Forn8hKozkkGNqKOnPSTtA9xhjOpRCK1v-moHicASA-IEqXtyU_8wDx43US5apAeYq83iRjnImUPvfEDnunDvzWJR5vndvUQhMvZZMp4iEOWAUTUrOqPu2-sGd"];
+    // $firebaseToken = ["f5uNZe_-tk03t6S-SUsdnw:APA91bFRU_20laXbsvFOkr2DMqKxUUmpmri6O-acLbjCvC7-VwGVloZYUBwjh_yB83MbCvD9Bs2nzZm0SKvDpRr0nwbOQsxN-FLnxXXXqvam3WC1-CoNygmVVlWNTy4GxAtedsjNlLbi"];
 
-    $headers = [
-        'Authorization' => 'Bearer' . env('FIREBASE_SERVER_KEY'),
-        'Content-Type' => 'application/json',
-    ];
-
-    $client = new \GuzzleHttp\Client([
-        'base_uri' => 'https://fcm.googleapis.com/v1/projects/delta-signal/messages:send',
-        // 'verify' => false,
-    ]);
+    $fcmTokens = followersPushTokens(2);
 
     $data = [
-        "message" => [
-            "token" => $firebaseToken,
-            "notification" => [
-                "title" => "Testing Notification",
-                "body" => "Testing Notification",
-            ],
-            "data" => [
-                "signals" => "hello"
-            ]
+        'push_tokens' => $fcmTokens,
+        'title' => "Hello World",
+        'message' => "Trust your day is fine.",
+        'data' => [
+            'signal' => "93jjfiejeinin",
         ]
     ];
 
-    $data = json_encode($data);
-
-    $response = $client->post('send', [
-        'headers' => $headers,
-        'body' => $data,
-    ]);
-
-    // Process the response
-    $statusCode = $response->getStatusCode();
-    $responseData = $response->getBody()->getContents();
-
-    dd($responseData, true);
-
-
-    // $data = [
-    //     'push_tokens' => $firebaseToken,
-    //     'title' => "Hello World",
-    //     'message' => "Trust your day is fine."
-    // ];
+    dispatch(new \App\Jobs\PushNotificationJob($data));
 
     // $firebase = new \App\Services\PushNotification();
 

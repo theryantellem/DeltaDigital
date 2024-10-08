@@ -65,14 +65,17 @@ class RolePermissionSeeder extends Seeder
 
         $permissions = Permission::get();
 
-        $role = Role::create(['name' => 'super_admin', 'guard_name' => 'admin']);
+        $role = Role::create(['name' => 'super_admin', 'guard_name' => 'admin', 'uuid' => Str::uuid()->toString()]);
 
-        $defaultRole = Role::create(['name' => 'default', 'guard_name' => 'admin']);
+        $defaultRole = Role::create(['name' => 'default', 'guard_name' => 'admin', 'uuid' => Str::uuid()->toString()]);
 
-        $educator = Role::create(['name' => 'educator', 'guard_name' => 'admin']);
+        $educator = Role::create(['name' => 'educator', 'guard_name' => 'admin', 'uuid' => Str::uuid()->toString()]);
 
         $defaultRole->syncPermissions([
-            'manage_educator', 'manage_news', 'manage_banner', 'manage_tickets'
+            'manage_educator',
+            'manage_news',
+            'manage_banner',
+            'manage_tickets'
         ]);
 
         $educator->syncPermissions([
@@ -84,7 +87,7 @@ class RolePermissionSeeder extends Seeder
             'manage_chat_room'
         ]);
 
-        $role->syncPermissions([$permissions->map(fn ($permission) => $permission->name)]);
+        $role->syncPermissions([$permissions->map(fn($permission) => $permission->name)]);
 
         $admin = Admin::first();
 
